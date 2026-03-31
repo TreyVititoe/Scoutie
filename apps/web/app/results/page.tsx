@@ -35,10 +35,10 @@ type GenerateResult = {
   error?: string;
 };
 
-const tierConfig: Record<string, { label: string; color: string; bgColor: string; borderColor: string }> = {
-  budget: { label: "Budget", color: "text-emerald-600", bgColor: "bg-emerald-50", borderColor: "border-emerald-200" },
-  balanced: { label: "Balanced", color: "text-primary", bgColor: "bg-primary-50", borderColor: "border-primary-200" },
-  premium: { label: "Premium", color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-200" },
+const tierConfig: Record<string, { label: string; color: string; bgColor: string; borderColor: string; icon: string }> = {
+  budget: { label: "Budget", color: "text-emerald-600", bgColor: "bg-emerald-50", borderColor: "border-emerald-200", icon: "💚" },
+  balanced: { label: "Balanced", color: "text-primary", bgColor: "bg-primary-50", borderColor: "border-primary-200", icon: "⚖️" },
+  premium: { label: "Premium", color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-200", icon: "✨" },
 };
 
 export default function ResultsPage() {
@@ -52,11 +52,11 @@ export default function ResultsPage() {
   const [loadingPhase, setLoadingPhase] = useState(0);
 
   const phases = [
-    "Analyzing your preferences...",
-    "Searching real flights...",
-    "Finding the best hotels...",
-    "Building your itineraries...",
-    "Almost there...",
+    { text: "Analyzing your preferences...", icon: "🎯" },
+    { text: "Searching real flights...", icon: "✈️" },
+    { text: "Finding the best hotels...", icon: "🏨" },
+    { text: "Building your itineraries...", icon: "🗓️" },
+    { text: "Almost there...", icon: "🎉" },
   ];
 
   useEffect(() => {
@@ -79,7 +79,6 @@ export default function ResultsPage() {
     const adults = quizData.travelersCount || quizData.travelers || 1;
     const cabinClass = quizData.flightClass || "economy";
 
-    // Fire all three requests in parallel
     const generatePromise = fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -97,14 +96,7 @@ export default function ResultsPage() {
         ? fetch("/api/flights", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              origin: departureCity,
-              destination,
-              departDate: startDate,
-              returnDate: endDate,
-              adults,
-              cabinClass,
-            }),
+            body: JSON.stringify({ origin: departureCity, destination, departDate: startDate, returnDate: endDate, adults, cabinClass }),
           })
             .then((r) => r.json())
             .then((data) => setFlights(data.flights || []))
@@ -116,12 +108,7 @@ export default function ResultsPage() {
         ? fetch("/api/hotels", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              destination,
-              checkIn: startDate,
-              checkOut: endDate,
-              adults,
-            }),
+            body: JSON.stringify({ destination, checkIn: startDate, checkOut: endDate, adults }),
           })
             .then((r) => r.json())
             .then((data) => setHotels(data.hotels || []))
@@ -155,7 +142,22 @@ export default function ResultsPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <div className="w-14 h-14 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-8" />
+          {/* Animated orb */}
+          <div className="relative w-24 h-24 mx-auto mb-10">
+            <div className="absolute inset-0 rounded-full bg-gradient-animated opacity-20 blur-xl animate-pulse" />
+            <div className="absolute inset-2 rounded-full bg-gradient-animated opacity-40 blur-md" />
+            <div className="absolute inset-4 rounded-full bg-surface flex items-center justify-center">
+              <motion.span
+                key={loadingPhase}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                className="text-2xl"
+              >
+                {phases[loadingPhase].icon}
+              </motion.span>
+            </div>
+          </div>
           <h2 className="font-display text-2xl font-bold text-text mb-3">
             Scouting your trip...
           </h2>
@@ -165,8 +167,19 @@ export default function ResultsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-text-secondary"
           >
-            {phases[loadingPhase]}
+            {phases[loadingPhase].text}
           </motion.p>
+          {/* Progress dots */}
+          <div className="flex gap-2 justify-center mt-6">
+            {phases.map((_, i) => (
+              <div
+                key={i}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  i <= loadingPhase ? "bg-primary w-6" : "bg-border"
+                }`}
+              />
+            ))}
+          </div>
         </motion.div>
       </div>
     );
@@ -176,12 +189,15 @@ export default function ResultsPage() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-md">
+          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
+            <span className="text-2xl">😵</span>
+          </div>
           <p className="font-display text-2xl font-bold text-text mb-3">Something went wrong</p>
           <p className="text-text-secondary mb-6">{error}</p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-colors"
+              className="px-6 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-all hover:-translate-y-0.5"
             >
               Try again
             </button>
@@ -212,29 +228,40 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-surface border-b border-border sticky top-0 z-20">
+      <header className="glass fixed top-0 left-0 right-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="font-display font-bold text-xl text-text">
+          <Link href="/" className="font-display font-extrabold text-xl text-gradient">
             scoutie
           </Link>
           <Link
             href="/quiz"
-            className="text-sm font-semibold text-primary hover:text-primary-dark transition-colors"
+            className="text-sm font-semibold text-primary hover:text-primary-dark transition-colors flex items-center gap-1"
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
             Edit trip
           </Link>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
+      <main className="max-w-6xl mx-auto px-6 pt-24 pb-10">
         {/* Page header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
+          className="mb-12"
         >
-          <h1 className="font-display font-bold text-3xl sm:text-4xl text-text mb-2">
-            Your trips to {destination}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-sm font-semibold text-primary">Trip generated</span>
+          </motion.div>
+          <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-text mb-3 tracking-tight">
+            Your trips to <span className="text-gradient">{destination}</span>
           </h1>
           <p className="text-text-secondary text-lg">
             We built {trips.length} options at different price points. Plus real flights and hotels you can book now.
@@ -243,63 +270,95 @@ export default function ResultsPage() {
 
         {/* Real Flights */}
         {flights.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl font-bold text-text">Flights</h2>
-              <span className="text-sm text-text-muted">{flights.length} options</span>
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-12"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
+                  <span>✈️</span>
+                </div>
+                <div>
+                  <h2 className="font-display text-xl font-bold text-text">Flights</h2>
+                  <p className="text-xs text-text-muted">Live prices via Skyscanner</p>
+                </div>
+              </div>
+              <span className="text-sm font-mono text-text-muted bg-surface px-3 py-1 rounded-full border border-border">{flights.length} found</span>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
               {flights.map((f) => (
-                <FlightCard
-                  key={f.id}
-                  flight={f}
-                  cheapest={cheapestFlight?.id === f.id}
-                />
+                <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
               ))}
             </div>
-          </section>
+          </motion.section>
         )}
 
         {/* Real Hotels */}
         {hotels.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl font-bold text-text">Stays</h2>
-              <span className="text-sm text-text-muted">{hotels.length} options</span>
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-12"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
+                  <span>🏨</span>
+                </div>
+                <div>
+                  <h2 className="font-display text-xl font-bold text-text">Stays</h2>
+                  <p className="text-xs text-text-muted">Availability from Booking.com</p>
+                </div>
+              </div>
+              <span className="text-sm font-mono text-text-muted bg-surface px-3 py-1 rounded-full border border-border">{hotels.length} found</span>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
               {hotels.map((h) => (
-                <HotelCard
-                  key={h.id}
-                  hotel={h}
-                  bestValue={bestValueHotel?.id === h.id}
-                />
+                <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
               ))}
             </div>
-          </section>
+          </motion.section>
         )}
 
         {/* AI Trip Itineraries */}
-        <section className="mb-10">
-          <h2 className="font-display text-xl font-bold text-text mb-4">
-            Full itineraries
-          </h2>
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-12"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center">
+              <span>🗓️</span>
+            </div>
+            <div>
+              <h2 className="font-display text-xl font-bold text-text">Full itineraries</h2>
+              <p className="text-xs text-text-muted">AI-generated day-by-day plans</p>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {trips.map((trip, i) => {
               const config = tierConfig[trip.tier] || tierConfig.balanced;
               return (
                 <motion.div
                   key={trip.tier}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.15 }}
-                  className={`bg-surface rounded-2xl border ${config.borderColor} overflow-hidden hover:shadow-lg transition-shadow`}
+                  transition={{ delay: 0.4 + i * 0.15 }}
+                  className={`bg-surface rounded-2xl border ${config.borderColor} overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all card-shine`}
                 >
-                  <div className={`${config.bgColor} px-5 py-3 flex items-center justify-between`}>
-                    <span className={`text-sm font-bold uppercase tracking-wider ${config.color}`}>
-                      {config.label}
-                    </span>
-                    <span className={`font-mono font-bold text-lg ${config.color}`}>
+                  <div className={`${config.bgColor} px-5 py-4 flex items-center justify-between`}>
+                    <div className="flex items-center gap-2">
+                      <span>{config.icon}</span>
+                      <span className={`text-sm font-bold uppercase tracking-wider ${config.color}`}>
+                        {config.label}
+                      </span>
+                    </div>
+                    <span className={`font-mono font-bold text-xl ${config.color}`}>
                       ${trip.totalEstimatedCost.toLocaleString()}
                     </span>
                   </div>
@@ -308,21 +367,21 @@ export default function ResultsPage() {
                     <h3 className="font-display font-bold text-lg text-text mb-2">
                       {trip.title}
                     </h3>
-                    <p className="text-sm text-text-secondary mb-4 line-clamp-3">
+                    <p className="text-sm text-text-secondary mb-5 line-clamp-3">
                       {trip.summary}
                     </p>
 
                     <div className="space-y-2 mb-5">
                       {trip.days.slice(0, 3).map((day) => (
-                        <div key={day.dayNumber} className="flex items-center gap-2 text-sm">
-                          <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0">
+                        <div key={day.dayNumber} className="flex items-center gap-3 text-sm">
+                          <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0">
                             {day.dayNumber}
                           </span>
                           <span className="text-text-secondary truncate">{day.title}</span>
                         </div>
                       ))}
                       {trip.days.length > 3 && (
-                        <p className="text-xs text-text-muted pl-8">
+                        <p className="text-xs text-text-muted pl-10">
                           +{trip.days.length - 3} more days
                         </p>
                       )}
@@ -330,7 +389,7 @@ export default function ResultsPage() {
 
                     <Link
                       href={`/trip?tier=${trip.tier}`}
-                      className="block w-full py-3 rounded-xl bg-primary text-white text-center font-bold hover:bg-primary-dark transition-colors"
+                      className="block w-full py-3.5 rounded-xl bg-primary text-white text-center font-bold hover:bg-primary-dark transition-all hover:shadow-lg hover:shadow-primary/20"
                     >
                       View full itinerary
                     </Link>
@@ -339,17 +398,20 @@ export default function ResultsPage() {
               );
             })}
           </div>
-        </section>
+        </motion.section>
 
         {/* Quick comparison */}
         {trips.length > 1 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.6 }}
             className="bg-surface rounded-2xl border border-border p-6 mb-10"
           >
-            <h3 className="font-display font-bold text-xl text-text mb-4">
+            <h3 className="font-display font-bold text-xl text-text mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
               Quick comparison
             </h3>
             <div className="overflow-x-auto">
@@ -367,19 +429,13 @@ export default function ResultsPage() {
                     const config = tierConfig[trip.tier] || tierConfig.balanced;
                     const totalActivities = trip.days.reduce(
                       (sum, d) =>
-                        sum +
-                        d.items.filter(
-                          (it) =>
-                            it.itemType === "activity" ||
-                            it.itemType === "event" ||
-                            it.itemType === "restaurant"
-                        ).length,
+                        sum + d.items.filter((it) => it.itemType === "activity" || it.itemType === "event" || it.itemType === "restaurant").length,
                       0
                     );
                     return (
-                      <tr key={trip.tier} className="border-b border-border last:border-0">
+                      <tr key={trip.tier} className="border-b border-border last:border-0 hover:bg-primary-50/30 transition-colors">
                         <td className="py-3 pr-4">
-                          <span className={`font-semibold ${config.color}`}>{config.label}</span>
+                          <span className={`font-semibold ${config.color}`}>{config.icon} {config.label}</span>
                           <span className="text-text-muted ml-2">— {trip.title}</span>
                         </td>
                         <td className="py-3 px-4 text-right font-mono font-bold text-text">

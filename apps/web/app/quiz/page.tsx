@@ -27,6 +27,11 @@ const steps: Record<number, React.ComponentType> = {
   10: Step10Review,
 };
 
+const stepLabels = [
+  "Mode", "Where", "Who", "Budget", "Flights",
+  "Stay", "Activities", "Pace", "Dining", "Review",
+];
+
 export default function QuizPage() {
   const router = useRouter();
   const store = useQuizStore();
@@ -37,7 +42,6 @@ export default function QuizPage() {
   const isLastStep = currentStep === 10;
 
   const handleGenerate = () => {
-    // Save quiz data to localStorage for the results page to read
     localStorage.setItem(
       "scoutie_prefs",
       JSON.stringify({
@@ -65,7 +69,6 @@ export default function QuizPage() {
         pace: store.pace,
         diningPreference: store.diningPreference,
         dietaryRestrictions: store.dietaryRestrictions,
-        // Legacy compat for existing results page
         destination: store.destinations[0] || "Surprise me",
         travelers: store.travelersCount,
         budget: store.budgetAmount || 2000,
@@ -78,9 +81,9 @@ export default function QuizPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-surface border-b border-border sticky top-0 z-20">
+      <header className="glass sticky top-0 z-20">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="font-display font-bold text-xl text-text">
+          <a href="/" className="font-display font-extrabold text-xl text-gradient">
             scoutie
           </a>
           <button
@@ -88,27 +91,60 @@ export default function QuizPage() {
               store.resetQuiz();
               router.push("/");
             }}
-            className="text-sm text-text-muted hover:text-text transition-colors"
+            className="text-sm text-text-muted hover:text-text transition-colors flex items-center gap-1"
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
             Exit
           </button>
         </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="bg-surface border-b border-border">
+      {/* Progress */}
+      <div className="bg-surface/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-3xl mx-auto px-6">
-          <div className="h-1 bg-border rounded-full overflow-hidden">
+          {/* Step dots */}
+          <div className="flex items-center justify-between py-3">
+            {stepLabels.map((label, i) => {
+              const stepNum = i + 1;
+              const isActive = stepNum === currentStep;
+              const isComplete = stepNum < currentStep;
+              return (
+                <div key={label} className="flex flex-col items-center gap-1.5">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                      isActive
+                        ? "bg-gradient-animated text-white shadow-md shadow-primary/30 scale-110"
+                        : isComplete
+                        ? "bg-primary text-white"
+                        : "bg-border/50 text-text-muted"
+                    }`}
+                  >
+                    {isComplete ? (
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      stepNum
+                    )}
+                  </div>
+                  <span className={`text-[10px] font-medium hidden sm:block ${isActive ? "text-primary" : "text-text-muted"}`}>
+                    {label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          {/* Progress bar */}
+          <div className="h-1 bg-border/50 rounded-full overflow-hidden mb-1">
             <motion.div
-              className="h-full bg-primary rounded-full"
+              className="h-full bg-gradient-animated rounded-full"
               initial={false}
               animate={{ width: `${(currentStep / 10) * 100}%` }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
             />
           </div>
-          <p className="text-xs text-text-muted py-2">
-            Step {currentStep} of 10
-          </p>
         </div>
       </div>
 
@@ -120,33 +156,42 @@ export default function QuizPage() {
       </main>
 
       {/* Bottom nav */}
-      <div className="bg-surface border-t border-border sticky bottom-0">
+      <div className="glass sticky bottom-0 border-t border-border">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => store.prevStep()}
             disabled={isFirstStep}
-            className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+            className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
               isFirstStep
                 ? "opacity-0 pointer-events-none"
-                : "text-text-secondary hover:bg-primary-50"
+                : "text-text-secondary hover:bg-primary-50 hover:text-primary"
             }`}
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+            </svg>
             Back
           </button>
 
           {isLastStep ? (
             <button
               onClick={handleGenerate}
-              className="px-8 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20"
+              className="btn-glow px-8 py-3 rounded-xl bg-gradient-animated text-white font-bold transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 flex items-center gap-2"
             >
               Generate My Trip
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </button>
           ) : (
             <button
               onClick={() => store.nextStep()}
-              className="px-8 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors"
+              className="px-8 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-all hover:shadow-lg hover:shadow-primary/20 flex items-center gap-2"
             >
               Continue
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </button>
           )}
         </div>
