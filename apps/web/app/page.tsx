@@ -14,18 +14,18 @@ const destinations = [
 ];
 
 const steps = [
-  { num: "01", title: "Take the quiz", desc: "Tell us where, when, how you travel, and what you love. Takes 2 minutes.", icon: "🎯" },
-  { num: "02", title: "Scoutie plans it", desc: "AI builds complete itineraries — flights, hotels, activities, restaurants — all real, all bookable.", icon: "🤖" },
-  { num: "03", title: "You book it", desc: "Compare options side-by-side, tap to book. No extra fees, no subscriptions, ever.", icon: "✈️" },
+  { num: "01", title: "Take the quiz", desc: "Tell us where, when, how you travel, and what you love. Takes 2 minutes." },
+  { num: "02", title: "Scoutie plans it", desc: "AI builds complete itineraries — flights, hotels, activities, restaurants — all real, all bookable." },
+  { num: "03", title: "You book it", desc: "Compare options side-by-side, tap to book. No extra fees, no subscriptions, ever." },
 ];
 
 const features = [
-  { title: "Real flights", desc: "Live prices from Skyscanner", icon: "✈️" },
-  { title: "Real hotels", desc: "Availability from Booking.com", icon: "🏨" },
-  { title: "AI itineraries", desc: "Day-by-day plans built for you", icon: "🗓️" },
-  { title: "3 budget tiers", desc: "Budget, balanced, and premium", icon: "💰" },
-  { title: "No sign-up required", desc: "Use it free, save when ready", icon: "🔓" },
-  { title: "Share with friends", desc: "One link, full itinerary", icon: "🔗" },
+  { title: "Real flights", desc: "Live prices from Skyscanner" },
+  { title: "Real hotels", desc: "Availability from Booking.com" },
+  { title: "AI itineraries", desc: "Day-by-day plans built for you" },
+  { title: "3 budget tiers", desc: "Budget, balanced, and premium" },
+  { title: "No sign-up required", desc: "Use it free, save when ready" },
+  { title: "Share with friends", desc: "One link, full itinerary" },
 ];
 
 export default function HomePage() {
@@ -176,7 +176,7 @@ export default function HomePage() {
                 transition={{ delay: i * 0.05 }}
                 className="flex items-center gap-3 py-2"
               >
-                <span className="text-lg">{f.icon}</span>
+                <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0"></span>
                 <div>
                   <p className="text-sm font-bold text-text leading-tight">{f.title}</p>
                   <p className="text-[11px] text-text-muted">{f.desc}</p>
@@ -211,8 +211,8 @@ export default function HomePage() {
                 transition={{ delay: i * 0.15 }}
                 className="relative bg-surface rounded-2xl border border-border p-8 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all card-shine"
               >
-                <div className="w-12 h-12 rounded-2xl bg-gradient-animated flex items-center justify-center text-2xl mb-5">
-                  {step.icon}
+                <div className="w-12 h-12 rounded-2xl bg-gradient-animated flex items-center justify-center mb-5">
+                  <span className="text-white font-display font-bold text-lg">{step.num}</span>
                 </div>
                 <span className="absolute top-6 right-6 font-display font-extrabold text-5xl text-primary/[0.07]">
                   {step.num}

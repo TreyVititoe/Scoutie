@@ -47,7 +47,7 @@ export default function LoginPage() {
           className="bg-surface rounded-2xl border border-border p-8 max-w-md w-full text-center"
         >
           <div className="w-14 h-14 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">✉️</span>
+            <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
           </div>
           <h2 className="font-display font-bold text-2xl text-text mb-2">Check your email</h2>
           <p className="text-text-secondary">

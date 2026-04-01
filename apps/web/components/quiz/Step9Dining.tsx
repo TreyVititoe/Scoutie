@@ -3,11 +3,11 @@
 import { useQuizStore, DiningPreference } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
-const diningOptions: { value: DiningPreference; icon: string; label: string }[] = [
-  { value: "budget", icon: "🍜", label: "Budget eats" },
-  { value: "mid_range", icon: "🍝", label: "Mid-range" },
-  { value: "fine_dining", icon: "🥂", label: "Fine dining" },
-  { value: "mixed", icon: "🍽️", label: "Mix of everything" },
+const diningOptions: { value: DiningPreference; label: string }[] = [
+  { value: "budget", label: "Budget eats" },
+  { value: "mid_range", label: "Mid-range" },
+  { value: "fine_dining", label: "Fine dining" },
+  { value: "mixed", label: "Mix of everything" },
 ];
 
 const restrictions = [
@@ -51,7 +51,6 @@ export default function Step9Dining() {
                   : "border-border bg-surface hover:border-primary-light"
               }`}
             >
-              <span className="text-2xl block mb-1">{d.icon}</span>
               <span className="text-sm font-medium text-text">{d.label}</span>
             </button>
           ))}

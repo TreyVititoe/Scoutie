@@ -3,22 +3,19 @@
 import { useQuizStore, TripPace } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
-const paces: { value: TripPace; icon: string; title: string; desc: string }[] = [
+const paces: { value: TripPace; title: string; desc: string }[] = [
   {
     value: "relaxed",
-    icon: "🧘",
     title: "Relaxed",
     desc: "2-3 things per day, plenty of downtime and spontaneity.",
   },
   {
     value: "moderate",
-    icon: "🚶",
     title: "Moderate",
     desc: "3-5 activities per day, balanced between plans and free time.",
   },
   {
     value: "packed",
-    icon: "🏃",
     title: "Packed",
     desc: "Maximize every hour — see everything, sleep later.",
   },
@@ -44,7 +41,6 @@ export default function Step8Pace() {
             }`}
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{p.icon}</span>
               <div>
                 <p className="font-display font-bold text-text">{p.title}</p>
                 <p className="text-sm text-text-secondary">{p.desc}</p>

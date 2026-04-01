@@ -3,12 +3,12 @@
 import { useQuizStore, AccommodationType } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
-const types: { value: AccommodationType; icon: string; label: string }[] = [
-  { value: "hotel", icon: "🏨", label: "Hotel" },
-  { value: "vacation_rental", icon: "🏠", label: "Vacation rental" },
-  { value: "hostel", icon: "🛏️", label: "Hostel" },
-  { value: "resort", icon: "🏖️", label: "Resort" },
-  { value: "boutique", icon: "✨", label: "Boutique" },
+const types: { value: AccommodationType; label: string }[] = [
+  { value: "hotel", label: "Hotel" },
+  { value: "vacation_rental", label: "Vacation rental" },
+  { value: "hostel", label: "Hostel" },
+  { value: "resort", label: "Resort" },
+  { value: "boutique", label: "Boutique" },
 ];
 
 const mustHaveOptions = [
@@ -70,7 +70,6 @@ export default function Step6Accommodation() {
                   : "border-border bg-surface text-text hover:border-primary-light"
               }`}
             >
-              <span className="mr-2">{t.icon}</span>
               {t.label}
             </button>
           ))}

@@ -3,12 +3,12 @@
 import { useQuizStore, TravelerType } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
-const travelerTypes: { type: TravelerType; icon: string; label: string }[] = [
-  { type: "solo", icon: "🧑", label: "Solo" },
-  { type: "couple", icon: "👫", label: "Couple" },
-  { type: "family", icon: "👨‍👩‍👧‍👦", label: "Family" },
-  { type: "friends", icon: "👯", label: "Friends" },
-  { type: "business", icon: "💼", label: "Business" },
+const travelerTypes: { type: TravelerType; label: string }[] = [
+  { type: "solo", label: "Solo" },
+  { type: "couple", label: "Couple" },
+  { type: "family", label: "Family" },
+  { type: "friends", label: "Friends" },
+  { type: "business", label: "Business" },
 ];
 
 export default function Step3Travelers() {
@@ -32,7 +32,6 @@ export default function Step3Travelers() {
                   : "border-border bg-surface text-text hover:border-primary-light"
               }`}
             >
-              <span className="mr-2">{t.icon}</span>
               {t.label}
             </button>
           ))}

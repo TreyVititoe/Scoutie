@@ -10,12 +10,12 @@ type Props = {
 };
 
 const options = [
-  { id: "hotel", label: "Hotel", emoji: "🏨", desc: "Room service, amenities, consistency" },
-  { id: "airbnb", label: "Airbnb", emoji: "🏡", desc: "Local feel, more space, unique spots" },
-  { id: "hostel", label: "Hostel", emoji: "🛏️", desc: "Budget-friendly, social atmosphere" },
-  { id: "resort", label: "Resort", emoji: "🌴", desc: "All-inclusive, pools, relaxation" },
-  { id: "boutique", label: "Boutique", emoji: "✨", desc: "Curated, stylish, one-of-a-kind" },
-  { id: "any", label: "Surprise me", emoji: "🎲", desc: "Best value, whatever fits" },
+  { id: "hotel", label: "Hotel", desc: "Room service, amenities, consistency" },
+  { id: "airbnb", label: "Airbnb", desc: "Local feel, more space, unique spots" },
+  { id: "hostel", label: "Hostel", desc: "Budget-friendly, social atmosphere" },
+  { id: "resort", label: "Resort", desc: "All-inclusive, pools, relaxation" },
+  { id: "boutique", label: "Boutique", desc: "Curated, stylish, one-of-a-kind" },
+  { id: "any", label: "Surprise me", desc: "Best value, whatever fits" },
 ];
 
 export default function StepStay({ prefs, update, onNext, onBack }: Props) {
@@ -47,7 +47,6 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
                   : "border-gray-100 bg-gray-50 hover:border-gray-200"
               }`}
             >
-              <span className="text-2xl">{o.emoji}</span>
               <div>
                 <div className={`font-semibold ${selected ? "text-sky-700" : "text-gray-800"}`}>
                   {o.label}
@@ -75,7 +74,7 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
           disabled={prefs.stay.length === 0}
           className="flex-grow-[2] flex-1 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-100 disabled:text-gray-300 text-white font-semibold py-4 rounded-2xl text-lg transition-colors"
         >
-          Find my trip ✦
+          Find my trip
         </button>
       </div>
     </div>

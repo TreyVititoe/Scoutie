@@ -121,7 +121,7 @@ export default function DashboardPage() {
             <h2 className="font-display font-bold text-xl text-text mb-4">Your trips</h2>
             {trips.length === 0 ? (
               <div className="bg-surface rounded-2xl border border-border p-10 text-center">
-                <p className="text-4xl mb-4">🗺️</p>
+                <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-4"><svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg></div>
                 <p className="font-display font-bold text-lg text-text mb-2">No trips yet</p>
                 <p className="text-text-secondary mb-6">
                   Take the quiz to generate your first AI-powered trip itinerary.

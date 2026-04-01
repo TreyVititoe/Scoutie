@@ -35,10 +35,10 @@ type GenerateResult = {
   error?: string;
 };
 
-const tierConfig: Record<string, { label: string; color: string; bgColor: string; borderColor: string; icon: string }> = {
-  budget: { label: "Budget", color: "text-emerald-600", bgColor: "bg-emerald-50", borderColor: "border-emerald-200", icon: "💚" },
-  balanced: { label: "Balanced", color: "text-primary", bgColor: "bg-primary-50", borderColor: "border-primary-200", icon: "⚖️" },
-  premium: { label: "Premium", color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-200", icon: "✨" },
+const tierConfig: Record<string, { label: string; color: string; bgColor: string; borderColor: string }> = {
+  budget: { label: "Budget", color: "text-emerald-600", bgColor: "bg-emerald-50", borderColor: "border-emerald-200" },
+  balanced: { label: "Balanced", color: "text-primary", bgColor: "bg-primary-50", borderColor: "border-primary-200" },
+  premium: { label: "Premium", color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-200" },
 };
 
 export default function ResultsPage() {
@@ -52,11 +52,11 @@ export default function ResultsPage() {
   const [loadingPhase, setLoadingPhase] = useState(0);
 
   const phases = [
-    { text: "Analyzing your preferences...", icon: "🎯" },
-    { text: "Searching real flights...", icon: "✈️" },
-    { text: "Finding the best hotels...", icon: "🏨" },
-    { text: "Building your itineraries...", icon: "🗓️" },
-    { text: "Almost there...", icon: "🎉" },
+    "Analyzing your preferences...",
+    "Searching real flights...",
+    "Finding the best hotels...",
+    "Building your itineraries...",
+    "Almost there...",
   ];
 
   useEffect(() => {
@@ -151,10 +151,9 @@ export default function ResultsPage() {
                 key={loadingPhase}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                className="text-2xl"
+                className="font-display font-bold text-primary text-lg"
               >
-                {phases[loadingPhase].icon}
+                {loadingPhase + 1}
               </motion.span>
             </div>
           </div>
@@ -167,7 +166,7 @@ export default function ResultsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-text-secondary"
           >
-            {phases[loadingPhase].text}
+            {phases[loadingPhase]}
           </motion.p>
           {/* Progress dots */}
           <div className="flex gap-2 justify-center mt-6">
@@ -190,7 +189,7 @@ export default function ResultsPage() {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
-            <span className="text-2xl">😵</span>
+            <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
           </div>
           <p className="font-display text-2xl font-bold text-text mb-3">Something went wrong</p>
           <p className="text-text-secondary mb-6">{error}</p>
@@ -279,7 +278,7 @@ export default function ResultsPage() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
-                  <span>✈️</span>
+                  <svg className="w-4 h-4 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                 </div>
                 <div>
                   <h2 className="font-display text-xl font-bold text-text">Flights</h2>
@@ -307,7 +306,7 @@ export default function ResultsPage() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
-                  <span>🏨</span>
+                  <svg className="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                 </div>
                 <div>
                   <h2 className="font-display text-xl font-bold text-text">Stays</h2>
@@ -333,7 +332,7 @@ export default function ResultsPage() {
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center">
-              <span>🗓️</span>
+              <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             </div>
             <div>
               <h2 className="font-display text-xl font-bold text-text">Full itineraries</h2>

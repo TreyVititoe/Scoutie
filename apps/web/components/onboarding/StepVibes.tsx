@@ -10,14 +10,14 @@ type Props = {
 };
 
 const vibes = [
-  { id: "adventure", label: "Adventure", emoji: "🧗" },
-  { id: "relaxation", label: "Relaxation", emoji: "🏖️" },
-  { id: "culture", label: "Culture", emoji: "🏛️" },
-  { id: "food", label: "Food & Drink", emoji: "🍜" },
-  { id: "nightlife", label: "Nightlife", emoji: "🎉" },
-  { id: "nature", label: "Nature", emoji: "🌿" },
-  { id: "shopping", label: "Shopping", emoji: "🛍️" },
-  { id: "romance", label: "Romance", emoji: "💑" },
+  { id: "adventure", label: "Adventure" },
+  { id: "relaxation", label: "Relaxation" },
+  { id: "culture", label: "Culture" },
+  { id: "food", label: "Food & Drink" },
+  { id: "nightlife", label: "Nightlife" },
+  { id: "nature", label: "Nature" },
+  { id: "shopping", label: "Shopping" },
+  { id: "romance", label: "Romance" },
 ];
 
 export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
@@ -49,7 +49,6 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
                   : "border-gray-100 bg-gray-50 hover:border-gray-200"
               }`}
             >
-              <span className="text-2xl">{v.emoji}</span>
               <span className={`font-semibold text-sm ${selected ? "text-sky-600" : "text-gray-700"}`}>
                 {v.label}
               </span>

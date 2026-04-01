@@ -4,20 +4,20 @@ import { motion } from "framer-motion";
 import { useQuizStore, ActivityInterest } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
-const activities: { value: ActivityInterest; icon: string; label: string }[] = [
-  { value: "adventure", icon: "🏔️", label: "Adventure & Outdoors" },
-  { value: "culture", icon: "🏛️", label: "Culture & History" },
-  { value: "food", icon: "🍽️", label: "Food & Culinary" },
-  { value: "nightlife", icon: "🎭", label: "Nightlife" },
-  { value: "nature", icon: "🌿", label: "Nature & Wildlife" },
-  { value: "relaxation", icon: "🏖️", label: "Beach & Relaxation" },
-  { value: "shopping", icon: "🛍️", label: "Shopping" },
-  { value: "history", icon: "📜", label: "History" },
-  { value: "art", icon: "🎨", label: "Art & Museums" },
-  { value: "sports", icon: "🏃", label: "Sports & Fitness" },
-  { value: "live_events", icon: "🎵", label: "Live Events & Concerts" },
-  { value: "family_fun", icon: "👨‍👩‍👧‍👦", label: "Family Fun" },
-  { value: "photography", icon: "📸", label: "Photography" },
+const activities: { value: ActivityInterest; label: string }[] = [
+  { value: "adventure", label: "Adventure & Outdoors" },
+  { value: "culture", label: "Culture & History" },
+  { value: "food", label: "Food & Culinary" },
+  { value: "nightlife", label: "Nightlife" },
+  { value: "nature", label: "Nature & Wildlife" },
+  { value: "relaxation", label: "Beach & Relaxation" },
+  { value: "shopping", label: "Shopping" },
+  { value: "history", label: "History" },
+  { value: "art", label: "Art & Museums" },
+  { value: "sports", label: "Sports & Fitness" },
+  { value: "live_events", label: "Live Events & Concerts" },
+  { value: "family_fun", label: "Family Fun" },
+  { value: "photography", label: "Photography" },
 ];
 
 export default function Step7Activities() {
@@ -44,7 +44,6 @@ export default function Step7Activities() {
                   : "border-border bg-surface hover:border-primary-light"
               }`}
             >
-              <span className="text-2xl block mb-1">{a.icon}</span>
               <span className="text-sm font-medium text-text">{a.label}</span>
             </motion.button>
           );

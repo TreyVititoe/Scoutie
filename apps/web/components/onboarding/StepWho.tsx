@@ -10,10 +10,10 @@ type Props = {
 };
 
 const types = [
-  { id: "solo", label: "Solo", emoji: "🧍" },
-  { id: "couple", label: "Couple", emoji: "👫" },
-  { id: "friends", label: "Friends", emoji: "👯" },
-  { id: "family", label: "Family", emoji: "👨‍👩‍👧‍👦" },
+  { id: "solo", label: "Solo" },
+  { id: "couple", label: "Couple" },
+  { id: "friends", label: "Friends" },
+  { id: "family", label: "Family" },
 ];
 
 export default function StepWho({ prefs, update, onNext, onBack }: Props) {
@@ -35,7 +35,6 @@ export default function StepWho({ prefs, update, onNext, onBack }: Props) {
                 : "border-gray-100 bg-gray-50 hover:border-gray-200"
             }`}
           >
-            <span className="text-3xl mb-2">{t.emoji}</span>
             <span className={`font-semibold ${prefs.travelersType === t.id ? "text-sky-600" : "text-gray-700"}`}>
               {t.label}
             </span>

@@ -25,7 +25,7 @@ export default function ExperienceCard({ experience }: { experience: Experience 
         {/* Rating & Duration */}
         <div className="flex items-center gap-3 mb-4">
           <div className="flex items-center gap-1">
-            <span className="text-sm font-bold text-amber-500">★ {experience.rating}</span>
+            <span className="text-sm font-bold text-amber-500">{experience.rating}/5</span>
             <span className="text-xs text-gray-400">({experience.reviews.toLocaleString()})</span>
           </div>
           <span className="text-xs text-gray-400">{experience.duration}</span>

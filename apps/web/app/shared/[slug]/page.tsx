@@ -39,14 +39,14 @@ type SharedTrip = {
 };
 
 const typeIcons: Record<string, string> = {
-  flight: "✈️",
-  hotel: "🏨",
-  rental: "🏠",
-  activity: "🎯",
-  restaurant: "🍽️",
-  event: "🎫",
-  transport: "🚗",
-  note: "📝",
+  flight: "FL",
+  hotel: "HT",
+  rental: "RN",
+  activity: "AC",
+  restaurant: "DI",
+  event: "EV",
+  transport: "TR",
+  note: "NT",
 };
 
 const typeColors: Record<string, string> = {
@@ -225,7 +225,7 @@ export default function SharedTripPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span>{typeIcons[item.item_type] || "📌"}</span>
+                          <span className="text-xs font-mono font-bold">{typeIcons[item.item_type] || "--"}</span>
                           {item.start_time && (
                             <span className="text-xs font-mono opacity-70">
                               {item.start_time}
@@ -244,7 +244,7 @@ export default function SharedTripPage() {
                           <p className="font-mono font-bold text-sm">${item.estimated_cost}</p>
                         )}
                         {item.rating && (
-                          <p className="text-xs opacity-70 mt-0.5">★ {item.rating}</p>
+                          <p className="text-xs opacity-70 mt-0.5">{item.rating}/5</p>
                         )}
                       </div>
                     </div>
