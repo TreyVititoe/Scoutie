@@ -83,6 +83,30 @@ export default function HomePage() {
             animate={{ y: [0, -15, 0], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: 3.5, repeat: Infinity, delay: 2 }}
           />
+
+          {/* Giant background watermark stats */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-end gap-0 pr-6 sm:pr-12 select-none">
+            {[
+              { num: "0", label: "subscriptions" },
+              { num: "0", label: "ads" },
+              { num: "0", label: "fees" },
+            ].map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.15, duration: 0.8 }}
+                className="text-right"
+              >
+                <span className="font-display font-extrabold text-[10rem] sm:text-[14rem] leading-[0.8] text-primary/[0.04] block">
+                  {s.num}
+                </span>
+                <span className="font-display font-bold text-sm sm:text-base uppercase tracking-[0.2em] text-primary/[0.08] -mt-4 block">
+                  {s.label}
+                </span>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         <motion.div
@@ -132,29 +156,6 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex gap-16 mt-20"
-          >
-            {[
-              { num: "0", label: "subscriptions" },
-              { num: "0", label: "ads" },
-              { num: "0", label: "fees" },
-            ].map((s, i) => (
-              <motion.div
-                key={s.label}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-              >
-                <p className="font-display font-extrabold text-4xl text-gradient">{s.num}</p>
-                <p className="text-sm font-medium text-text-muted uppercase tracking-wider mt-1">{s.label}</p>
-              </motion.div>
-            ))}
-          </motion.div>
         </motion.div>
       </section>
 
