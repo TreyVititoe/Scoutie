@@ -351,12 +351,9 @@ export default function ResultsPage() {
                   className={`bg-surface rounded-2xl border ${config.borderColor} overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all card-shine`}
                 >
                   <div className={`${config.bgColor} px-5 py-4 flex items-center justify-between`}>
-                    <div className="flex items-center gap-2">
-                      <span>{config.icon}</span>
-                      <span className={`text-sm font-bold uppercase tracking-wider ${config.color}`}>
-                        {config.label}
-                      </span>
-                    </div>
+                    <span className={`text-sm font-bold uppercase tracking-wider ${config.color}`}>
+                      {config.label}
+                    </span>
                     <span className={`font-mono font-bold text-xl ${config.color}`}>
                       ${trip.totalEstimatedCost.toLocaleString()}
                     </span>
@@ -434,7 +431,7 @@ export default function ResultsPage() {
                     return (
                       <tr key={trip.tier} className="border-b border-border last:border-0 hover:bg-primary-50/30 transition-colors">
                         <td className="py-3 pr-4">
-                          <span className={`font-semibold ${config.color}`}>{config.icon} {config.label}</span>
+                          <span className={`font-semibold ${config.color}`}>{config.label}</span>
                           <span className="text-text-muted ml-2">— {trip.title}</span>
                         </td>
                         <td className="py-3 px-4 text-right font-mono font-bold text-text">
