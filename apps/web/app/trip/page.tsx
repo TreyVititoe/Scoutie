@@ -92,7 +92,7 @@ function TripDetailPage() {
   const [quizPrefs, setQuizPrefs] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
-    const stored = localStorage.getItem("walter_trips");
+    const stored = localStorage.getItem("walter_trips") || localStorage.getItem("scoutie_trips");
     if (!stored) {
       router.push("/results");
       return;
@@ -102,7 +102,7 @@ function TripDetailPage() {
     const match = trips.find((t) => t.tier === tier) || trips[0];
     if (match) setTrip(match);
 
-    const prefs = localStorage.getItem("walter_prefs");
+    const prefs = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
     if (prefs) setQuizPrefs(JSON.parse(prefs));
   }, [tier, router]);
 

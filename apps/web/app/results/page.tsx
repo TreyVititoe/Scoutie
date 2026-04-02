@@ -60,7 +60,7 @@ export default function ResultsPage() {
   ];
 
   useEffect(() => {
-    const stored = localStorage.getItem("walter_prefs");
+    const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
     if (!stored) {
       router.push("/quiz");
       return;
