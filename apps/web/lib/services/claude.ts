@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const SCOUTIE_SYSTEM_PROMPT = `You are Scoutie, an expert AI travel planner. You create detailed, bookable trip itineraries that maximize value for the traveler's budget and preferences.
+const WALTER_SYSTEM_PROMPT = `You are Walter, an expert AI travel planner. You create detailed, bookable trip itineraries that maximize value for the traveler's budget and preferences.
 
 RULES:
 - Every recommendation must be a REAL place, flight, or experience that actually exists
@@ -128,7 +128,7 @@ Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 8000,
-    system: SCOUTIE_SYSTEM_PROMPT,
+    system: WALTER_SYSTEM_PROMPT,
     messages: [{ role: "user", content: userPrompt }],
   });
 

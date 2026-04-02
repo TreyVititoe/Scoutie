@@ -70,7 +70,7 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="bg-surface border-b border-border sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="font-display font-bold text-xl text-text">scoutie</Link>
+          <Link href="/" className="font-display font-bold text-xl text-text">walter</Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-text-secondary">{user?.email}</span>
             <button

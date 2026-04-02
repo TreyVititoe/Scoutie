@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Scoutie — One Quiz. Your Whole Trip.",
+  title: "Walter — One Quiz. Your Whole Trip.",
   description:
     "AI-powered trip planning. Take a quick quiz, get complete bookable itineraries with flights, hotels, activities, and more.",
 };

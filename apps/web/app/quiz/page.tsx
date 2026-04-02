@@ -43,7 +43,7 @@ export default function QuizPage() {
 
   const handleGenerate = () => {
     localStorage.setItem(
-      "scoutie_prefs",
+      "walter_prefs",
       JSON.stringify({
         planningMode: store.planningMode,
         destinations: store.destinations,
@@ -84,7 +84,7 @@ export default function QuizPage() {
       <header className="glass sticky top-0 z-20">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="font-display font-extrabold text-xl text-gradient">
-            scoutie
+            walter
           </a>
           <button
             onClick={() => {

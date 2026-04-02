@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 4096,
-      system: `You are Scoutie, an AI travel planner. The user has a trip itinerary and wants to refine it.
+      system: `You are Walter, an AI travel planner. The user has a trip itinerary and wants to refine it.
 Return the FULL updated trip as valid JSON with the same structure. Only modify what the user asks for.
 
 Trip structure:

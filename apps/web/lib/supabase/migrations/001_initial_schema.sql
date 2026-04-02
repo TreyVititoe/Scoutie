@@ -1,4 +1,4 @@
--- Scoutie Database Schema
+-- Walter Database Schema
 -- Run this in Supabase SQL Editor: https://supabase.com/dashboard → SQL Editor
 
 -- Users (extends Supabase auth.users)

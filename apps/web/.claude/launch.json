@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "scoutie-web",
+      "name": "walter-web",
       "runtimeExecutable": "/bin/bash",
       "runtimeArgs": ["/Users/treyvititoe/projects/scoutie/apps/web/start.sh"],
       "port": 3000,

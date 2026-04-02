@@ -66,7 +66,7 @@ export default function LoginPage() {
         className="bg-surface rounded-2xl border border-border p-8 max-w-md w-full"
       >
         <Link href="/" className="font-display font-bold text-2xl text-text block text-center mb-2">
-          scoutie
+          walter
         </Link>
         <p className="text-text-secondary text-center mb-8">
           Sign in to save trips and sync across devices.

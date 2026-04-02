@@ -198,7 +198,7 @@ export const useQuizStore = create<QuizState & QuizActions>()(
       resetQuiz: () => set(initialState),
     }),
     {
-      name: "scoutie-quiz",
+      name: "walter-quiz",
     }
   )
 );

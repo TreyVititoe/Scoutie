@@ -60,7 +60,7 @@ export default function ResultsPage() {
   ];
 
   useEffect(() => {
-    const stored = localStorage.getItem("scoutie_prefs");
+    const stored = localStorage.getItem("walter_prefs");
     if (!stored) {
       router.push("/quiz");
       return;
@@ -99,7 +99,7 @@ export default function ResultsPage() {
         clearTimeout(generateTimeout);
         if (data.error) throw new Error(data.error);
         setTrips(data.trips || []);
-        localStorage.setItem("scoutie_trips", JSON.stringify(data));
+        localStorage.setItem("walter_trips", JSON.stringify(data));
       })
       .catch((err) => {
         clearTimeout(generateTimeout);
@@ -189,7 +189,7 @@ export default function ResultsPage() {
             </div>
           </div>
           <h2 className="font-display text-2xl font-bold text-text mb-3">
-            Scouting your trip...
+            Planning your trip...
           </h2>
           <motion.p
             key={loadingPhase}
@@ -261,7 +261,7 @@ export default function ResultsPage() {
       <header className="glass fixed top-0 left-0 right-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="font-display font-extrabold text-xl text-gradient">
-            scoutie
+            walter
           </Link>
           <Link
             href="/quiz"
@@ -481,7 +481,7 @@ export default function ResultsPage() {
 
         {/* FTC disclosure */}
         <p className="text-xs text-text-muted text-center mt-10">
-          Scoutie earns a commission when you book through our links at no extra cost to you.
+          Walter earns a commission when you book through our links at no extra cost to you.
         </p>
       </main>
     </div>

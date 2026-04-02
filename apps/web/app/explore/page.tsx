@@ -113,7 +113,7 @@ export default function ExplorePage() {
       <header className="bg-surface border-b border-border sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="font-display font-bold text-xl text-text">
-            scoutie
+            walter
           </Link>
           <Link
             href="/quiz"
@@ -229,7 +229,7 @@ export default function ExplorePage() {
             Can&apos;t decide?
           </h2>
           <p className="text-text-secondary mb-6">
-            Let Scoutie pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
+            Let Walter pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
           </p>
           <Link
             href="/quiz"

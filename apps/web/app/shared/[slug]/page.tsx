@@ -114,7 +114,7 @@ export default function SharedTripPage() {
       <header className="bg-surface border-b border-border sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="font-display font-bold text-xl text-text">
-            scoutie
+            walter
           </Link>
           <Link
             href="/quiz"

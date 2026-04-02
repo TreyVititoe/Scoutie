@@ -15,7 +15,7 @@ const destinations = [
 
 const steps = [
   { num: "01", title: "Take the quiz", desc: "Tell us where, when, how you travel, and what you love. Takes 2 minutes." },
-  { num: "02", title: "Scoutie plans it", desc: "AI builds complete itineraries — flights, hotels, activities, restaurants — all real, all bookable." },
+  { num: "02", title: "Walter plans it", desc: "AI builds complete itineraries — flights, hotels, activities, restaurants — all real, all bookable." },
   { num: "03", title: "You book it", desc: "Compare options side-by-side, tap to book. No extra fees, no subscriptions, ever." },
 ];
 
@@ -43,7 +43,7 @@ export default function HomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="font-display font-extrabold text-2xl text-gradient">
-            scoutie
+            walter
           </Link>
           <div className="flex items-center gap-6">
             <Link href="/explore" className="text-sm font-semibold text-text-secondary hover:text-text transition-colors hidden sm:block">
@@ -135,7 +135,7 @@ export default function HomePage() {
               <span className="text-gradient">Your whole trip.</span>
             </h1>
             <p className="text-xl sm:text-2xl text-text-secondary leading-relaxed mb-10 max-w-xl">
-              Tell Scoutie how you like to travel. Get complete, bookable itineraries with flights, hotels, activities, and more — in seconds.
+              Tell Walter how you like to travel. Get complete, bookable itineraries with flights, hotels, activities, and more — in seconds.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -328,7 +328,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
             <div>
-              <span className="font-display font-extrabold text-xl text-gradient">scoutie</span>
+              <span className="font-display font-extrabold text-xl text-gradient">walter</span>
               <p className="text-sm text-white/40 mt-2 max-w-xs">
                 AI-powered trip planning. One quiz, your whole trip planned and bookable.
               </p>
@@ -348,7 +348,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-white/10 mt-8 pt-8">
             <p className="text-xs text-white/30 text-center">
-              Scoutie earns a commission when you book through our links at no extra cost to you. &copy; {new Date().getFullYear()} Scoutie.
+              Walter earns a commission when you book through our links at no extra cost to you. &copy; {new Date().getFullYear()} Walter.
             </p>
           </div>
         </div>

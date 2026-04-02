@@ -44,7 +44,7 @@ export default function OnboardingPage() {
   const next = () => {
     if (step < TOTAL_STEPS) setStep((s) => s + 1);
     else {
-      localStorage.setItem("scoutie_prefs", JSON.stringify(prefs));
+      localStorage.setItem("walter_prefs", JSON.stringify(prefs));
       router.push("/results");
     }
   };
@@ -59,7 +59,7 @@ export default function OnboardingPage() {
       <div className="px-6 pt-8 pb-4">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-xl font-bold text-gray-900">scoutie</span>
+            <span className="text-xl font-bold text-gray-900">walter</span>
             <span className="text-sm text-gray-400">{step} of {TOTAL_STEPS}</span>
           </div>
           {/* Progress bar */}

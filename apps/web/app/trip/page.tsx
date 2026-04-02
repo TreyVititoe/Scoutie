@@ -79,7 +79,7 @@ function TripDetailPage() {
   const [refining, setRefining] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("scoutie_trips");
+    const stored = localStorage.getItem("walter_trips");
     if (!stored) {
       router.push("/results");
       return;
@@ -99,13 +99,13 @@ function TripDetailPage() {
 
     if (!user) {
       // Store intent, redirect to login
-      localStorage.setItem("scoutie_save_after_login", tier);
+      localStorage.setItem("walter_save_after_login", tier);
       router.push("/auth/login");
       return;
     }
 
     try {
-      const storedPrefs = localStorage.getItem("scoutie_prefs");
+      const storedPrefs = localStorage.getItem("walter_prefs");
       const quizData = storedPrefs ? JSON.parse(storedPrefs) : {};
 
       const res = await fetch("/api/trips/save", {
@@ -137,7 +137,7 @@ function TripDetailPage() {
     setRefining(true);
 
     try {
-      const storedPrefs = localStorage.getItem("scoutie_prefs");
+      const storedPrefs = localStorage.getItem("walter_prefs");
       const quizData = storedPrefs ? JSON.parse(storedPrefs) : {};
 
       const res = await fetch("/api/trips/refine", {
@@ -150,14 +150,14 @@ function TripDetailPage() {
       if (data.trip) {
         setTrip(data.trip);
         // Update localStorage so it persists
-        const stored = localStorage.getItem("scoutie_trips");
+        const stored = localStorage.getItem("walter_trips");
         if (stored) {
           const allData = JSON.parse(stored);
           const trips: Trip[] = allData.trips || [];
           const idx = trips.findIndex((t) => t.tier === tier);
           if (idx >= 0) {
             trips[idx] = data.trip;
-            localStorage.setItem("scoutie_trips", JSON.stringify({ ...allData, trips }));
+            localStorage.setItem("walter_trips", JSON.stringify({ ...allData, trips }));
           }
         }
         setChatInput("");
@@ -187,7 +187,7 @@ function TripDetailPage() {
       <header className="bg-surface border-b border-border sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="font-display font-bold text-xl text-text">
-            scoutie
+            walter
           </Link>
           <div className="flex items-center gap-3">
             <Link
