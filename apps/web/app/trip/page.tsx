@@ -168,17 +168,8 @@ function TripDetailPage() {
     [tier],
   );
 
-  if (!trip) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  const currentDay = trip.days.find((d) => d.dayNumber === activeDay) || trip.days[0];
-
   const mapItems: MapItem[] = useMemo(() => {
+    if (!trip) return [];
     const items: MapItem[] = [];
     for (const day of trip.days) {
       for (const item of day.items) {
@@ -194,6 +185,16 @@ function TripDetailPage() {
     }
     return items;
   }, [trip]);
+
+  if (!trip) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const currentDay = trip.days.find((d) => d.dayNumber === activeDay) || trip.days[0];
 
   return (
     <div className="min-h-screen bg-background">
