@@ -83,20 +83,21 @@ export default function ResultsPage() {
     const generateController = new AbortController();
     const flightsController = new AbortController();
     const hotelsController = new AbortController();
-    const generateTimeout = setTimeout(() => generateController.abort(), 55000);
+    const generateTimeout = setTimeout(() => generateController.abort(), 180000);
     const flightsTimeout = setTimeout(() => flightsController.abort(), 15000);
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
 
-    // Core: generate trips — resolves loading state on its own
+    // Core: generate trips via streaming endpoint
     fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(quizData),
       signal: generateController.signal,
     })
-      .then((r) => r.json())
-      .then((data: GenerateResult) => {
+      .then((r) => r.text())
+      .then((text) => {
         clearTimeout(generateTimeout);
+        const data: GenerateResult = JSON.parse(text);
         if (data.error) throw new Error(data.error);
         setTrips(data.trips || []);
         localStorage.setItem("walter_trips", JSON.stringify(data));

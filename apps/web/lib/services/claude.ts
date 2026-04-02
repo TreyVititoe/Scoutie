@@ -48,10 +48,7 @@ RESPONSE FORMAT — raw JSON only, no markdown, no code fences:
 
 Generate EXACTLY 3 trips: budget, balanced, premium. Keep 3-4 items per day max.`;
 
-/**
- * Generate full trip itineraries from quiz data.
- */
-export async function generateTrips(quizData: {
+type QuizData = {
   planningMode?: string;
   destinations?: string[];
   surpriseMe?: boolean;
@@ -75,12 +72,13 @@ export async function generateTrips(quizData: {
   pace?: string | null;
   diningPreference?: string | null;
   dietaryRestrictions?: string[];
-  // Legacy fields
   destination?: string;
   travelers?: number;
   budget?: number;
   vibes?: string[];
-}) {
+};
+
+function buildUserPrompt(quizData: QuizData): string {
   const destination =
     quizData.destinations?.join(", ") || quizData.destination || "Surprise me";
   const budget = quizData.budgetAmount || quizData.budget || 2000;
@@ -97,7 +95,7 @@ export async function generateTrips(quizData: {
         )
       : quizData.tripDurationDays || 7;
 
-  const userPrompt = `Plan a trip with these details:
+  return `Plan a trip with these details:
 
 DESTINATION: ${destination}${quizData.surpriseMe ? " (pick the best destination for my interests and budget)" : ""}
 DATES: ${quizData.startDate || "flexible"} to ${quizData.endDate || "flexible"} (${nights} nights)
@@ -115,6 +113,67 @@ DINING: ${quizData.diningPreference || "mixed"}
 DIETARY: ${quizData.dietaryRestrictions?.join(", ") || "none"}
 
 Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
+}
+
+function parseClaudeJson(text: string) {
+  const cleaned = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON in response");
+    return JSON.parse(jsonMatch[0]);
+  }
+}
+
+/**
+ * Stream trip generation — keeps Vercel connection alive.
+ * Returns a ReadableStream that emits the full JSON once complete.
+ */
+export async function generateTripsStream(quizData: QuizData): Promise<ReadableStream> {
+  const userPrompt = buildUserPrompt(quizData);
+
+  return new ReadableStream({
+    async start(controller) {
+      try {
+        const stream = await client.messages.stream({
+          model: "claude-sonnet-4-6",
+          max_tokens: 16000,
+          system: WALTER_SYSTEM_PROMPT,
+          messages: [{ role: "user", content: userPrompt }],
+        });
+
+        let fullText = "";
+        for await (const event of stream) {
+          if (
+            event.type === "content_block_delta" &&
+            event.delta.type === "text_delta"
+          ) {
+            fullText += event.delta.text;
+          }
+        }
+
+        const result = parseClaudeJson(fullText);
+        controller.enqueue(new TextEncoder().encode(JSON.stringify(result)));
+        controller.close();
+      } catch (err) {
+        console.error("[claude stream]", err);
+        controller.enqueue(
+          new TextEncoder().encode(
+            JSON.stringify({ error: "Trip generation failed. Please try again." })
+          )
+        );
+        controller.close();
+      }
+    },
+  });
+}
+
+/**
+ * Generate full trip itineraries from quiz data (non-streaming fallback).
+ */
+export async function generateTrips(quizData: QuizData) {
+  const userPrompt = buildUserPrompt(quizData);
 
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
@@ -124,31 +183,7 @@ Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
   });
 
   const text = message.content[0].type === "text" ? message.content[0].text : "";
-
-  // Strip markdown code fences if present
-  const cleaned = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
-
-  try {
-    // Try parsing the cleaned text directly first
-    return JSON.parse(cleaned);
-  } catch {
-    // Fallback: extract JSON object with regex
-    try {
-      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("No JSON in response");
-      return JSON.parse(jsonMatch[0]);
-    } catch (parseErr) {
-      console.error("[claude] Raw response:", text.slice(0, 500));
-      console.error("[claude] Stop reason:", message.stop_reason);
-      console.error("[claude] Response length:", text.length);
-      console.error("[claude] Last 200 chars:", text.slice(-200));
-      throw new Error(
-        message.stop_reason === "max_tokens"
-          ? "Response was truncated — trip too complex for token limit"
-          : "Failed to parse trip generation response"
-      );
-    }
-  }
+  return parseClaudeJson(text);
 }
 
 /**
