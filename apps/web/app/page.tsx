@@ -98,10 +98,10 @@ export default function HomePage() {
                 transition={{ delay: 0.4 + i * 0.15, duration: 0.8 }}
                 className="text-right"
               >
-                <span className="font-display font-extrabold text-[10rem] sm:text-[14rem] leading-[0.8] text-primary/[0.04] block">
+                <span className="font-display font-extrabold text-[10rem] sm:text-[14rem] leading-[0.8] text-primary/[0.08] block">
                   {s.num}
                 </span>
-                <span className="font-display font-bold text-sm sm:text-base uppercase tracking-[0.2em] text-primary/[0.08] -mt-4 block">
+                <span className="font-display font-bold text-sm sm:text-base uppercase tracking-[0.2em] text-primary/[0.14] -mt-4 block">
                   {s.label}
                 </span>
               </motion.div>
