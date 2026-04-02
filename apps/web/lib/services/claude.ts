@@ -126,7 +126,7 @@ DIETARY: ${quizData.dietaryRestrictions?.join(", ") || "none"}
 Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
 
   const message = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 8000,
     system: SCOUTIE_SYSTEM_PROMPT,
     messages: [{ role: "user", content: userPrompt }],

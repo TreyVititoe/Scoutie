@@ -79,45 +79,31 @@ export default function ResultsPage() {
     const adults = quizData.travelersCount || quizData.travelers || 1;
     const cabinClass = quizData.flightClass || "economy";
 
-    const generatePromise = fetch("/api/generate", {
+    // AbortControllers for timeouts
+    const generateController = new AbortController();
+    const flightsController = new AbortController();
+    const hotelsController = new AbortController();
+    const generateTimeout = setTimeout(() => generateController.abort(), 55000);
+    const flightsTimeout = setTimeout(() => flightsController.abort(), 15000);
+    const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
+
+    // Core: generate trips — resolves loading state on its own
+    fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(quizData),
+      signal: generateController.signal,
     })
       .then((r) => r.json())
       .then((data: GenerateResult) => {
+        clearTimeout(generateTimeout);
         if (data.error) throw new Error(data.error);
         setTrips(data.trips || []);
         localStorage.setItem("scoutie_trips", JSON.stringify(data));
-      });
-
-    const flightsPromise =
-      departureCity && destination && startDate && endDate
-        ? fetch("/api/flights", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ origin: departureCity, destination, departDate: startDate, returnDate: endDate, adults, cabinClass }),
-          })
-            .then((r) => r.json())
-            .then((data) => setFlights(data.flights || []))
-            .catch((err) => console.warn("[flights]", err))
-        : Promise.resolve();
-
-    const hotelsPromise =
-      destination && startDate && endDate
-        ? fetch("/api/hotels", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ destination, checkIn: startDate, checkOut: endDate, adults }),
-          })
-            .then((r) => r.json())
-            .then((data) => setHotels(data.hotels || []))
-            .catch((err) => console.warn("[hotels]", err))
-        : Promise.resolve();
-
-    Promise.all([generatePromise, flightsPromise, hotelsPromise])
+      })
       .catch((err) => {
-        console.error(err);
+        clearTimeout(generateTimeout);
+        console.error("[generate]", err);
         setError("Couldn't generate your trip. Please try again.");
       })
       .finally(() => {
@@ -125,7 +111,52 @@ export default function ResultsPage() {
         setLoading(false);
       });
 
-    return () => clearInterval(interval);
+    // Flights and hotels load independently — won't block the main results
+    if (departureCity && destination && startDate && endDate) {
+      fetch("/api/flights", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origin: departureCity, destination, departDate: startDate, returnDate: endDate, adults, cabinClass }),
+        signal: flightsController.signal,
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          clearTimeout(flightsTimeout);
+          setFlights(data.flights || []);
+        })
+        .catch((err) => {
+          clearTimeout(flightsTimeout);
+          console.warn("[flights]", err);
+        });
+    }
+
+    if (destination && startDate && endDate) {
+      fetch("/api/hotels", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ destination, checkIn: startDate, checkOut: endDate, adults }),
+        signal: hotelsController.signal,
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          clearTimeout(hotelsTimeout);
+          setHotels(data.hotels || []);
+        })
+        .catch((err) => {
+          clearTimeout(hotelsTimeout);
+          console.warn("[hotels]", err);
+        });
+    }
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(generateTimeout);
+      clearTimeout(flightsTimeout);
+      clearTimeout(hotelsTimeout);
+      generateController.abort();
+      flightsController.abort();
+      hotelsController.abort();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
