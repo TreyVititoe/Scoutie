@@ -20,8 +20,8 @@ type TripItem = {
 type TripDay = {
   dayNumber: number;
   title: string;
-  summary: string;
-  estimatedCost: number;
+  summary?: string;
+  estimatedCost?: number;
   items: TripItem[];
 };
 

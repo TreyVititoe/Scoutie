@@ -36,8 +36,8 @@ type TripItem = {
 type TripDay = {
   dayNumber: number;
   title: string;
-  summary: string;
-  estimatedCost: number;
+  summary?: string;
+  estimatedCost?: number;
   items: TripItem[];
 };
 
@@ -301,11 +301,15 @@ function TripDetailPage() {
                   <h2 className="font-display font-bold text-2xl text-text">
                     Day {currentDay.dayNumber}: {currentDay.title}
                   </h2>
-                  <p className="text-text-secondary mt-1">{currentDay.summary}</p>
+                  {currentDay.summary && (
+                    <p className="text-text-secondary mt-1">{currentDay.summary}</p>
+                  )}
                 </div>
-                <span className="font-mono font-bold text-text-secondary">
-                  ~${currentDay.estimatedCost.toLocaleString()}
-                </span>
+                {currentDay.estimatedCost != null && (
+                  <span className="font-mono font-bold text-text-secondary">
+                    ~${currentDay.estimatedCost.toLocaleString()}
+                  </span>
+                )}
               </div>
 
               {/* Timeline */}
