@@ -105,9 +105,20 @@ export async function searchHotels(params: {
     const photoUrls = (property.photoUrls as string[]) || [];
     const mainPhoto = (property.mainPhotoUrl as string) || photoUrls[0] || null;
 
+    // Build Booking.com search URL
+    const hotelName = (property.name as string) || "Unknown Hotel";
+    const bookingParams = new URLSearchParams({
+      ss: hotelName,
+      checkin: checkIn,
+      checkout: checkOut,
+      group_adults: String(adults),
+      no_rooms: String(rooms),
+    });
+    const bookingUrl = `https://www.booking.com/searchresults.html?${bookingParams.toString()}`;
+
     return {
       id: `hotel-${i}`,
-      name: (property.name as string) || "Unknown Hotel",
+      name: hotelName,
       image: mainPhoto,
       rating: Math.round(reviewScore * 10) / 10,
       reviewCount,
@@ -119,7 +130,7 @@ export async function searchHotels(params: {
       latitude: (property.latitude as number) || null,
       longitude: (property.longitude as number) || null,
       amenities: [],
-      bookingUrl: null,
+      bookingUrl,
     };
   });
 }

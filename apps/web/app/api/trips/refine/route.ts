@@ -17,16 +17,18 @@ export async function POST(req: NextRequest) {
       model: "claude-sonnet-4-20250514",
       max_tokens: 4096,
       system: `You are Walter, an AI travel planner. The user has a trip itinerary and wants to refine it.
-Return the FULL updated trip as valid JSON with the same structure. Only modify what the user asks for.
+Return a JSON object with two keys:
+1. "message" - a brief, friendly summary (1-2 sentences) of what you changed, written in first person (e.g. "I swapped the museum visit for a street food tour and adjusted the schedule accordingly.")
+2. "trip" - the FULL updated trip with the same structure
 
-Trip structure:
+Trip structure for the "trip" key:
 {
   "tier": string,
   "title": string,
   "summary": string,
   "destination": string,
   "totalEstimatedCost": number,
-  "days": [{ "dayNumber": number, "title": string, "summary": string, "estimatedCost": number, "items": [{ "itemType": string, "title": string, "description": string, "startTime": string|null, "endTime": string|null, "durationMinutes": number|null, "estimatedCost": number, "locationName": string, "rating": number|null }] }]
+  "days": [{ "dayNumber": number, "title": string, "summary": string, "estimatedCost": number, "items": [{ "itemType": string, "title": string, "description": string, "startTime": string|null, "endTime": string|null, "durationMinutes": number|null, "estimatedCost": number, "locationName": string, "locationLat": number|null, "locationLng": number|null, "rating": number|null }] }]
 }
 
 Rules:
@@ -34,7 +36,8 @@ Rules:
 - Only change what the user requests
 - Recalculate costs if items change
 - Be creative but practical
-- Return ONLY the JSON, no markdown fences`,
+- Do not use emojis in the message
+- Return ONLY the JSON object with "message" and "trip" keys, no markdown fences`,
       messages: [
         {
           role: "user",
@@ -47,9 +50,13 @@ Rules:
 
     // Parse the JSON response
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-    const updatedTrip = JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned);
 
-    return NextResponse.json({ trip: updatedTrip });
+    // Support both formats: { message, trip } wrapper or raw trip object
+    const updatedTrip = parsed.trip || parsed;
+    const walterMessage = parsed.message || null;
+
+    return NextResponse.json({ trip: updatedTrip, message: walterMessage });
   } catch (err) {
     console.error("[refine]", err);
     return NextResponse.json({ error: "Failed to refine trip" }, { status: 500 });

@@ -1,26 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { useQuizStore } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
+import DestinationAutocomplete from "./DestinationAutocomplete";
 
 export default function Step2Destination() {
   const store = useQuizStore();
-  const [input, setInput] = useState("");
 
   const isDestinationMode = store.planningMode === "destination";
-
-  const addDestination = () => {
-    const trimmed = input.trim();
-    if (trimmed && !store.destinations.includes(trimmed)) {
-      store.setDestinations([...store.destinations, trimmed]);
-      setInput("");
-    }
-  };
-
-  const removeDestination = (dest: string) => {
-    store.setDestinations(store.destinations.filter((d) => d !== dest));
-  };
 
   if (isDestinationMode) {
     return (
@@ -29,41 +16,7 @@ export default function Step2Destination() {
         subtitle="Add one or more destinations. Or let us surprise you."
       >
         <div className="space-y-4">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addDestination()}
-              placeholder="Type a city or country..."
-              className="flex-1 px-4 py-3 rounded-xl border border-border bg-surface text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-            <button
-              onClick={addDestination}
-              className="px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-colors"
-            >
-              Add
-            </button>
-          </div>
-
-          {store.destinations.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {store.destinations.map((d) => (
-                <span
-                  key={d}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-50 text-primary-700 text-sm font-medium"
-                >
-                  {d}
-                  <button
-                    onClick={() => removeDestination(d)}
-                    className="hover:text-primary-dark"
-                  >
-                    x
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
+          <DestinationAutocomplete />
 
           <button
             onClick={() => {

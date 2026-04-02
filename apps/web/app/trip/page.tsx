@@ -1,10 +1,23 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
+import RefinementChat from "@/components/trip/RefinementChat";
+import PackingList from "@/components/trip/PackingList";
+import type { MapItem } from "@/components/trip/TripMap";
+
+const TripMap = dynamic(() => import("@/components/trip/TripMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="rounded-2xl border border-border bg-surface flex items-center justify-center h-80 lg:min-h-[400px] text-text-muted text-sm">
+      Loading map...
+    </div>
+  ),
+});
 
 type TripItem = {
   itemType: string;
@@ -15,6 +28,8 @@ type TripItem = {
   durationMinutes: number | null;
   estimatedCost: number;
   locationName: string;
+  locationLat: number | null;
+  locationLng: number | null;
   rating: number | null;
 };
 
@@ -74,9 +89,7 @@ function TripDetailPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [shareSlug, setShareSlug] = useState<string | null>(null);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatInput, setChatInput] = useState("");
-  const [refining, setRefining] = useState(false);
+  const [quizPrefs, setQuizPrefs] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_trips");
@@ -88,6 +101,9 @@ function TripDetailPage() {
     const trips: Trip[] = data.trips || [];
     const match = trips.find((t) => t.tier === tier) || trips[0];
     if (match) setTrip(match);
+
+    const prefs = localStorage.getItem("walter_prefs");
+    if (prefs) setQuizPrefs(JSON.parse(prefs));
   }, [tier, router]);
 
   const handleSave = async () => {
@@ -132,44 +148,25 @@ function TripDetailPage() {
     await navigator.clipboard.writeText(url);
   };
 
-  const handleRefine = async () => {
-    if (!chatInput.trim() || !trip || refining) return;
-    setRefining(true);
-
-    try {
-      const storedPrefs = localStorage.getItem("walter_prefs");
-      const quizData = storedPrefs ? JSON.parse(storedPrefs) : {};
-
-      const res = await fetch("/api/trips/refine", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: chatInput, trip, quizData }),
-      });
-
-      const data = await res.json();
-      if (data.trip) {
-        setTrip(data.trip);
-        // Update localStorage so it persists
-        const stored = localStorage.getItem("walter_trips");
-        if (stored) {
-          const allData = JSON.parse(stored);
-          const trips: Trip[] = allData.trips || [];
-          const idx = trips.findIndex((t) => t.tier === tier);
-          if (idx >= 0) {
-            trips[idx] = data.trip;
-            localStorage.setItem("walter_trips", JSON.stringify({ ...allData, trips }));
-          }
+  const handleTripUpdate = useCallback(
+    (updated: Trip) => {
+      setTrip(updated);
+      // Update localStorage so it persists
+      const stored = localStorage.getItem("walter_trips");
+      if (stored) {
+        const allData = JSON.parse(stored);
+        const trips: Trip[] = allData.trips || [];
+        const idx = trips.findIndex((t) => t.tier === tier);
+        if (idx >= 0) {
+          trips[idx] = updated;
+          localStorage.setItem("walter_trips", JSON.stringify({ ...allData, trips }));
         }
-        setChatInput("");
-        setSaved(false);
-        setShareSlug(null);
       }
-    } catch (err) {
-      console.error("[refine]", err);
-    } finally {
-      setRefining(false);
-    }
-  };
+      setSaved(false);
+      setShareSlug(null);
+    },
+    [tier],
+  );
 
   if (!trip) {
     return (
@@ -180,6 +177,23 @@ function TripDetailPage() {
   }
 
   const currentDay = trip.days.find((d) => d.dayNumber === activeDay) || trip.days[0];
+
+  const mapItems: MapItem[] = useMemo(() => {
+    const items: MapItem[] = [];
+    for (const day of trip.days) {
+      for (const item of day.items) {
+        if (item.locationLat != null && item.locationLng != null) {
+          items.push({
+            title: item.title,
+            locationName: item.locationName,
+            locationLat: item.locationLat,
+            locationLng: item.locationLng,
+          });
+        }
+      }
+    }
+    return items;
+  }, [trip]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -253,7 +267,7 @@ function TripDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Day selector */}
         <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-8">
           {trip.days.map((day) => (
@@ -272,132 +286,102 @@ function TripDetailPage() {
           ))}
         </div>
 
-        {/* Day content */}
-        <motion.div
-          key={activeDay}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="font-display font-bold text-2xl text-text">
-                Day {currentDay.dayNumber}: {currentDay.title}
-              </h2>
-              <p className="text-text-secondary mt-1">{currentDay.summary}</p>
-            </div>
-            <span className="font-mono font-bold text-text-secondary">
-              ~${currentDay.estimatedCost.toLocaleString()}
-            </span>
-          </div>
+        {/* Day content + Map sidebar */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Day itinerary */}
+          <div className="flex-1 min-w-0">
+            <motion.div
+              key={activeDay}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="font-display font-bold text-2xl text-text">
+                    Day {currentDay.dayNumber}: {currentDay.title}
+                  </h2>
+                  <p className="text-text-secondary mt-1">{currentDay.summary}</p>
+                </div>
+                <span className="font-mono font-bold text-text-secondary">
+                  ~${currentDay.estimatedCost.toLocaleString()}
+                </span>
+              </div>
 
-          {/* Timeline */}
-          <div className="relative pl-8">
-            <div className="absolute left-3 top-0 bottom-0 w-px bg-border" />
-            <div className="space-y-4">
-              {currentDay.items.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className={`relative border rounded-xl p-4 ${typeColors[item.itemType] || typeColors.note}`}
-                >
-                  {/* Timeline dot */}
-                  <div className="absolute -left-[1.4rem] top-5 w-3 h-3 rounded-full bg-primary border-2 border-surface" />
+              {/* Timeline */}
+              <div className="relative pl-8">
+                <div className="absolute left-3 top-0 bottom-0 w-px bg-border" />
+                <div className="space-y-4">
+                  {currentDay.items.map((item, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className={`relative border rounded-xl p-4 ${typeColors[item.itemType] || typeColors.note}`}
+                    >
+                      {/* Timeline dot */}
+                      <div className="absolute -left-[1.4rem] top-5 w-3 h-3 rounded-full bg-primary border-2 border-surface" />
 
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-mono font-bold">{typeIcons[item.itemType] || "--"}</span>
-                        {item.startTime && (
-                          <span className="text-xs font-mono opacity-70">
-                            {item.startTime}
-                            {item.endTime && ` - ${item.endTime}`}
-                          </span>
-                        )}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-mono font-bold">{typeIcons[item.itemType] || "--"}</span>
+                            {item.startTime && (
+                              <span className="text-xs font-mono opacity-70">
+                                {item.startTime}
+                                {item.endTime && ` - ${item.endTime}`}
+                              </span>
+                            )}
+                          </div>
+                          <p className="font-semibold text-sm">{item.title}</p>
+                          <p className="text-xs mt-1 opacity-80">{item.description}</p>
+                          {item.locationName && (
+                            <p className="text-xs mt-1 opacity-60">{item.locationName}</p>
+                          )}
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          {item.estimatedCost > 0 && (
+                            <p className="font-mono font-bold text-sm">
+                              ${item.estimatedCost}
+                            </p>
+                          )}
+                          {item.rating && (
+                            <p className="text-xs opacity-70 mt-0.5">
+                              {item.rating}/5
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <p className="font-semibold text-sm">{item.title}</p>
-                      <p className="text-xs mt-1 opacity-80">{item.description}</p>
-                      {item.locationName && (
-                        <p className="text-xs mt-1 opacity-60">{item.locationName}</p>
-                      )}
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      {item.estimatedCost > 0 && (
-                        <p className="font-mono font-bold text-sm">
-                          ${item.estimatedCost}
-                        </p>
-                      )}
-                      {item.rating && (
-                        <p className="text-xs opacity-70 mt-0.5">
-                          {item.rating}/5
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+
+          {/* Map sidebar */}
+          <div className="lg:w-[400px] lg:flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
+            <h3 className="font-display font-bold text-lg text-text mb-3">Trip map</h3>
+            <TripMap items={mapItems} />
+          </div>
+        </div>
+
+        {/* Packing List */}
+        <div className="mt-10">
+          <PackingList
+            destination={trip.destination}
+            startDate={(quizPrefs.startDate as string) || ""}
+            endDate={(quizPrefs.endDate as string) || ""}
+            activities={(quizPrefs.activityInterests as string[]) || (quizPrefs.vibes as string[]) || []}
+            pace={(quizPrefs.pace as string) || "moderate"}
+            travelers={(quizPrefs.travelersCount as number) || (quizPrefs.travelers as number) || 1}
+          />
+        </div>
       </div>
 
       {/* AI Chat Refinement */}
-      <div className="fixed bottom-6 right-6 z-30">
-        {chatOpen ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="w-80 bg-surface rounded-2xl border border-border shadow-xl overflow-hidden"
-          >
-            <div className="bg-primary px-4 py-3 flex items-center justify-between">
-              <span className="text-white font-bold text-sm">Refine your trip</span>
-              <button
-                onClick={() => setChatOpen(false)}
-                className="text-white/70 hover:text-white text-lg leading-none"
-              >
-                x
-              </button>
-            </div>
-            <div className="p-4">
-              <p className="text-xs text-text-muted mb-3">
-                Tell me how to adjust your itinerary. Try &quot;make day 3 more relaxed&quot; or &quot;add a beach day&quot;.
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleRefine()}
-                  placeholder="e.g. swap the museum for a food tour"
-                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm text-text placeholder:text-text-muted focus:outline-none focus:border-primary"
-                  disabled={refining}
-                />
-                <button
-                  onClick={handleRefine}
-                  disabled={refining || !chatInput.trim()}
-                  className="px-3 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary-dark transition-colors disabled:opacity-50"
-                >
-                  {refining ? "..." : "Go"}
-                </button>
-              </div>
-              {refining && (
-                <p className="text-xs text-primary mt-2 animate-pulse">
-                  Updating your itinerary...
-                </p>
-              )}
-            </div>
-          </motion.div>
-        ) : (
-          <button
-            onClick={() => setChatOpen(true)}
-            className="w-14 h-14 rounded-full bg-primary text-white shadow-lg hover:bg-primary-dark hover:shadow-xl transition-all flex items-center justify-center text-xl"
-          >
-            AI
-          </button>
-        )}
-      </div>
+      <RefinementChat trip={trip} onTripUpdate={handleTripUpdate} />
     </div>
   );
 }

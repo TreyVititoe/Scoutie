@@ -99,6 +99,11 @@ export async function searchFlights(params: {
   const data = await res.json();
   const itineraries = data?.data?.itineraries || [];
 
+  // Format depart/return dates for Skyscanner URL (YYMMDD)
+  const skyscannerDate = (iso: string) => iso.replace(/-/g, "").slice(2);
+  const depDateFormatted = skyscannerDate(departDate);
+  const retDateFormatted = skyscannerDate(returnDate);
+
   return itineraries.slice(0, 8).map((it: Record<string, unknown>, i: number): FlightResult => {
     const legs = (it.legs as Array<Record<string, unknown>>) || [];
     const outbound = legs[0] || {};
@@ -126,6 +131,11 @@ export async function searchFlights(params: {
         })
       : "";
 
+    // Build Skyscanner search URL using IATA-style codes from the API
+    const originCode = (origin.displayCode || origin.id || originData.skyId).toLowerCase();
+    const destCode = (dest.displayCode || dest.id || destData.skyId).toLowerCase();
+    const bookingUrl = `https://www.skyscanner.com/transport/flights/${originCode}/${destCode}/${depDateFormatted}/${retDateFormatted}/`;
+
     return {
       id: `flight-${i}`,
       airline: marketing[0]?.name as string || "Unknown Airline",
@@ -138,7 +148,7 @@ export async function searchFlights(params: {
       stops,
       price: (price.raw as number) || 0,
       currency: "USD",
-      bookingUrl: null,
+      bookingUrl,
     };
   });
 }

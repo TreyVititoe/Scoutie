@@ -323,36 +323,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-text">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
-            <div>
-              <span className="font-display font-extrabold text-xl text-gradient">walter</span>
-              <p className="text-sm text-white/40 mt-2 max-w-xs">
-                AI-powered trip planning. One quiz, your whole trip planned and bookable.
-              </p>
-            </div>
-            <div className="flex gap-8">
-              <div className="flex flex-col gap-2">
-                <span className="text-xs font-bold text-white/30 uppercase tracking-wider">Product</span>
-                <Link href="/quiz" className="text-sm text-white/60 hover:text-white transition-colors">Plan a trip</Link>
-                <Link href="/explore" className="text-sm text-white/60 hover:text-white transition-colors">Explore</Link>
-              </div>
-              <div className="flex flex-col gap-2">
-                <span className="text-xs font-bold text-white/30 uppercase tracking-wider">Legal</span>
-                <a href="#" className="text-sm text-white/60 hover:text-white transition-colors">Privacy</a>
-                <a href="#" className="text-sm text-white/60 hover:text-white transition-colors">Terms</a>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-white/10 mt-8 pt-8">
-            <p className="text-xs text-white/30 text-center">
-              Walter earns a commission when you book through our links at no extra cost to you. &copy; {new Date().getFullYear()} Walter.
-            </p>
-          </div>
-        </div>
-      </footer>
+      {/* Footer is rendered by root layout */}
     </div>
   );
 }
