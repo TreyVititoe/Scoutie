@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchFlights } from "@/lib/services/flights";
 
+export const maxDuration = 30;
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
