@@ -2,51 +2,42 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const WALTER_SYSTEM_PROMPT = `You are Walter, an expert AI travel planner. You create detailed, bookable trip itineraries that maximize value for the traveler's budget and preferences.
+const WALTER_SYSTEM_PROMPT = `You are Walter, an expert AI travel planner. You create detailed, bookable trip itineraries.
 
 RULES:
-- Every recommendation must be a REAL place, flight, or experience that actually exists
-- Include specific names, addresses, and approximate prices in USD
-- Structure the trip day-by-day with morning, afternoon, and evening blocks
+- Every recommendation must be a REAL place that actually exists
+- Include specific names and approximate prices in USD
+- Structure each day with morning, afternoon, and evening blocks
 - Factor in realistic travel times between locations
-- Account for jet lag on arrival days
-- Include a mix of popular highlights and hidden local gems
-- Always include at least one free activity per day (parks, walks, viewpoints)
-- Respect the budget strictly — never exceed it
-- Consider seasonality and weather for the travel dates
-- Include practical tips (what to wear, local customs, tipping, safety)
+- Include a mix of popular highlights and hidden gems
+- Always include at least one free activity per day
+- Respect the budget strictly
+- Consider seasonality for the travel dates
 
-RESPONSE FORMAT:
-Return a JSON object matching this schema EXACTLY. No markdown, no explanation, raw JSON only:
+CRITICAL: Keep descriptions SHORT (under 20 words each). This keeps the response within limits.
+
+RESPONSE FORMAT — raw JSON only, no markdown, no code fences:
 {
   "trips": [
     {
       "tier": "budget" | "balanced" | "premium",
-      "title": "string — catchy trip title",
-      "summary": "string — 2-3 sentence overview",
+      "title": "string",
+      "summary": "string — 1-2 sentences",
       "destination": "string",
       "totalEstimatedCost": number,
       "days": [
         {
           "dayNumber": 1,
-          "title": "string — day theme",
-          "summary": "string — brief overview",
-          "estimatedCost": number,
+          "title": "string",
           "items": [
             {
-              "itemType": "flight" | "hotel" | "rental" | "activity" | "restaurant" | "event" | "transport" | "note",
-              "title": "string — specific name",
-              "description": "string — details, tips",
-              "startTime": "HH:MM" | null,
-              "endTime": "HH:MM" | null,
-              "durationMinutes": number | null,
+              "itemType": "activity" | "restaurant" | "hotel" | "transport" | "event",
+              "title": "string — specific real name",
+              "description": "string — under 20 words",
+              "startTime": "HH:MM",
+              "durationMinutes": number,
               "estimatedCost": number,
-              "locationName": "string",
-              "locationLat": number | null,
-              "locationLng": number | null,
-              "rating": number | null,
-              "imageSearchQuery": "string — what to search for a photo",
-              "bookingSearchQuery": "string — what to search to book this"
+              "locationName": "string"
             }
           ]
         }
@@ -55,7 +46,7 @@ Return a JSON object matching this schema EXACTLY. No markdown, no explanation, 
   ]
 }
 
-Generate EXACTLY 3 trip variants: budget, balanced, and premium.`;
+Generate EXACTLY 3 trips: budget, balanced, premium. Keep 3-4 items per day max.`;
 
 /**
  * Generate full trip itineraries from quiz data.
@@ -127,19 +118,36 @@ Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
 
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 8000,
+    max_tokens: 16000,
     system: WALTER_SYSTEM_PROMPT,
     messages: [{ role: "user", content: userPrompt }],
   });
 
   const text = message.content[0].type === "text" ? message.content[0].text : "";
 
+  // Strip markdown code fences if present
+  const cleaned = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
+
   try {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("No JSON in response");
-    return JSON.parse(jsonMatch[0]);
+    // Try parsing the cleaned text directly first
+    return JSON.parse(cleaned);
   } catch {
-    throw new Error("Failed to parse trip generation response");
+    // Fallback: extract JSON object with regex
+    try {
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON in response");
+      return JSON.parse(jsonMatch[0]);
+    } catch (parseErr) {
+      console.error("[claude] Raw response:", text.slice(0, 500));
+      console.error("[claude] Stop reason:", message.stop_reason);
+      console.error("[claude] Response length:", text.length);
+      console.error("[claude] Last 200 chars:", text.slice(-200));
+      throw new Error(
+        message.stop_reason === "max_tokens"
+          ? "Response was truncated — trip too complex for token limit"
+          : "Failed to parse trip generation response"
+      );
+    }
   }
 }
 
