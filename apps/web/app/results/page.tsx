@@ -35,10 +35,28 @@ type GenerateResult = {
   error?: string;
 };
 
-const tierConfig: Record<string, { label: string; color: string; bgColor: string; borderColor: string }> = {
-  budget: { label: "Budget", color: "text-emerald-600", bgColor: "bg-emerald-50", borderColor: "border-emerald-200" },
-  balanced: { label: "Balanced", color: "text-primary", bgColor: "bg-primary-50", borderColor: "border-primary-200" },
-  premium: { label: "Premium", color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-200" },
+const tierConfig: Record<
+  string,
+  { label: string; color: string; badgeBg: string; ctaClass: string }
+> = {
+  budget: {
+    label: "Budget",
+    color: "text-teal-700",
+    badgeBg: "bg-secondary-container text-on-secondary-container",
+    ctaClass: "bg-primary text-white",
+  },
+  balanced: {
+    label: "Balanced",
+    color: "text-primary",
+    badgeBg: "bg-primary/10 text-primary",
+    ctaClass: "bg-primary text-white",
+  },
+  premium: {
+    label: "Premium",
+    color: "text-amber-700",
+    badgeBg: "bg-tertiary-container/60 text-amber-800",
+    ctaClass: "bg-primary text-white",
+  },
 };
 
 export default function ResultsPage() {
@@ -166,6 +184,7 @@ export default function ResultsPage() {
     (prefs as { destination?: string })?.destination ||
     "your destination";
 
+  /* ─── Loading State ─── */
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
@@ -174,39 +193,41 @@ export default function ResultsPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          {/* Animated orb */}
+          {/* Animated orb — primary gradient with blur */}
           <div className="relative w-24 h-24 mx-auto mb-10">
-            <div className="absolute inset-0 rounded-full bg-gradient-animated opacity-20 blur-xl animate-pulse" />
-            <div className="absolute inset-2 rounded-full bg-gradient-animated opacity-40 blur-md" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-teal-400 opacity-20 blur-xl animate-pulse" />
+            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-primary to-teal-400 opacity-40 blur-md" />
             <div className="absolute inset-4 rounded-full bg-surface flex items-center justify-center">
               <motion.span
                 key={loadingPhase}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="font-display font-bold text-primary text-lg"
+                className="font-headline font-extrabold text-primary text-lg"
               >
                 {loadingPhase + 1}
               </motion.span>
             </div>
           </div>
-          <h2 className="font-display text-2xl font-bold text-text mb-3">
+
+          <h2 className="font-headline text-2xl font-extrabold text-on-surface mb-3">
             Planning your trip...
           </h2>
           <motion.p
             key={loadingPhase}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-text-secondary"
+            className="text-on-surface-variant font-body"
           >
             {phases[loadingPhase]}
           </motion.p>
+
           {/* Progress dots */}
           <div className="flex gap-2 justify-center mt-6">
             {phases.map((_, i) => (
               <div
                 key={i}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  i <= loadingPhase ? "bg-primary w-6" : "bg-border"
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  i <= loadingPhase ? "bg-primary w-6" : "bg-outline-variant/30 w-2"
                 }`}
               />
             ))}
@@ -216,25 +237,26 @@ export default function ResultsPage() {
     );
   }
 
+  /* ─── Error State ─── */
   if (error) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
-            <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+            <span className="material-symbols-outlined text-red-500 text-2xl">error</span>
           </div>
-          <p className="font-display text-2xl font-bold text-text mb-3">Something went wrong</p>
-          <p className="text-text-secondary mb-6">{error}</p>
+          <p className="font-headline text-2xl font-extrabold text-on-surface mb-3">Something went wrong</p>
+          <p className="text-on-surface-variant font-body mb-6">{error}</p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-all hover:-translate-y-0.5"
+              className="btn-primary-gradient px-6 py-3 rounded-full font-extrabold font-headline"
             >
               Try again
             </button>
             <Link
               href="/quiz"
-              className="px-6 py-3 rounded-xl border border-border text-text font-semibold hover:bg-surface transition-colors"
+              className="px-6 py-3 rounded-full border border-outline-variant text-on-surface font-bold font-headline hover:bg-surface transition-colors"
             >
               Edit quiz
             </Link>
@@ -258,68 +280,66 @@ export default function ResultsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="glass fixed top-0 left-0 right-0 z-20">
+      {/* ─── Header ─── */}
+      <header className="fixed top-0 left-0 right-0 z-20 bg-white/70 backdrop-blur-xl shadow-xl shadow-teal-900/5">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="font-display font-extrabold text-xl text-gradient">
-            walter
+          <Link href="/" className="font-headline font-black italic text-2xl text-teal-700">
+            Walter
           </Link>
           <Link
             href="/quiz"
-            className="text-sm font-semibold text-primary hover:text-primary-dark transition-colors flex items-center gap-1"
+            className="text-sm font-bold font-body text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
+            <span className="material-symbols-outlined text-[18px]">edit</span>
             Edit trip
           </Link>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 pt-24 pb-10">
-        {/* Page header */}
+      <main className="max-w-6xl mx-auto px-6 pt-28 pb-10">
+        {/* ─── Page Header ─── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-14"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container mb-5"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-sm font-semibold text-primary">Trip generated</span>
+            <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+            <span className="text-xs font-bold tracking-widest uppercase font-body">Walter AI</span>
           </motion.div>
-          <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-text mb-3 tracking-tight">
+          <h1 className="font-headline font-extrabold text-5xl text-on-surface mb-3 tracking-tight">
             Your trips to <span className="text-gradient">{destination}</span>
           </h1>
-          <p className="text-text-secondary text-lg">
+          <p className="text-on-surface-variant text-xl font-body">
             We built {trips.length} options at different price points. Plus real flights and hotels you can book now.
           </p>
         </motion.div>
 
-        {/* Real Flights */}
+        {/* ─── Flights ─── */}
         {flights.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mb-12"
+            className="mb-14"
           >
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-teal-600 text-xl">flight</span>
                 </div>
                 <div>
-                  <h2 className="font-display text-xl font-bold text-text">Flights</h2>
-                  <p className="text-xs text-text-muted">Live prices via Skyscanner</p>
+                  <h2 className="font-headline text-xl font-bold text-on-surface">Flights</h2>
+                  <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">Live prices via Skyscanner</p>
                 </div>
               </div>
-              <span className="text-sm font-mono text-text-muted bg-surface px-3 py-1 rounded-full border border-border">{flights.length} found</span>
+              <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{flights.length} found</span>
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+            <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
               {flights.map((f) => (
                 <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
               ))}
@@ -327,27 +347,27 @@ export default function ResultsPage() {
           </motion.section>
         )}
 
-        {/* Real Hotels */}
+        {/* ─── Hotels ─── */}
         {hotels.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-12"
+            className="mb-14"
           >
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                <div className="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-purple-600 text-xl">hotel</span>
                 </div>
                 <div>
-                  <h2 className="font-display text-xl font-bold text-text">Stays</h2>
-                  <p className="text-xs text-text-muted">Availability from Booking.com</p>
+                  <h2 className="font-headline text-xl font-bold text-on-surface">Stays</h2>
+                  <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">Availability from Booking.com</p>
                 </div>
               </div>
-              <span className="text-sm font-mono text-text-muted bg-surface px-3 py-1 rounded-full border border-border">{hotels.length} found</span>
+              <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{hotels.length} found</span>
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+            <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
               {hotels.map((h) => (
                 <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
               ))}
@@ -355,20 +375,20 @@ export default function ResultsPage() {
           </motion.section>
         )}
 
-        {/* AI Trip Itineraries */}
+        {/* ─── AI Trip Itineraries ─── */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mb-12"
+          className="mb-14"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center">
-              <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-xl">calendar_month</span>
             </div>
             <div>
-              <h2 className="font-display text-xl font-bold text-text">Full itineraries</h2>
-              <p className="text-xs text-text-muted">AI-generated day-by-day plans</p>
+              <h2 className="font-headline text-xl font-bold text-on-surface">Full itineraries</h2>
+              <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">AI-generated day-by-day plans</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -380,36 +400,38 @@ export default function ResultsPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + i * 0.15 }}
-                  className={`bg-surface rounded-2xl border ${config.borderColor} overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all card-shine`}
+                  className="card-3d rounded-[2.5rem] overflow-hidden"
                 >
-                  <div className={`${config.bgColor} px-5 py-4 flex items-center justify-between`}>
-                    <span className={`text-sm font-bold uppercase tracking-wider ${config.color}`}>
+                  {/* Tier badge strip */}
+                  <div className={`${config.badgeBg} px-6 py-4 flex items-center justify-between`}>
+                    <span className="text-[10px] font-bold uppercase tracking-widest font-body">
                       {config.label}
                     </span>
-                    <span className={`font-mono font-bold text-xl ${config.color}`}>
+                    <span className="text-3xl font-headline font-black">
                       ${trip.totalEstimatedCost.toLocaleString()}
                     </span>
                   </div>
 
-                  <div className="p-5">
-                    <h3 className="font-display font-bold text-lg text-text mb-2">
+                  <div className="p-6">
+                    <h3 className="font-headline font-extrabold text-2xl text-on-surface mb-2">
                       {trip.title}
                     </h3>
-                    <p className="text-sm text-text-secondary mb-5 line-clamp-3">
+                    <p className="text-on-surface-variant leading-relaxed font-body mb-6 line-clamp-3">
                       {trip.summary}
                     </p>
 
-                    <div className="space-y-2 mb-5">
+                    {/* Day preview */}
+                    <div className="space-y-2.5 mb-6">
                       {trip.days.slice(0, 3).map((day) => (
                         <div key={day.dayNumber} className="flex items-center gap-3 text-sm">
-                          <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0">
+                          <span className="w-7 h-7 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                             {day.dayNumber}
                           </span>
-                          <span className="text-text-secondary truncate">{day.title}</span>
+                          <span className="text-on-surface-variant font-body truncate">{day.title}</span>
                         </div>
                       ))}
                       {trip.days.length > 3 && (
-                        <p className="text-xs text-text-muted pl-10">
+                        <p className="text-xs text-outline-variant font-body pl-10">
                           +{trip.days.length - 3} more days
                         </p>
                       )}
@@ -417,7 +439,7 @@ export default function ResultsPage() {
 
                     <Link
                       href={`/trip?tier=${trip.tier}`}
-                      className="block w-full py-3.5 rounded-xl bg-primary text-white text-center font-bold hover:bg-primary-dark transition-all hover:shadow-lg hover:shadow-primary/20"
+                      className="block w-full py-4 rounded-full bg-primary text-white text-center font-extrabold font-headline shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all"
                     >
                       View full itinerary
                     </Link>
@@ -428,28 +450,26 @@ export default function ResultsPage() {
           </div>
         </motion.section>
 
-        {/* Quick comparison */}
+        {/* ─── Comparison Table ─── */}
         {trips.length > 1 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="bg-surface rounded-2xl border border-border p-6 mb-10"
+            className="card-3d p-8 rounded-[2rem] mb-10"
           >
-            <h3 className="font-display font-bold text-xl text-text mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+            <h3 className="font-headline font-bold text-xl text-on-surface mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">compare</span>
               Quick comparison
             </h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm font-body">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 pr-4 text-text-muted font-medium">Option</th>
-                    <th className="text-right py-3 px-4 text-text-muted font-medium">Total cost</th>
-                    <th className="text-right py-3 px-4 text-text-muted font-medium">Days</th>
-                    <th className="text-right py-3 pl-4 text-text-muted font-medium">Activities</th>
+                  <tr className="border-b border-outline-variant/20">
+                    <th className="text-left py-3 pr-4 text-[10px] uppercase tracking-widest text-outline-variant font-bold">Option</th>
+                    <th className="text-right py-3 px-4 text-[10px] uppercase tracking-widest text-outline-variant font-bold">Total cost</th>
+                    <th className="text-right py-3 px-4 text-[10px] uppercase tracking-widest text-outline-variant font-bold">Days</th>
+                    <th className="text-right py-3 pl-4 text-[10px] uppercase tracking-widest text-outline-variant font-bold">Activities</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -461,16 +481,16 @@ export default function ResultsPage() {
                       0
                     );
                     return (
-                      <tr key={trip.tier} className="border-b border-border last:border-0 hover:bg-primary-50/30 transition-colors">
-                        <td className="py-3 pr-4">
-                          <span className={`font-semibold ${config.color}`}>{config.label}</span>
-                          <span className="text-text-muted ml-2">— {trip.title}</span>
+                      <tr key={trip.tier} className="border-b border-outline-variant/10 last:border-0">
+                        <td className="py-3.5 pr-4">
+                          <span className={`font-bold font-headline ${config.color}`}>{config.label}</span>
+                          <span className="text-outline-variant ml-2">-- {trip.title}</span>
                         </td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-text">
+                        <td className="py-3.5 px-4 text-right font-headline font-black text-on-surface">
                           ${trip.totalEstimatedCost.toLocaleString()}
                         </td>
-                        <td className="py-3 px-4 text-right text-text">{trip.days.length}</td>
-                        <td className="py-3 pl-4 text-right text-text">{totalActivities}</td>
+                        <td className="py-3.5 px-4 text-right text-on-surface">{trip.days.length}</td>
+                        <td className="py-3.5 pl-4 text-right text-on-surface">{totalActivities}</td>
                       </tr>
                     );
                   })}
@@ -480,8 +500,8 @@ export default function ResultsPage() {
           </motion.div>
         )}
 
-        {/* FTC disclosure */}
-        <p className="text-xs text-text-muted text-center mt-10">
+        {/* ─── FTC Disclosure ─── */}
+        <p className="text-xs text-outline-variant text-center mt-10 font-body">
           Walter earns a commission when you book through our links at no extra cost to you.
         </p>
       </main>

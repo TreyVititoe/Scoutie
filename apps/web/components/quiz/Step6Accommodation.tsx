@@ -3,34 +3,34 @@
 import { useQuizStore, AccommodationType } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
-const types: { value: AccommodationType; label: string }[] = [
-  { value: "hotel", label: "Hotel" },
-  { value: "vacation_rental", label: "Vacation rental" },
-  { value: "hostel", label: "Hostel" },
-  { value: "resort", label: "Resort" },
-  { value: "boutique", label: "Boutique" },
+const types: { value: AccommodationType; label: string; icon: string }[] = [
+  { value: "hotel", label: "Hotel", icon: "hotel" },
+  { value: "vacation_rental", label: "Vacation rental", icon: "cottage" },
+  { value: "hostel", label: "Hostel", icon: "bunk_bed" },
+  { value: "resort", label: "Resort", icon: "spa" },
+  { value: "boutique", label: "Boutique", icon: "store" },
 ];
 
-const mustHaveOptions = [
-  "Pool",
-  "Kitchen",
-  "WiFi",
-  "Parking",
-  "Pet-friendly",
-  "Gym",
-  "Breakfast included",
-  "Washer/Dryer",
-  "Air conditioning",
-  "Ocean view",
+const mustHaveOptions: { label: string; icon: string }[] = [
+  { label: "Pool", icon: "pool" },
+  { label: "Kitchen", icon: "kitchen" },
+  { label: "WiFi", icon: "wifi" },
+  { label: "Parking", icon: "local_parking" },
+  { label: "Pet-friendly", icon: "pets" },
+  { label: "Gym", icon: "fitness_center" },
+  { label: "Breakfast included", icon: "free_breakfast" },
+  { label: "Washer/Dryer", icon: "local_laundry_service" },
+  { label: "Air conditioning", icon: "ac_unit" },
+  { label: "Ocean view", icon: "waves" },
 ];
 
-const locationOptions = [
-  "City center",
-  "Near attractions",
-  "Quiet neighborhood",
-  "Beachfront",
-  "Near public transit",
-  "Near airport",
+const locationOptions: { label: string; icon: string }[] = [
+  { label: "City center", icon: "location_city" },
+  { label: "Near attractions", icon: "attractions" },
+  { label: "Quiet neighborhood", icon: "night_shelter" },
+  { label: "Beachfront", icon: "beach_access" },
+  { label: "Near public transit", icon: "directions_transit" },
+  { label: "Near airport", icon: "connecting_airports" },
 ];
 
 export default function Step6Accommodation() {
@@ -55,67 +55,86 @@ export default function Step6Accommodation() {
   return (
     <StepWrapper
       title="Where do you want to stay?"
-      subtitle="Pick one or more — we'll search them all."
+      subtitle="Pick one or more -- we'll search them all."
     >
       <div className="space-y-6">
         {/* Type */}
-        <div className="flex flex-wrap gap-3">
-          {types.map((t) => (
-            <button
-              key={t.value}
-              onClick={() => toggleType(t.value)}
-              className={`px-5 py-3 rounded-xl border-2 font-medium transition-all ${
-                store.accommodationTypes.includes(t.value)
-                  ? "border-primary bg-primary-50 text-primary-700"
-                  : "border-border bg-surface text-text hover:border-primary-light"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {types.map((t) => {
+            const isSelected = store.accommodationTypes.includes(t.value);
+            return (
+              <button
+                key={t.value}
+                onClick={() => toggleType(t.value)}
+                className={`card-3d flex flex-col items-center gap-2 p-5 rounded-2xl border-2 transition-all duration-300 ${
+                  isSelected
+                    ? "border-primary shadow-lg shadow-primary/15"
+                    : "border-transparent hover:-translate-y-2"
+                }`}
+              >
+                <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-primary" : "text-on-surface-variant"}`}>
+                  {t.icon}
+                </span>
+                <span className={`text-sm font-body font-semibold ${isSelected ? "text-primary" : "text-on-surface"}`}>
+                  {t.label}
+                </span>
+                {isSelected && (
+                  <span className="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Must-haves */}
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">
+          <label className="block text-sm font-semibold font-body text-on-surface-variant mb-2">
             Must-haves
           </label>
           <div className="flex flex-wrap gap-2">
-            {mustHaveOptions.map((item) => (
-              <button
-                key={item}
-                onClick={() => toggleMustHave(item)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  store.accommodationMustHaves.includes(item)
-                    ? "bg-primary text-white"
-                    : "bg-surface border border-border text-text-secondary hover:border-primary-light"
-                }`}
-              >
-                {item}
-              </button>
-            ))}
+            {mustHaveOptions.map((item) => {
+              const isSelected = store.accommodationMustHaves.includes(item.label);
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => toggleMustHave(item.label)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-body font-medium transition-all ${
+                    isSelected
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Location preference */}
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">
+          <label className="block text-sm font-semibold font-body text-on-surface-variant mb-2">
             Location preference
           </label>
           <div className="flex flex-wrap gap-2">
-            {locationOptions.map((loc) => (
-              <button
-                key={loc}
-                onClick={() => store.setLocationPreference(loc)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  store.locationPreference === loc
-                    ? "bg-primary text-white"
-                    : "bg-surface border border-border text-text-secondary hover:border-primary-light"
-                }`}
-              >
-                {loc}
-              </button>
-            ))}
+            {locationOptions.map((loc) => {
+              const isSelected = store.locationPreference === loc.label;
+              return (
+                <button
+                  key={loc.label}
+                  onClick={() => store.setLocationPreference(loc.label)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-body font-medium transition-all ${
+                    isSelected
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">{loc.icon}</span>
+                  {loc.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

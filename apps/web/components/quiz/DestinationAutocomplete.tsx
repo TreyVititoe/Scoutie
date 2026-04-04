@@ -146,22 +146,16 @@ export default function DestinationAutocomplete() {
           {store.destinations.map((d) => (
             <span
               key={d}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-50 text-primary-700 text-sm font-medium"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-body font-semibold"
             >
+              <span className="material-symbols-outlined text-[16px]">location_on</span>
               {d}
               <button
                 onClick={() => removeDestination(d)}
-                className="hover:text-primary-dark ml-0.5"
+                className="hover:text-error ml-0.5"
                 aria-label={`Remove ${d}`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="w-4 h-4"
-                >
-                  <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                </svg>
+                <span className="material-symbols-outlined text-[16px]">close</span>
               </button>
             </span>
           ))}
@@ -170,6 +164,9 @@ export default function DestinationAutocomplete() {
 
       <div ref={containerRef} className="relative">
         <div className="relative">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[22px]">
+            location_on
+          </span>
           <input
             ref={inputRef}
             type="text"
@@ -180,7 +177,7 @@ export default function DestinationAutocomplete() {
               if (results.length > 0) setIsOpen(true);
             }}
             placeholder="Search for a city or country..."
-            className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-sans"
+            className="w-full bg-surface-container-low border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/20 font-body"
             role="combobox"
             aria-expanded={isOpen}
             aria-autocomplete="list"
@@ -188,7 +185,7 @@ export default function DestinationAutocomplete() {
           />
           {isLoading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="w-5 h-5 border-2 border-border border-t-primary rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-outline-variant border-t-primary rounded-full animate-spin" />
             </div>
           )}
         </div>
@@ -197,7 +194,7 @@ export default function DestinationAutocomplete() {
           <ul
             id="destination-listbox"
             role="listbox"
-            className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-xl shadow-lg overflow-hidden"
+            className="absolute z-50 w-full mt-2 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl overflow-hidden"
           >
             {results.map((feature, index) => {
               const label = formatPlace(feature);
@@ -209,27 +206,32 @@ export default function DestinationAutocomplete() {
                   key={feature.id}
                   role="option"
                   aria-selected={isHighlighted}
-                  className={`px-4 py-3 cursor-pointer text-sm font-sans transition-colors ${
+                  className={`px-4 py-3 cursor-pointer text-sm font-body transition-colors flex items-center gap-3 ${
                     isHighlighted
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-text hover:bg-primary-50/50"
+                      ? "bg-primary/10 text-primary"
+                      : "text-on-surface hover:bg-surface-container-low"
                   } ${isAlreadyAdded ? "opacity-50" : ""} ${
-                    index < results.length - 1 ? "border-b border-border" : ""
+                    index < results.length - 1 ? "border-b border-outline-variant/20" : ""
                   }`}
                   onClick={() => {
                     if (!isAlreadyAdded) selectPlace(feature);
                   }}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
-                  <span className="font-medium">{feature.text}</span>
-                  {feature.place_name !== feature.text && (
-                    <span className="text-text-muted ml-1">
-                      {feature.place_name.replace(feature.text + ", ", "")}
-                    </span>
-                  )}
-                  {isAlreadyAdded && (
-                    <span className="text-text-muted ml-2 text-xs">(already added)</span>
-                  )}
+                  <span className="material-symbols-outlined text-[18px] text-on-surface-variant">
+                    location_on
+                  </span>
+                  <div>
+                    <span className="font-semibold">{feature.text}</span>
+                    {feature.place_name !== feature.text && (
+                      <span className="text-on-surface-variant ml-1">
+                        {feature.place_name.replace(feature.text + ", ", "")}
+                      </span>
+                    )}
+                    {isAlreadyAdded && (
+                      <span className="text-on-surface-variant ml-2 text-xs">(already added)</span>
+                    )}
+                  </div>
                 </li>
               );
             })}

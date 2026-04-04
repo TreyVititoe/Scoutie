@@ -15,56 +15,60 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
   };
 
   return (
-    <div
-      onClick={handleBook}
-      className="min-w-[280px] w-[280px] flex-shrink-0 bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary-light transition-all group cursor-pointer">
+    <div className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden cursor-pointer group">
       {/* Image */}
       <div className="relative h-40 bg-background">
         {hotel.image ? (
           <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-purple-50">
-            <svg className="w-8 h-8 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+            <span className="material-symbols-outlined text-purple-300 text-3xl">hotel</span>
           </div>
         )}
         {bestValue && (
-          <span className="absolute top-3 left-3 text-[11px] font-bold uppercase tracking-wider bg-emerald-500 text-white px-2.5 py-1 rounded-full">
+          <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-body">
             Best value
           </span>
         )}
       </div>
 
-      <div className="p-4">
+      <div className="p-6">
         {/* Name & Location */}
-        <p className="font-bold text-text mb-1 leading-tight line-clamp-2">{hotel.name}</p>
+        <p className="font-headline font-bold text-on-surface mb-1 leading-tight line-clamp-2">{hotel.name}</p>
         {hotel.neighborhood && (
-          <p className="text-xs text-text-muted mb-3">{hotel.neighborhood}</p>
+          <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body mb-3">{hotel.neighborhood}</p>
         )}
 
         {/* Rating */}
-        <div className="flex items-center gap-1.5 mb-3">
+        <div className="flex items-center gap-1.5 mb-4">
           {hotel.rating > 0 && (
             <>
-              <span className="text-sm font-bold text-accent">{hotel.rating}/10</span>
+              <span className="material-symbols-outlined text-amber-500 text-base">star</span>
+              <span className="text-sm font-bold font-headline text-on-surface">{hotel.rating}/10</span>
               {hotel.reviewWord && (
-                <span className="text-xs text-text-muted">{hotel.reviewWord}</span>
+                <span className="text-xs text-on-surface-variant font-body">{hotel.reviewWord}</span>
               )}
               {hotel.reviewCount > 0 && (
-                <span className="text-xs text-text-muted">({hotel.reviewCount.toLocaleString()})</span>
+                <span className="text-xs text-outline-variant font-body">({hotel.reviewCount.toLocaleString()})</span>
               )}
             </>
           )}
         </div>
 
-        {/* Price */}
-        <div className="flex items-end justify-between pt-3 border-t border-border">
+        {/* Price & Book */}
+        <div className="flex items-end justify-between pt-4 border-t border-outline-variant/15">
           <div>
-            <p className="text-2xl font-mono font-bold text-text">${hotel.pricePerNight}</p>
-            <p className="text-[11px] text-text-muted">
-              per night · ${hotel.totalPrice.toLocaleString()} total
+            <p className="font-headline font-black text-primary text-xl">${hotel.pricePerNight}</p>
+            <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+              per night -- ${hotel.totalPrice.toLocaleString()} total
             </p>
           </div>
-          <span className="text-xs text-primary font-semibold group-hover:underline">Book →</span>
+          <button
+            onClick={handleBook}
+            className="rounded-full bg-on-background text-white px-5 py-2 text-sm font-bold font-headline hover:opacity-90 transition-opacity"
+          >
+            Book
+          </button>
         </div>
       </div>
     </div>
