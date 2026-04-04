@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 type PackingItem = {
   name: string;
@@ -143,9 +144,11 @@ export default function PackingList({
               {copied ? "Copied" : "Copy list"}
             </button>
           )}
-          <button
+          <motion.button
             onClick={handleGenerate}
             disabled={loading}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             className="px-4 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
             {loading
@@ -153,7 +156,7 @@ export default function PackingList({
               : generated
               ? "Regenerate"
               : "Generate Packing List"}
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -186,14 +189,16 @@ export default function PackingList({
             {/* Progress bar */}
             <div className="mb-6">
               <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-300"
-                  style={{
+                <motion.div
+                  className="h-full bg-primary rounded-full"
+                  initial={{ width: "0%" }}
+                  animate={{
                     width:
                       totalItems > 0
                         ? `${(checkedCount / totalItems) * 100}%`
                         : "0%",
                   }}
+                  transition={{ type: "spring", stiffness: 200, damping: 25 }}
                 />
               </div>
             </div>
@@ -209,7 +214,11 @@ export default function PackingList({
                       const key = `${cat.name}::${item.name}`;
                       const checked = checkedItems.has(key);
                       return (
-                        <li key={key}>
+                        <motion.li
+                          key={key}
+                          animate={{ scale: checked ? [0.97, 1] : 1 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                        >
                           <label className="flex items-center gap-2.5 cursor-pointer group">
                             <input
                               type="checkbox"
@@ -237,7 +246,7 @@ export default function PackingList({
                               </span>
                             )}
                           </label>
-                        </li>
+                        </motion.li>
                       );
                     })}
                   </ul>

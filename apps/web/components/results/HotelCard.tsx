@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { HotelResult } from "@/lib/services/hotels";
 import { trackAndOpen } from "@/lib/affiliate";
 
@@ -15,7 +16,11 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
   };
 
   return (
-    <div className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden cursor-pointer group">
+    <motion.div
+      whileHover={{ y: -4, boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)" }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden cursor-pointer group"
+    >
       {/* Image */}
       <div className="relative h-40 bg-background">
         {hotel.image ? (
@@ -58,19 +63,28 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
         {/* Price & Book */}
         <div className="flex items-end justify-between pt-4 border-t border-outline-variant/15">
           <div>
-            <p className="font-headline font-black text-primary text-xl">${hotel.pricePerNight}</p>
+            <motion.p
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+              className="font-headline font-black text-primary text-xl"
+            >
+              ${hotel.pricePerNight}
+            </motion.p>
             <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
               per night -- ${hotel.totalPrice.toLocaleString()} total
             </p>
           </div>
-          <button
+          <motion.button
             onClick={handleBook}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             className="rounded-full bg-on-background text-white px-5 py-2 text-sm font-bold font-headline hover:opacity-90 transition-opacity"
           >
             Book
-          </button>
+          </motion.button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

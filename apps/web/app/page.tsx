@@ -180,35 +180,61 @@ export default function HomePage() {
               Walter AI
             </motion.div>
 
-            <h1 className="font-headline font-extrabold text-5xl md:text-7xl text-on-surface leading-[1.05] tracking-tight mb-7">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.5, ease: "easeOut" }}
+              className="font-headline font-extrabold text-5xl md:text-7xl text-on-surface leading-[1.05] tracking-tight mb-7"
+            >
               One quiz.
               <br />
-              <span className="text-gradient">Your whole trip.</span>
-            </h1>
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25, duration: 0.5, ease: "easeOut" }}
+                className="text-gradient inline-block"
+              >
+                Your whole trip.
+              </motion.span>
+            </motion.h1>
 
-            <p className="text-lg md:text-xl text-on-surface-variant font-body leading-relaxed mb-12 max-w-xl">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.5, ease: "easeOut" }}
+              className="text-lg md:text-xl text-on-surface-variant font-body leading-relaxed mb-12 max-w-xl"
+            >
               Tell Walter how you like to travel. Get complete, bookable
               itineraries with flights, hotels, activities, and more -- in
               seconds.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/quiz"
-                className="btn-primary-gradient inline-flex items-center justify-center px-8 py-4 rounded-full text-white text-lg font-bold transition-all hover:scale-105 active:scale-95"
-              >
-                Plan your trip
-                <span className="material-symbols-outlined ml-2 text-xl">
-                  arrow_forward
-                </span>
-              </Link>
-              <a
-                href="#how-it-works"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-outline-variant text-on-surface font-bold hover:bg-surface-container-lowest hover:border-primary/30 transition-all hover:scale-105 active:scale-95"
-              >
-                How it works
-              </a>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, duration: 0.5, ease: "easeOut" }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href="/quiz"
+                  className="btn-primary-gradient inline-flex items-center justify-center px-8 py-4 rounded-full text-white text-lg font-bold"
+                >
+                  Plan your trip
+                  <span className="material-symbols-outlined ml-2 text-xl">
+                    arrow_forward
+                  </span>
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <a
+                  href="#how-it-works"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-outline-variant text-on-surface font-bold hover:bg-surface-container-lowest hover:border-primary/30 transition-colors"
+                >
+                  How it works
+                </a>
+              </motion.div>
+            </motion.div>
           </motion.div>
 
           {/* Social proof strip */}
@@ -270,9 +296,10 @@ export default function HomePage() {
       {/* ========== FEATURES STRIP ========== */}
       <section className="border-y border-outline-variant/30 bg-surface-container-lowest overflow-hidden">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
           className="max-w-6xl mx-auto px-6 py-8"
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
@@ -306,9 +333,10 @@ export default function HomePage() {
       <section id="how-it-works" className="bg-surface">
         <div className="max-w-6xl mx-auto px-6 py-28 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="text-center mb-20"
           >
             <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">
@@ -326,8 +354,8 @@ export default function HomePage() {
                 key={step.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.5 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ delay: i * 0.15, duration: 0.4, ease: "easeOut" }}
                 className="card-3d p-8 relative"
               >
                 <div className="w-14 h-14 rounded-2xl bg-primary-container/40 flex items-center justify-center mb-6">
@@ -354,9 +382,10 @@ export default function HomePage() {
       <section className="bg-surface-container-lowest border-y border-outline-variant/30">
         <div className="max-w-6xl mx-auto px-6 py-28">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="flex items-end justify-between mb-12"
           >
             <div>
@@ -388,8 +417,9 @@ export default function HomePage() {
                 key={d.name}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ delay: i * 0.08, duration: 0.4, ease: "easeOut" }}
+                whileHover={{ y: -8 }}
               >
                 <Link
                   href={`/quiz?destination=${encodeURIComponent(d.name)}`}
@@ -435,9 +465,10 @@ export default function HomePage() {
         <div className="bg-gradient-animated noise">
           <div className="max-w-6xl mx-auto px-6 py-28 text-center relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white/90 rounded-full text-xs font-bold tracking-widest uppercase mb-8 border border-white/10">
                 <span className="material-symbols-outlined text-base">
@@ -452,15 +483,17 @@ export default function HomePage() {
                 No sign-up required. Take the quiz, get your trip, book when
                 you&apos;re ready.
               </p>
-              <Link
-                href="/quiz"
-                className="inline-flex items-center justify-center px-10 py-5 rounded-full bg-white text-primary text-lg font-bold transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-black/20"
-              >
-                Start planning
-                <span className="material-symbols-outlined ml-2 text-xl">
-                  arrow_forward
-                </span>
-              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href="/quiz"
+                  className="inline-flex items-center justify-center px-10 py-5 rounded-full bg-white text-primary text-lg font-bold shadow-2xl shadow-black/20"
+                >
+                  Start planning
+                  <span className="material-symbols-outlined ml-2 text-xl">
+                    arrow_forward
+                  </span>
+                </Link>
+              </motion.div>
             </motion.div>
           </div>
         </div>

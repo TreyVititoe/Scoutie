@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { FlightResult } from "@/lib/services/flights";
 import { trackAndOpen } from "@/lib/affiliate";
 
@@ -15,7 +16,11 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
   };
 
   return (
-    <div className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] p-6 cursor-pointer group">
+    <motion.div
+      whileHover={{ y: -4, boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)" }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] p-6 cursor-pointer group"
+    >
       {/* Tags */}
       <div className="flex items-center gap-2 mb-4">
         {cheapest && (
@@ -66,14 +71,23 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
 
       {/* Price & Book */}
       <div className="flex items-center justify-between pt-4 border-t border-outline-variant/15">
-        <p className="font-headline font-black text-primary text-xl">${flight.price}</p>
-        <button
+        <motion.p
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+          className="font-headline font-black text-primary text-xl"
+        >
+          ${flight.price}
+        </motion.p>
+        <motion.button
           onClick={handleBook}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           className="btn-primary-gradient rounded-full px-5 py-2 text-sm font-bold font-headline"
         >
           Book
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }

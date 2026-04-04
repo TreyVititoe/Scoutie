@@ -249,26 +249,28 @@ function TripDetailPage() {
               Back to results
             </Link>
             {saved ? (
-              <button
+              <motion.button
                 onClick={handleShare}
+                whileTap={{ scale: 0.95 }}
                 className="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-colors flex items-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">
                   link
                 </span>
                 Copy link
-              </button>
+              </motion.button>
             ) : (
-              <button
+              <motion.button
                 onClick={handleSave}
                 disabled={saving}
+                whileTap={{ scale: 0.95 }}
                 className="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dim transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">
                   bookmark
                 </span>
                 {saving ? "Saving..." : "Save trip"}
-              </button>
+              </motion.button>
             )}
           </div>
         </div>
@@ -340,10 +342,13 @@ function TripDetailPage() {
       <div className="max-w-7xl mx-auto px-6 pt-8">
         <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
           {trip.days.map((day) => (
-            <button
+            <motion.button
               key={day.dayNumber}
               onClick={() => setActiveDay(day.dayNumber)}
-              className={`flex-shrink-0 px-5 py-3 rounded-xl font-body transition-all ${
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className={`flex-shrink-0 px-5 py-3 rounded-xl font-body transition-colors ${
                 activeDay === day.dayNumber
                   ? "bg-primary text-white shadow-md"
                   : "bg-surface-container-lowest border border-outline-variant/10 text-on-surface-variant hover:border-primary/30"
@@ -355,7 +360,7 @@ function TripDetailPage() {
               <span className="block text-sm font-bold font-headline mt-0.5">
                 {day.title}
               </span>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -515,7 +520,13 @@ function TripDetailPage() {
           {/* ── Right Column: Sidebar Widgets (col-span-4) ── */}
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 lg:self-start">
             {/* Map Widget */}
-            <div className="card-3d p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="card-3d p-6"
+            >
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary text-[22px]">
                   near_me
@@ -525,10 +536,16 @@ function TripDetailPage() {
                 </h3>
               </div>
               <TripMap items={mapItems} />
-            </div>
+            </motion.div>
 
             {/* Travel Logistics */}
-            <div className="card-3d p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.35, ease: "easeOut", delay: 0.1 }}
+              className="card-3d p-6"
+            >
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary text-[22px]">
                   luggage
@@ -643,7 +660,7 @@ function TripDetailPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 

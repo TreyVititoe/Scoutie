@@ -95,10 +95,15 @@ export default function QuizPage() {
               return (
                 <div
                   key={label}
-                  className={`w-12 h-1 rounded-full transition-colors duration-300 ${
-                    isFilled ? "bg-primary" : "bg-primary/20"
-                  }`}
-                />
+                  className="w-12 h-1 rounded-full bg-primary/20 overflow-hidden"
+                >
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: isFilled ? 1 : 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="w-full h-full bg-primary rounded-full origin-left"
+                  />
+                </div>
               );
             })}
           </div>
@@ -126,10 +131,12 @@ export default function QuizPage() {
       {/* Bottom Navigation */}
       <div className="sticky bottom-0 z-20 bg-white/70 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,101,113,0.05)]">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <button
+          <motion.button
             onClick={() => store.prevStep()}
             disabled={isFirstStep}
-            className={`px-8 py-4 rounded-full font-bold font-body transition-all flex items-center gap-2 ${
+            whileHover={isFirstStep ? {} : { scale: 1.03 }}
+            whileTap={isFirstStep ? {} : { scale: 0.95 }}
+            className={`px-8 py-4 rounded-full font-bold font-body flex items-center gap-2 ${
               isFirstStep
                 ? "opacity-0 pointer-events-none"
                 : "text-on-surface hover:bg-surface-container-high"
@@ -137,24 +144,28 @@ export default function QuizPage() {
           >
             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             Back
-          </button>
+          </motion.button>
 
           {isLastStep ? (
-            <button
+            <motion.button
               onClick={handleGenerate}
-              className="px-14 py-4 rounded-full btn-primary-gradient text-white font-bold font-body shadow-2xl shadow-primary/30 transition-all hover:-translate-y-0.5 flex items-center gap-2 text-lg"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-14 py-4 rounded-full btn-primary-gradient text-white font-bold font-body shadow-2xl shadow-primary/30 flex items-center gap-2 text-lg"
             >
               <span className="material-symbols-outlined text-[22px]">auto_awesome</span>
               Generate My Trip
-            </button>
+            </motion.button>
           ) : (
-            <button
+            <motion.button
               onClick={() => store.nextStep()}
-              className="px-12 py-4 rounded-full btn-primary-gradient text-white font-bold font-body shadow-2xl shadow-primary/30 transition-all hover:-translate-y-0.5 flex items-center gap-2"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-12 py-4 rounded-full btn-primary-gradient text-white font-bold font-body shadow-2xl shadow-primary/30 flex items-center gap-2"
             >
               Continue
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-            </button>
+            </motion.button>
           )}
         </div>
       </div>

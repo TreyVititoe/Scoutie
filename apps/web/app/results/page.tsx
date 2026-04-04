@@ -340,8 +340,15 @@ export default function ResultsPage() {
               <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{flights.length} found</span>
             </div>
             <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
-              {flights.map((f) => (
-                <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
+              {flights.map((f, i) => (
+                <motion.div
+                  key={f.id}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
+                >
+                  <FlightCard flight={f} cheapest={cheapestFlight?.id === f.id} />
+                </motion.div>
               ))}
             </div>
           </motion.section>
@@ -368,8 +375,15 @@ export default function ResultsPage() {
               <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{hotels.length} found</span>
             </div>
             <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
-              {hotels.map((h) => (
-                <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
+              {hotels.map((h, i) => (
+                <motion.div
+                  key={h.id}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
+                >
+                  <HotelCard hotel={h} bestValue={bestValueHotel?.id === h.id} />
+                </motion.div>
               ))}
             </div>
           </motion.section>
@@ -473,7 +487,7 @@ export default function ResultsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {trips.map((trip) => {
+                  {trips.map((trip, i) => {
                     const config = tierConfig[trip.tier] || tierConfig.balanced;
                     const totalActivities = trip.days.reduce(
                       (sum, d) =>
@@ -481,7 +495,13 @@ export default function ResultsPage() {
                       0
                     );
                     return (
-                      <tr key={trip.tier} className="border-b border-outline-variant/10 last:border-0">
+                      <motion.tr
+                        key={trip.tier}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.7 + i * 0.1, duration: 0.3, ease: "easeOut" }}
+                        className="border-b border-outline-variant/10 last:border-0"
+                      >
                         <td className="py-3.5 pr-4">
                           <span className={`font-bold font-headline ${config.color}`}>{config.label}</span>
                           <span className="text-outline-variant ml-2">-- {trip.title}</span>
@@ -491,7 +511,7 @@ export default function ResultsPage() {
                         </td>
                         <td className="py-3.5 px-4 text-right text-on-surface">{trip.days.length}</td>
                         <td className="py-3.5 pl-4 text-right text-on-surface">{totalActivities}</td>
-                      </tr>
+                      </motion.tr>
                     );
                   })}
                 </tbody>
