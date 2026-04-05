@@ -1,23 +1,16 @@
-import { NextRequest } from "next/server";
-import { generateTripsStream } from "@/lib/services/claude";
+import { NextRequest, NextResponse } from "next/server";
+import { generateTrips } from "@/lib/services/claude";
 
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   try {
     const quizData = await req.json();
-
-    const stream = await generateTripsStream(quizData);
-
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "Transfer-Encoding": "chunked",
-      },
-    });
+    const result = await generateTrips(quizData);
+    return NextResponse.json(result);
   } catch (err) {
     console.error("[/api/generate]", err);
-    return Response.json(
+    return NextResponse.json(
       { error: "Trip generation failed. Check your API keys." },
       { status: 500 }
     );
