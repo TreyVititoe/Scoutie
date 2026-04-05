@@ -119,7 +119,6 @@ export default function ResultsPage() {
       body: JSON.stringify(quizData),
       signal: generateController.signal,
     })
-      .then((r) => r.text())
       .then((r) => r.json())
       .then((data: GenerateResult) => {
         clearTimeout(generateTimeout);
