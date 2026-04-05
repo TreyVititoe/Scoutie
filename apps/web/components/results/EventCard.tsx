@@ -1,6 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { ScoredEvent } from "@/lib/types";
+import { trackAndOpen } from "@/lib/affiliate";
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return "Date TBD";
@@ -17,67 +19,89 @@ function formatTime(timeStr: string | null): string {
 }
 
 export default function EventCard({ event }: { event: ScoredEvent }) {
+  const handleGetTickets = () => {
+    trackAndOpen({
+      provider: "ticketmaster",
+      itemType: "event",
+      destinationUrl: event.url,
+    });
+  };
+
   return (
-    <a
-      href={event.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="min-w-[280px] w-[280px] flex-shrink-0 bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-sky-200 transition-all cursor-pointer group"
+    <motion.div
+      whileHover={{ y: -4, boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)" }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden cursor-pointer group"
     >
       {/* Image */}
-      <div className="relative h-40 bg-gray-100">
+      <div className="relative h-40 bg-surface-container-lowest">
         {event.image ? (
           <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-sky-50 to-indigo-100">
-            <svg className="w-8 h-8 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
+            <span className="material-symbols-outlined text-primary/30 text-4xl">local_activity</span>
           </div>
         )}
-        <span className="absolute top-3 left-3 text-[11px] font-bold uppercase tracking-wider bg-white/90 backdrop-blur-sm text-gray-700 px-2.5 py-1 rounded-full">
+        <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest bg-white/90 backdrop-blur-sm text-on-surface px-2.5 py-1 rounded-full font-body">
           {event.category}
         </span>
-      </div>
-
-      <div className="p-4">
-        {/* Name */}
-        <p className="font-bold text-gray-900 mb-1 leading-tight line-clamp-2">{event.name}</p>
-
-        {/* Venue */}
-        <p className="text-xs text-gray-400 mb-2">{event.venueName}</p>
-
-        {/* Date/time + match reason */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-sm font-semibold text-gray-700">{formatDate(event.date)}</p>
-            {event.time && (
-              <p className="text-xs text-gray-400">{formatTime(event.time)}</p>
-            )}
-          </div>
-          <span className="text-[11px] bg-sky-50 text-sky-600 px-2 py-0.5 rounded-full text-right max-w-[120px] leading-tight">
+        {event.matchReason && (
+          <span className="absolute top-3 right-3 text-[10px] font-bold bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full font-body max-w-[140px] truncate">
             {event.matchReason}
           </span>
+        )}
+      </div>
+
+      <div className="p-5">
+        {/* Name */}
+        <p className="font-headline font-bold text-on-surface leading-tight line-clamp-2 mb-1">
+          {event.name}
+        </p>
+
+        {/* Venue */}
+        <div className="flex items-center gap-1.5 mb-3">
+          <span className="material-symbols-outlined text-outline-variant text-[14px]">location_on</span>
+          <p className="text-xs text-outline-variant font-body truncate">{event.venueName}</p>
         </div>
 
-        {/* Price */}
-        <div className="flex items-end justify-between pt-3 border-t border-gray-50">
+        {/* Date/time */}
+        <div className="flex items-center gap-1.5 mb-4">
+          <span className="material-symbols-outlined text-outline-variant text-[14px]">calendar_today</span>
+          <p className="text-sm font-bold text-on-surface font-body">
+            {formatDate(event.date)}
+            {event.time && (
+              <span className="text-outline-variant font-normal ml-1.5">{formatTime(event.time)}</span>
+            )}
+          </p>
+        </div>
+
+        {/* Price & CTA */}
+        <div className="flex items-center justify-between pt-4 border-t border-outline-variant/15">
           <div>
             {event.priceMin ? (
               <>
-                <p className="text-xl font-bold text-gray-900">
+                <p className="font-headline font-black text-primary text-xl">
                   ${event.priceMin}
                   {event.priceMax && event.priceMax !== event.priceMin
-                    ? `–$${event.priceMax}`
-                    : ""}
+                    ? <span className="text-sm font-bold text-outline-variant">--${event.priceMax}</span>
+                    : null}
                 </p>
-                <p className="text-[11px] text-gray-400">per ticket</p>
+                <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">per ticket</p>
               </>
             ) : (
-              <p className="text-sm font-semibold text-gray-500">See tickets</p>
+              <p className="text-sm font-bold text-outline-variant font-body">See prices</p>
             )}
           </div>
-          <span className="text-xs text-sky-500 font-semibold group-hover:underline">Book →</span>
+          <motion.button
+            onClick={handleGetTickets}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="btn-primary-gradient rounded-full px-5 py-2 text-sm font-bold font-headline"
+          >
+            Get Tickets
+          </motion.button>
         </div>
       </div>
-    </a>
+    </motion.div>
   );
 }

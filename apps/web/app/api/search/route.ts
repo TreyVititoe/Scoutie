@@ -4,6 +4,8 @@ import { scoreAndBucket } from "@/lib/services/scoring";
 import { expandInterests, generateTripSummary } from "@/lib/services/claude";
 import type { TripPrefs, SearchResults } from "@/lib/types";
 
+export const maxDuration = 30;
+
 export async function POST(req: NextRequest) {
   try {
     const prefs: TripPrefs = await req.json();

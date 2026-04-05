@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import FlightCard from "@/components/results/FlightCard";
 import HotelCard from "@/components/results/HotelCard";
+import EventCard from "@/components/results/EventCard";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
+import type { ScoredEvent } from "@/lib/types";
 
 type TripItem = {
   itemType: string;
@@ -65,6 +67,9 @@ export default function ResultsPage() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [flights, setFlights] = useState<FlightResult[]>([]);
   const [hotels, setHotels] = useState<HotelResult[]>([]);
+  const [events, setEvents] = useState<ScoredEvent[]>([]);
+  const [similarEvents, setSimilarEvents] = useState<ScoredEvent[]>([]);
+  const [topEvents, setTopEvents] = useState<ScoredEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
   const [loadingPhase, setLoadingPhase] = useState(0);
@@ -101,9 +106,11 @@ export default function ResultsPage() {
     const generateController = new AbortController();
     const flightsController = new AbortController();
     const hotelsController = new AbortController();
+    const eventsController = new AbortController();
     const generateTimeout = setTimeout(() => generateController.abort(), 180000);
     const flightsTimeout = setTimeout(() => flightsController.abort(), 15000);
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
+    const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
 
     // Core: generate trips via streaming endpoint
     fetch("/api/generate", {
@@ -167,14 +174,43 @@ export default function ResultsPage() {
         });
     }
 
+    // Fetch events in parallel with flights and hotels
+    if (destination && startDate && endDate) {
+      fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination,
+          startDate,
+          endDate,
+          vibes: quizData.activityInterests || quizData.vibes || [],
+          travelers: adults,
+        }),
+        signal: eventsController.signal,
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          clearTimeout(eventsTimeout);
+          setEvents(data.exactMatches || []);
+          setSimilarEvents(data.similarMatches || []);
+          setTopEvents(data.topInArea || []);
+        })
+        .catch((err) => {
+          clearTimeout(eventsTimeout);
+          console.warn("[events]", err);
+        });
+    }
+
     return () => {
       clearInterval(interval);
       clearTimeout(generateTimeout);
       clearTimeout(flightsTimeout);
       clearTimeout(hotelsTimeout);
+      clearTimeout(eventsTimeout);
       generateController.abort();
       flightsController.abort();
       hotelsController.abort();
+      eventsController.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
@@ -383,6 +419,43 @@ export default function ResultsPage() {
                   transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
                 >
                   <HotelCard hotel={h} bestValue={bestValueHotel?.id === h.id} />
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* ─── Events ─── */}
+        {(events.length > 0 || similarEvents.length > 0 || topEvents.length > 0) && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mb-14"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-amber-600 text-xl">local_activity</span>
+                </div>
+                <div>
+                  <h2 className="font-headline text-xl font-bold text-on-surface">Live Events & Experiences</h2>
+                  <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">Ticketmaster events during your trip</p>
+                </div>
+              </div>
+              <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">
+                {events.length + similarEvents.length + topEvents.length} found
+              </span>
+            </div>
+            <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+              {[...events, ...(events.length < 3 ? similarEvents : []), ...topEvents].map((ev, i) => (
+                <motion.div
+                  key={ev.id}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
+                >
+                  <EventCard event={ev} />
                 </motion.div>
               ))}
             </div>
