@@ -122,7 +122,16 @@ export default function ResultsPage() {
       .then((r) => r.text())
       .then((text) => {
         clearTimeout(generateTimeout);
-        const data: GenerateResult = JSON.parse(text);
+        // Strip markdown fences if Claude included them
+        const cleaned = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
+        let data: GenerateResult;
+        try {
+          data = JSON.parse(cleaned);
+        } catch {
+          const match = cleaned.match(/\{[\s\S]*\}/);
+          if (!match) throw new Error("No JSON in response");
+          data = JSON.parse(match[0]);
+        }
         if (data.error) throw new Error(data.error);
         setTrips(data.trips || []);
         localStorage.setItem("walter_trips", JSON.stringify(data));

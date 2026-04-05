@@ -127,18 +127,19 @@ function parseClaudeJson(text: string) {
 }
 
 /**
- * Stream trip generation — keeps Vercel connection alive.
- * Returns a ReadableStream that emits the full JSON once complete.
+ * Stream trip generation — sends raw text chunks to keep Vercel alive,
+ * then the client reassembles and parses the JSON.
  */
 export async function generateTripsStream(quizData: QuizData): Promise<ReadableStream> {
   const userPrompt = buildUserPrompt(quizData);
+  const encoder = new TextEncoder();
 
   return new ReadableStream({
     async start(controller) {
       try {
         const stream = await client.messages.stream({
-          model: "claude-sonnet-4-6",
-          max_tokens: 16000,
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 8192,
           system: WALTER_SYSTEM_PROMPT,
           messages: [{ role: "user", content: userPrompt }],
         });
@@ -150,16 +151,19 @@ export async function generateTripsStream(quizData: QuizData): Promise<ReadableS
             event.delta.type === "text_delta"
           ) {
             fullText += event.delta.text;
+            // Send each chunk to keep the connection alive
+            controller.enqueue(encoder.encode(event.delta.text));
           }
         }
 
-        const result = parseClaudeJson(fullText);
-        controller.enqueue(new TextEncoder().encode(JSON.stringify(result)));
+        // Verify the JSON is valid before closing
+        parseClaudeJson(fullText);
         controller.close();
       } catch (err) {
         console.error("[claude stream]", err);
+        // If we haven't sent anything yet, send an error JSON
         controller.enqueue(
-          new TextEncoder().encode(
+          encoder.encode(
             JSON.stringify({ error: "Trip generation failed. Please try again." })
           )
         );
