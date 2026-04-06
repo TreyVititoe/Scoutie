@@ -14,39 +14,16 @@ RULES:
 - Respect the budget strictly
 - Consider seasonality for the travel dates
 
-CRITICAL: Keep descriptions SHORT (under 20 words each). This keeps the response within limits.
+CRITICAL OUTPUT RULES:
+- Descriptions MUST be under 10 words each
+- Max 3 items per day
+- No null fields — omit optional fields instead
+- Raw JSON only — no markdown, no code fences, no explanation
 
-RESPONSE FORMAT — raw JSON only, no markdown, no code fences:
-{
-  "trips": [
-    {
-      "tier": "budget" | "balanced" | "premium",
-      "title": "string",
-      "summary": "string — 1-2 sentences",
-      "destination": "string",
-      "totalEstimatedCost": number,
-      "days": [
-        {
-          "dayNumber": 1,
-          "title": "string",
-          "items": [
-            {
-              "itemType": "activity" | "restaurant" | "hotel" | "transport" | "event",
-              "title": "string — specific real name",
-              "description": "string — under 20 words",
-              "startTime": "HH:MM",
-              "durationMinutes": number,
-              "estimatedCost": number,
-              "locationName": "string"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+RESPONSE FORMAT:
+{"trips":[{"tier":"budget","title":"...","summary":"...","destination":"...","totalEstimatedCost":0,"days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}
 
-Generate EXACTLY 3 trips: budget, balanced, premium. Keep 3-4 items per day max.`;
+Generate EXACTLY 3 trips: budget, balanced, premium.`;
 
 type QuizData = {
   planningMode?: string;
@@ -181,10 +158,14 @@ export async function generateTrips(quizData: QuizData) {
 
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
-    max_tokens: 8192,
+    max_tokens: 16384,
     system: WALTER_SYSTEM_PROMPT,
     messages: [{ role: "user", content: userPrompt }],
   });
+
+  if (message.stop_reason === "max_tokens") {
+    throw new Error("Response truncated — try a shorter trip duration");
+  }
 
   const text = message.content[0].type === "text" ? message.content[0].text : "";
   return parseClaudeJson(text);
