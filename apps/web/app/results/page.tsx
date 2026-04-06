@@ -63,7 +63,7 @@ const tierConfig: Record<
 
 export default function ResultsPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [tripsLoading, setTripsLoading] = useState(true);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [flights, setFlights] = useState<FlightResult[]>([]);
   const [hotels, setHotels] = useState<HotelResult[]>([]);
@@ -72,15 +72,7 @@ export default function ResultsPage() {
   const [topEvents, setTopEvents] = useState<ScoredEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
-  const [loadingPhase, setLoadingPhase] = useState(0);
-
-  const phases = [
-    "Analyzing your preferences...",
-    "Searching real flights...",
-    "Finding the best hotels...",
-    "Building your itineraries...",
-    "Almost there...",
-  ];
+  const [pageReady, setPageReady] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
@@ -90,10 +82,7 @@ export default function ResultsPage() {
     }
     const quizData = JSON.parse(stored);
     setPrefs(quizData);
-
-    const interval = setInterval(() => {
-      setLoadingPhase((p) => (p < phases.length - 1 ? p + 1 : p));
-    }, 2500);
+    setPageReady(true);
 
     const destination = quizData.destinations?.[0] || quizData.destination || "";
     const departureCity = quizData.departureCity || "";
@@ -112,7 +101,7 @@ export default function ResultsPage() {
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
     const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
 
-    // Core: generate trips
+    // Core: generate trips (slowest — 30-60s)
     fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -143,8 +132,7 @@ export default function ResultsPage() {
         setError(err?.message || "Couldn't generate your trip. Please try again.");
       })
       .finally(() => {
-        clearInterval(interval);
-        setLoading(false);
+        setTripsLoading(false);
       });
 
     // Flights and hotels load independently — won't block the main results
@@ -212,7 +200,6 @@ export default function ResultsPage() {
     }
 
     return () => {
-      clearInterval(interval);
       clearTimeout(generateTimeout);
       clearTimeout(flightsTimeout);
       clearTimeout(hotelsTimeout);
@@ -230,84 +217,11 @@ export default function ResultsPage() {
     (prefs as { destination?: string })?.destination ||
     "your destination";
 
-  /* ─── Loading State ─── */
-  if (loading) {
+  /* ─── Initial load ─── */
+  if (!pageReady) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          {/* Animated orb — primary gradient with blur */}
-          <div className="relative w-24 h-24 mx-auto mb-10">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-teal-400 opacity-20 blur-xl animate-pulse" />
-            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-primary to-teal-400 opacity-40 blur-md" />
-            <div className="absolute inset-4 rounded-full bg-surface flex items-center justify-center">
-              <motion.span
-                key={loadingPhase}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="font-headline font-extrabold text-primary text-lg"
-              >
-                {loadingPhase + 1}
-              </motion.span>
-            </div>
-          </div>
-
-          <h2 className="font-headline text-2xl font-extrabold text-on-surface mb-3">
-            Planning your trip...
-          </h2>
-          <motion.p
-            key={loadingPhase}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-on-surface-variant font-body"
-          >
-            {phases[loadingPhase]}
-          </motion.p>
-
-          {/* Progress dots */}
-          <div className="flex gap-2 justify-center mt-6">
-            {phases.map((_, i) => (
-              <div
-                key={i}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  i <= loadingPhase ? "bg-primary w-6" : "bg-outline-variant/30 w-2"
-                }`}
-              />
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  /* ─── Error State ─── */
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
-            <span className="material-symbols-outlined text-red-500 text-2xl">error</span>
-          </div>
-          <p className="font-headline text-2xl font-extrabold text-on-surface mb-3">Something went wrong</p>
-          <p className="text-on-surface-variant font-body mb-6">{error}</p>
-          <div className="flex gap-3 justify-center">
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-primary-gradient px-6 py-3 rounded-full font-extrabold font-headline"
-            >
-              Try again
-            </button>
-            <Link
-              href="/quiz"
-              className="px-6 py-3 rounded-full border border-outline-variant text-on-surface font-bold font-headline hover:bg-surface transition-colors"
-            >
-              Edit quiz
-            </Link>
-          </div>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -485,9 +399,59 @@ export default function ResultsPage() {
             </div>
             <div>
               <h2 className="font-headline text-xl font-bold text-on-surface">Full itineraries</h2>
-              <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">AI-generated day-by-day plans</p>
+              <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                {tripsLoading ? "Walter is building your plans..." : "AI-generated day-by-day plans"}
+              </p>
             </div>
           </div>
+
+          {/* Error state — inline, not full page */}
+          {error && (
+            <div className="card-3d rounded-[2rem] p-8 text-center mb-6">
+              <span className="material-symbols-outlined text-red-500 text-3xl mb-3 block">error</span>
+              <p className="font-headline font-bold text-on-surface mb-2">Generation failed</p>
+              <p className="text-on-surface-variant font-body text-sm mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="btn-primary-gradient px-6 py-3 rounded-full text-white font-bold font-headline text-sm"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
+          {/* Skeleton loaders while generating */}
+          {tripsLoading && !error && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="card-3d rounded-[2.5rem] overflow-hidden animate-pulse">
+                  <div className="h-16 bg-surface-container-low" />
+                  <div className="p-6 space-y-4">
+                    <div className="h-6 bg-surface-container-low rounded-lg w-3/4" />
+                    <div className="h-4 bg-surface-container-low rounded-lg w-full" />
+                    <div className="h-4 bg-surface-container-low rounded-lg w-2/3" />
+                    <div className="space-y-2.5 mt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-full bg-surface-container-low" />
+                        <div className="h-3 bg-surface-container-low rounded w-1/2" />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-full bg-surface-container-low" />
+                        <div className="h-3 bg-surface-container-low rounded w-2/3" />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-full bg-surface-container-low" />
+                        <div className="h-3 bg-surface-container-low rounded w-1/3" />
+                      </div>
+                    </div>
+                    <div className="h-12 bg-surface-container-low rounded-full mt-6" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Actual trip cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {trips.map((trip, i) => {
               const config = tierConfig[trip.tier] || tierConfig.balanced;
