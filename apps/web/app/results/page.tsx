@@ -112,16 +112,27 @@ export default function ResultsPage() {
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
     const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
 
-    // Core: generate trips via streaming endpoint
+    // Core: generate trips
     fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(quizData),
       signal: generateController.signal,
     })
-      .then((r) => r.json())
-      .then((data: GenerateResult) => {
+      .then(async (r) => {
         clearTimeout(generateTimeout);
+        const text = await r.text();
+        if (!r.ok) {
+          throw new Error(`Server error ${r.status}: ${text.slice(0, 200)}`);
+        }
+        let data: GenerateResult;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          const match = text.match(/\{[\s\S]*\}/);
+          if (!match) throw new Error(`Invalid response: ${text.slice(0, 200)}`);
+          data = JSON.parse(match[0]);
+        }
         if (data.error) throw new Error(data.error);
         setTrips(data.trips || []);
         localStorage.setItem("walter_trips", JSON.stringify(data));
@@ -129,7 +140,7 @@ export default function ResultsPage() {
       .catch((err) => {
         clearTimeout(generateTimeout);
         console.error("[generate]", err);
-        setError("Couldn't generate your trip. Please try again.");
+        setError(err?.message || "Couldn't generate your trip. Please try again.");
       })
       .finally(() => {
         clearInterval(interval);

@@ -9,9 +9,10 @@ export async function POST(req: NextRequest) {
     const result = await generateTrips(quizData);
     return NextResponse.json(result);
   } catch (err) {
-    console.error("[/api/generate]", err);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[/api/generate]", message);
     return NextResponse.json(
-      { error: "Trip generation failed. Check your API keys." },
+      { error: `Trip generation failed: ${message}` },
       { status: 500 }
     );
   }
