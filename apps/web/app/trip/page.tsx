@@ -195,12 +195,12 @@ function TripDetailPage() {
     const items: MapItem[] = [];
     for (const day of trip.days) {
       for (const item of day.items) {
-        if (item.locationLat != null && item.locationLng != null) {
+        if (item.locationName) {
           items.push({
             title: item.title,
             locationName: item.locationName,
-            locationLat: item.locationLat,
-            locationLng: item.locationLng,
+            locationLat: item.locationLat ?? null,
+            locationLng: item.locationLng ?? null,
           });
         }
       }
@@ -535,7 +535,7 @@ function TripDetailPage() {
                   Route Explorer
                 </h3>
               </div>
-              <TripMap items={mapItems} />
+              <TripMap items={mapItems} destination={trip.destination} />
             </motion.div>
 
             {/* Travel Logistics */}
