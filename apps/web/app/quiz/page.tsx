@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuizStore } from "@/lib/stores/quizStore";
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import Step1WhereWhen from "@/components/quiz/Step1WhereWhen";
 import Step3Travelers from "@/components/quiz/Step3Travelers";
 import Step4Budget from "@/components/quiz/Step4Budget";
@@ -35,6 +36,7 @@ export default function QuizPage() {
   const isLastStep = currentStep === 7;
 
   const handleGenerate = () => {
+    useTripCartStore.getState().clearCart();
     localStorage.setItem(
       "walter_prefs",
       JSON.stringify({

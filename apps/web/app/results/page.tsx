@@ -22,6 +22,9 @@ export default function ResultsPage() {
   const [topEvents, setTopEvents] = useState<ScoredEvent[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(true);
+  const [flightsLoading, setFlightsLoading] = useState(true);
+  const [hotelsLoading, setHotelsLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
   const [pageReady, setPageReady] = useState(false);
 
@@ -99,7 +102,12 @@ export default function ResultsPage() {
         .catch((err) => {
           clearTimeout(flightsTimeout);
           console.warn("[flights]", err);
+        })
+        .finally(() => {
+          setFlightsLoading(false);
         });
+    } else {
+      setFlightsLoading(false);
     }
 
     // Hotels
@@ -118,7 +126,12 @@ export default function ResultsPage() {
         .catch((err) => {
           clearTimeout(hotelsTimeout);
           console.warn("[hotels]", err);
+        })
+        .finally(() => {
+          setHotelsLoading(false);
         });
+    } else {
+      setHotelsLoading(false);
     }
 
     // Events
@@ -145,7 +158,12 @@ export default function ResultsPage() {
         .catch((err) => {
           clearTimeout(eventsTimeout);
           console.warn("[events]", err);
+        })
+        .finally(() => {
+          setEventsLoading(false);
         });
+    } else {
+      setEventsLoading(false);
     }
 
     return () => {
@@ -234,7 +252,7 @@ export default function ResultsPage() {
           {/* --- Main Content --- */}
           <main className="pb-20 lg:pb-0">
             {/* --- Flights --- */}
-            {flights.length > 0 && (
+            {(flightsLoading || flights.length > 0) && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -248,28 +266,60 @@ export default function ResultsPage() {
                     </div>
                     <div>
                       <h2 className="font-headline text-xl font-bold text-on-surface">Flights</h2>
-                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">Live prices via Skyscanner</p>
+                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                        {flightsLoading ? "Searching..." : "Live prices via Skyscanner"}
+                      </p>
                     </div>
                   </div>
-                  <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{flights.length} found</span>
+                  {!flightsLoading && (
+                    <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{flights.length} found</span>
+                  )}
                 </div>
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                  {flights.map((f, i) => (
-                    <motion.div
-                      key={f.id}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
-                    >
-                      <FlightCard flight={f} cheapest={cheapestFlight?.id === f.id} />
-                    </motion.div>
-                  ))}
-                </div>
+
+                {flightsLoading && (
+                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] p-6 animate-pulse">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-8 h-8 rounded-lg bg-surface-container-low" />
+                          <div className="h-4 bg-surface-container-low rounded-lg w-24" />
+                        </div>
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <div className="h-5 bg-surface-container-low rounded-lg w-12 mb-1" />
+                            <div className="h-3 bg-surface-container-low rounded-lg w-16" />
+                          </div>
+                          <div className="h-3 bg-surface-container-low rounded-lg w-16" />
+                          <div>
+                            <div className="h-5 bg-surface-container-low rounded-lg w-12 mb-1" />
+                            <div className="h-3 bg-surface-container-low rounded-lg w-16" />
+                          </div>
+                        </div>
+                        <div className="h-6 bg-surface-container-low rounded-full w-20 mt-4" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {!flightsLoading && flights.length > 0 && (
+                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
+                    {flights.map((f, i) => (
+                      <motion.div
+                        key={f.id}
+                        initial={{ opacity: 0, x: 40 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
+                      >
+                        <FlightCard flight={f} cheapest={cheapestFlight?.id === f.id} />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </motion.section>
             )}
 
             {/* --- Stays --- */}
-            {hotels.length > 0 && (
+            {(hotelsLoading || hotels.length > 0) && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -283,28 +333,50 @@ export default function ResultsPage() {
                     </div>
                     <div>
                       <h2 className="font-headline text-xl font-bold text-on-surface">Stays</h2>
-                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">Availability from Booking.com</p>
+                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                        {hotelsLoading ? "Searching..." : "Availability from Booking.com"}
+                      </p>
                     </div>
                   </div>
-                  <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{hotels.length} found</span>
+                  {!hotelsLoading && (
+                    <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{hotels.length} found</span>
+                  )}
                 </div>
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                  {hotels.map((h, i) => (
-                    <motion.div
-                      key={h.id}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
-                    >
-                      <HotelCard hotel={h} bestValue={bestValueHotel?.id === h.id} />
-                    </motion.div>
-                  ))}
-                </div>
+
+                {hotelsLoading && (
+                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden animate-pulse">
+                        <div className="w-full h-40 bg-surface-container-low" />
+                        <div className="p-5">
+                          <div className="h-5 bg-surface-container-low rounded-lg w-3/4 mb-3" />
+                          <div className="h-4 bg-surface-container-low rounded-lg w-1/2 mb-3" />
+                          <div className="h-6 bg-surface-container-low rounded-full w-24 mt-3" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {!hotelsLoading && hotels.length > 0 && (
+                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
+                    {hotels.map((h, i) => (
+                      <motion.div
+                        key={h.id}
+                        initial={{ opacity: 0, x: 40 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
+                      >
+                        <HotelCard hotel={h} bestValue={bestValueHotel?.id === h.id} />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </motion.section>
             )}
 
             {/* --- Events --- */}
-            {allEvents.length > 0 && (
+            {(eventsLoading || allEvents.length > 0) && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -318,25 +390,47 @@ export default function ResultsPage() {
                     </div>
                     <div>
                       <h2 className="font-headline text-xl font-bold text-on-surface">Live Events & Experiences</h2>
-                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">Ticketmaster events during your trip</p>
+                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                        {eventsLoading ? "Searching..." : "Ticketmaster events during your trip"}
+                      </p>
                     </div>
                   </div>
-                  <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">
-                    {allEvents.length} found
-                  </span>
+                  {!eventsLoading && (
+                    <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">
+                      {allEvents.length} found
+                    </span>
+                  )}
                 </div>
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                  {allEvents.map((ev, i) => (
-                    <motion.div
-                      key={ev.id}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
-                    >
-                      <EventCard event={ev} />
-                    </motion.div>
-                  ))}
-                </div>
+
+                {eventsLoading && (
+                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden animate-pulse">
+                        <div className="w-full h-40 bg-surface-container-low" />
+                        <div className="p-5">
+                          <div className="h-5 bg-surface-container-low rounded-lg w-3/4 mb-3" />
+                          <div className="h-4 bg-surface-container-low rounded-lg w-1/2 mb-2" />
+                          <div className="h-3 bg-surface-container-low rounded-lg w-2/3" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {!eventsLoading && allEvents.length > 0 && (
+                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
+                    {allEvents.map((ev, i) => (
+                      <motion.div
+                        key={ev.id}
+                        initial={{ opacity: 0, x: 40 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
+                      >
+                        <EventCard event={ev} />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </motion.section>
             )}
 

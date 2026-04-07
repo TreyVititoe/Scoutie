@@ -53,6 +53,22 @@ export const useTripCartStore = create<TripCartState & TripCartActions>()(
   })
 );
 
+// Hydrate from localStorage (browser only, no SSR)
+if (typeof window !== "undefined") {
+  try {
+    const stored = localStorage.getItem("walter_cart");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.items) useTripCartStore.setState({ items: parsed.items });
+    }
+  } catch {}
+
+  // Auto-save on changes
+  useTripCartStore.subscribe((state) => {
+    localStorage.setItem("walter_cart", JSON.stringify({ items: state.items }));
+  });
+}
+
 // Computed selectors
 export const selectTotalPrice = (state: TripCartState) =>
   state.items.reduce((sum, item) => sum + (item.price ?? 0), 0);

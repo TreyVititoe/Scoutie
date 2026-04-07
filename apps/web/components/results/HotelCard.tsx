@@ -39,8 +39,8 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
         {hotel.image ? (
           <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-purple-50">
-            <span className="material-symbols-outlined text-purple-300 text-3xl">hotel</span>
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-100">
+            <span className="material-symbols-outlined text-purple-300/60 text-4xl">hotel</span>
           </div>
         )}
         {bestValue && (
