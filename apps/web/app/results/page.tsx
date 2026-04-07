@@ -193,7 +193,7 @@ export default function ResultsPage() {
     <div className="min-h-screen bg-background">
       {/* --- Header --- */}
       <header className="fixed top-0 left-0 right-0 z-20 bg-white/70 backdrop-blur-xl shadow-xl shadow-teal-900/5">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="font-headline font-black italic text-2xl text-teal-700">
             Walter
           </Link>
@@ -207,7 +207,7 @@ export default function ResultsPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 pt-28 pb-10">
+      <div className="max-w-screen-2xl mx-auto px-4 lg:px-8 pt-28 pb-10">
         {/* --- Page Header --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -253,7 +253,7 @@ export default function ResultsPage() {
                   </div>
                   <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{flights.length} found</span>
                 </div>
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
                   {flights.map((f, i) => (
                     <motion.div
                       key={f.id}
@@ -288,7 +288,7 @@ export default function ResultsPage() {
                   </div>
                   <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{hotels.length} found</span>
                 </div>
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
                   {hotels.map((h, i) => (
                     <motion.div
                       key={h.id}
@@ -325,7 +325,7 @@ export default function ResultsPage() {
                     {allEvents.length} found
                   </span>
                 </div>
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
                   {allEvents.map((ev, i) => (
                     <motion.div
                       key={ev.id}
@@ -368,7 +368,7 @@ export default function ResultsPage() {
 
               {/* Skeleton loaders */}
               {suggestionsLoading && (
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
                   {[0, 1, 2, 3].map((i) => (
                     <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] p-6 animate-pulse">
                       <div className="flex items-center gap-3 mb-4">
@@ -386,7 +386,7 @@ export default function ResultsPage() {
 
               {/* Suggestion cards */}
               {!suggestionsLoading && suggestions.length > 0 && (
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
                   {suggestions.map((s, i) => (
                     <motion.div
                       key={s.id}
