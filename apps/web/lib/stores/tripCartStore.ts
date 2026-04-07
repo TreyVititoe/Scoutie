@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 
 export type CartItemType =
   | "flight"
@@ -34,40 +33,24 @@ export interface TripCartActions {
 }
 
 export const useTripCartStore = create<TripCartState & TripCartActions>()(
-  persist(
-    (set, get) => ({
-      items: [],
+  (set, get) => ({
+    items: [],
 
-      addItem: (item) =>
-        set((state) => {
-          if (state.items.some((i) => i.id === item.id)) return state;
-          return { items: [...state.items, item] };
-        }),
-
-      removeItem: (id) =>
-        set((state) => ({
-          items: state.items.filter((i) => i.id !== id),
-        })),
-
-      isInCart: (id) => get().items.some((i) => i.id === id),
-
-      clearCart: () => set({ items: [] }),
-    }),
-    {
-      name: "walter_cart",
-      storage: createJSONStorage(() => {
-        if (typeof window === "undefined") {
-          // SSR fallback — no-op storage
-          return {
-            getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {},
-          };
-        }
-        return localStorage;
+    addItem: (item) =>
+      set((state) => {
+        if (state.items.some((i) => i.id === item.id)) return state;
+        return { items: [...state.items, item] };
       }),
-    }
-  )
+
+    removeItem: (id) =>
+      set((state) => ({
+        items: state.items.filter((i) => i.id !== id),
+      })),
+
+    isInCart: (id) => get().items.some((i) => i.id === id),
+
+    clearCart: () => set({ items: [] }),
+  })
 );
 
 // Computed selectors
