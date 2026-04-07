@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ScoredEvent } from "@/lib/types";
-import { trackAndOpen } from "@/lib/affiliate";
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return "Date TBD";
@@ -19,12 +19,26 @@ function formatTime(timeStr: string | null): string {
 }
 
 export default function EventCard({ event }: { event: ScoredEvent }) {
-  const handleGetTickets = () => {
-    trackAndOpen({
-      provider: "ticketmaster",
-      itemType: "event",
-      destinationUrl: event.url,
-    });
+  const { addItem, removeItem, isInCart } = useTripCartStore();
+  const added = isInCart(event.id);
+
+  const handleToggle = () => {
+    if (added) {
+      removeItem(event.id);
+    } else {
+      addItem({
+        id: event.id,
+        type: "event",
+        title: event.name,
+        subtitle: event.venueName,
+        price: event.priceMin,
+        image: event.image,
+        bookingUrl: event.url,
+        provider: "ticketmaster",
+        date: event.date,
+        meta: event as unknown as Record<string, unknown>,
+      });
+    }
   };
 
   return (
@@ -75,7 +89,7 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
           </p>
         </div>
 
-        {/* Price & CTA */}
+        {/* Price & Add to Trip */}
         <div className="flex items-center justify-between pt-4 border-t border-outline-variant/15">
           <div>
             {event.priceMin ? (
@@ -93,12 +107,19 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
             )}
           </div>
           <motion.button
-            onClick={handleGetTickets}
+            onClick={handleToggle}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="btn-primary-gradient rounded-full px-5 py-2 text-sm font-bold font-headline"
+            className={`rounded-full px-5 py-2 text-sm font-bold font-headline flex items-center gap-1.5 transition-colors ${
+              added
+                ? "bg-primary text-white"
+                : "border border-primary text-primary hover:bg-primary/5"
+            }`}
           >
-            Get Tickets
+            <span className="material-symbols-outlined text-[16px]">
+              {added ? "check" : "add"}
+            </span>
+            {added ? "Added" : "Add to Trip"}
           </motion.button>
         </div>
       </div>

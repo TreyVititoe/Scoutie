@@ -2,15 +2,27 @@
 
 import { motion } from "framer-motion";
 import type { HotelResult } from "@/lib/services/hotels";
-import { trackAndOpen } from "@/lib/affiliate";
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; bestValue: boolean }) {
-  const handleBook = () => {
-    if (hotel.bookingUrl) {
-      trackAndOpen({
+  const { addItem, removeItem, isInCart } = useTripCartStore();
+  const added = isInCart(hotel.id);
+
+  const handleToggle = () => {
+    if (added) {
+      removeItem(hotel.id);
+    } else {
+      addItem({
+        id: hotel.id,
+        type: "hotel",
+        title: hotel.name,
+        subtitle: hotel.neighborhood || "",
+        price: hotel.totalPrice,
+        image: hotel.image,
+        bookingUrl: hotel.bookingUrl,
         provider: "booking",
-        itemType: "hotel",
-        destinationUrl: hotel.bookingUrl,
+        date: null,
+        meta: hotel as unknown as Record<string, unknown>,
       });
     }
   };
@@ -60,7 +72,7 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
           )}
         </div>
 
-        {/* Price & Book */}
+        {/* Price & Add to Trip */}
         <div className="flex items-end justify-between pt-4 border-t border-outline-variant/15">
           <div>
             <motion.p
@@ -76,12 +88,19 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
             </p>
           </div>
           <motion.button
-            onClick={handleBook}
+            onClick={handleToggle}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="rounded-full bg-on-background text-white px-5 py-2 text-sm font-bold font-headline hover:opacity-90 transition-opacity"
+            className={`rounded-full px-5 py-2 text-sm font-bold font-headline flex items-center gap-1.5 transition-colors ${
+              added
+                ? "bg-primary text-white"
+                : "border border-primary text-primary hover:bg-primary/5"
+            }`}
           >
-            Book
+            <span className="material-symbols-outlined text-[16px]">
+              {added ? "check" : "add"}
+            </span>
+            {added ? "Added" : "Add to Trip"}
           </motion.button>
         </div>
       </div>

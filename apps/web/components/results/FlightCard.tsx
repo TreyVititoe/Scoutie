@@ -2,15 +2,29 @@
 
 import { motion } from "framer-motion";
 import type { FlightResult } from "@/lib/services/flights";
-import { trackAndOpen } from "@/lib/affiliate";
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 export default function FlightCard({ flight, cheapest }: { flight: FlightResult; cheapest: boolean }) {
-  const handleBook = () => {
-    if (flight.bookingUrl) {
-      trackAndOpen({
-        provider: "skyscanner",
-        itemType: "flight",
-        destinationUrl: flight.bookingUrl,
+  const { addItem, removeItem, isInCart } = useTripCartStore();
+  const added = isInCart(flight.id);
+
+  const stopsLabel = flight.stops === 0 ? "nonstop" : `${flight.stops} stop${flight.stops > 1 ? "s" : ""}`;
+
+  const handleToggle = () => {
+    if (added) {
+      removeItem(flight.id);
+    } else {
+      addItem({
+        id: flight.id,
+        type: "flight",
+        title: `${flight.airline} ${flight.departure} -> ${flight.arrival}`,
+        subtitle: `${flight.departTime} | ${flight.duration} | ${stopsLabel}`,
+        price: flight.price,
+        image: flight.airlineLogo,
+        bookingUrl: flight.bookingUrl,
+        provider: "google_flights",
+        date: null,
+        meta: flight as unknown as Record<string, unknown>,
       });
     }
   };
@@ -69,7 +83,7 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
         </div>
       </div>
 
-      {/* Price & Book */}
+      {/* Price & Add to Trip */}
       <div className="flex items-center justify-between pt-4 border-t border-outline-variant/15">
         <motion.p
           initial={{ scale: 0.9, opacity: 0 }}
@@ -80,12 +94,19 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
           ${flight.price}
         </motion.p>
         <motion.button
-          onClick={handleBook}
+          onClick={handleToggle}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          className="btn-primary-gradient rounded-full px-5 py-2 text-sm font-bold font-headline"
+          className={`rounded-full px-5 py-2 text-sm font-bold font-headline flex items-center gap-1.5 transition-colors ${
+            added
+              ? "bg-primary text-white"
+              : "border border-primary text-primary hover:bg-primary/5"
+          }`}
         >
-          Book
+          <span className="material-symbols-outlined text-[16px]">
+            {added ? "check" : "add"}
+          </span>
+          {added ? "Added" : "Add to Trip"}
         </motion.button>
       </div>
     </motion.div>

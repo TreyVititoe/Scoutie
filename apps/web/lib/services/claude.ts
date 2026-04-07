@@ -218,6 +218,62 @@ Reply with ONLY a JSON array of strings, no explanation. Example: ["jazz", "come
 }
 
 /**
+ * Generate curated activity/restaurant/site suggestions for a destination.
+ */
+export type SuggestionsInput = {
+  destination: string;
+  startDate: string;
+  endDate: string;
+  interests: string[];
+  travelers: number;
+  travelerType: string;
+};
+
+const SUGGESTIONS_SYSTEM_PROMPT = `You are Walter, a travel curator. Generate ONLY the absolute best, most unmissable recommendations for a destination. Quality over quantity. Each suggestion must be a real, specific place.
+
+Return raw JSON only, no markdown:
+{"suggestions": [
+  {
+    "type": "activity" | "restaurant" | "site",
+    "title": "Specific real name",
+    "description": "One compelling sentence, under 15 words",
+    "estimatedCost": number (per person, USD),
+    "locationName": "Neighborhood or area",
+    "bestTime": "morning" | "afternoon" | "evening" | "anytime",
+    "bookingSearchQuery": "what to Google to book this"
+  }
+]}
+
+Return 8-10 suggestions max. Mix of activities (3-4), restaurants (2-3), and sites (2-3).`;
+
+export async function generateSuggestions(input: SuggestionsInput) {
+  const { destination, startDate, endDate, interests, travelers, travelerType } = input;
+
+  const userPrompt = `Curate the best suggestions for this trip:
+
+DESTINATION: ${destination}
+DATES: ${startDate} to ${endDate}
+TRAVELERS: ${travelers} ${travelerType}
+INTERESTS: ${interests.join(", ") || "general sightseeing"}
+
+Give me 8-10 top picks — the absolute must-dos. Mix of activities, restaurants, and sites/landmarks.`;
+
+  const message = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 4096,
+    system: SUGGESTIONS_SYSTEM_PROMPT,
+    messages: [{ role: "user", content: userPrompt }],
+  });
+
+  if (message.stop_reason === "max_tokens") {
+    throw new Error("Response truncated");
+  }
+
+  const text = message.content[0].type === "text" ? message.content[0].text : "";
+  return parseClaudeJson(text);
+}
+
+/**
  * Generate a personalized AI summary of the trip results.
  */
 export async function generateTripSummary(params: {
