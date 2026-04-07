@@ -3,33 +3,26 @@
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuizStore } from "@/lib/stores/quizStore";
-import Step1PlanningMode from "@/components/quiz/Step1PlanningMode";
-import Step2Destination from "@/components/quiz/Step2Destination";
+import Step1WhereWhen from "@/components/quiz/Step1WhereWhen";
 import Step3Travelers from "@/components/quiz/Step3Travelers";
 import Step4Budget from "@/components/quiz/Step4Budget";
-import Step5Flights from "@/components/quiz/Step5Flights";
-import Step6Accommodation from "@/components/quiz/Step6Accommodation";
-import Step7Activities from "@/components/quiz/Step7Activities";
-import Step8Pace from "@/components/quiz/Step8Pace";
-import Step9Dining from "@/components/quiz/Step9Dining";
-import Step10Review from "@/components/quiz/Step10Review";
+import Step4Flights from "@/components/quiz/Step4Flights";
+import Step5Accommodation from "@/components/quiz/Step5Accommodation";
+import Step6Activities from "@/components/quiz/Step6Activities";
+import Step7Review from "@/components/quiz/Step7Review";
 
 const steps: Record<number, React.ComponentType> = {
-  1: Step1PlanningMode,
-  2: Step2Destination,
-  3: Step3Travelers,
-  4: Step4Budget,
-  5: Step5Flights,
-  6: Step6Accommodation,
-  7: Step7Activities,
-  8: Step8Pace,
-  9: Step9Dining,
-  10: Step10Review,
+  1: Step1WhereWhen,
+  2: Step3Travelers,
+  3: Step4Budget,
+  4: Step4Flights,
+  5: Step5Accommodation,
+  6: Step6Activities,
+  7: Step7Review,
 };
 
 const stepLabels = [
-  "Mode", "Where", "Who", "Budget", "Flights",
-  "Stay", "Activities", "Pace", "Dining", "Review",
+  "Trip", "Travelers", "Budget", "Flights", "Stay", "Interests", "Review",
 ];
 
 export default function QuizPage() {
@@ -39,13 +32,12 @@ export default function QuizPage() {
 
   const StepComponent = steps[currentStep];
   const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === 10;
+  const isLastStep = currentStep === 7;
 
   const handleGenerate = () => {
     localStorage.setItem(
       "walter_prefs",
       JSON.stringify({
-        planningMode: store.planningMode,
         destinations: store.destinations,
         surpriseMe: store.surpriseMe,
         startDate: store.startDate,
@@ -59,16 +51,15 @@ export default function QuizPage() {
         budgetMode: store.budgetMode,
         budgetAmount: store.budgetAmount,
         budgetCurrency: store.budgetCurrency,
+        budgetSkipped: store.budgetSkipped,
         departureCity: store.departureCity,
         flightClass: store.flightClass,
         flightPriority: store.flightPriority,
         accommodationTypes: store.accommodationTypes,
         accommodationMustHaves: store.accommodationMustHaves,
         locationPreference: store.locationPreference,
+        noAccommodation: store.noAccommodation,
         activityInterests: store.activityInterests,
-        pace: store.pace,
-        diningPreference: store.diningPreference,
-        dietaryRestrictions: store.dietaryRestrictions,
         destination: store.destinations[0] || "Surprise me",
         travelers: store.travelersCount,
         budget: store.budgetAmount || 2000,

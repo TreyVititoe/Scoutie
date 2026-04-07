@@ -27,12 +27,12 @@ export type BudgetMode = "total_trip" | "per_day";
 export interface QuizState {
   // Step tracking
   currentStep: number;
-  totalSteps: 10;
+  totalSteps: 7;
 
-  // Step 1: Planning mode
+  // Legacy — no longer drives UI, kept for backward compat
   planningMode: PlanningMode | null;
 
-  // Step 2: Destination or dates
+  // Step 1: Where & When
   destinations: string[];
   surpriseMe: boolean;
   startDate: string | null;
@@ -40,42 +40,40 @@ export interface QuizState {
   flexibleDates: boolean;
   tripDurationDays: number | null;
 
-  // Step 3: Travelers
+  // Step 2: Travelers
   travelersCount: number;
   travelerType: TravelerType | null;
   childrenCount: number;
   childrenAges: number[];
   accessibilityNeeds: string[];
 
-  // Step 4: Budget
+  // Step 3: Budget
   budgetMode: BudgetMode;
   budgetAmount: number | null;
   budgetCurrency: string;
   budgetFlexible: boolean;
+  budgetSkipped: boolean;
 
-  // Step 5: Flights
+  // Step 4: Flights
   departureCity: string;
   flightClass: FlightClass;
   flightPriority: FlightPriority;
   preferredAirlines: string[];
   carryOnOnly: boolean;
 
-  // Step 6: Accommodation
+  // Step 5: Accommodation (Stay)
   accommodationTypes: AccommodationType[];
   accommodationMustHaves: string[];
   locationPreference: string;
+  noAccommodation: boolean;
 
-  // Step 7: Activities
+  // Step 6: Interests (Activities)
   activityInterests: ActivityInterest[];
 
-  // Step 8: Pace
+  // Step 7: Review (no extra state needed — legacy fields kept for compat)
   pace: TripPace | null;
-
-  // Step 9: Dining
   diningPreference: DiningPreference | null;
   dietaryRestrictions: string[];
-
-  // Step 10: Review (no extra state needed)
 }
 
 export interface QuizActions {
@@ -98,6 +96,7 @@ export interface QuizActions {
   setBudgetAmount: (amount: number | null) => void;
   setBudgetCurrency: (currency: string) => void;
   setBudgetFlexible: (val: boolean) => void;
+  setBudgetSkipped: (val: boolean) => void;
   setDepartureCity: (city: string) => void;
   setFlightClass: (cls: FlightClass) => void;
   setFlightPriority: (priority: FlightPriority) => void;
@@ -106,6 +105,7 @@ export interface QuizActions {
   setAccommodationTypes: (types: AccommodationType[]) => void;
   setAccommodationMustHaves: (mustHaves: string[]) => void;
   setLocationPreference: (pref: string) => void;
+  setNoAccommodation: (val: boolean) => void;
   toggleActivityInterest: (interest: ActivityInterest) => void;
   setPace: (pace: TripPace) => void;
   setDiningPreference: (pref: DiningPreference) => void;
@@ -115,7 +115,7 @@ export interface QuizActions {
 
 const initialState: QuizState = {
   currentStep: 1,
-  totalSteps: 10,
+  totalSteps: 7,
   planningMode: null,
   destinations: [],
   surpriseMe: false,
@@ -132,6 +132,7 @@ const initialState: QuizState = {
   budgetAmount: null,
   budgetCurrency: "USD",
   budgetFlexible: false,
+  budgetSkipped: false,
   departureCity: "",
   flightClass: "economy",
   flightPriority: "best_value",
@@ -140,6 +141,7 @@ const initialState: QuizState = {
   accommodationTypes: [],
   accommodationMustHaves: [],
   locationPreference: "",
+  noAccommodation: false,
   activityInterests: [],
   pace: null,
   diningPreference: null,
@@ -152,7 +154,7 @@ export const useQuizStore = create<QuizState & QuizActions>()(
       ...initialState,
 
       setStep: (step) => set({ currentStep: step }),
-      nextStep: () => set((s) => ({ currentStep: Math.min(s.currentStep + 1, 10) })),
+      nextStep: () => set((s) => ({ currentStep: Math.min(s.currentStep + 1, 7) })),
       prevStep: () => set((s) => ({ currentStep: Math.max(s.currentStep - 1, 1) })),
 
       setPlanningMode: (planningMode) => set({ planningMode }),
@@ -173,6 +175,7 @@ export const useQuizStore = create<QuizState & QuizActions>()(
       setBudgetAmount: (budgetAmount) => set({ budgetAmount }),
       setBudgetCurrency: (budgetCurrency) => set({ budgetCurrency }),
       setBudgetFlexible: (budgetFlexible) => set({ budgetFlexible }),
+      setBudgetSkipped: (budgetSkipped) => set({ budgetSkipped }),
 
       setDepartureCity: (departureCity) => set({ departureCity }),
       setFlightClass: (flightClass) => set({ flightClass }),
@@ -183,6 +186,7 @@ export const useQuizStore = create<QuizState & QuizActions>()(
       setAccommodationTypes: (accommodationTypes) => set({ accommodationTypes }),
       setAccommodationMustHaves: (accommodationMustHaves) => set({ accommodationMustHaves }),
       setLocationPreference: (locationPreference) => set({ locationPreference }),
+      setNoAccommodation: (noAccommodation) => set({ noAccommodation }),
 
       toggleActivityInterest: (interest) =>
         set((s) => ({

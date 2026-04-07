@@ -3,16 +3,21 @@
 import { useQuizStore, TravelerType } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
-const travelerTypes: { type: TravelerType; label: string; icon: string }[] = [
-  { type: "solo", label: "Solo", icon: "person" },
-  { type: "couple", label: "Couple", icon: "favorite" },
-  { type: "family", label: "Family", icon: "family_restroom" },
-  { type: "friends", label: "Friends", icon: "group" },
-  { type: "business", label: "Business", icon: "work" },
+const travelerTypes: { type: TravelerType; label: string; icon: string; defaultCount: number }[] = [
+  { type: "solo", label: "Solo", icon: "person", defaultCount: 1 },
+  { type: "couple", label: "Couple", icon: "favorite", defaultCount: 2 },
+  { type: "family", label: "Family", icon: "family_restroom", defaultCount: 3 },
+  { type: "friends", label: "Friends", icon: "group", defaultCount: 3 },
+  { type: "business", label: "Business", icon: "work", defaultCount: 1 },
 ];
 
 export default function Step3Travelers() {
   const store = useQuizStore();
+
+  const handleTypeSelect = (t: (typeof travelerTypes)[number]) => {
+    store.setTravelerType(t.type);
+    store.setTravelersCount(t.defaultCount);
+  };
 
   return (
     <StepWrapper
@@ -27,7 +32,7 @@ export default function Step3Travelers() {
             return (
               <button
                 key={t.type}
-                onClick={() => store.setTravelerType(t.type)}
+                onClick={() => handleTypeSelect(t)}
                 className={`inner-card-3d flex flex-col items-center gap-2 p-5 rounded-2xl border-2 font-body transition-all duration-300 cursor-pointer ${
                   isSelected
                     ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
