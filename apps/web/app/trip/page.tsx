@@ -1,12 +1,17 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { createClient } from "@/lib/supabase/client";
-import RefinementChat from "@/components/trip/RefinementChat";
+import {
+  useTripCartStore,
+  selectTotalPrice,
+  getItemsByType,
+  type CartItem,
+  type CartItemType,
+} from "@/lib/stores/tripCartStore";
+import { trackAndOpen } from "@/lib/affiliate";
 import PackingList from "@/components/trip/PackingList";
 import type { MapItem } from "@/components/trip/TripMap";
 
@@ -19,69 +24,30 @@ const TripMap = dynamic(() => import("@/components/trip/TripMap"), {
   ),
 });
 
-type TripItem = {
-  itemType: string;
-  title: string;
-  description: string;
-  startTime: string | null;
-  endTime: string | null;
-  durationMinutes: number | null;
-  estimatedCost: number;
-  locationName: string;
-  locationLat: number | null;
-  locationLng: number | null;
-  rating: number | null;
-};
-
-type TripDay = {
-  dayNumber: number;
-  title: string;
-  summary?: string;
-  estimatedCost?: number;
-  items: TripItem[];
-};
-
-type Trip = {
-  tier: string;
-  title: string;
-  summary: string;
-  destination: string;
-  totalEstimatedCost: number;
-  days: TripDay[];
-};
-
-const typeIcons: Record<string, string> = {
-  flight: "flight",
-  hotel: "hotel",
-  rental: "directions_car",
-  activity: "hiking",
-  restaurant: "restaurant",
-  event: "event",
-  transport: "commute",
-  note: "sticky_note_2",
+/* ── Section config ── */
+const sectionConfig: Record<
+  string,
+  { label: string; icon: string; ctaLabel: string }
+> = {
+  flight: { label: "Flights", icon: "flight", ctaLabel: "Book Now" },
+  hotel: { label: "Stays", icon: "hotel", ctaLabel: "Book Now" },
+  event: { label: "Events", icon: "confirmation_number", ctaLabel: "Get Tickets" },
+  activity: { label: "Activities & Sites", icon: "hiking", ctaLabel: "Book Now" },
+  site: { label: "Activities & Sites", icon: "hiking", ctaLabel: "Book Now" },
+  restaurant: { label: "Restaurants", icon: "restaurant", ctaLabel: "Reserve" },
 };
 
 const typeColors: Record<string, string> = {
   flight: "bg-teal-50 text-teal-600",
   hotel: "bg-blue-50 text-blue-600",
-  rental: "bg-indigo-50 text-indigo-600",
-  activity: "bg-emerald-50 text-emerald-600",
-  restaurant: "bg-amber-50 text-amber-600",
   event: "bg-rose-50 text-rose-600",
-  transport: "bg-slate-50 text-slate-600",
-  note: "bg-stone-50 text-stone-500",
+  activity: "bg-emerald-50 text-emerald-600",
+  site: "bg-emerald-50 text-emerald-600",
+  restaurant: "bg-amber-50 text-amber-600",
 };
 
-function getTimePeriod(time: string | null): string {
-  if (!time) return "Morning";
-  const hour = parseInt(time.split(":")[0], 10);
-  if (isNaN(hour)) return "Morning";
-  if (hour < 12) return "Morning";
-  if (hour < 17) return "Midday";
-  return "Night";
-}
-
-export default function TripDetailPageWrapper() {
+/* ── Wrapper with Suspense ── */
+export default function TripPageWrapper() {
   return (
     <Suspense
       fallback={
@@ -90,146 +56,174 @@ export default function TripDetailPageWrapper() {
         </div>
       }
     >
-      <TripDetailPage />
+      <TripPage />
     </Suspense>
   );
 }
 
-function TripDetailPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const tier = searchParams.get("tier") || "balanced";
-  const [trip, setTrip] = useState<Trip | null>(null);
-  const [activeDay, setActiveDay] = useState(1);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [shareSlug, setShareSlug] = useState<string | null>(null);
-  const [quizPrefs, setQuizPrefs] = useState<Record<string, unknown>>({});
+/* ── Main trip page ── */
+function TripPage() {
+  const items = useTripCartStore((s) => s.items);
+  const removeItem = useTripCartStore((s) => s.removeItem);
+  const totalPrice = useTripCartStore(selectTotalPrice);
+
+  const [prefs, setPrefs] = useState<Record<string, unknown>>({});
+  const [shareLink, setShareLink] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored =
-      localStorage.getItem("walter_trips") ||
-      localStorage.getItem("scoutie_trips");
-    if (!stored) {
-      router.push("/results");
-      return;
-    }
-    const data = JSON.parse(stored);
-    const trips: Trip[] = data.trips || [];
-    const match = trips.find((t) => t.tier === tier) || trips[0];
-    if (match) setTrip(match);
-
-    const prefs =
-      localStorage.getItem("walter_prefs") ||
-      localStorage.getItem("scoutie_prefs");
-    if (prefs) setQuizPrefs(JSON.parse(prefs));
-  }, [tier, router]);
-
-  const handleSave = async () => {
-    if (!trip || saving) return;
-    setSaving(true);
-
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      localStorage.setItem("walter_save_after_login", tier);
-      router.push("/auth/login");
-      return;
-    }
-
-    try {
-      const storedPrefs = localStorage.getItem("walter_prefs");
-      const quizData = storedPrefs ? JSON.parse(storedPrefs) : {};
-
-      const res = await fetch("/api/trips/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ trip, quizData }),
-      });
-
-      const data = await res.json();
-      if (data.shareSlug) {
-        setSaved(true);
-        setShareSlug(data.shareSlug);
+    const stored = localStorage.getItem("walter_prefs");
+    if (stored) {
+      try {
+        setPrefs(JSON.parse(stored));
+      } catch {
+        /* ignore */
       }
-    } catch (err) {
-      console.error("[save]", err);
-    } finally {
-      setSaving(false);
     }
-  };
+  }, []);
 
-  const handleShare = async () => {
-    if (!shareSlug) return;
-    const url = `${window.location.origin}/shared/${shareSlug}`;
-    await navigator.clipboard.writeText(url);
-  };
+  const destination = (prefs.destination as string) || "";
+  const startDate = (prefs.startDate as string) || "";
+  const endDate = (prefs.endDate as string) || "";
+  const travelers =
+    (prefs.travelersCount as number) || (prefs.travelers as number) || 1;
+  const activities =
+    (prefs.activityInterests as string[]) || (prefs.vibes as string[]) || [];
+  const pace = (prefs.pace as string) || "moderate";
 
-  const handleTripUpdate = useCallback(
-    (updated: Trip) => {
-      setTrip(updated);
-      const stored = localStorage.getItem("walter_trips");
-      if (stored) {
-        const allData = JSON.parse(stored);
-        const trips: Trip[] = allData.trips || [];
-        const idx = trips.findIndex((t) => t.tier === tier);
-        if (idx >= 0) {
-          trips[idx] = updated;
-          localStorage.setItem(
-            "walter_trips",
-            JSON.stringify({ ...allData, trips })
-          );
-        }
-      }
-      setSaved(false);
-      setShareSlug(null);
-    },
-    [tier]
-  );
+  /* Group items by type, merging activity + site */
+  const grouped = useMemo(() => getItemsByType(items), [items]);
 
+  /* Merge activity and site into one section */
+  const sectionOrder: Array<{ key: string; types: CartItemType[] }> = [
+    { key: "flight", types: ["flight"] },
+    { key: "hotel", types: ["hotel"] },
+    { key: "event", types: ["event"] },
+    { key: "activity", types: ["activity", "site"] },
+    { key: "restaurant", types: ["restaurant"] },
+  ];
+
+  const sections = useMemo(() => {
+    return sectionOrder
+      .map((sec) => {
+        const sectionItems = sec.types.flatMap((t) => grouped[t] || []);
+        if (sectionItems.length === 0) return null;
+        const cfg = sectionConfig[sec.key];
+        return { ...cfg, key: sec.key, items: sectionItems };
+      })
+      .filter(Boolean) as Array<{
+      key: string;
+      label: string;
+      icon: string;
+      ctaLabel: string;
+      items: CartItem[];
+    }>;
+  }, [grouped]);
+
+  /* Map items from cart */
   const mapItems: MapItem[] = useMemo(() => {
-    if (!trip) return [];
-    const items: MapItem[] = [];
-    for (const day of trip.days) {
-      for (const item of day.items) {
-        if (item.locationName) {
-          items.push({
-            title: item.title,
-            locationName: item.locationName,
-            locationLat: item.locationLat ?? null,
-            locationLng: item.locationLng ?? null,
-          });
-        }
-      }
-    }
-    return items;
-  }, [trip]);
+    return items
+      .filter((item) => {
+        const loc =
+          (item.meta?.locationName as string) ||
+          item.subtitle ||
+          item.title;
+        return !!loc;
+      })
+      .map((item) => ({
+        title: item.title,
+        locationName:
+          (item.meta?.locationName as string) || item.subtitle || item.title,
+        locationLat: (item.meta?.locationLat as number) ?? null,
+        locationLng: (item.meta?.locationLng as number) ?? null,
+      }));
+  }, [items]);
 
-  if (!trip) {
+  /* Share handler */
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareLink(url);
+      setTimeout(() => setShareLink(null), 2000);
+    } catch {
+      /* fallback */
+    }
+  };
+
+  /* Date formatting */
+  const formatDate = (d: string) => {
+    if (!d) return "";
+    try {
+      return new Date(d).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      return d;
+    }
+  };
+
+  const dateRange =
+    startDate && endDate
+      ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+      : startDate
+        ? formatDate(startDate)
+        : "";
+
+  /* ── Empty state ── */
+  if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-background font-body">
+        <header className="bg-white/70 backdrop-blur-xl shadow-xl shadow-teal-900/5 sticky top-0 z-20">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <Link
+              href="/"
+              className="text-2xl font-black italic text-teal-700 font-headline"
+            >
+              Walter
+            </Link>
+            <Link
+              href="/results"
+              className="flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                arrow_back
+              </span>
+              Back to results
+            </Link>
+          </div>
+        </header>
+
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
+          <span className="material-symbols-outlined text-[64px] text-outline mb-4">
+            luggage
+          </span>
+          <h1 className="font-headline font-extrabold text-3xl text-on-surface mb-3">
+            Your trip is empty
+          </h1>
+          <p className="text-on-surface-variant font-body text-lg max-w-md mb-8">
+            Start building your trip by adding flights, hotels, events, and
+            activities from the results page.
+          </p>
+          <Link
+            href="/results"
+            className="btn-primary-gradient rounded-full px-8 py-3 text-sm font-bold flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              search
+            </span>
+            Browse results
+          </Link>
+        </div>
       </div>
     );
   }
 
-  const currentDay =
-    trip.days.find((d) => d.dayNumber === activeDay) || trip.days[0];
-
-  // Extract flights and hotels for the sidebar
-  const flights = trip.days.flatMap((d) =>
-    d.items.filter((i) => i.itemType === "flight")
-  );
-  const hotels = trip.days.flatMap((d) =>
-    d.items.filter((i) => i.itemType === "hotel")
-  );
-
+  /* ── Main render ── */
   return (
     <div className="min-h-screen bg-background font-body">
-      {/* ──────────────── Glass Header ──────────────── */}
+      {/* ── Glass Header ── */}
       <header className="bg-white/70 backdrop-blur-xl shadow-xl shadow-teal-900/5 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
@@ -248,276 +242,148 @@ function TripDetailPage() {
               </span>
               Back to results
             </Link>
-            {saved ? (
-              <motion.button
-                onClick={handleShare}
-                whileTap={{ scale: 0.95 }}
-                className="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-colors flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  link
-                </span>
-                Copy link
-              </motion.button>
-            ) : (
-              <motion.button
-                onClick={handleSave}
-                disabled={saving}
-                whileTap={{ scale: 0.95 }}
-                className="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dim transition-colors disabled:opacity-50 flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  bookmark
-                </span>
-                {saving ? "Saving..." : "Save trip"}
-              </motion.button>
-            )}
+            <motion.button
+              onClick={handleShare}
+              whileTap={{ scale: 0.95 }}
+              className="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dim transition-colors flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                {shareLink ? "check" : "share"}
+              </span>
+              {shareLink ? "Copied!" : "Share trip"}
+            </motion.button>
           </div>
         </div>
       </header>
 
-      {/* ──────────────── Hero Section ──────────────── */}
+      {/* ── Trip Overview Hero ── */}
       <section className="relative overflow-hidden bg-white/50 border-b border-outline-variant/10">
         <div className="max-w-7xl mx-auto px-6 pt-12 pb-10">
           <p className="uppercase tracking-[0.2em] text-xs font-bold text-primary mb-2 font-body">
-            Expedition
+            Your Trip
           </p>
           <h1 className="text-5xl md:text-7xl font-headline font-extrabold tracking-tight text-on-surface mb-4">
-            {trip.title.includes(trip.destination) ? (
-              <>
-                {trip.title.split(trip.destination)[0]}
-                <span className="text-gradient">{trip.destination}</span>
-                {trip.title.split(trip.destination).slice(1).join(trip.destination)}
-              </>
+            {destination ? (
+              <span className="text-gradient">{destination}</span>
             ) : (
-              <>
-                {trip.title}{" "}
-                <span className="text-gradient">{trip.destination}</span>
-              </>
+              "Your Custom Trip"
             )}
           </h1>
-          <p className="text-on-surface-variant max-w-2xl text-lg font-body mb-8">
-            {trip.summary}
-          </p>
 
-          {/* Stat blocks */}
-          <div className="flex flex-wrap items-center gap-8">
+          <div className="flex flex-wrap items-center gap-8 mt-6">
+            {destination && (
+              <>
+                <div>
+                  <p className="text-xs text-on-surface-variant uppercase tracking-[0.15em] font-bold mb-1 font-body">
+                    Destination
+                  </p>
+                  <p className="font-headline font-bold text-lg text-on-surface flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-primary text-[20px]">
+                      location_on
+                    </span>
+                    {destination}
+                  </p>
+                </div>
+                <div className="w-px h-10 bg-outline-variant/20" />
+              </>
+            )}
+
+            {dateRange && (
+              <>
+                <div>
+                  <p className="text-xs text-on-surface-variant uppercase tracking-[0.15em] font-bold mb-1 font-body">
+                    Dates
+                  </p>
+                  <p className="font-headline font-bold text-lg text-on-surface flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-primary text-[20px]">
+                      calendar_today
+                    </span>
+                    {dateRange}
+                  </p>
+                </div>
+                <div className="w-px h-10 bg-outline-variant/20" />
+              </>
+            )}
+
             <div>
               <p className="text-xs text-on-surface-variant uppercase tracking-[0.15em] font-bold mb-1 font-body">
-                Destination
+                Travelers
               </p>
               <p className="font-headline font-bold text-lg text-on-surface flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-primary text-[20px]">
-                  location_on
+                  group
                 </span>
-                {trip.destination}
+                {travelers}
               </p>
             </div>
             <div className="w-px h-10 bg-outline-variant/20" />
+
             <div>
               <p className="text-xs text-on-surface-variant uppercase tracking-[0.15em] font-bold mb-1 font-body">
-                Duration
+                Items
               </p>
               <p className="font-headline font-bold text-lg text-on-surface flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-primary text-[20px]">
-                  calendar_today
+                  shopping_bag
                 </span>
-                {trip.days.length} days
+                {items.length}
               </p>
             </div>
             <div className="w-px h-10 bg-outline-variant/20" />
+
             <div>
               <p className="text-xs text-on-surface-variant uppercase tracking-[0.15em] font-bold mb-1 font-body">
-                Total Cost
+                Est. Total
               </p>
               <p className="font-mono font-bold text-2xl text-primary">
-                ${trip.totalEstimatedCost.toLocaleString()}
+                ${totalPrice.toLocaleString()}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ──────────────── Day Selector ──────────────── */}
-      <div className="max-w-7xl mx-auto px-6 pt-8">
-        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-          {trip.days.map((day) => (
-            <motion.button
-              key={day.dayNumber}
-              onClick={() => setActiveDay(day.dayNumber)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              className={`flex-shrink-0 px-5 py-3 rounded-xl font-body transition-colors ${
-                activeDay === day.dayNumber
-                  ? "bg-primary text-white shadow-md"
-                  : "bg-surface-container-lowest border border-outline-variant/10 text-on-surface-variant hover:border-primary/30"
-              }`}
-            >
-              <span className="block text-[10px] uppercase tracking-wider opacity-70 font-bold">
-                Day {day.dayNumber}
-              </span>
-              <span className="block text-sm font-bold font-headline mt-0.5">
-                {day.title}
-              </span>
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* ──────────────── Bento Grid (8/4 split) ──────────────── */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* ── Left Column: Itinerary (col-span-8) ── */}
-          <div className="lg:col-span-8">
-            <motion.div
-              key={activeDay}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div className="card-3d p-8">
-                {/* Itinerary header */}
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h2 className="font-headline font-extrabold text-2xl text-on-surface">
-                      Detailed Itinerary
-                    </h2>
-                    {currentDay.summary && (
-                      <p className="text-on-surface-variant text-sm mt-1 font-body">
-                        {currentDay.summary}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold font-body bg-surface-container-low text-on-surface-variant px-3 py-1.5 rounded-full">
-                      Day {currentDay.dayNumber} of {trip.days.length}
-                    </span>
-                    <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg uppercase tracking-wider">
-                      Active
-                    </span>
-                  </div>
+      {/* ── Content Grid ── */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* ── Left Column: Trip Items ── */}
+          <div className="lg:col-span-8 space-y-8">
+            {sections.map((section) => (
+              <motion.div
+                key={section.key}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Section header */}
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="material-symbols-outlined text-primary text-[24px]">
+                    {section.icon}
+                  </span>
+                  <h2 className="font-headline font-extrabold text-xl text-on-surface">
+                    {section.label}
+                  </h2>
+                  <span className="text-xs font-bold bg-surface-container-low text-on-surface-variant px-2.5 py-1 rounded-full ml-1">
+                    {section.items.length}
+                  </span>
                 </div>
 
-                {currentDay.estimatedCost != null && (
-                  <div className="mb-6 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary text-[18px]">
-                      payments
-                    </span>
-                    <span className="text-xs text-on-surface-variant font-body">
-                      Day estimate:
-                    </span>
-                    <span className="font-mono font-bold text-primary">
-                      ~${currentDay.estimatedCost.toLocaleString()}
-                    </span>
-                  </div>
-                )}
-
-                {/* Vertical Timeline */}
-                <div className="relative pl-10">
-                  {/* Timeline spine */}
-                  <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-outline-variant/20" />
-
-                  <div className="space-y-5">
-                    {currentDay.items.map((item, i) => {
-                      const period = getTimePeriod(item.startTime);
-                      const showPeriodLabel =
-                        i === 0 ||
-                        getTimePeriod(currentDay.items[i - 1]?.startTime) !==
-                          period;
-
-                      return (
-                        <div key={i}>
-                          {/* Period label */}
-                          {showPeriodLabel && (
-                            <div className="flex items-center gap-2 mb-3 -ml-10 pl-10">
-                              <span className="text-xs text-slate-400 uppercase tracking-wider font-bold font-body">
-                                {period}
-                              </span>
-                              <div className="flex-1 h-px bg-outline-variant/10" />
-                            </div>
-                          )}
-
-                          <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="relative"
-                          >
-                            {/* Timeline dot */}
-                            <div className="absolute -left-10 top-6 w-[16px] h-[16px] rounded-full bg-primary ring-4 ring-primary-container/30 z-10" />
-
-                            <div className="card-3d !rounded-3xl p-6">
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="flex-1">
-                                  {/* Time block */}
-                                  {item.startTime && (
-                                    <p className="font-headline font-extrabold text-on-surface text-sm mb-0.5">
-                                      {item.startTime}
-                                      {item.endTime && ` -- ${item.endTime}`}
-                                    </p>
-                                  )}
-                                  {/* Period label inline */}
-                                  <p className="text-xs text-slate-400 uppercase tracking-wider font-body mb-2">
-                                    {period}
-                                  </p>
-
-                                  {/* Item type tag + title */}
-                                  <div className="flex items-center gap-2 mb-1.5">
-                                    <span
-                                      className={`inline-flex items-center gap-1 text-[10px] font-bold rounded-lg px-2 py-1 ${typeColors[item.itemType] || typeColors.note}`}
-                                    >
-                                      <span className="material-symbols-outlined text-[14px]">
-                                        {typeIcons[item.itemType] || "note"}
-                                      </span>
-                                      {item.itemType}
-                                    </span>
-                                  </div>
-
-                                  <h3 className="font-headline font-bold text-xl text-on-surface mb-1">
-                                    {item.title}
-                                  </h3>
-                                  <p className="text-on-surface-variant text-sm font-body leading-relaxed">
-                                    {item.description}
-                                  </p>
-                                  {item.locationName && (
-                                    <p className="text-on-surface-variant/60 text-xs mt-2 flex items-center gap-1 font-body">
-                                      <span className="material-symbols-outlined text-[14px]">
-                                        pin_drop
-                                      </span>
-                                      {item.locationName}
-                                    </p>
-                                  )}
-                                </div>
-
-                                <div className="text-right flex-shrink-0">
-                                  {item.estimatedCost > 0 && (
-                                    <p className="font-mono font-bold text-sm text-primary">
-                                      ${item.estimatedCost}
-                                    </p>
-                                  )}
-                                  {item.rating && (
-                                    <p className="text-xs text-on-surface-variant mt-1 flex items-center justify-end gap-0.5">
-                                      <span className="material-symbols-outlined text-amber-400 text-[14px]">
-                                        star
-                                      </span>
-                                      {item.rating}/5
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </motion.div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                {/* Item cards */}
+                <div className="space-y-3">
+                  {section.items.map((item) => (
+                    <ItemCard
+                      key={item.id}
+                      item={item}
+                      ctaLabel={section.ctaLabel}
+                      onRemove={removeItem}
+                    />
+                  ))}
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
 
-          {/* ── Right Column: Sidebar Widgets (col-span-4) ── */}
+          {/* ── Right Column: Map + Sidebar ── */}
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 lg:self-start">
             {/* Map Widget */}
             <motion.div
@@ -532,13 +398,13 @@ function TripDetailPage() {
                   near_me
                 </span>
                 <h3 className="font-headline font-extrabold text-lg text-on-surface">
-                  Route Explorer
+                  Trip Map
                 </h3>
               </div>
-              <TripMap items={mapItems} destination={trip.destination} />
+              <TripMap items={mapItems} destination={destination} />
             </motion.div>
 
-            {/* Travel Logistics */}
+            {/* Cost Summary Widget */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -548,145 +414,178 @@ function TripDetailPage() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary text-[22px]">
-                  luggage
+                  payments
                 </span>
                 <h3 className="font-headline font-extrabold text-lg text-on-surface">
-                  Travel Logistics
+                  Cost Breakdown
                 </h3>
               </div>
-
-              <div className="space-y-3">
-                {/* Flights */}
-                {flights.length > 0 ? (
-                  flights.map((f, i) => (
+              <div className="space-y-2">
+                {sections.map((sec) => {
+                  const sectionTotal = sec.items.reduce(
+                    (sum, i) => sum + (i.price ?? 0),
+                    0
+                  );
+                  return (
                     <div
-                      key={`flight-${i}`}
-                      className="card-3d !rounded-2xl p-4 group cursor-pointer"
+                      key={sec.key}
+                      className="flex items-center justify-between text-sm"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0">
-                          <span className="material-symbols-outlined text-teal-600 text-[20px]">
-                            flight
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-headline font-bold text-sm text-on-surface truncate">
-                            {f.title}
-                          </p>
-                          <p className="text-xs text-on-surface-variant font-body">
-                            {f.startTime || "Scheduled"}
-                          </p>
-                        </div>
-                        {f.estimatedCost > 0 && (
-                          <p className="font-mono font-bold text-sm text-primary flex-shrink-0">
-                            ${f.estimatedCost}
-                          </p>
-                        )}
-                        <span className="material-symbols-outlined text-outline text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">
-                          chevron_right
-                        </span>
-                      </div>
+                      <span className="text-on-surface-variant font-body">
+                        {sec.label}
+                      </span>
+                      <span className="font-mono font-bold text-on-surface">
+                        ${sectionTotal.toLocaleString()}
+                      </span>
                     </div>
-                  ))
-                ) : (
-                  <div className="card-3d !rounded-2xl p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0">
-                        <span className="material-symbols-outlined text-teal-600 text-[20px]">
-                          flight
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-headline font-bold text-sm text-on-surface">
-                          Flights
-                        </p>
-                        <p className="text-xs text-on-surface-variant font-body">
-                          No flights in itinerary
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Hotels */}
-                {hotels.length > 0 ? (
-                  hotels.map((h, i) => (
-                    <div
-                      key={`hotel-${i}`}
-                      className="card-3d !rounded-2xl p-4 group cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                          <span className="material-symbols-outlined text-blue-600 text-[20px]">
-                            hotel
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-headline font-bold text-sm text-on-surface truncate">
-                            {h.title}
-                          </p>
-                          <p className="text-xs text-on-surface-variant font-body">
-                            {h.locationName || "Confirmed"}
-                          </p>
-                        </div>
-                        {h.estimatedCost > 0 && (
-                          <p className="font-mono font-bold text-sm text-primary flex-shrink-0">
-                            ${h.estimatedCost}
-                          </p>
-                        )}
-                        <span className="material-symbols-outlined text-outline text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">
-                          chevron_right
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="card-3d !rounded-2xl p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <span className="material-symbols-outlined text-blue-600 text-[20px]">
-                          hotel
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-headline font-bold text-sm text-on-surface">
-                          Hotels
-                        </p>
-                        <p className="text-xs text-on-surface-variant font-body">
-                          No hotels in itinerary
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  );
+                })}
+                <div className="border-t border-outline-variant/20 pt-2 mt-2 flex items-center justify-between">
+                  <span className="font-body font-bold text-on-surface">
+                    Total
+                  </span>
+                  <span className="font-mono font-bold text-xl text-primary">
+                    ${totalPrice.toLocaleString()}
+                  </span>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
 
-        {/* ──────────────── Packing List ──────────────── */}
-        <div className="mt-10">
-          <PackingList
-            destination={trip.destination}
-            startDate={(quizPrefs.startDate as string) || ""}
-            endDate={(quizPrefs.endDate as string) || ""}
-            activities={
-              (quizPrefs.activityInterests as string[]) ||
-              (quizPrefs.vibes as string[]) ||
-              []
-            }
-            pace={(quizPrefs.pace as string) || "moderate"}
-            travelers={
-              (quizPrefs.travelersCount as number) ||
-              (quizPrefs.travelers as number) ||
-              1
-            }
-          />
+        {/* ── Packing List ── */}
+        {destination && (
+          <div className="mt-10">
+            <PackingList
+              destination={destination}
+              startDate={startDate}
+              endDate={endDate}
+              activities={activities}
+              pace={pace}
+              travelers={travelers}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Item Card Component ── */
+function ItemCard({
+  item,
+  ctaLabel,
+  onRemove,
+}: {
+  item: CartItem;
+  ctaLabel: string;
+  onRemove: (id: string) => void;
+}) {
+  const colorClass = typeColors[item.type] || "bg-slate-50 text-slate-600";
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="card-3d !rounded-2xl p-5 group"
+    >
+      <div className="flex items-start gap-4">
+        {/* Image thumbnail */}
+        {item.image && (
+          <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-surface-container-low">
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span
+              className={`inline-flex items-center gap-1 text-[10px] font-bold rounded-lg px-2 py-0.5 uppercase tracking-wider ${colorClass}`}
+            >
+              {item.type}
+            </span>
+            {item.provider && (
+              <span className="text-[10px] text-on-surface-variant font-body">
+                via {item.provider}
+              </span>
+            )}
+          </div>
+
+          <h3 className="font-headline font-bold text-lg text-on-surface truncate">
+            {item.title}
+          </h3>
+
+          {item.subtitle && (
+            <p className="text-on-surface-variant text-sm font-body mt-0.5 truncate">
+              {item.subtitle}
+            </p>
+          )}
+
+          {item.date && (
+            <p className="text-on-surface-variant/70 text-xs mt-1 flex items-center gap-1 font-body">
+              <span className="material-symbols-outlined text-[14px]">
+                schedule
+              </span>
+              {item.date}
+            </p>
+          )}
+
+          {/* Meta details for specific types */}
+          {item.type === "hotel" && item.meta?.rating != null && (
+            <p className="text-xs text-on-surface-variant mt-1 flex items-center gap-0.5">
+              <span className="material-symbols-outlined text-amber-400 text-[14px]">
+                star
+              </span>
+              {String(item.meta.rating)}
+            </p>
+          )}
+        </div>
+
+        {/* Right side: price + actions */}
+        <div className="flex flex-col items-end gap-2 flex-shrink-0">
+          {/* Remove button */}
+          <button
+            onClick={() => onRemove(item.id)}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant/40 hover:text-red-500 hover:bg-red-50 transition-colors"
+            aria-label={`Remove ${item.title}`}
+          >
+            <span className="material-symbols-outlined text-[18px]">close</span>
+          </button>
+
+          {/* Price */}
+          {item.price != null && item.price > 0 && (
+            <p className="font-mono font-bold text-lg text-primary">
+              ${item.price.toLocaleString()}
+            </p>
+          )}
+
+          {/* CTA button */}
+          {item.bookingUrl && (
+            <button
+              onClick={() =>
+                trackAndOpen({
+                  provider: item.provider || "unknown",
+                  itemType: item.type,
+                  destinationUrl: item.bookingUrl!,
+                })
+              }
+              className="btn-primary-gradient rounded-full px-4 py-1.5 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap"
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                open_in_new
+              </span>
+              {ctaLabel}
+            </button>
+          )}
         </div>
       </div>
-
-      {/* ──────────────── AI Chat Refinement ──────────────── */}
-      <RefinementChat trip={trip} onTripUpdate={handleTripUpdate} />
-    </div>
+    </motion.div>
   );
 }
