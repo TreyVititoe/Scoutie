@@ -81,7 +81,10 @@ function TripPage() {
     }
   }, []);
 
-  const destination = (prefs.destination as string) || "";
+  const destination =
+    (prefs.destinations as string[])?.[0] ||
+    (prefs.destination as string) ||
+    "";
   const startDate = (prefs.startDate as string) || "";
   const endDate = (prefs.endDate as string) || "";
   const travelers =
@@ -119,20 +122,23 @@ function TripPage() {
     }>;
   }, [grouped]);
 
-  /* Map items from cart */
+  /* Map items from cart — skip flights, they aren't map-pinnable destinations */
   const mapItems: MapItem[] = useMemo(() => {
     return items
+      .filter((item) => item.type !== "flight")
       .filter((item) => {
         const loc =
           (item.meta?.locationName as string) ||
-          item.subtitle ||
+          (item.meta?.venueName as string) ||
           item.title;
         return !!loc;
       })
       .map((item) => ({
         title: item.title,
         locationName:
-          (item.meta?.locationName as string) || item.subtitle || item.title,
+          (item.meta?.locationName as string) ||
+          (item.meta?.venueName as string) ||
+          item.title,
         locationLat: (item.meta?.locationLat as number) ?? null,
         locationLng: (item.meta?.locationLng as number) ?? null,
       }));
