@@ -45,10 +45,9 @@ type QuizData = {
   accommodationTypes?: string[];
   accommodationMustHaves?: string[];
   locationPreference?: string;
+  noAccommodation?: boolean;
+  budgetSkipped?: boolean;
   activityInterests?: string[];
-  pace?: string | null;
-  diningPreference?: string | null;
-  dietaryRestrictions?: string[];
   destination?: string;
   travelers?: number;
   budget?: number;
@@ -72,22 +71,37 @@ function buildUserPrompt(quizData: QuizData): string {
         )
       : quizData.tripDurationDays || 7;
 
+  // Accommodation line
+  let accommodationLine: string;
+  if (quizData.noAccommodation) {
+    accommodationLine = "ACCOMMODATION: NOT NEEDED — traveler is staying with friends/family. Do NOT include any hotel or accommodation in the itinerary.";
+  } else {
+    const types = quizData.accommodationTypes?.join(", ") || "hotel";
+    const mustHaves = quizData.accommodationMustHaves?.length
+      ? `\nACCOMMODATION MUST-HAVES: ${quizData.accommodationMustHaves.join(", ")}`
+      : "";
+    const locPref = quizData.locationPreference
+      ? `\nLOCATION PREFERENCE: ${quizData.locationPreference}`
+      : "";
+    accommodationLine = `ACCOMMODATION: ONLY use ${types}. Do NOT suggest hotels if the user asked for vacation rentals, and vice versa.${mustHaves}${locPref}`;
+  }
+
+  // Budget line
+  const budgetLine = quizData.budgetSkipped
+    ? "BUDGET: Flexible — suggest a range of price points"
+    : `BUDGET: $${budget.toLocaleString()} ${quizData.budgetMode === "per_day" ? "per day" : "total"}`;
+
   return `Plan a trip with these details:
 
 DESTINATION: ${destination}${quizData.surpriseMe ? " (pick the best destination for my interests and budget)" : ""}
 DATES: ${quizData.startDate || "flexible"} to ${quizData.endDate || "flexible"} (${nights} nights)
 DEPARTING FROM: ${quizData.departureCity || "Not specified"}
 TRAVELERS: ${travelers} ${quizData.travelerType || "travelers"}${quizData.childrenCount ? ` + ${quizData.childrenCount} children (ages: ${quizData.childrenAges?.join(", ")})` : ""}
-BUDGET: $${budget.toLocaleString()} ${quizData.budgetMode === "per_day" ? "per day" : "total"}
+${budgetLine}
 FLIGHT CLASS: ${quizData.flightClass || "economy"}
 FLIGHT PRIORITY: ${quizData.flightPriority || "best value"}
-ACCOMMODATION: ${quizData.accommodationTypes?.join(", ") || "hotel"}
-ACCOMMODATION MUST-HAVES: ${quizData.accommodationMustHaves?.join(", ") || "none specified"}
-LOCATION PREFERENCE: ${quizData.locationPreference || "city center"}
+${accommodationLine}
 INTERESTS: ${interests}
-PACE: ${quizData.pace || "moderate"}
-DINING: ${quizData.diningPreference || "mixed"}
-DIETARY: ${quizData.dietaryRestrictions?.join(", ") || "none"}
 
 Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
 }
