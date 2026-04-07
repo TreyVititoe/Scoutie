@@ -154,7 +154,7 @@ export default function ResultsPage() {
         });
     }
 
-    if (destination && startDate && endDate) {
+    if (destination && startDate && endDate && !quizData.noAccommodation) {
       fetch("/api/hotels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

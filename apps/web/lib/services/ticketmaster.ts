@@ -2,13 +2,6 @@ import type { ScoutEvent } from "@/lib/types";
 
 const BASE_URL = "https://app.ticketmaster.com/discovery/v2";
 
-// Clean city name for better Ticketmaster API matching
-function cleanCityName(destination: string): string {
-  return destination
-    .replace(/,.*$/, "") // Remove ", State" or ", Country" suffix
-    .trim();
-}
-
 // Map our vibe keywords to Ticketmaster segment/genre names
 export const VIBE_TO_TM_KEYWORDS: Record<string, string[]> = {
   music: ["Music"],
@@ -25,16 +18,10 @@ export const VIBE_TO_TM_KEYWORDS: Record<string, string[]> = {
   theater: ["Arts & Theatre"],
   wine: ["Arts & Theatre", "Music"],
   "craft beer": ["Comedy", "Music"],
-};
-
-// Lifestyle interests that don't map directly to TM categories
-// but can still surface good results via keyword search
-export const LIFESTYLE_KEYWORDS: Record<string, string> = {
-  food: "food festival culinary",
-  wine: "wine tasting vineyard",
-  "craft beer": "craft beer brewery festival",
-  wellness: "yoga wellness retreat",
-  art: "art gallery exhibition",
+  nature: ["Sports", "Miscellaneous"],
+  "live events": ["Music", "Sports", "Arts & Theatre"],
+  photography: ["Arts & Theatre"],
+  "beach": ["Miscellaneous"],
 };
 
 type TMEvent = {
@@ -56,8 +43,6 @@ type TMEvent = {
   }[];
   url?: string;
   priceRanges?: { min?: number; max?: number }[];
-  sales?: { public?: { startDateTime?: string } };
-  pleaseNote?: string;
 };
 
 function parseTMEvent(e: TMEvent): ScoutEvent {
@@ -78,12 +63,62 @@ function parseTMEvent(e: TMEvent): ScoutEvent {
     time: e.dates?.start?.localTime ?? null,
     venueName: venue?.name ?? "TBD",
     venueCity: venue?.city?.name ?? "",
-    category: (classification?.segment?.name !== "Undefined" ? classification?.segment?.name : null) ?? classification?.genre?.name ?? "Event",
+    category:
+      (classification?.segment?.name !== "Undefined"
+        ? classification?.segment?.name
+        : null) ??
+      classification?.genre?.name ??
+      "Event",
     url: e.url ?? "#",
     priceMin: e.priceRanges?.[0]?.min ?? null,
     priceMax: e.priceRanges?.[0]?.max ?? null,
-    popularity: Math.random() * 100, // TM doesn't expose popularity directly; replace with real signal if available
+    popularity: Math.random() * 100,
   };
+}
+
+/**
+ * Geocode a destination to lat/lng via Mapbox for radius-based search.
+ */
+async function geocodeDestination(
+  destination: string
+): Promise<{ lat: number; lng: number } | null> {
+  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  if (!token) return null;
+
+  try {
+    const res = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        destination
+      )}.json?access_token=${token}&limit=1&types=place,locality`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const coords = data.features?.[0]?.center;
+    if (!coords) return null;
+    return { lng: coords[0], lat: coords[1] };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Build Ticketmaster search params with latlong radius instead of city name.
+ */
+async function buildLocationParams(
+  destination: string
+): Promise<Record<string, string>> {
+  // Try geocoding first for radius search (catches small cities near big ones)
+  const coords = await geocodeDestination(destination);
+  if (coords) {
+    return {
+      latlong: `${coords.lat},${coords.lng}`,
+      radius: "30",
+      unit: "miles",
+    };
+  }
+  // Fallback to city name
+  const city = destination.split(",")[0].trim();
+  return { city };
 }
 
 export async function fetchEventsByKeyword(
@@ -91,15 +126,15 @@ export async function fetchEventsByKeyword(
   startDate: string,
   endDate: string,
   keyword: string,
+  locationParams: Record<string, string>,
   size = 10
 ): Promise<ScoutEvent[]> {
   const apiKey = process.env.TICKETMASTER_API_KEY;
-  if (!apiKey) throw new Error("TICKETMASTER_API_KEY not set");
+  if (!apiKey) return [];
 
-  const city = cleanCityName(destination);
   const params = new URLSearchParams({
     apikey: apiKey,
-    city,
+    ...locationParams,
     keyword,
     startDateTime: `${startDate}T00:00:00Z`,
     endDateTime: `${endDate}T23:59:59Z`,
@@ -107,12 +142,14 @@ export async function fetchEventsByKeyword(
     sort: "date,asc",
   });
 
-  const res = await fetch(`${BASE_URL}/events.json?${params}`);
-  if (!res.ok) return [];
-
-  const data = await res.json();
-  const events: TMEvent[] = data._embedded?.events ?? [];
-  return events.map(parseTMEvent);
+  try {
+    const res = await fetch(`${BASE_URL}/events.json?${params}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data._embedded?.events ?? []).map(parseTMEvent);
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchTopEventsInArea(
@@ -122,24 +159,26 @@ export async function fetchTopEventsInArea(
   size = 8
 ): Promise<ScoutEvent[]> {
   const apiKey = process.env.TICKETMASTER_API_KEY;
-  if (!apiKey) throw new Error("TICKETMASTER_API_KEY not set");
+  if (!apiKey) return [];
 
-  const city = cleanCityName(destination);
+  const locationParams = await buildLocationParams(destination);
   const params = new URLSearchParams({
     apikey: apiKey,
-    city,
+    ...locationParams,
     startDateTime: `${startDate}T00:00:00Z`,
     endDateTime: `${endDate}T23:59:59Z`,
     size: String(size),
     sort: "relevance,desc",
   });
 
-  const res = await fetch(`${BASE_URL}/events.json?${params}`);
-  if (!res.ok) return [];
-
-  const data = await res.json();
-  const events: TMEvent[] = data._embedded?.events ?? [];
-  return events.map(parseTMEvent);
+  try {
+    const res = await fetch(`${BASE_URL}/events.json?${params}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data._embedded?.events ?? []).map(parseTMEvent);
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchEventsByVibes(
@@ -154,24 +193,26 @@ export async function fetchEventsByVibes(
   for (const vibe of vibes) {
     const mapped = VIBE_TO_TM_KEYWORDS[vibe.toLowerCase()] ?? [];
     mapped.forEach((k) => allKeywords.add(k));
-
-    const lifestyle = LIFESTYLE_KEYWORDS[vibe.toLowerCase()];
-    if (lifestyle) {
-      lifestyle.split(" ").forEach((k) => allKeywords.add(k));
-    }
   }
 
   for (const interest of expandedInterests) {
     allKeywords.add(interest);
   }
 
-  if (allKeywords.size === 0) return [];
+  if (allKeywords.size === 0) {
+    // No specific vibes — just search for general events
+    allKeywords.add("Music");
+    allKeywords.add("Sports");
+  }
+
+  // Geocode once, reuse for all keyword searches
+  const locationParams = await buildLocationParams(destination);
 
   // Fetch in parallel for top 3 keyword groups
   const keywordList = Array.from(allKeywords).slice(0, 3);
   const results = await Promise.all(
     keywordList.map((kw) =>
-      fetchEventsByKeyword(destination, startDate, endDate, kw, 5)
+      fetchEventsByKeyword(destination, startDate, endDate, kw, locationParams, 5)
     )
   );
 

@@ -1,5 +1,5 @@
 import type { ScoutEvent, ScoredEvent } from "@/lib/types";
-import { VIBE_TO_TM_KEYWORDS, LIFESTYLE_KEYWORDS } from "./ticketmaster";
+import { VIBE_TO_TM_KEYWORDS } from "./ticketmaster";
 
 function daysBetween(dateStr: string, refStr: string): number {
   const d = new Date(dateStr).getTime();
@@ -24,11 +24,8 @@ function interestScore(event: ScoutEvent, vibes: string[], expandedInterests: st
     const tms = VIBE_TO_TM_KEYWORDS[vibe.toLowerCase()] ?? [];
     if (tms.some((t) => eventText.includes(t.toLowerCase()))) score += 0.4;
 
-    const lifestyle = LIFESTYLE_KEYWORDS[vibe.toLowerCase()];
-    if (lifestyle) {
-      const kws = lifestyle.split(" ");
-      if (kws.some((k) => eventText.includes(k))) score += 0.2;
-    }
+    // Also check if the vibe word itself appears in the event text
+    if (eventText.includes(vibe.toLowerCase())) score += 0.2;
   }
 
   for (const interest of expandedInterests) {
