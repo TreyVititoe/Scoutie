@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   useTripCartStore,
-  selectTotalPrice,
-  selectItemCount,
-  selectItemsByType,
+  getItemsByType,
   type CartItemType,
 } from "@/lib/stores/tripCartStore";
 
@@ -49,9 +47,10 @@ function formatPrice(price: number | null): string {
 /* ─── Desktop Sidebar ─── */
 function DesktopSidebar() {
   const removeItem = useTripCartStore((s) => s.removeItem);
-  const totalPrice = useTripCartStore(selectTotalPrice);
-  const itemCount = useTripCartStore(selectItemCount);
-  const grouped = useTripCartStore(selectItemsByType);
+  const items = useTripCartStore((s) => s.items);
+  const totalPrice = useMemo(() => items.reduce((sum, i) => sum + (i.price ?? 0), 0), [items]);
+  const itemCount = items.length;
+  const grouped = useMemo(() => getItemsByType(items), [items]);
 
   return (
     <aside className="hidden lg:block w-[320px] flex-shrink-0">
@@ -160,9 +159,10 @@ function DesktopSidebar() {
 function MobileBar() {
   const [expanded, setExpanded] = useState(false);
   const removeItem = useTripCartStore((s) => s.removeItem);
-  const totalPrice = useTripCartStore(selectTotalPrice);
-  const itemCount = useTripCartStore(selectItemCount);
-  const grouped = useTripCartStore(selectItemsByType);
+  const items = useTripCartStore((s) => s.items);
+  const totalPrice = useMemo(() => items.reduce((sum, i) => sum + (i.price ?? 0), 0), [items]);
+  const itemCount = items.length;
+  const grouped = useMemo(() => getItemsByType(items), [items]);
 
   if (itemCount === 0) return null;
 

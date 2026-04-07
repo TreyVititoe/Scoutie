@@ -59,11 +59,12 @@ export const selectTotalPrice = (state: TripCartState) =>
 
 export const selectItemCount = (state: TripCartState) => state.items.length;
 
-export const selectItemsByType = (state: TripCartState) => {
+// NOTE: use this with useShallow or memoize externally to avoid infinite re-renders
+export function getItemsByType(items: CartItem[]): Partial<Record<CartItemType, CartItem[]>> {
   const grouped: Partial<Record<CartItemType, CartItem[]>> = {};
-  for (const item of state.items) {
+  for (const item of items) {
     if (!grouped[item.type]) grouped[item.type] = [];
     grouped[item.type]!.push(item);
   }
   return grouped;
-};
+}
