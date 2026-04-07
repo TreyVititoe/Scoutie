@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
-import type { Suggestion } from "@/app/results/page";
+import type { Suggestion } from "@/lib/types";
 
 const typeIcons: Record<string, string> = {
   activity: "hiking",
@@ -31,9 +31,9 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
         id: suggestion.id,
         type: suggestion.type,
         title: suggestion.title,
-        subtitle: suggestion.location,
+        subtitle: suggestion.locationName,
         price: suggestion.estimatedCost,
-        image: suggestion.image,
+        image: null,
         bookingUrl: null,
         provider: null,
         date: null,
@@ -71,7 +71,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
       {/* Location */}
       <div className="flex items-center gap-1.5 mb-2">
         <span className="material-symbols-outlined text-outline-variant text-[14px]">location_on</span>
-        <p className="text-xs text-outline-variant font-body truncate">{suggestion.location}</p>
+        <p className="text-xs text-outline-variant font-body truncate">{suggestion.locationName}</p>
       </div>
 
       {/* Best time */}

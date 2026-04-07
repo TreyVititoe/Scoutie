@@ -62,6 +62,7 @@ export const useTripCartStore = create<
     }),
     {
       name: "walter_cart",
+      skipHydration: true,
     }
   )
 );

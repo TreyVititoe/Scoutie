@@ -30,6 +30,17 @@ export type ScoredEvent = ScoutEvent & {
   matchReason: string;
 };
 
+export type Suggestion = {
+  id: string;
+  type: "activity" | "restaurant" | "site";
+  title: string;
+  description: string;
+  estimatedCost: number | null;
+  locationName: string;
+  bestTime: string;
+  bookingSearchQuery: string;
+};
+
 export type SearchResults = {
   exactMatches: ScoredEvent[];
   similarMatches: ScoredEvent[];

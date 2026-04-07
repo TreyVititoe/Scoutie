@@ -24,7 +24,15 @@ export async function POST(req: NextRequest) {
       travelerType: travelerType || "travelers",
     });
 
-    return NextResponse.json(result);
+    // Add IDs to suggestions if missing
+    const suggestions = (result.suggestions || []).map(
+      (s: Record<string, unknown>, i: number) => ({
+        ...s,
+        id: s.id || `suggestion-${i}`,
+      })
+    );
+
+    return NextResponse.json({ suggestions });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[/api/suggestions]", message);

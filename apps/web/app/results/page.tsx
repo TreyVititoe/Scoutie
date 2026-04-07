@@ -11,18 +11,8 @@ import SuggestionCard from "@/components/results/SuggestionCard";
 import TripTracker from "@/components/results/TripTracker";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
-import type { ScoredEvent } from "@/lib/types";
-
-export type Suggestion = {
-  id: string;
-  type: "activity" | "restaurant" | "site";
-  title: string;
-  description: string;
-  estimatedCost: number | null;
-  location: string;
-  bestTime: string;
-  image: string | null;
-};
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import type { ScoredEvent, Suggestion } from "@/lib/types";
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -35,6 +25,11 @@ export default function ResultsPage() {
   const [suggestionsLoading, setSuggestionsLoading] = useState(true);
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
   const [pageReady, setPageReady] = useState(false);
+
+  // Hydrate the cart store from localStorage on mount
+  useEffect(() => {
+    useTripCartStore.persist.rehydrate();
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
