@@ -5,8 +5,9 @@ import type { HotelResult } from "@/lib/services/hotels";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; bestValue: boolean }) {
-  const { addItem, removeItem, isInCart } = useTripCartStore();
-  const added = isInCart(hotel.id);
+  const addItem = useTripCartStore((s) => s.addItem);
+  const removeItem = useTripCartStore((s) => s.removeItem);
+  const added = useTripCartStore((s) => s.items.some((i) => i.id === hotel.id));
 
   const handleToggle = () => {
     if (added) {

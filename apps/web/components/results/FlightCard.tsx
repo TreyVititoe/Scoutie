@@ -5,8 +5,9 @@ import type { FlightResult } from "@/lib/services/flights";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 export default function FlightCard({ flight, cheapest }: { flight: FlightResult; cheapest: boolean }) {
-  const { addItem, removeItem, isInCart } = useTripCartStore();
-  const added = isInCart(flight.id);
+  const addItem = useTripCartStore((s) => s.addItem);
+  const removeItem = useTripCartStore((s) => s.removeItem);
+  const added = useTripCartStore((s) => s.items.some((i) => i.id === flight.id));
 
   const stopsLabel = flight.stops === 0 ? "nonstop" : `${flight.stops} stop${flight.stops > 1 ? "s" : ""}`;
 

@@ -19,8 +19,9 @@ function formatTime(timeStr: string | null): string {
 }
 
 export default function EventCard({ event }: { event: ScoredEvent }) {
-  const { addItem, removeItem, isInCart } = useTripCartStore();
-  const added = isInCart(event.id);
+  const addItem = useTripCartStore((s) => s.addItem);
+  const removeItem = useTripCartStore((s) => s.removeItem);
+  const added = useTripCartStore((s) => s.items.some((i) => i.id === event.id));
 
   const handleToggle = () => {
     if (added) {

@@ -17,8 +17,9 @@ const typeColors: Record<string, { bg: string; text: string }> = {
 };
 
 export default function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
-  const { addItem, removeItem, isInCart } = useTripCartStore();
-  const added = isInCart(suggestion.id);
+  const addItem = useTripCartStore((s) => s.addItem);
+  const removeItem = useTripCartStore((s) => s.removeItem);
+  const added = useTripCartStore((s) => s.items.some((i) => i.id === suggestion.id));
 
   const icon = typeIcons[suggestion.type] || "explore";
   const colors = typeColors[suggestion.type] || typeColors.activity;
