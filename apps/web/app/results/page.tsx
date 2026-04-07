@@ -230,9 +230,9 @@ export default function ResultsPage() {
           </p>
         </motion.div>
 
-        <div className="flex gap-8">
+        <div>
           {/* --- Main Content --- */}
-          <main className="flex-1 min-w-0 pb-20 lg:pb-0">
+          <main className="pb-20 lg:pb-0 lg:pr-[320px]">
             {/* --- Flights --- */}
             {flights.length > 0 && (
               <motion.section

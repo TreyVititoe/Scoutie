@@ -53,8 +53,8 @@ function DesktopSidebar() {
   const grouped = useMemo(() => getItemsByType(items), [items]);
 
   return (
-    <aside className="hidden lg:block w-[320px] flex-shrink-0">
-      <div className="card-3d bg-white rounded-[2rem] p-6 sticky top-24">
+    <aside className="hidden lg:block fixed top-24 right-8 w-[300px] z-30">
+      <div className="card-3d bg-white rounded-[2rem] p-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-headline font-extrabold text-xl text-on-surface">
