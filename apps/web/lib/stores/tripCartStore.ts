@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export type CartItemType =
   | "flight"
@@ -13,13 +13,13 @@ export type CartItem = {
   id: string;
   type: CartItemType;
   title: string;
-  subtitle: string; // airline, venue, neighborhood, etc.
+  subtitle: string;
   price: number | null;
   image: string | null;
   bookingUrl: string | null;
-  provider: string | null; // "skyscanner", "booking", "ticketmaster", etc.
+  provider: string | null;
   date: string | null;
-  meta: Record<string, unknown>; // flexible for type-specific data
+  meta: Record<string, unknown>;
 };
 
 export interface TripCartState {
@@ -33,14 +33,7 @@ export interface TripCartActions {
   clearCart: () => void;
 }
 
-export interface TripCartGetters {
-  totalPrice: number;
-  itemCount: number;
-}
-
-export const useTripCartStore = create<
-  TripCartState & TripCartActions
->()(
+export const useTripCartStore = create<TripCartState & TripCartActions>()(
   persist(
     (set, get) => ({
       items: [],
@@ -62,12 +55,22 @@ export const useTripCartStore = create<
     }),
     {
       name: "walter_cart",
-      skipHydration: true,
+      storage: createJSONStorage(() => {
+        if (typeof window === "undefined") {
+          // SSR fallback — no-op storage
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        }
+        return localStorage;
+      }),
     }
   )
 );
 
-// Computed selectors (derived outside the store for Zustand best practices)
+// Computed selectors
 export const selectTotalPrice = (state: TripCartState) =>
   state.items.reduce((sum, item) => sum + (item.price ?? 0), 0);
 
