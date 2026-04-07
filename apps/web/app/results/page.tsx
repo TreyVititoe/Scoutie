@@ -232,7 +232,7 @@ export default function ResultsPage() {
 
         <div>
           {/* --- Main Content --- */}
-          <main className="pb-20 lg:pb-0 lg:pr-[320px]">
+          <main className="pb-20 lg:pb-0">
             {/* --- Flights --- */}
             {flights.length > 0 && (
               <motion.section
