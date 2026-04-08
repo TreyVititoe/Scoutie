@@ -237,57 +237,38 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
 
-          {/* Social proof strip */}
+          {/* Value props strip */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-8"
+            className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8"
           >
-            {/* Avatar stack */}
-            <div className="flex items-center">
-              <div className="flex -space-x-3">
-                {[
-                  "bg-teal-400",
-                  "bg-cyan-400",
-                  "bg-emerald-400",
-                  "bg-sky-400",
-                  "bg-teal-300",
-                ].map((color, i) => (
-                  <div
-                    key={i}
-                    className={`w-10 h-10 rounded-full ${color} border-2 border-white flex items-center justify-center`}
-                  >
-                    <span className="material-symbols-outlined text-white text-sm">
-                      person
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="ml-4 text-sm text-on-surface-variant font-medium">
-                Joined this week
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-xl">
+                block
+              </span>
+              <p className="text-sm font-bold text-on-surface font-body">
+                Zero fees, zero subscriptions
               </p>
             </div>
-
-            {/* Trip counter */}
-            <div className="flex items-center gap-6">
-              <div>
-                <p className="font-headline font-extrabold text-3xl text-on-surface tracking-tight">
-                  12,400+
-                </p>
-                <p className="text-xs uppercase tracking-[0.2em] font-black text-on-surface-variant">
-                  Trips Planned
-                </p>
-              </div>
-              <div className="w-px h-10 bg-outline-variant" />
-              <div>
-                <p className="font-headline font-extrabold text-3xl text-on-surface tracking-tight">
-                  $0
-                </p>
-                <p className="text-xs uppercase tracking-[0.2em] font-black text-on-surface-variant">
-                  Always Free
-                </p>
-              </div>
+            <div className="hidden sm:block w-px h-8 bg-outline-variant" />
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-xl">
+                verified
+              </span>
+              <p className="text-sm font-bold text-on-surface font-body">
+                Real prices from Google Flights &amp; Booking.com
+              </p>
+            </div>
+            <div className="hidden sm:block w-px h-8 bg-outline-variant" />
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-xl">
+                confirmation_number
+              </span>
+              <p className="text-sm font-bold text-on-surface font-body">
+                Ticketmaster events built in
+              </p>
             </div>
           </motion.div>
         </motion.div>
@@ -371,6 +352,84 @@ export default function HomePage() {
                 </h3>
                 <p className="text-on-surface-variant font-body leading-relaxed">
                   {step.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== EVENTS SHOWCASE ========== */}
+      <section className="bg-surface-container-lowest border-y border-outline-variant/30">
+        <div className="max-w-6xl mx-auto px-6 py-28">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="text-center mb-16"
+          >
+            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">
+              Live Events
+            </span>
+            <h2 className="font-headline font-extrabold text-4xl sm:text-5xl text-on-surface mt-4 tracking-tight">
+              Never miss a <span className="text-gradient">moment</span>
+            </h2>
+            <p className="text-on-surface-variant mt-4 font-body text-lg max-w-2xl mx-auto leading-relaxed">
+              Concerts, games, festivals, theater — Walter finds what&apos;s happening
+              during your trip and lets you add it with one tap.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: "music_note",
+                color: "bg-purple-100 text-purple-600",
+                title: "Concerts & Music",
+                desc: "From arena tours to intimate jazz clubs, see who is performing while you are in town.",
+              },
+              {
+                icon: "sports_score",
+                color: "bg-emerald-100 text-emerald-600",
+                title: "Sports & Games",
+                desc: "Catch live NBA, NFL, soccer, and more. Real-time ticket availability from Ticketmaster.",
+              },
+              {
+                icon: "theater_comedy",
+                color: "bg-amber-100 text-amber-600",
+                title: "Theater & Comedy",
+                desc: "Broadway, stand-up, improv. Find the best shows and book seats before they sell out.",
+              },
+              {
+                icon: "celebration",
+                color: "bg-rose-100 text-rose-600",
+                title: "Festivals & Nightlife",
+                desc: "Food festivals, art fairs, nightlife events. Discover the local scene during your dates.",
+              },
+            ].map((card, i) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ delay: i * 0.1, duration: 0.4, ease: "easeOut" }}
+                className="card-3d p-7"
+              >
+                <div
+                  className={`w-14 h-14 rounded-full ${card.color.split(" ")[0]} flex items-center justify-center mb-5`}
+                >
+                  <span
+                    className={`material-symbols-outlined text-2xl ${card.color.split(" ")[1]}`}
+                  >
+                    {card.icon}
+                  </span>
+                </div>
+                <h3 className="font-headline font-extrabold text-lg text-on-surface mb-2 tracking-tight">
+                  {card.title}
+                </h3>
+                <p className="text-on-surface-variant font-body text-sm leading-relaxed">
+                  {card.desc}
                 </p>
               </motion.div>
             ))}

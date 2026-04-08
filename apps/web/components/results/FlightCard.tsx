@@ -4,12 +4,18 @@ import { motion } from "framer-motion";
 import type { FlightResult } from "@/lib/services/flights";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
+function parseDurationHours(duration: string): number {
+  const match = duration.match(/(\d+)h/);
+  return match ? parseInt(match[1], 10) : 99;
+}
+
 export default function FlightCard({ flight, cheapest }: { flight: FlightResult; cheapest: boolean }) {
   const addItem = useTripCartStore((s) => s.addItem);
   const removeItem = useTripCartStore((s) => s.removeItem);
   const added = useTripCartStore((s) => s.items.some((i) => i.id === flight.id));
 
   const stopsLabel = flight.stops === 0 ? "nonstop" : `${flight.stops} stop${flight.stops > 1 ? "s" : ""}`;
+  const isQuickFlight = parseDurationHours(flight.duration) < 4;
 
   const handleToggle = () => {
     if (added) {
@@ -37,15 +43,25 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
       className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] p-6 cursor-pointer group"
     >
       {/* Tags */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         {cheapest && (
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full font-body">
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-body">
             Best price
           </span>
         )}
         {flight.stops === 0 && (
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-primary/10 text-primary px-2.5 py-1 rounded-full font-body">
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-teal-100 text-teal-700 px-2.5 py-1 rounded-full font-body">
             Direct
+          </span>
+        )}
+        {!cheapest && flight.stops === 0 && isQuickFlight && (
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-sky-100 text-sky-700 px-2.5 py-1 rounded-full font-body">
+            Quick flight
+          </span>
+        )}
+        {flight.stops === 1 && (
+          <span className="text-[10px] font-bold uppercase tracking-widest text-outline-variant font-body">
+            1 stop
           </span>
         )}
       </div>

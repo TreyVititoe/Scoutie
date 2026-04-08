@@ -49,14 +49,34 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] p-6 cursor-pointer"
     >
-      {/* Type badge */}
-      <div className="flex items-center gap-3 mb-4">
+      {/* Type badge & context badges */}
+      <div className="flex items-center gap-3 mb-3">
         <div className={`w-10 h-10 rounded-2xl ${colors.bg} flex items-center justify-center`}>
           <span className={`material-symbols-outlined ${colors.text} text-xl`}>{icon}</span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-widest text-outline-variant font-body">
-          {suggestion.type}
+          {suggestion.type === "restaurant" ? "Dining" : suggestion.type === "site" ? "Landmark" : suggestion.type}
         </span>
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5 mb-4">
+        {suggestion.bestTime && (
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-body">
+            {suggestion.bestTime.toLowerCase().includes("morning")
+              ? "Best in morning"
+              : suggestion.bestTime.toLowerCase().includes("evening")
+                ? "Best in evening"
+                : suggestion.bestTime.toLowerCase().includes("night")
+                  ? "Best at night"
+                  : suggestion.bestTime.toLowerCase().includes("afternoon")
+                    ? "Best in afternoon"
+                    : "Anytime"}
+          </span>
+        )}
+        {(suggestion.estimatedCost === null || suggestion.estimatedCost === 0) && (
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-body">
+            Free
+          </span>
+        )}
       </div>
 
       {/* Title */}
@@ -75,8 +95,10 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
         <p className="text-xs text-outline-variant font-body truncate">{suggestion.locationName}</p>
       </div>
 
-      {/* Best time */}
-      {suggestion.bestTime && (
+      {/* Best time (raw value, shown if not already captured by badge) */}
+      {suggestion.bestTime && !["morning", "evening", "night", "afternoon", "anytime"].some(
+        (t) => suggestion.bestTime.toLowerCase().includes(t)
+      ) && (
         <div className="flex items-center gap-1.5 mb-4">
           <span className="material-symbols-outlined text-outline-variant text-[14px]">schedule</span>
           <p className="text-xs text-outline-variant font-body">{suggestion.bestTime}</p>

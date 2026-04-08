@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -44,6 +44,31 @@ function formatPrice(price: number | null): string {
   return `$${price.toLocaleString()}`;
 }
 
+/* ─── Share hook ─── */
+function useShareTrip() {
+  const [copied, setCopied] = useState(false);
+
+  const share = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textarea = document.createElement("textarea");
+      textarea.value = window.location.href;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }, []);
+
+  return { share, copied };
+}
+
 /* ─── Desktop Sidebar ─── */
 function DesktopSidebar() {
   const removeItem = useTripCartStore((s) => s.removeItem);
@@ -51,6 +76,7 @@ function DesktopSidebar() {
   const totalPrice = useMemo(() => items.reduce((sum, i) => sum + (i.price ?? 0), 0), [items]);
   const itemCount = items.length;
   const grouped = useMemo(() => getItemsByType(items), [items]);
+  const { share, copied } = useShareTrip();
 
   return (
     <aside className="hidden lg:block fixed top-24 right-8 w-[300px] z-30">
@@ -137,18 +163,44 @@ function DesktopSidebar() {
               {totalPrice > 0 ? `$${totalPrice.toLocaleString()}` : "--"}
             </span>
           </div>
-          <Link
-            href="/trip"
-            className={`block w-full py-3.5 rounded-full text-center font-extrabold font-headline text-sm transition-all ${
-              itemCount > 0
-                ? "btn-primary-gradient text-white shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5"
-                : "bg-surface-container-low text-outline-variant pointer-events-none"
-            }`}
-            aria-disabled={itemCount === 0}
-            tabIndex={itemCount === 0 ? -1 : undefined}
-          >
-            View My Trip
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/trip"
+              className={`flex-1 block py-3.5 rounded-full text-center font-extrabold font-headline text-sm transition-all ${
+                itemCount > 0
+                  ? "btn-primary-gradient text-white shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5"
+                  : "bg-surface-container-low text-outline-variant pointer-events-none"
+              }`}
+              aria-disabled={itemCount === 0}
+              tabIndex={itemCount === 0 ? -1 : undefined}
+            >
+              View My Trip
+            </Link>
+            {itemCount > 0 && (
+              <button
+                onClick={share}
+                className="relative flex-shrink-0 w-[46px] h-[46px] rounded-full border-2 border-outline-variant/30 flex items-center justify-center hover:bg-surface-container hover:border-primary/30 transition-all active:scale-90"
+                aria-label="Share trip"
+                title="Share trip"
+              >
+                <span className="material-symbols-outlined text-on-surface-variant text-xl">
+                  {copied ? "check" : "share"}
+                </span>
+                <AnimatePresence>
+                  {copied && (
+                    <motion.span
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold font-body text-primary bg-primary-container px-2 py-0.5 rounded-full"
+                    >
+                      Link copied
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </aside>
@@ -163,6 +215,7 @@ function MobileBar() {
   const totalPrice = useMemo(() => items.reduce((sum, i) => sum + (i.price ?? 0), 0), [items]);
   const itemCount = items.length;
   const grouped = useMemo(() => getItemsByType(items), [items]);
+  const { share, copied } = useShareTrip();
 
   if (itemCount === 0) return null;
 
@@ -275,12 +328,36 @@ function MobileBar() {
                   ${totalPrice.toLocaleString()}
                 </span>
               </div>
-              <Link
-                href="/trip"
-                className="block w-full py-3.5 rounded-full text-center font-extrabold font-headline text-sm btn-primary-gradient text-white shadow-xl shadow-primary/20"
-              >
-                View My Trip
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/trip"
+                  className="flex-1 block py-3.5 rounded-full text-center font-extrabold font-headline text-sm btn-primary-gradient text-white shadow-xl shadow-primary/20"
+                >
+                  View My Trip
+                </Link>
+                <button
+                  onClick={share}
+                  className="relative flex-shrink-0 w-[46px] h-[46px] rounded-full border-2 border-outline-variant/30 flex items-center justify-center hover:bg-surface-container hover:border-primary/30 transition-all active:scale-90"
+                  aria-label="Share trip"
+                  title="Share trip"
+                >
+                  <span className="material-symbols-outlined text-on-surface-variant text-xl">
+                    {copied ? "check" : "share"}
+                  </span>
+                  <AnimatePresence>
+                    {copied && (
+                      <motion.span
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold font-body text-primary bg-primary-container px-2 py-0.5 rounded-full"
+                      >
+                        Link copied
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
@@ -300,12 +377,35 @@ function MobileBar() {
               ${totalPrice.toLocaleString()}
             </span>
           </button>
-          <Link
-            href="/trip"
-            className="px-5 py-2.5 rounded-full font-extrabold font-headline text-sm btn-primary-gradient text-white shadow-lg shadow-primary/20"
-          >
-            View Trip
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={share}
+              className="relative w-9 h-9 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container transition-all active:scale-90"
+              aria-label="Share trip"
+            >
+              <span className="material-symbols-outlined text-on-surface-variant text-lg">
+                {copied ? "check" : "share"}
+              </span>
+              <AnimatePresence>
+                {copied && (
+                  <motion.span
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold font-body text-primary bg-primary-container px-2 py-0.5 rounded-full"
+                  >
+                    Link copied
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+            <Link
+              href="/trip"
+              className="px-5 py-2.5 rounded-full font-extrabold font-headline text-sm btn-primary-gradient text-white shadow-lg shadow-primary/20"
+            >
+              View Trip
+            </Link>
+          </div>
         </div>
       </div>
     </>

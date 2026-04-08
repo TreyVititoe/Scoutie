@@ -43,11 +43,28 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
             <span className="material-symbols-outlined text-purple-300/60 text-4xl">hotel</span>
           </div>
         )}
-        {bestValue && (
-          <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-body">
-            Best value
-          </span>
-        )}
+        <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
+          {bestValue && (
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full font-body">
+              Best value
+            </span>
+          )}
+          {hotel.rating >= 9.0 && (
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-body">
+              Exceptional
+            </span>
+          )}
+          {hotel.rating >= 8.0 && hotel.rating < 9.0 && (
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-teal-100 text-teal-700 px-2.5 py-1 rounded-full font-body">
+              Highly rated
+            </span>
+          )}
+          {!bestValue && hotel.pricePerNight < 150 && (
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-body">
+              Budget-friendly
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="p-6">

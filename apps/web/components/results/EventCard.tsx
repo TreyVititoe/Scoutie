@@ -57,9 +57,21 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
             <span className="material-symbols-outlined text-primary/30 text-4xl">local_activity</span>
           </div>
         )}
-        <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest bg-white/90 backdrop-blur-sm text-on-surface px-2.5 py-1 rounded-full font-body">
-          {event.category}
-        </span>
+        <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-white/90 backdrop-blur-sm text-on-surface px-2.5 py-1 rounded-full font-body">
+            {event.category}
+          </span>
+          {(event.priceMin === null || event.priceMin === 0) && (
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-body">
+              Free
+            </span>
+          )}
+          {event.priceMin !== null && event.priceMin > 0 && event.priceMin < 30 && (
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-teal-100 text-teal-700 px-2.5 py-1 rounded-full font-body">
+              Under $30
+            </span>
+          )}
+        </div>
         {event.matchReason && (
           <span className="absolute top-3 right-3 text-[10px] font-bold bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full font-body max-w-[140px] truncate">
             {event.matchReason}
