@@ -8,51 +8,46 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
+        "gray-light": "#f5f5f7",
+        "gray-dark": "#1d1d1f",
+        accent: {
           DEFAULT: "#006571",
-          dim: "#005862",
-          container: "#79e7f8",
+          light: "#007d8a",
         },
-        "on-primary": "#d7f9ff",
-        "on-primary-container": "#00535d",
-        secondary: {
-          DEFAULT: "#266658",
-          container: "#afefdd",
-        },
-        "on-secondary-container": "#195c4e",
-        tertiary: {
-          DEFAULT: "#005cab",
-          container: "#7eb2ff",
-        },
-        background: "#f5f7f8",
-        surface: {
-          DEFAULT: "#f5f7f8",
-          "container-lowest": "#ffffff",
-          "container-low": "#eef1f2",
-          container: "#e5e9ea",
-          "container-high": "#dfe3e4",
-        },
-        "on-surface": "#2c2f30",
-        "on-surface-variant": "#595c5d",
-        "on-background": "#2c2f30",
-        outline: {
-          DEFAULT: "#747778",
-          variant: "#abadae",
-        },
-        error: {
-          DEFAULT: "#b31b25",
-          container: "#fb5151",
+        "on-dark-secondary": "rgba(255,255,255,0.8)",
+        "on-dark-tertiary": "rgba(255,255,255,0.48)",
+        "on-light-secondary": "rgba(0,0,0,0.8)",
+        "on-light-tertiary": "rgba(0,0,0,0.48)",
+        "surface-dark": {
+          1: "#272729",
+          2: "#2a2a2d",
         },
       },
       fontFamily: {
-        headline: ["var(--font-headline)", "Plus Jakarta Sans", "sans-serif"],
-        body: ["var(--font-body)", "Manrope", "sans-serif"],
-        label: ["var(--font-body)", "Manrope", "sans-serif"],
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
       },
       borderRadius: {
-        "2xl": "1rem",
-        "3xl": "1.5rem",
-        "4xl": "2rem",
+        DEFAULT: "8px",
+        pill: "980px",
+      },
+      boxShadow: {
+        card: "3px 5px 30px 0px rgba(0, 0, 0, 0.22)",
+      },
+      letterSpacing: {
+        "display": "-0.3px",
+        "section": "-0.2px",
+        "body": "-0.4px",
+        "caption": "-0.2px",
+        "micro": "-0.1px",
+      },
+      lineHeight: {
+        "display": "1.07",
+        "section": "1.10",
+        "page": "1.14",
+        "card-title": "1.19",
+      },
+      maxWidth: {
+        "content": "980px",
       },
     },
   },
