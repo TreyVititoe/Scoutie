@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 
 const destinations = [
   {
@@ -77,280 +76,145 @@ const features = [
 ];
 
 export default function HomePage() {
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen">
       {/* ========== HEADER ========== */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-header">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-50 nav-glass">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link
             href="/"
-            className="text-2xl font-black italic text-teal-700 font-headline tracking-tight"
+            className="text-white text-[17px] font-semibold"
           >
-            Walter
+            Scoutie
           </Link>
           <div className="flex items-center gap-8">
             <Link
               href="/explore"
-              className="text-slate-500 font-medium text-sm hover:text-teal-700 transition-colors hidden sm:block"
+              className="text-white text-[12px] hidden sm:block"
             >
               Explore
             </Link>
             <Link
               href="/quiz"
-              className="text-slate-500 font-medium text-sm hover:text-teal-700 transition-colors hidden sm:block"
+              className="text-white text-[12px] hidden sm:block"
             >
               Plan a Trip
             </Link>
-            <div className="flex items-center gap-3">
-              <button className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors active:scale-90">
-                <span className="material-symbols-outlined text-on-surface-variant">
-                  notifications
-                </span>
-              </button>
-              <button className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors active:scale-90">
-                <span className="material-symbols-outlined text-on-surface-variant">
-                  account_circle
-                </span>
-              </button>
-              <Link
-                href="/quiz"
-                className="btn-primary-gradient inline-flex items-center justify-center px-6 py-2.5 rounded-full text-white text-sm font-bold transition-all hover:scale-105 active:scale-95"
-              >
-                Get Started
-              </Link>
-            </div>
+            <Link
+              href="/quiz"
+              className="bg-accent text-white rounded-pill px-4 py-1.5 text-[14px]"
+            >
+              Get Started
+            </Link>
           </div>
         </div>
       </nav>
 
       {/* ========== HERO ========== */}
-      <section
-        ref={heroRef}
-        className="relative overflow-hidden min-h-[92vh] flex items-center"
-      >
-        {/* Soft background blobs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full bg-primary-container/20 blur-[120px]" />
-          <div className="absolute -bottom-60 -left-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[100px]" />
-          <motion.div
-            className="absolute top-1/4 right-1/4 w-2 h-2 rounded-full bg-primary/30"
-            animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
-            transition={{ duration: 4, repeat: Infinity }}
-          />
-          <motion.div
-            className="absolute top-1/3 left-2/3 w-3 h-3 rounded-full bg-primary-container/40"
-            animate={{ y: [0, -30, 0], opacity: [0.2, 0.6, 0.2] }}
-            transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-          />
-          <motion.div
-            className="absolute bottom-1/3 right-1/5 w-1.5 h-1.5 rounded-full bg-primary/25"
-            animate={{ y: [0, -15, 0], opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 3.5, repeat: Infinity, delay: 2 }}
-          />
-        </div>
-
+      <section className="bg-black min-h-[92vh] flex items-center">
         <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="max-w-6xl mx-auto px-6 pt-36 pb-24 relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-6xl mx-auto px-6 pt-36 pb-24"
         >
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="max-w-3xl"
-          >
-            {/* Walter AI badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold tracking-widest uppercase mb-10"
-            >
-              <span className="material-symbols-outlined text-base">
-                auto_awesome
-              </span>
-              Walter AI
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.5, ease: "easeOut" }}
-              className="font-headline font-extrabold text-5xl md:text-7xl text-on-surface leading-[1.05] tracking-tight mb-7"
-            >
+          <div className="max-w-3xl">
+            <h1 className="text-white text-[56px] font-semibold leading-display tracking-display mb-7">
               One quiz.
               <br />
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25, duration: 0.5, ease: "easeOut" }}
-                className="text-gradient inline-block"
-              >
-                Your whole trip.
-              </motion.span>
-            </motion.h1>
+              Your whole trip.
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.5, ease: "easeOut" }}
-              className="text-lg md:text-xl text-on-surface-variant font-body leading-relaxed mb-12 max-w-xl"
-            >
-              Tell Walter how you like to travel. Get complete, bookable
+            <p className="text-on-dark-secondary text-[21px] leading-card-title mb-12 max-w-xl">
+              Tell Scoutie how you like to travel. Get complete, bookable
               itineraries with flights, hotels, activities, and more -- in
               seconds.
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.5, ease: "easeOut" }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href="/quiz"
-                  className="btn-primary-gradient inline-flex items-center justify-center px-8 py-4 rounded-full text-white text-lg font-bold"
-                >
-                  Plan your trip
-                  <span className="material-symbols-outlined ml-2 text-xl">
-                    arrow_forward
-                  </span>
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <a
-                  href="#how-it-works"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-outline-variant text-on-surface font-bold hover:bg-surface-container-lowest hover:border-primary/30 transition-colors"
-                >
-                  How it works
-                </a>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-
-          {/* Value props strip */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="mt-16 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8"
-          >
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary text-xl">
-                block
-              </span>
-              <p className="text-sm font-bold text-on-surface font-body">
-                Zero fees, zero subscriptions
-              </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a
+                href="#how-it-works"
+                className="border border-accent-light text-accent-light rounded-pill px-5 py-2 text-sm inline-flex items-center justify-center"
+              >
+                Learn more
+              </a>
+              <Link
+                href="/quiz"
+                className="bg-accent text-white rounded-[8px] px-4 py-2 text-[17px] inline-flex items-center justify-center"
+              >
+                Get started
+              </Link>
             </div>
-            <div className="hidden sm:block w-px h-8 bg-outline-variant" />
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary text-xl">
-                verified
-              </span>
-              <p className="text-sm font-bold text-on-surface font-body">
-                Real prices from Google Flights &amp; Booking.com
-              </p>
-            </div>
-            <div className="hidden sm:block w-px h-8 bg-outline-variant" />
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary text-xl">
-                confirmation_number
-              </span>
-              <p className="text-sm font-bold text-on-surface font-body">
-                Ticketmaster events built in
-              </p>
-            </div>
-          </motion.div>
+          </div>
         </motion.div>
       </section>
 
       {/* ========== FEATURES STRIP ========== */}
-      <section className="border-y border-outline-variant/30 bg-surface-container-lowest overflow-hidden">
+      <section className="bg-gray-light overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
+          transition={{ duration: 0.3 }}
           className="max-w-6xl mx-auto px-6 py-8"
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
-            {features.map((f, i) => (
-              <motion.div
+            {features.map((f) => (
+              <div
                 key={f.title}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
                 className="flex items-start gap-3 py-2"
               >
-                <span className="material-symbols-outlined text-primary text-xl mt-0.5">
+                <span className="material-symbols-outlined text-accent text-xl mt-0.5">
                   {f.icon}
                 </span>
                 <div>
-                  <p className="text-sm font-bold text-on-surface leading-tight font-headline">
+                  <p className="text-sm font-semibold text-gray-dark leading-tight">
                     {f.title}
                   </p>
-                  <p className="text-xs text-on-surface-variant mt-0.5">
+                  <p className="text-xs text-on-light-secondary mt-0.5">
                     {f.desc}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </motion.div>
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section id="how-it-works" className="bg-surface">
-        <div className="max-w-6xl mx-auto px-6 py-28 relative z-10">
+      <section id="how-it-works" className="bg-black">
+        <div className="max-w-6xl mx-auto px-6 py-28">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.3 }}
             className="text-center mb-20"
           >
-            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">
-              How It Works
-            </span>
-            <h2 className="font-headline font-extrabold text-4xl sm:text-5xl text-on-surface mt-4 tracking-tight">
-              Three steps to{" "}
-              <span className="text-gradient">your perfect trip</span>
+            <h2 className="text-white text-[40px] font-semibold leading-section tracking-section">
+              Three steps to your perfect trip
             </h2>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {steps.map((step, i) => (
+            {steps.map((step) => (
               <motion.div
                 key={step.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: i * 0.15, duration: 0.4, ease: "easeOut" }}
-                className="card-3d p-8 relative"
+                transition={{ duration: 0.3 }}
+                className="bg-surface-dark-1 rounded-[8px] p-8"
               >
-                <div className="w-14 h-14 rounded-2xl bg-primary-container/40 flex items-center justify-center mb-6">
-                  <span className="material-symbols-outlined text-primary text-2xl">
+                <div className="w-14 h-14 rounded-[8px] bg-accent/20 flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-accent-light text-2xl">
                     {step.icon}
                   </span>
                 </div>
-                <span className="absolute top-6 right-8 font-headline font-extrabold text-6xl text-primary/[0.06]">
-                  0{i + 1}
-                </span>
-                <h3 className="font-headline font-extrabold text-xl text-on-surface mb-3 tracking-tight">
+                <h3 className="text-white font-semibold text-[17px] mb-3">
                   {step.title}
                 </h3>
-                <p className="text-on-surface-variant font-body leading-relaxed">
+                <p className="text-on-dark-secondary leading-relaxed">
                   {step.desc}
                 </p>
               </motion.div>
@@ -360,23 +224,20 @@ export default function HomePage() {
       </section>
 
       {/* ========== EVENTS SHOWCASE ========== */}
-      <section className="bg-surface-container-lowest border-y border-outline-variant/30">
+      <section className="bg-gray-light">
         <div className="max-w-6xl mx-auto px-6 py-28">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.3 }}
             className="text-center mb-16"
           >
-            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">
-              Live Events
-            </span>
-            <h2 className="font-headline font-extrabold text-4xl sm:text-5xl text-on-surface mt-4 tracking-tight">
-              Never miss a <span className="text-gradient">moment</span>
+            <h2 className="text-gray-dark text-[40px] font-semibold leading-section tracking-section">
+              Never miss a moment
             </h2>
-            <p className="text-on-surface-variant mt-4 font-body text-lg max-w-2xl mx-auto leading-relaxed">
-              Concerts, games, festivals, theater — Walter finds what&apos;s happening
+            <p className="text-on-light-secondary mt-4 text-lg max-w-2xl mx-auto leading-relaxed">
+              Concerts, games, festivals, theater — Scoutie finds what&apos;s happening
               during your trip and lets you add it with one tap.
             </p>
           </motion.div>
@@ -385,50 +246,42 @@ export default function HomePage() {
             {[
               {
                 icon: "music_note",
-                color: "bg-purple-100 text-purple-600",
                 title: "Concerts & Music",
                 desc: "From arena tours to intimate jazz clubs, see who is performing while you are in town.",
               },
               {
                 icon: "sports_score",
-                color: "bg-emerald-100 text-emerald-600",
                 title: "Sports & Games",
                 desc: "Catch live NBA, NFL, soccer, and more. Real-time ticket availability from Ticketmaster.",
               },
               {
                 icon: "theater_comedy",
-                color: "bg-amber-100 text-amber-600",
                 title: "Theater & Comedy",
                 desc: "Broadway, stand-up, improv. Find the best shows and book seats before they sell out.",
               },
               {
                 icon: "celebration",
-                color: "bg-rose-100 text-rose-600",
                 title: "Festivals & Nightlife",
                 desc: "Food festivals, art fairs, nightlife events. Discover the local scene during your dates.",
               },
-            ].map((card, i) => (
+            ].map((card) => (
               <motion.div
                 key={card.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
-                transition={{ delay: i * 0.1, duration: 0.4, ease: "easeOut" }}
-                className="card-3d p-7"
+                transition={{ duration: 0.3 }}
+                className="bg-white rounded-[8px] p-7"
               >
-                <div
-                  className={`w-14 h-14 rounded-full ${card.color.split(" ")[0]} flex items-center justify-center mb-5`}
-                >
-                  <span
-                    className={`material-symbols-outlined text-2xl ${card.color.split(" ")[1]}`}
-                  >
+                <div className="w-14 h-14 rounded-full bg-gray-light flex items-center justify-center mb-5">
+                  <span className="material-symbols-outlined text-accent text-2xl">
                     {card.icon}
                   </span>
                 </div>
-                <h3 className="font-headline font-extrabold text-lg text-on-surface mb-2 tracking-tight">
+                <h3 className="font-semibold text-[17px] text-gray-dark mb-2">
                   {card.title}
                 </h3>
-                <p className="text-on-surface-variant font-body text-sm leading-relaxed">
+                <p className="text-on-light-secondary text-sm leading-relaxed">
                   {card.desc}
                 </p>
               </motion.div>
@@ -438,29 +291,26 @@ export default function HomePage() {
       </section>
 
       {/* ========== DESTINATION TEASERS ========== */}
-      <section className="bg-surface-container-lowest border-y border-outline-variant/30">
+      <section className="bg-black">
         <div className="max-w-6xl mx-auto px-6 py-28">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.3 }}
             className="flex items-end justify-between mb-12"
           >
             <div>
-              <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">
-                Explore
-              </span>
-              <h2 className="font-headline font-extrabold text-4xl sm:text-5xl text-on-surface mt-4 tracking-tight">
+              <h2 className="text-white text-[40px] font-semibold">
                 Popular destinations
               </h2>
-              <p className="text-on-surface-variant mt-3 font-body">
+              <p className="text-on-dark-secondary mt-3">
                 Click to start your trip with a destination pre-filled.
               </p>
             </div>
             <Link
               href="/explore"
-              className="hidden sm:flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-dark transition-colors"
+              className="hidden sm:flex items-center gap-1 text-accent-light text-sm"
             >
               View all
               <span className="material-symbols-outlined text-lg">
@@ -474,15 +324,14 @@ export default function HomePage() {
             {destinations.map((d, i) => (
               <motion.div
                 key={d.name}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
-                transition={{ delay: i * 0.08, duration: 0.4, ease: "easeOut" }}
-                whileHover={{ y: -8 }}
+                transition={{ duration: 0.3 }}
               >
                 <Link
                   href={`/quiz?destination=${encodeURIComponent(d.name)}`}
-                  className={`group relative block overflow-hidden card-3d ${
+                  className={`relative block overflow-hidden rounded-[8px] shadow-elevated ${
                     i === 0 || i === 3
                       ? "aspect-[4/5] sm:row-span-1"
                       : "aspect-[4/3]"
@@ -491,26 +340,21 @@ export default function HomePage() {
                   <img
                     src={d.image}
                     alt={d.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent group-hover:from-black/80 transition-colors duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[11px] font-black uppercase tracking-[0.15em] bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full border border-white/10">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.15em] bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full">
                         {d.tag}
                       </span>
                     </div>
-                    <p className="font-headline font-extrabold text-2xl text-white tracking-tight">
+                    <p className="font-semibold text-2xl text-white">
                       {d.name}
                     </p>
-                    <p className="text-white/50 text-sm font-mono mt-1">
+                    <p className="text-on-dark-tertiary text-sm mt-1">
                       {d.price}
                     </p>
-                  </div>
-                  <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-white/10 group-hover:scale-110">
-                    <span className="material-symbols-outlined text-white text-lg">
-                      arrow_outward
-                    </span>
                   </div>
                 </Link>
               </motion.div>
@@ -520,41 +364,28 @@ export default function HomePage() {
       </section>
 
       {/* ========== CTA ========== */}
-      <section className="relative overflow-hidden">
-        <div className="bg-gradient-animated noise">
-          <div className="max-w-6xl mx-auto px-6 py-28 text-center relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+      <section className="bg-gray-light">
+        <div className="max-w-6xl mx-auto px-6 py-28 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.3 }}
+          >
+            <h2 className="text-gray-dark text-[40px] font-semibold mb-6">
+              Ready to plan your next adventure?
+            </h2>
+            <p className="text-on-light-secondary text-lg mb-12 max-w-xl mx-auto">
+              No sign-up required. Take the quiz, get your trip, book when
+              you&apos;re ready.
+            </p>
+            <Link
+              href="/quiz"
+              className="bg-accent text-white rounded-[8px] px-6 py-3 text-[17px] inline-flex items-center justify-center"
             >
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white/90 rounded-full text-xs font-bold tracking-widest uppercase mb-8 border border-white/10">
-                <span className="material-symbols-outlined text-base">
-                  auto_awesome
-                </span>
-                Powered by AI
-              </span>
-              <h2 className="font-headline font-extrabold text-4xl sm:text-5xl text-white mb-6 tracking-tight">
-                Ready to plan your next adventure?
-              </h2>
-              <p className="text-white/60 text-lg mb-12 max-w-xl mx-auto font-body">
-                No sign-up required. Take the quiz, get your trip, book when
-                you&apos;re ready.
-              </p>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href="/quiz"
-                  className="inline-flex items-center justify-center px-10 py-5 rounded-full bg-white text-primary text-lg font-bold shadow-2xl shadow-black/20"
-                >
-                  Start planning
-                  <span className="material-symbols-outlined ml-2 text-xl">
-                    arrow_forward
-                  </span>
-                </Link>
-              </motion.div>
-            </motion.div>
-          </div>
+              Start planning
+            </Link>
+          </motion.div>
         </div>
       </section>
 
