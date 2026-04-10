@@ -26,12 +26,12 @@ type PackingListProps = {
 function SkeletonCategory() {
   return (
     <div className="space-y-3">
-      <div className="h-5 w-32 bg-border rounded animate-pulse" />
+      <div className="h-5 w-32 bg-gray-light rounded-[8px] animate-pulse" />
       <div className="space-y-2">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex items-center gap-3">
-            <div className="h-4 w-4 bg-border rounded animate-pulse" />
-            <div className="h-4 w-40 bg-border rounded animate-pulse" />
+            <div className="h-4 w-4 bg-gray-light rounded-[8px] animate-pulse" />
+            <div className="h-4 w-40 bg-gray-light rounded-[8px] animate-pulse" />
           </div>
         ))}
       </div>
@@ -122,15 +122,15 @@ export default function PackingList({
   const checkedCount = checkedItems.size;
 
   return (
-    <div className="bg-surface rounded-2xl border border-border overflow-hidden">
+    <div className="bg-white rounded-[8px] p-6 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+      <div className="pb-5 mb-5 border-b border-black/10 flex items-center justify-between">
         <div>
-          <h3 className="font-display font-bold text-lg text-text">
+          <h3 className="font-sans font-semibold text-lg text-gray-dark">
             Packing List
           </h3>
           {generated && totalItems > 0 && (
-            <p className="text-xs text-text-muted mt-0.5">
+            <p className="text-xs text-on-light-tertiary mt-0.5">
               {checkedCount} of {totalItems} items packed
             </p>
           )}
@@ -139,7 +139,7 @@ export default function PackingList({
           {generated && categories.length > 0 && (
             <button
               onClick={handleCopy}
-              className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-text-secondary hover:bg-background transition-colors"
+              className="px-3 py-1.5 rounded-[8px] text-xs font-semibold text-accent hover:underline transition-colors"
             >
               {copied ? "Copied" : "Copy list"}
             </button>
@@ -149,7 +149,7 @@ export default function PackingList({
             disabled={loading}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="px-4 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary-dark transition-colors disabled:opacity-50"
+            className="px-4 py-1.5 rounded-[8px] bg-accent text-white text-xs font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50"
           >
             {loading
               ? "Generating..."
@@ -161,10 +161,10 @@ export default function PackingList({
       </div>
 
       {/* Content */}
-      <div className="px-6 py-5">
+      <div>
         {/* Not yet generated */}
         {!generated && !loading && (
-          <p className="text-sm text-text-muted text-center py-4">
+          <p className="text-sm text-on-light-tertiary text-center py-4">
             Generate an AI-powered packing list tailored to your trip.
           </p>
         )}
@@ -188,9 +188,9 @@ export default function PackingList({
           <>
             {/* Progress bar */}
             <div className="mb-6">
-              <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-gray-light rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-primary rounded-full"
+                  className="h-full bg-accent rounded-full"
                   initial={{ width: "0%" }}
                   animate={{
                     width:
@@ -206,7 +206,7 @@ export default function PackingList({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {categories.map((cat) => (
                 <div key={cat.name}>
-                  <h4 className="font-display font-bold text-sm text-text mb-3 uppercase tracking-wider">
+                  <h4 className="font-sans font-semibold text-sm text-gray-dark mb-3 uppercase tracking-wider">
                     {cat.name}
                   </h4>
                   <ul className="space-y-1.5">
@@ -224,24 +224,24 @@ export default function PackingList({
                               type="checkbox"
                               checked={checked}
                               onChange={() => toggleItem(key)}
-                              className="w-4 h-4 rounded border-border text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer"
+                              className="w-4 h-4 rounded border-black/10 text-accent focus:ring-accent focus:ring-offset-0 cursor-pointer"
                             />
                             <span
                               className={`text-sm transition-colors ${
                                 checked
-                                  ? "line-through text-text-muted"
-                                  : "text-text group-hover:text-primary"
+                                  ? "line-through text-on-light-tertiary"
+                                  : "text-gray-dark group-hover:text-accent"
                               }`}
                             >
                               {item.name}
                               {item.quantity > 1 && (
-                                <span className="text-text-muted ml-1">
+                                <span className="text-on-light-tertiary ml-1">
                                   x{item.quantity}
                                 </span>
                               )}
                             </span>
                             {item.essential && (
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-[8px]">
                                 Essential
                               </span>
                             )}
