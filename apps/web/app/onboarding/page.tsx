@@ -54,18 +54,18 @@ export default function OnboardingPage() {
   const progress = (step / TOTAL_STEPS) * 100;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gray-light flex flex-col">
       {/* Header */}
       <div className="px-6 pt-8 pb-4">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-xl font-bold text-gray-900">walter</span>
-            <span className="text-sm text-gray-400">{step} of {TOTAL_STEPS}</span>
+            <span className="text-[17px] font-semibold text-gray-dark">Scoutie</span>
+            <span className="text-sm text-on-light-tertiary">{step} of {TOTAL_STEPS}</span>
           </div>
           {/* Progress bar */}
-          <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-1 bg-black/5 rounded-full overflow-hidden">
             <div
-              className="h-full bg-sky-500 rounded-full transition-all duration-500"
+              className="h-full bg-accent rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
