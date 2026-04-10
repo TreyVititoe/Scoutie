@@ -72,20 +72,20 @@ export default function Step5Accommodation() {
         {/* No accommodation toggle */}
         <button
           onClick={toggleNoAccommodation}
-          className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-300 ${
+          className={`w-full flex items-center gap-3 p-4 rounded-[8px] border transition-colors ${
             store.noAccommodation
-              ? "border-primary bg-primary text-white shadow-lg shadow-primary/15"
-              : "border-outline-variant/30 bg-surface-container-low hover:border-primary/40"
+              ? "border-accent bg-accent text-white"
+              : "border-black/10 bg-white hover:border-accent/30"
           }`}
         >
-          <span className={`material-symbols-outlined text-[24px] ${store.noAccommodation ? "text-white" : "text-on-surface-variant"}`}>
+          <span className={`material-symbols-outlined text-[24px] ${store.noAccommodation ? "text-white" : "text-on-light-tertiary"}`}>
             group
           </span>
           <div className="text-left flex-1">
-            <p className={`font-headline font-bold text-sm ${store.noAccommodation ? "text-white" : "text-on-surface"}`}>
+            <p className={`font-semibold text-sm ${store.noAccommodation ? "text-white" : "text-gray-dark"}`}>
               Don't need a place
             </p>
-            <p className={`text-xs font-body mt-0.5 ${store.noAccommodation ? "text-white/80" : "text-on-surface-variant"}`}>
+            <p className={`text-xs mt-0.5 ${store.noAccommodation ? "text-white/80" : "text-on-light-secondary"}`}>
               Staying with friends or family
             </p>
           </div>
@@ -95,9 +95,9 @@ export default function Step5Accommodation() {
         </button>
 
         {store.noAccommodation && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
-            <span className="material-symbols-outlined text-primary text-[18px]">info</span>
-            <p className="text-sm text-on-surface-variant font-body">
+          <div className="flex items-center gap-2 px-4 py-3 rounded-[8px] bg-accent/5 border border-accent/10">
+            <span className="material-symbols-outlined text-accent text-[18px]">info</span>
+            <p className="text-sm text-on-light-secondary">
               We'll skip accommodation and focus on everything else.
             </p>
           </div>
@@ -112,20 +112,20 @@ export default function Step5Accommodation() {
                 <button
                   key={t.value}
                   onClick={() => toggleType(t.value)}
-                  className={`card-3d flex flex-col items-center gap-2 p-5 rounded-2xl border-2 transition-all duration-300 ${
+                  className={`flex flex-col items-center gap-2 p-4 rounded-[8px] border transition-colors ${
                     isSelected
-                      ? "border-primary shadow-lg shadow-primary/15"
-                      : "border-transparent hover:-translate-y-2"
+                      ? "border-accent bg-accent/5"
+                      : "border-black/10 bg-white hover:border-accent/30"
                   }`}
                 >
-                  <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-primary" : "text-on-surface-variant"}`}>
+                  <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
                     {t.icon}
                   </span>
-                  <span className={`text-sm font-body font-semibold ${isSelected ? "text-primary" : "text-on-surface"}`}>
+                  <span className={`text-sm font-semibold ${isSelected ? "text-accent" : "text-gray-dark"}`}>
                     {t.label}
                   </span>
                   {isSelected && (
-                    <span className="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+                    <span className="material-symbols-outlined text-accent text-[16px]">check_circle</span>
                   )}
                 </button>
               );
@@ -134,7 +134,7 @@ export default function Step5Accommodation() {
 
           {/* Must-haves */}
           <div className="mt-6">
-            <label className="block text-sm font-semibold font-body text-on-surface-variant mb-2">
+            <label className="block text-sm font-semibold text-gray-dark mb-2">
               Must-haves
             </label>
             <div className="flex flex-wrap gap-2">
@@ -144,10 +144,10 @@ export default function Step5Accommodation() {
                   <button
                     key={item.label}
                     onClick={() => toggleMustHave(item.label)}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-body font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
-                        ? "bg-primary text-white shadow-md shadow-primary/20"
-                        : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                        ? "bg-accent text-white shadow-md"
+                        : "bg-gray-light text-on-light-secondary hover:bg-black/5"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
@@ -160,7 +160,7 @@ export default function Step5Accommodation() {
 
           {/* Location preference */}
           <div className="mt-6">
-            <label className="block text-sm font-semibold font-body text-on-surface-variant mb-2">
+            <label className="block text-sm font-semibold text-gray-dark mb-2">
               Location preference
             </label>
             <div className="flex flex-wrap gap-2">
@@ -170,10 +170,10 @@ export default function Step5Accommodation() {
                   <button
                     key={loc.label}
                     onClick={() => store.setLocationPreference(loc.label)}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-body font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
-                        ? "bg-primary text-white shadow-md shadow-primary/20"
-                        : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                        ? "bg-accent text-white shadow-md"
+                        : "bg-gray-light text-on-light-secondary hover:bg-black/5"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{loc.icon}</span>

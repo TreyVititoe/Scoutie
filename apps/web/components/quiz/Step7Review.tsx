@@ -7,11 +7,11 @@ export default function Step7Review() {
   const store = useQuizStore();
 
   const Section = ({ icon, label, value }: { icon: string; label: string; value: string }) => (
-    <div className="flex items-start gap-3 py-3 border-b border-outline-variant/15 last:border-0">
-      <span className="material-symbols-outlined text-primary text-[20px] mt-0.5 shrink-0">{icon}</span>
+    <div className="flex items-start gap-3 py-3 border-b border-black/5 last:border-0">
+      <span className="material-symbols-outlined text-accent text-[20px] mt-0.5 shrink-0">{icon}</span>
       <div className="flex-1 flex justify-between items-start">
-        <span className="text-sm text-on-surface-variant font-body">{label}</span>
-        <span className="text-sm font-semibold text-on-surface font-body text-right max-w-[55%]">{value}</span>
+        <span className="text-sm text-on-light-secondary">{label}</span>
+        <span className="text-sm font-semibold text-gray-dark text-right max-w-[55%]">{value}</span>
       </div>
     </div>
   );
@@ -31,10 +31,10 @@ export default function Step7Review() {
     >
       <div className="space-y-4">
         {/* Trip Basics */}
-        <div className="bg-surface-container-low rounded-2xl p-5">
+        <div className="bg-gray-light rounded-[8px] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary text-[20px]">explore</span>
-            <p className="text-xs font-bold font-body text-primary uppercase tracking-wider">Trip basics</p>
+            <span className="material-symbols-outlined text-accent text-[20px]">explore</span>
+            <p className="text-xs font-semibold text-accent uppercase tracking-wider">Trip basics</p>
           </div>
           {store.destinations.length > 0 && (
             <Section icon="location_on" label="Destination" value={store.destinations.join(", ")} />
@@ -74,10 +74,10 @@ export default function Step7Review() {
         </div>
 
         {/* Flights */}
-        <div className="bg-surface-container-low rounded-2xl p-5">
+        <div className="bg-gray-light rounded-[8px] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary text-[20px]">flight</span>
-            <p className="text-xs font-bold font-body text-primary uppercase tracking-wider">Flights</p>
+            <span className="material-symbols-outlined text-accent text-[20px]">flight</span>
+            <p className="text-xs font-semibold text-accent uppercase tracking-wider">Flights</p>
           </div>
           {store.departureCity ? (
             <Section icon="flight_takeoff" label="Departing from" value={store.departureCity} />
@@ -90,10 +90,10 @@ export default function Step7Review() {
         </div>
 
         {/* Accommodation */}
-        <div className="bg-surface-container-low rounded-2xl p-5">
+        <div className="bg-gray-light rounded-[8px] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary text-[20px]">hotel</span>
-            <p className="text-xs font-bold font-body text-primary uppercase tracking-wider">Accommodation</p>
+            <span className="material-symbols-outlined text-accent text-[20px]">hotel</span>
+            <p className="text-xs font-semibold text-accent uppercase tracking-wider">Accommodation</p>
           </div>
           {store.noAccommodation ? (
             <Section icon="group" label="Stay" value="Not needed (staying with friends/family)" />
@@ -112,10 +112,10 @@ export default function Step7Review() {
 
         {/* Interests */}
         {store.activityInterests.length > 0 && (
-          <div className="bg-surface-container-low rounded-2xl p-5">
+          <div className="bg-gray-light rounded-[8px] p-5">
             <div className="flex items-center gap-2 mb-3">
-              <span className="material-symbols-outlined text-primary text-[20px]">interests</span>
-              <p className="text-xs font-bold font-body text-primary uppercase tracking-wider">Interests</p>
+              <span className="material-symbols-outlined text-accent text-[20px]">interests</span>
+              <p className="text-xs font-semibold text-accent uppercase tracking-wider">Interests</p>
             </div>
             <Section
               icon="interests"

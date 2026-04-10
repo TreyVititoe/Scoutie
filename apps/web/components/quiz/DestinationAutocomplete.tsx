@@ -146,13 +146,13 @@ export default function DestinationAutocomplete() {
           {store.destinations.map((d) => (
             <span
               key={d}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-body font-semibold"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-gray-light text-gray-dark text-sm font-semibold"
             >
               <span className="material-symbols-outlined text-[16px]">location_on</span>
               {d}
               <button
                 onClick={() => removeDestination(d)}
-                className="hover:text-error ml-0.5"
+                className="text-on-light-tertiary hover:text-gray-dark ml-0.5"
                 aria-label={`Remove ${d}`}
               >
                 <span className="material-symbols-outlined text-[16px]">close</span>
@@ -164,7 +164,7 @@ export default function DestinationAutocomplete() {
 
       <div ref={containerRef} className="relative">
         <div className="relative">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[22px]">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[22px]">
             location_on
           </span>
           <input
@@ -177,7 +177,7 @@ export default function DestinationAutocomplete() {
               if (results.length > 0) setIsOpen(true);
             }}
             placeholder="Search for a city or country..."
-            className="w-full bg-surface-container-low border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/20 font-body"
+            className="w-full bg-white border border-black/10 rounded-[8px] py-3 pl-12 pr-4 text-gray-dark placeholder:text-on-light-tertiary/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
             role="combobox"
             aria-expanded={isOpen}
             aria-autocomplete="list"
@@ -185,7 +185,7 @@ export default function DestinationAutocomplete() {
           />
           {isLoading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="w-5 h-5 border-2 border-outline-variant border-t-primary rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-black/10 border-t-accent rounded-full animate-spin" />
             </div>
           )}
         </div>
@@ -194,7 +194,7 @@ export default function DestinationAutocomplete() {
           <ul
             id="destination-listbox"
             role="listbox"
-            className="absolute z-50 w-full mt-2 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl overflow-hidden"
+            className="absolute z-50 w-full mt-2 bg-white rounded-[8px] shadow-elevated border border-black/5 overflow-hidden"
           >
             {results.map((feature, index) => {
               const label = formatPlace(feature);
@@ -206,30 +206,30 @@ export default function DestinationAutocomplete() {
                   key={feature.id}
                   role="option"
                   aria-selected={isHighlighted}
-                  className={`px-4 py-3 cursor-pointer text-sm font-body transition-colors flex items-center gap-3 ${
+                  className={`px-4 py-3 cursor-pointer text-sm transition-colors flex items-center gap-3 ${
                     isHighlighted
-                      ? "bg-primary/10 text-primary"
-                      : "text-on-surface hover:bg-surface-container-low"
+                      ? "bg-accent/10 text-accent"
+                      : "text-gray-dark hover:bg-gray-light"
                   } ${isAlreadyAdded ? "opacity-50" : ""} ${
-                    index < results.length - 1 ? "border-b border-outline-variant/20" : ""
+                    index < results.length - 1 ? "border-b border-black/5" : ""
                   }`}
                   onClick={() => {
                     if (!isAlreadyAdded) selectPlace(feature);
                   }}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
-                  <span className="material-symbols-outlined text-[18px] text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[18px] text-on-light-tertiary">
                     location_on
                   </span>
                   <div>
                     <span className="font-semibold">{feature.text}</span>
                     {feature.place_name !== feature.text && (
-                      <span className="text-on-surface-variant ml-1">
+                      <span className="text-on-light-secondary ml-1">
                         {feature.place_name.replace(feature.text + ", ", "")}
                       </span>
                     )}
                     {isAlreadyAdded && (
-                      <span className="text-on-surface-variant ml-2 text-xs">(already added)</span>
+                      <span className="text-on-light-tertiary ml-2 text-xs">(already added)</span>
                     )}
                   </div>
                 </li>
