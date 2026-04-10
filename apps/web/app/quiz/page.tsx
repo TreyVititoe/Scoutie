@@ -72,12 +72,12 @@ export default function QuizPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Glass Header */}
-      <header className="sticky top-0 z-20 bg-white/70 backdrop-blur-xl shadow-xl shadow-teal-900/5">
+    <div className="min-h-screen bg-gray-light flex flex-col">
+      {/* Dark Nav Header */}
+      <header className="sticky top-0 z-20 nav-glass">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="text-2xl font-black italic text-teal-700 font-headline">
-            Walter
+          <a href="/" className="text-white text-[17px] font-semibold">
+            Scoutie
           </a>
 
           {/* Progress Bars */}
@@ -88,13 +88,13 @@ export default function QuizPage() {
               return (
                 <div
                   key={label}
-                  className="w-12 h-1 rounded-full bg-primary/20 overflow-hidden"
+                  className="w-12 h-0.5 rounded-full bg-on-light-tertiary/20 overflow-hidden"
                 >
                   <motion.div
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: isFilled ? 1 : 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="w-full h-full bg-primary rounded-full origin-left"
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="w-full h-full bg-accent rounded-full origin-left"
                   />
                 </div>
               );
@@ -106,7 +106,7 @@ export default function QuizPage() {
               store.resetQuiz();
               router.push("/");
             }}
-            className="flex items-center gap-1 text-sm font-body text-on-surface-variant hover:text-on-surface transition-colors"
+            className="flex items-center gap-1 text-sm text-on-light-secondary hover:text-gray-dark transition-colors"
           >
             <span className="material-symbols-outlined text-[20px]">close</span>
             Exit
@@ -122,43 +122,37 @@ export default function QuizPage() {
       </main>
 
       {/* Bottom Navigation */}
-      <div className="sticky bottom-0 z-20 bg-white/70 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,101,113,0.05)]">
+      <div className="sticky bottom-0 z-20 bg-white border-t border-black/5">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <motion.button
+          <button
             onClick={() => store.prevStep()}
             disabled={isFirstStep}
-            whileHover={isFirstStep ? {} : { scale: 1.03 }}
-            whileTap={isFirstStep ? {} : { scale: 0.95 }}
-            className={`px-8 py-4 rounded-full font-bold font-body flex items-center gap-2 ${
+            className={`text-sm flex items-center gap-2 ${
               isFirstStep
                 ? "opacity-0 pointer-events-none"
-                : "text-on-surface hover:bg-surface-container-high"
+                : "text-on-light-secondary hover:text-gray-dark"
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             Back
-          </motion.button>
+          </button>
 
           {isLastStep ? (
-            <motion.button
+            <button
               onClick={handleGenerate}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-14 py-4 rounded-full btn-primary-gradient text-white font-bold font-body shadow-2xl shadow-primary/30 flex items-center gap-2 text-lg"
+              className="bg-accent text-white rounded-[8px] px-8 py-3 text-[17px] flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-[22px]">auto_awesome</span>
               Generate My Trip
-            </motion.button>
+            </button>
           ) : (
-            <motion.button
+            <button
               onClick={() => store.nextStep()}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-12 py-4 rounded-full btn-primary-gradient text-white font-bold font-body shadow-2xl shadow-primary/30 flex items-center gap-2"
+              className="bg-accent text-white rounded-[8px] px-8 py-3 text-[17px] flex items-center gap-2"
             >
               Continue
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-            </motion.button>
+            </button>
           )}
         </div>
       </div>

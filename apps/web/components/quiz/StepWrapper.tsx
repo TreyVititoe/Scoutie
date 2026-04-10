@@ -19,12 +19,12 @@ export default function StepWrapper({
       transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
       className="w-full max-w-2xl mx-auto"
     >
-      <div className="card-3d bg-surface-container-lowest rounded-[2rem] p-8">
-        <h2 className="font-headline font-extrabold text-3xl text-on-surface mb-2">
+      <div className="bg-white rounded-[8px] p-8">
+        <h2 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-on-surface-variant text-sm leading-relaxed font-body mb-8">
+          <p className="text-on-light-secondary text-sm leading-[1.43] tracking-caption mb-8">
             {subtitle}
           </p>
         )}
