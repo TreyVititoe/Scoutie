@@ -178,7 +178,7 @@ function TripPage() {
               href="/"
               className="text-[17px] font-semibold text-white"
             >
-              Scoutie
+              Walter
             </Link>
             <Link
               href="/results"
@@ -227,7 +227,7 @@ function TripPage() {
             href="/"
             className="text-[17px] font-semibold text-white"
           >
-            Scoutie
+            Walter
           </Link>
           <div className="flex items-center gap-3">
             <Link
@@ -254,14 +254,14 @@ function TripPage() {
       </header>
 
       {/* ── Trip Overview Hero ── */}
-      <section className="relative overflow-hidden bg-black">
+      <section className="relative overflow-hidden bg-gray-light">
         <div className="max-w-content mx-auto px-6 pt-12 pb-10">
-          <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-2">
+          <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-2">
             Your Trip
           </p>
-          <h1 className="text-[40px] font-semibold text-white leading-section mb-4">
+          <h1 className="text-[40px] font-semibold text-gray-dark leading-section mb-4">
             {destination ? (
-              <span className="text-white">{destination}</span>
+              <span className="text-gray-dark">{destination}</span>
             ) : (
               "Your Custom Trip"
             )}
@@ -271,68 +271,68 @@ function TripPage() {
             {destination && (
               <>
                 <div>
-                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+                  <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
                     Destination
                   </p>
-                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-accent-light text-[20px]">
+                  <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-accent text-[20px]">
                       location_on
                     </span>
                     {destination}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-white/10" />
+                <div className="w-px h-10 bg-black/5" />
               </>
             )}
 
             {dateRange && (
               <>
                 <div>
-                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+                  <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
                     Dates
                   </p>
-                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-accent-light text-[20px]">
+                  <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-accent text-[20px]">
                       calendar_today
                     </span>
                     {dateRange}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-white/10" />
+                <div className="w-px h-10 bg-black/5" />
               </>
             )}
 
             <div>
-              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
                 Travelers
               </p>
-              <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-accent-light text-[20px]">
+              <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-accent text-[20px]">
                   group
                 </span>
                 {travelers}
               </p>
             </div>
-            <div className="w-px h-10 bg-white/10" />
+            <div className="w-px h-10 bg-black/5" />
 
             <div>
-              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
                 Items
               </p>
-              <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-accent-light text-[20px]">
+              <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-accent text-[20px]">
                   shopping_bag
                 </span>
                 {items.length}
               </p>
             </div>
-            <div className="w-px h-10 bg-white/10" />
+            <div className="w-px h-10 bg-black/5" />
 
             <div>
-              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
                 Est. Total
               </p>
-              <p className="font-semibold text-[28px] text-white">
+              <p className="font-semibold text-[28px] text-gray-dark">
                 ${totalPrice.toLocaleString()}
               </p>
             </div>

@@ -57,7 +57,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-light flex items-center justify-center px-4">
       <div className="bg-white rounded-[8px] p-8 max-w-md w-full">
         <Link href="/" className="font-semibold text-[21px] text-gray-dark block text-center mb-2">
-          Scoutie
+          Walter
         </Link>
         <p className="text-on-light-secondary text-center mb-8">
           Sign in to save trips and sync across devices.

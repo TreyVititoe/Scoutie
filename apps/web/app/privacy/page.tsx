@@ -2,9 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Scoutie",
+  title: "Privacy Policy — Walter",
   description:
-    "Learn how Scoutie collects, uses, and protects your personal data.",
+    "Learn how Walter collects, uses, and protects your personal data.",
 };
 
 export default function PrivacyPage() {
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
             href="/"
             className="text-white text-[17px] font-semibold"
           >
-            Scoutie
+            Walter
           </Link>
         </div>
       </nav>
@@ -37,8 +37,8 @@ export default function PrivacyPage() {
                 1. Introduction
               </h2>
               <p>
-                Scoutie (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;)
-                operates the Scoutie travel planning platform. This Privacy Policy
+                Walter (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;)
+                operates the Walter travel planning platform. This Privacy Policy
                 explains how we collect, use, disclose, and safeguard your
                 information when you use our website and services.
               </p>
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
                 4. Third-Party Services
               </h2>
               <p className="mb-3">
-                Scoutie integrates with the following third-party services to
+                Walter integrates with the following third-party services to
                 deliver our platform:
               </p>
               <ul className="list-disc pl-6 space-y-2">
@@ -238,7 +238,7 @@ export default function PrivacyPage() {
               <p>
                 California residents have the right to know what personal
                 information we collect, request deletion of that information, and
-                opt out of the sale of personal information. Scoutie does not sell
+                opt out of the sale of personal information. Walter does not sell
                 personal information. To exercise your rights, contact us using
                 the information below.
               </p>

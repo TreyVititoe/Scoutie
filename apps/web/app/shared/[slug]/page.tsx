@@ -103,7 +103,7 @@ export default function SharedTripPage() {
       <header className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">
-            Scoutie
+            Walter
           </Link>
           <Link
             href="/quiz"
@@ -115,34 +115,34 @@ export default function SharedTripPage() {
       </header>
 
       {/* Shared banner */}
-      <div className="bg-black">
+      <div className="bg-gray-light">
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-2">
-          <span className="text-white/80 text-sm font-semibold">Shared trip</span>
-          <span className="text-white/50 text-sm">— Someone shared this itinerary with you</span>
+          <span className="text-gray-dark/80 text-sm font-semibold">Shared trip</span>
+          <span className="text-on-light-tertiary text-sm">— Someone shared this itinerary with you</span>
         </div>
       </div>
 
       {/* Trip hero */}
-      <div className="bg-black">
+      <div className="bg-gray-light">
         <div className="max-w-5xl mx-auto px-6 py-8">
-          <span className="inline-block text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 bg-white/10 text-white/70">
+          <span className="inline-block text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 bg-black/5 text-on-light-tertiary">
             {trip.tier}
           </span>
-          <h1 className="font-semibold text-3xl sm:text-4xl text-white mb-2">
+          <h1 className="font-semibold text-3xl sm:text-4xl text-gray-dark mb-2">
             {trip.title}
           </h1>
-          <p className="text-white/60 max-w-2xl">{trip.summary}</p>
+          <p className="text-on-light-secondary max-w-2xl">{trip.summary}</p>
           <div className="flex items-center gap-6 mt-4">
             <div>
-              <p className="text-xs text-white/40 uppercase tracking-wider">Destination</p>
-              <p className="font-semibold text-white">{trip.destination}</p>
+              <p className="text-xs text-on-light-tertiary uppercase tracking-wider">Destination</p>
+              <p className="font-semibold text-gray-dark">{trip.destination}</p>
             </div>
             <div>
-              <p className="text-xs text-white/40 uppercase tracking-wider">Duration</p>
-              <p className="font-semibold text-white">{trip.trip_days.length} days</p>
+              <p className="text-xs text-on-light-tertiary uppercase tracking-wider">Duration</p>
+              <p className="font-semibold text-gray-dark">{trip.trip_days.length} days</p>
             </div>
             <div>
-              <p className="text-xs text-white/40 uppercase tracking-wider">Total cost</p>
+              <p className="text-xs text-on-light-tertiary uppercase tracking-wider">Total cost</p>
               <p className="font-semibold text-accent text-lg">
                 ${trip.total_estimated_cost.toLocaleString()}
               </p>
@@ -240,12 +240,12 @@ export default function SharedTripPage() {
       </div>
 
       {/* CTA */}
-      <div className="bg-black mt-10">
+      <div className="bg-gray-light mt-10">
         <div className="max-w-5xl mx-auto px-6 py-12 text-center">
-          <h2 className="font-semibold text-2xl text-white mb-3">
+          <h2 className="font-semibold text-2xl text-gray-dark mb-3">
             Want a trip like this?
           </h2>
-          <p className="text-white/60 mb-6">
+          <p className="text-on-light-secondary mb-6">
             Take a 2-minute quiz and get a personalized itinerary built for you.
           </p>
           <Link

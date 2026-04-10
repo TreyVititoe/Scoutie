@@ -59,7 +59,7 @@ export default function OnboardingPage() {
       <div className="px-6 pt-8 pb-4">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-[17px] font-semibold text-gray-dark">Scoutie</span>
+            <span className="text-[17px] font-semibold text-gray-dark">Walter</span>
             <span className="text-sm text-on-light-tertiary">{step} of {TOTAL_STEPS}</span>
           </div>
           {/* Progress bar */}

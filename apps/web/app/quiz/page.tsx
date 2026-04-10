@@ -77,7 +77,7 @@ export default function QuizPage() {
       <header className="sticky top-0 z-20 nav-glass">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="text-white text-[17px] font-semibold">
-            Scoutie
+            Walter
           </a>
 
           {/* Progress Bars */}

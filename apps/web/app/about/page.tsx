@@ -49,7 +49,7 @@ export default function AboutPage() {
             href="/"
             className="font-semibold text-[17px] text-white"
           >
-            Scoutie
+            Walter
           </Link>
           <Link
             href="/quiz"
@@ -61,23 +61,23 @@ export default function AboutPage() {
       </nav>
 
       {/* Hero */}
-      <section className="bg-black">
+      <section className="bg-gray-light">
         <div className="max-w-content mx-auto px-6 py-24 sm:py-32">
           <div className="text-center">
-            <span className="inline-flex items-center gap-2 bg-surface-dark-1 text-on-dark-secondary rounded-pill px-4 py-1.5 border border-white/10 mb-8">
+            <span className="inline-flex items-center gap-2 bg-white text-on-light-secondary rounded-pill px-4 py-1.5 border border-black/5 mb-8">
               <span className="w-2 h-2 rounded-full bg-accent" />
               <span className="text-sm font-semibold">
-                About Scoutie
+                About Walter
               </span>
             </span>
 
-            <h1 className="text-white text-[56px] font-semibold leading-display tracking-display mb-6">
+            <h1 className="text-gray-dark text-[56px] font-semibold leading-display tracking-display mb-6">
               One quiz.
               <br />
               Your whole trip.
             </h1>
 
-            <p className="text-xl sm:text-2xl text-on-dark-secondary leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xl sm:text-2xl text-on-light-secondary leading-relaxed max-w-2xl mx-auto">
               Walter is an AI-powered travel planner that turns a short quiz
               into a complete, bookable itinerary -- flights, hotels,
               activities, restaurants, and more.
@@ -121,13 +121,13 @@ export default function AboutPage() {
       </section>
 
       {/* How it works */}
-      <section className="bg-black">
+      <section className="bg-gray-light">
         <div className="max-w-content mx-auto px-6 py-24">
           <div className="text-center mb-16">
             <span className="text-accent text-sm font-semibold uppercase tracking-wider">
               How it works
             </span>
-            <h2 className="text-[40px] font-semibold text-white leading-section tracking-section mt-3">
+            <h2 className="text-[40px] font-semibold text-gray-dark leading-section tracking-section mt-3">
               Three steps to your perfect trip
             </h2>
           </div>
@@ -135,17 +135,17 @@ export default function AboutPage() {
             {steps.map((step) => (
               <div
                 key={step.num}
-                className="bg-surface-dark-1 rounded-[8px] p-8"
+                className="bg-white rounded-[8px] p-8"
               >
                 <div className="w-12 h-12 rounded-[8px] bg-accent flex items-center justify-center mb-5">
                   <span className="text-white font-semibold text-lg">
                     {step.num}
                   </span>
                 </div>
-                <h3 className="text-white font-semibold text-xl mb-2">
+                <h3 className="text-gray-dark font-semibold text-xl mb-2">
                   {step.title}
                 </h3>
-                <p className="text-on-dark-secondary leading-relaxed">
+                <p className="text-on-light-secondary leading-relaxed">
                   {step.desc}
                 </p>
               </div>
@@ -189,13 +189,13 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-black">
+      <section className="bg-gray-light">
         <div className="max-w-content mx-auto px-6 py-24 text-center">
           <div>
-            <h2 className="text-white text-[40px] font-semibold leading-section tracking-section mb-5">
+            <h2 className="text-gray-dark text-[40px] font-semibold leading-section tracking-section mb-5">
               Ready to plan your next adventure?
             </h2>
-            <p className="text-on-dark-secondary text-lg mb-10 max-w-xl mx-auto">
+            <p className="text-on-light-secondary text-lg mb-10 max-w-xl mx-auto">
               No sign-up required. Take the quiz, get your trip, book when
               you are ready.
             </p>

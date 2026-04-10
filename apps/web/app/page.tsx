@@ -85,7 +85,7 @@ export default function HomePage() {
             href="/"
             className="text-white text-[17px] font-semibold"
           >
-            Scoutie
+            Walter
           </Link>
           <div className="flex items-center gap-8">
             <Link
@@ -111,7 +111,7 @@ export default function HomePage() {
       </nav>
 
       {/* ========== HERO ========== */}
-      <section className="bg-black min-h-[92vh] flex items-center">
+      <section className="bg-gray-light min-h-[92vh] flex items-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,14 +119,14 @@ export default function HomePage() {
           className="max-w-6xl mx-auto px-6 pt-36 pb-24"
         >
           <div className="max-w-3xl">
-            <h1 className="text-white text-[56px] font-semibold leading-display tracking-display mb-7">
+            <h1 className="text-gray-dark text-[56px] font-semibold leading-display tracking-display mb-7">
               One quiz.
               <br />
               Your whole trip.
             </h1>
 
-            <p className="text-on-dark-secondary text-[21px] leading-card-title mb-12 max-w-xl">
-              Tell Scoutie how you like to travel. Get complete, bookable
+            <p className="text-on-light-secondary text-[21px] leading-card-title mb-12 max-w-xl">
+              Tell Walter how you like to travel. Get complete, bookable
               itineraries with flights, hotels, activities, and more -- in
               seconds.
             </p>
@@ -134,7 +134,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#how-it-works"
-                className="border border-accent-light text-accent-light rounded-pill px-5 py-2 text-sm inline-flex items-center justify-center"
+                className="border border-accent text-accent rounded-pill px-5 py-2 text-sm inline-flex items-center justify-center"
               >
                 Learn more
               </a>
@@ -182,7 +182,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section id="how-it-works" className="bg-black">
+      <section id="how-it-works" className="bg-gray-light">
         <div className="max-w-6xl mx-auto px-6 py-28">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -191,7 +191,7 @@ export default function HomePage() {
             transition={{ duration: 0.3 }}
             className="text-center mb-20"
           >
-            <h2 className="text-white text-[40px] font-semibold leading-section tracking-section">
+            <h2 className="text-gray-dark text-[40px] font-semibold leading-section tracking-section">
               Three steps to your perfect trip
             </h2>
           </motion.div>
@@ -204,17 +204,17 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.3 }}
-                className="bg-surface-dark-1 rounded-[8px] p-8"
+                className="bg-white rounded-[8px] p-8"
               >
                 <div className="w-14 h-14 rounded-[8px] bg-accent/20 flex items-center justify-center mb-6">
-                  <span className="material-symbols-outlined text-accent-light text-2xl">
+                  <span className="material-symbols-outlined text-accent text-2xl">
                     {step.icon}
                   </span>
                 </div>
-                <h3 className="text-white font-semibold text-[17px] mb-3">
+                <h3 className="text-gray-dark font-semibold text-[17px] mb-3">
                   {step.title}
                 </h3>
-                <p className="text-on-dark-secondary leading-relaxed">
+                <p className="text-on-light-secondary leading-relaxed">
                   {step.desc}
                 </p>
               </motion.div>
@@ -237,7 +237,7 @@ export default function HomePage() {
               Never miss a moment
             </h2>
             <p className="text-on-light-secondary mt-4 text-lg max-w-2xl mx-auto leading-relaxed">
-              Concerts, games, festivals, theater — Scoutie finds what&apos;s happening
+              Concerts, games, festivals, theater — Walter finds what&apos;s happening
               during your trip and lets you add it with one tap.
             </p>
           </motion.div>
@@ -291,7 +291,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== DESTINATION TEASERS ========== */}
-      <section className="bg-black">
+      <section className="bg-gray-light">
         <div className="max-w-6xl mx-auto px-6 py-28">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -301,16 +301,16 @@ export default function HomePage() {
             className="flex items-end justify-between mb-12"
           >
             <div>
-              <h2 className="text-white text-[40px] font-semibold">
+              <h2 className="text-gray-dark text-[40px] font-semibold">
                 Popular destinations
               </h2>
-              <p className="text-on-dark-secondary mt-3">
+              <p className="text-on-light-secondary mt-3">
                 Click to start your trip with a destination pre-filled.
               </p>
             </div>
             <Link
               href="/explore"
-              className="hidden sm:flex items-center gap-1 text-accent-light text-sm"
+              className="hidden sm:flex items-center gap-1 text-accent text-sm"
             >
               View all
               <span className="material-symbols-outlined text-lg">

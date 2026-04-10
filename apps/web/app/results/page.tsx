@@ -213,7 +213,7 @@ export default function ResultsPage() {
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">
-            Scoutie
+            Walter
           </Link>
           <Link
             href="/quiz"
@@ -405,7 +405,7 @@ export default function ResultsPage() {
               </motion.section>
             )}
 
-            {/* --- Scoutie's Picks --- */}
+            {/* --- Walter's Picks --- */}
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -416,7 +416,7 @@ export default function ResultsPage() {
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-accent text-[21px]">auto_awesome</span>
                   <div>
-                    <h2 className="text-[21px] font-semibold text-gray-dark">Scoutie&apos;s Picks</h2>
+                    <h2 className="text-[21px] font-semibold text-gray-dark">Walter&apos;s Picks</h2>
                     <p className="text-on-light-tertiary text-sm">
                       {suggestionsLoading ? "Finding the best spots for you..." : "AI-curated activities, restaurants & sites"}
                     </p>
@@ -475,7 +475,7 @@ export default function ResultsPage() {
 
         {/* --- FTC Disclosure --- */}
         <p className="text-xs text-on-light-tertiary text-center mt-10">
-          Scoutie earns a commission when you book through our links at no extra cost to you.
+          Walter earns a commission when you book through our links at no extra cost to you.
         </p>
       </div>
     </div>

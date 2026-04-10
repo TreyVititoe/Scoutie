@@ -112,7 +112,7 @@ export default function ExplorePage() {
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">
-            Scoutie
+            Walter
           </Link>
           <Link
             href="/quiz"
@@ -208,12 +208,12 @@ export default function ExplorePage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-16 bg-black rounded-[8px] p-10 text-center">
-          <h2 className="text-white font-semibold text-[40px] mb-3">
+        <div className="mt-16 bg-white rounded-[8px] p-10 text-center">
+          <h2 className="text-gray-dark font-semibold text-[40px] mb-3">
             Can&apos;t decide?
           </h2>
-          <p className="text-on-dark-secondary mb-6">
-            Let Scoutie pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
+          <p className="text-on-light-secondary mb-6">
+            Let Walter pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
           </p>
           <Link
             href="/quiz"
