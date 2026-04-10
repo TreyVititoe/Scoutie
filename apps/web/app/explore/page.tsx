@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 
 type Destination = {
@@ -108,44 +107,40 @@ export default function ExplorePage() {
     : destinations;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-light">
       {/* Header */}
-      <header className="bg-surface border-b border-border sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="font-display font-bold text-xl text-text">
-            walter
+      <header className="nav-glass sticky top-0 z-20">
+        <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="text-white text-[17px] font-semibold">
+            Scoutie
           </Link>
           <Link
             href="/quiz"
-            className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dark transition-colors"
+            className="px-4 py-2 rounded-[8px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors"
           >
             Plan a trip
           </Link>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
-        >
-          <h1 className="font-display font-bold text-3xl sm:text-4xl text-text mb-2">
+      <main className="max-w-content mx-auto px-6 py-10">
+        <div className="mb-10">
+          <h1 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
             Explore destinations
           </h1>
-          <p className="text-text-secondary text-lg">
+          <p className="text-on-light-secondary text-lg">
             Not sure where to go? Browse popular destinations and start planning.
           </p>
-        </motion.div>
+        </div>
 
         {/* Tag filter */}
         <div className="flex gap-2 flex-wrap mb-8">
           <button
             onClick={() => setActiveTag(null)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+            className={`px-4 py-2 rounded-pill text-sm transition-all ${
               activeTag === null
-                ? "bg-primary text-white"
-                : "bg-surface border border-border text-text-secondary hover:border-primary-light"
+                ? "bg-accent text-white"
+                : "bg-white border border-black/10 text-on-light-secondary hover:border-accent/30"
             }`}
           >
             All
@@ -154,10 +149,10 @@ export default function ExplorePage() {
             <button
               key={tag}
               onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-pill text-sm transition-all ${
                 activeTag === tag
-                  ? "bg-primary text-white"
-                  : "bg-surface border border-border text-text-secondary hover:border-primary-light"
+                  ? "bg-accent text-white"
+                  : "bg-white border border-black/10 text-on-light-secondary hover:border-accent/30"
               }`}
             >
               {tag}
@@ -167,77 +162,66 @@ export default function ExplorePage() {
 
         {/* Destination grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((dest, i) => (
-            <motion.div
+          {filtered.map((dest) => (
+            <Link
               key={dest.city}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              href={`/quiz?destination=${encodeURIComponent(dest.city)}`}
+              className="block bg-white rounded-[8px] overflow-hidden shadow-elevated transition-all group"
             >
-              <Link
-                href={`/quiz?destination=${encodeURIComponent(dest.city)}`}
-                className="block bg-surface rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-primary-light transition-all group"
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={dest.image}
-                    alt={dest.city}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-4 left-4">
-                    <h3 className="font-display font-bold text-xl text-white">{dest.city}</h3>
-                    <p className="text-white/80 text-sm">{dest.country}</p>
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src={dest.image}
+                  alt={dest.city}
+                  className="w-full h-full object-cover transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <div className="absolute bottom-4 left-4">
+                  <h3 className="font-semibold text-xl text-white">{dest.city}</h3>
+                  <p className="text-white/80 text-sm">{dest.country}</p>
+                </div>
+              </div>
+              <div className="p-5">
+                <p className="text-sm text-on-light-secondary mb-3">{dest.tagline}</p>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-[12px] text-on-light-tertiary uppercase tracking-wider">Avg. cost</p>
+                    <p className="font-semibold text-gray-dark text-sm">{dest.avgCost}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[12px] text-on-light-tertiary uppercase tracking-wider">Best time</p>
+                    <p className="text-sm font-semibold text-gray-dark">{dest.bestMonths}</p>
                   </div>
                 </div>
-                <div className="p-5">
-                  <p className="text-sm text-text-secondary mb-3">{dest.tagline}</p>
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <p className="text-xs text-text-muted uppercase tracking-wider">Avg. cost</p>
-                      <p className="font-mono font-bold text-text text-sm">{dest.avgCost}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-text-muted uppercase tracking-wider">Best time</p>
-                      <p className="text-sm font-medium text-text">{dest.bestMonths}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {dest.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                <div className="flex gap-1.5 flex-wrap">
+                  {dest.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[12px] font-semibold text-on-light-tertiary bg-gray-light rounded-pill px-2 py-0.5"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
-              </Link>
-            </motion.div>
+              </div>
+            </Link>
           ))}
         </div>
 
         {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-16 text-center"
-        >
-          <h2 className="font-display font-bold text-2xl text-text mb-3">
+        <div className="mt-16 bg-black rounded-[8px] p-10 text-center">
+          <h2 className="text-white font-semibold text-[40px] mb-3">
             Can&apos;t decide?
           </h2>
-          <p className="text-text-secondary mb-6">
-            Let Walter pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
+          <p className="text-on-dark-secondary mb-6">
+            Let Scoutie pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
           </p>
           <Link
             href="/quiz"
-            className="inline-flex px-8 py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors"
+            className="inline-flex px-8 py-4 rounded-[8px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
           >
             Surprise me
           </Link>
-        </motion.div>
+        </div>
       </main>
     </div>
   );
