@@ -15,10 +15,6 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-headline), "Plus Jakarta Sans", system-ui, sans-serif;
-  }
-
   ::selection {
     background-color: #006571;
     color: white;
@@ -32,120 +28,22 @@
   line-height: 1;
 }
 
-/* Glass panel effect */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+/* Apple dark glass navigation */
+.nav-glass {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
-/* 3D Card effect */
-.card-3d {
-  background: #ffffff;
-  border-radius: 2rem;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 20px 60px -10px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-}
-.card-3d:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 30px 80px -15px rgba(0, 0, 0, 0.1);
+/* Elevated card shadow */
+.shadow-elevated {
+  box-shadow: 3px 5px 30px 0px rgba(0, 0, 0, 0.22);
 }
 
-/* Text gradient */
-.text-gradient {
-  background: linear-gradient(135deg, #006571 0%, #79e7f8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Primary gradient button */
-.btn-primary-gradient {
-  background: linear-gradient(135deg, #006571 0%, #79e7f8 100%);
-}
-
-/* Inner card 3D for list items */
-.inner-card-3d {
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-.inner-card-3d:hover {
-  transform: scale(1.02);
-  background-color: white;
-  border-color: #79e7f8;
-  box-shadow: 0 8px 16px -4px rgba(0, 101, 113, 0.1);
-}
-
-@layer components {
-  /* Glass header */
-  .glass-header {
-    background: rgba(255, 255, 255, 0.70);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border-bottom: 1px solid rgba(0, 101, 113, 0.08);
-  }
-
-  /* Noise texture overlay */
-  .noise {
-    position: relative;
-  }
-  .noise::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  /* Glass card */
-  .glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  /* Animated gradient background */
-  .bg-gradient-animated {
-    background: linear-gradient(-45deg, #006571, #008a96, #004D57, #79e7f8);
-    background-size: 400% 400%;
-    animation: gradient-shift 8s ease infinite;
-  }
-
-  @keyframes gradient-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-}
-
-/* Smooth global transitions */
-button, a, input, [role="button"] {
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.2s ease,
-              background-color 0.2s ease,
-              color 0.2s ease,
-              border-color 0.2s ease;
-}
-
-/* Responsive button press */
-button:active:not(:disabled), [role="button"]:active {
-  transform: scale(0.97);
-}
-
-/* Smooth focus rings */
+/* Focus rings */
 *:focus-visible {
   outline: 2px solid #006571;
   outline-offset: 2px;
-  border-radius: 0.5rem;
-  transition: outline-offset 0.15s ease;
-}
-
-/* Card hover lift — ensure smooth transform */
-.card-3d {
-  will-change: transform;
 }
 
 /* Hide scrollbar for card rows */
