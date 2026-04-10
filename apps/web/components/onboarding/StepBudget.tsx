@@ -15,20 +15,20 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
   return (
     <div className="flex flex-col flex-1">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">What&apos;s your budget?</h1>
-        <p className="text-gray-500">We&apos;ll find options that fit.</p>
+        <h1 className="text-3xl font-semibold text-gray-dark mb-2">What&apos;s your budget?</h1>
+        <p className="text-on-light-secondary">We&apos;ll find options that fit.</p>
       </div>
 
       {/* Toggle */}
-      <div className="flex bg-gray-100 rounded-full p-1 mb-6">
+      <div className="flex bg-gray-light rounded-pill p-1 mb-6">
         {(["total", "per_day"] as const).map((type) => (
           <button
             key={type}
             onClick={() => update({ budgetType: type })}
-            className={`flex-1 py-2 rounded-full text-sm font-semibold transition-all ${
+            className={`flex-1 py-2 rounded-pill text-sm font-semibold transition-all ${
               prefs.budgetType === type
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500"
+                ? "bg-white text-gray-dark shadow-sm"
+                : "text-on-light-secondary"
             }`}
           >
             {type === "total" ? "Total trip" : "Per day"}
@@ -38,10 +38,10 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
 
       {/* Amount display */}
       <div className="text-center mb-6">
-        <span className="text-5xl font-bold text-gray-900">
+        <span className="text-5xl font-semibold text-gray-dark">
           ${prefs.budget.toLocaleString()}
         </span>
-        <span className="text-gray-400 text-lg ml-2">
+        <span className="text-on-light-tertiary text-lg ml-2">
           {prefs.budgetType === "per_day" ? "/ day" : "total"}
         </span>
       </div>
@@ -54,7 +54,7 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
         step={prefs.budgetType === "per_day" ? 50 : 100}
         value={prefs.budget}
         onChange={(e) => update({ budget: Number(e.target.value) })}
-        className="w-full accent-sky-500 mb-6"
+        className="w-full accent-accent mb-6"
       />
 
       {/* Quick picks */}
@@ -65,10 +65,10 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
             <button
               key={p}
               onClick={() => update({ budget: p })}
-              className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-pill border text-sm font-medium transition-colors ${
                 prefs.budget === p
-                  ? "bg-sky-500 border-sky-500 text-white"
-                  : "border-gray-200 text-gray-600 hover:border-sky-300"
+                  ? "bg-accent border-accent text-white"
+                  : "border-black/10 text-on-light-secondary hover:border-accent/30"
               }`}
             >
               ${p.toLocaleString()}
@@ -77,10 +77,10 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-gray-200 text-gray-600 font-semibold py-4 rounded-2xl text-lg hover:bg-gray-50 transition-colors">
+        <button onClick={onBack} className="flex-1 border border-black/10 text-on-light-secondary font-semibold py-4 rounded-[8px] text-lg hover:bg-gray-light transition-colors">
           Back
         </button>
-        <button onClick={onNext} className="flex-grow-[2] flex-1 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 rounded-2xl text-lg transition-colors">
+        <button onClick={onNext} className="flex-grow-[2] flex-1 bg-accent hover:bg-accent/90 text-white font-semibold py-4 rounded-[8px] text-lg transition-colors">
           Continue
         </button>
       </div>

@@ -32,8 +32,8 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
   return (
     <div className="flex flex-col flex-1">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">What&apos;s your vibe?</h1>
-        <p className="text-gray-500">Pick everything that fits. We&apos;ll match your style.</p>
+        <h1 className="text-3xl font-semibold text-gray-dark mb-2">What&apos;s your vibe?</h1>
+        <p className="text-on-light-secondary">Pick everything that fits. We&apos;ll match your style.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-10">
@@ -43,13 +43,13 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
             <button
               key={v.id}
               onClick={() => toggle(v.id)}
-              className={`flex items-center gap-3 px-4 py-4 rounded-2xl border-2 transition-all text-left ${
+              className={`flex items-center gap-3 px-4 py-4 rounded-[8px] border transition-all text-left ${
                 selected
-                  ? "border-sky-500 bg-sky-50"
-                  : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                  ? "bg-accent/5 border-accent"
+                  : "bg-white border-black/10 hover:border-accent/30"
               }`}
             >
-              <span className={`font-semibold text-sm ${selected ? "text-sky-600" : "text-gray-700"}`}>
+              <span className={`font-semibold text-sm ${selected ? "text-accent" : "text-gray-dark"}`}>
                 {v.label}
               </span>
             </button>
@@ -58,13 +58,13 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-gray-200 text-gray-600 font-semibold py-4 rounded-2xl text-lg hover:bg-gray-50 transition-colors">
+        <button onClick={onBack} className="flex-1 border border-black/10 text-on-light-secondary font-semibold py-4 rounded-[8px] text-lg hover:bg-gray-light transition-colors">
           Back
         </button>
         <button
           onClick={onNext}
           disabled={prefs.vibes.length === 0}
-          className="flex-grow-[2] flex-1 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-100 disabled:text-gray-300 text-white font-semibold py-4 rounded-2xl text-lg transition-colors"
+          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent/90 disabled:bg-gray-light disabled:text-on-light-tertiary text-white font-semibold py-4 rounded-[8px] text-lg transition-colors"
         >
           Continue
         </button>

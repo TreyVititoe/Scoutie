@@ -30,8 +30,8 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
   return (
     <div className="flex flex-col flex-1">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Where do you like to stay?</h1>
-        <p className="text-gray-500">Pick one or more types.</p>
+        <h1 className="text-3xl font-semibold text-gray-dark mb-2">Where do you like to stay?</h1>
+        <p className="text-on-light-secondary">Pick one or more types.</p>
       </div>
 
       <div className="space-y-3 mb-10">
@@ -41,20 +41,20 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
             <button
               key={o.id}
               onClick={() => toggle(o.id)}
-              className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 transition-all text-left ${
+              className={`w-full flex items-center gap-4 px-5 py-4 rounded-[8px] border transition-all text-left ${
                 selected
-                  ? "border-sky-500 bg-sky-50"
-                  : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                  ? "bg-accent/5 border-accent"
+                  : "bg-white border-black/10 hover:border-accent/30"
               }`}
             >
               <div>
-                <div className={`font-semibold ${selected ? "text-sky-700" : "text-gray-800"}`}>
+                <div className={`font-semibold ${selected ? "text-accent" : "text-gray-dark"}`}>
                   {o.label}
                 </div>
-                <div className="text-xs text-gray-400 mt-0.5">{o.desc}</div>
+                <div className="text-xs text-on-light-tertiary mt-0.5">{o.desc}</div>
               </div>
               {selected && (
-                <div className="ml-auto w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center">
+                <div className="ml-auto w-5 h-5 rounded-full bg-accent flex items-center justify-center">
                   <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
@@ -66,13 +66,13 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-gray-200 text-gray-600 font-semibold py-4 rounded-2xl text-lg hover:bg-gray-50 transition-colors">
+        <button onClick={onBack} className="flex-1 border border-black/10 text-on-light-secondary font-semibold py-4 rounded-[8px] text-lg hover:bg-gray-light transition-colors">
           Back
         </button>
         <button
           onClick={onNext}
           disabled={prefs.stay.length === 0}
-          className="flex-grow-[2] flex-1 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-100 disabled:text-gray-300 text-white font-semibold py-4 rounded-2xl text-lg transition-colors"
+          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent/90 disabled:bg-gray-light disabled:text-on-light-tertiary text-white font-semibold py-4 rounded-[8px] text-lg transition-colors"
         >
           Find my trip
         </button>
