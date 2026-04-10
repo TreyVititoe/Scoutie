@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import type { Suggestion } from "@/lib/types";
 
@@ -10,19 +9,12 @@ const typeIcons: Record<string, string> = {
   site: "location_on",
 };
 
-const typeColors: Record<string, { bg: string; text: string }> = {
-  activity: { bg: "bg-teal-50", text: "text-teal-600" },
-  restaurant: { bg: "bg-amber-50", text: "text-amber-600" },
-  site: { bg: "bg-purple-50", text: "text-purple-600" },
-};
-
 export default function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
   const addItem = useTripCartStore((s) => s.addItem);
   const removeItem = useTripCartStore((s) => s.removeItem);
   const added = useTripCartStore((s) => s.items.some((i) => i.id === suggestion.id));
 
   const icon = typeIcons[suggestion.type] || "explore";
-  const colors = typeColors[suggestion.type] || typeColors.activity;
 
   const handleToggle = () => {
     if (added) {
@@ -44,23 +36,19 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] p-6 cursor-pointer"
-    >
+    <div className="bg-white rounded-[8px] p-5">
       {/* Type badge & context badges */}
       <div className="flex items-center gap-3 mb-3">
-        <div className={`w-10 h-10 rounded-2xl ${colors.bg} flex items-center justify-center`}>
-          <span className={`material-symbols-outlined ${colors.text} text-xl`}>{icon}</span>
+        <div className="w-10 h-10 rounded-2xl bg-gray-light flex items-center justify-center">
+          <span className="material-symbols-outlined text-accent text-xl">{icon}</span>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-outline-variant font-body">
+        <span className="text-[12px] text-on-light-tertiary">
           {suggestion.type === "restaurant" ? "Dining" : suggestion.type === "site" ? "Landmark" : suggestion.type}
         </span>
       </div>
       <div className="flex flex-wrap items-center gap-1.5 mb-4">
         {suggestion.bestTime && (
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-body">
+          <span className="text-[12px] font-semibold bg-gray-light text-gray-dark px-2.5 py-1 rounded-full">
             {suggestion.bestTime.toLowerCase().includes("morning")
               ? "Best in morning"
               : suggestion.bestTime.toLowerCase().includes("evening")
@@ -73,26 +61,26 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
           </span>
         )}
         {(suggestion.estimatedCost === null || suggestion.estimatedCost === 0) && (
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-body">
+          <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
             Free
           </span>
         )}
       </div>
 
       {/* Title */}
-      <h3 className="font-headline font-bold text-on-surface text-lg leading-tight mb-2 line-clamp-2">
+      <h3 className="font-semibold text-gray-dark text-lg leading-tight mb-2 line-clamp-2">
         {suggestion.title}
       </h3>
 
       {/* Description */}
-      <p className="text-sm text-on-surface-variant font-body leading-relaxed mb-4 line-clamp-3">
+      <p className="text-sm text-on-light-secondary leading-relaxed mb-4 line-clamp-3">
         {suggestion.description}
       </p>
 
       {/* Location */}
       <div className="flex items-center gap-1.5 mb-2">
-        <span className="material-symbols-outlined text-outline-variant text-[14px]">location_on</span>
-        <p className="text-xs text-outline-variant font-body truncate">{suggestion.locationName}</p>
+        <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">location_on</span>
+        <p className="text-xs text-on-light-tertiary truncate">{suggestion.locationName}</p>
       </div>
 
       {/* Best time (raw value, shown if not already captured by badge) */}
@@ -100,41 +88,39 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
         (t) => suggestion.bestTime.toLowerCase().includes(t)
       ) && (
         <div className="flex items-center gap-1.5 mb-4">
-          <span className="material-symbols-outlined text-outline-variant text-[14px]">schedule</span>
-          <p className="text-xs text-outline-variant font-body">{suggestion.bestTime}</p>
+          <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">schedule</span>
+          <p className="text-xs text-on-light-tertiary">{suggestion.bestTime}</p>
         </div>
       )}
 
       {/* Cost & Add to Trip */}
-      <div className="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+      <div className="flex items-center justify-between pt-4 border-t border-on-light-tertiary/15">
         <div>
           {suggestion.estimatedCost != null ? (
             <>
-              <p className="font-headline font-black text-primary text-xl">
+              <p className="font-semibold text-accent text-[21px]">
                 ${suggestion.estimatedCost}
               </p>
-              <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">estimated</p>
+              <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">estimated</p>
             </>
           ) : (
-            <p className="text-sm font-bold text-outline-variant font-body">Free / varies</p>
+            <p className="text-sm font-semibold text-on-light-tertiary">Free / varies</p>
           )}
         </div>
-        <motion.button
+        <button
           onClick={handleToggle}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className={`rounded-full px-5 py-2 text-sm font-bold font-headline flex items-center gap-1.5 transition-colors ${
+          className={`rounded-[8px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
             added
-              ? "bg-primary text-white"
-              : "border border-primary text-primary hover:bg-primary/5"
+              ? "bg-accent text-white"
+              : "border border-accent text-accent"
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">
             {added ? "check" : "add"}
           </span>
           {added ? "Added" : "Add to Trip"}
-        </motion.button>
+        </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

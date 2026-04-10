@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { ScoredEvent } from "@/lib/types";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
@@ -43,37 +42,33 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -4, boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)" }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden cursor-pointer group"
-    >
+    <div className="w-full bg-white rounded-[8px] overflow-hidden">
       {/* Image */}
-      <div className="relative h-40 bg-surface-container-lowest">
+      <div className="relative h-40 bg-gray-light">
         {event.image ? (
           <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-            <span className="material-symbols-outlined text-primary/30 text-4xl">local_activity</span>
+          <div className="w-full h-full flex items-center justify-center bg-gray-light">
+            <span className="material-symbols-outlined text-on-light-tertiary text-4xl">local_activity</span>
           </div>
         )}
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-white/90 backdrop-blur-sm text-on-surface px-2.5 py-1 rounded-full font-body">
+          <span className="text-[12px] font-semibold text-gray-dark bg-white/90 backdrop-blur-sm rounded-pill px-2.5 py-1">
             {event.category}
           </span>
           {(event.priceMin === null || event.priceMin === 0) && (
-            <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-body">
+            <span className="text-[12px] text-on-light-tertiary">
               Free
             </span>
           )}
           {event.priceMin !== null && event.priceMin > 0 && event.priceMin < 30 && (
-            <span className="text-[10px] font-bold uppercase tracking-widest bg-teal-100 text-teal-700 px-2.5 py-1 rounded-full font-body">
+            <span className="text-[12px] text-on-light-tertiary">
               Under $30
             </span>
           )}
         </div>
         {event.matchReason && (
-          <span className="absolute top-3 right-3 text-[10px] font-bold bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full font-body max-w-[140px] truncate">
+          <span className="absolute top-3 right-3 text-[10px] font-semibold bg-gray-light text-gray-dark px-2.5 py-1 rounded-full max-w-[140px] truncate">
             {event.matchReason}
           </span>
         )}
@@ -81,61 +76,59 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
 
       <div className="p-5">
         {/* Name */}
-        <p className="font-headline font-bold text-on-surface leading-tight line-clamp-2 mb-1">
+        <p className="font-semibold text-on-surface leading-tight line-clamp-2 mb-1">
           {event.name}
         </p>
 
         {/* Venue */}
         <div className="flex items-center gap-1.5 mb-3">
-          <span className="material-symbols-outlined text-outline-variant text-[14px]">location_on</span>
-          <p className="text-xs text-outline-variant font-body truncate">{event.venueName}</p>
+          <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">location_on</span>
+          <p className="text-xs text-on-light-tertiary truncate">{event.venueName}</p>
         </div>
 
         {/* Date/time */}
         <div className="flex items-center gap-1.5 mb-4">
-          <span className="material-symbols-outlined text-outline-variant text-[14px]">calendar_today</span>
-          <p className="text-sm font-bold text-on-surface font-body">
+          <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">calendar_today</span>
+          <p className="text-sm font-semibold text-on-surface">
             {formatDate(event.date)}
             {event.time && (
-              <span className="text-outline-variant font-normal ml-1.5">{formatTime(event.time)}</span>
+              <span className="text-on-light-tertiary font-normal ml-1.5">{formatTime(event.time)}</span>
             )}
           </p>
         </div>
 
         {/* Price & Add to Trip */}
-        <div className="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+        <div className="flex items-center justify-between pt-4 border-t border-on-light-tertiary/15">
           <div>
             {event.priceMin ? (
               <>
-                <p className="font-headline font-black text-primary text-xl">
+                <p className="font-semibold text-accent text-[21px]">
                   ${event.priceMin}
                   {event.priceMax && event.priceMax !== event.priceMin
-                    ? <span className="text-sm font-bold text-outline-variant">--${event.priceMax}</span>
+                    ? <span className="text-sm font-semibold text-on-light-tertiary">--${event.priceMax}</span>
                     : null}
                 </p>
-                <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">per ticket</p>
+                <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">per ticket</p>
               </>
             ) : (
-              <p className="text-sm font-bold text-outline-variant font-body">See prices</p>
+              <p className="text-sm font-semibold text-on-light-tertiary">See prices</p>
             )}
           </div>
-          <motion.button
+          <button
             onClick={handleToggle}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className={`rounded-full px-5 py-2 text-sm font-bold font-headline flex items-center gap-1.5 transition-colors ${
+            className={`rounded-[8px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
               added
-                ? "bg-primary text-white"
-                : "border border-primary text-primary hover:bg-primary/5"
+                ? "bg-accent text-white"
+                : "border border-accent text-accent"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">
               {added ? "check" : "add"}
             </span>
             {added ? "Added" : "Add to Trip"}
-          </motion.button>
+          </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

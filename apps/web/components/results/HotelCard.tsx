@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { HotelResult } from "@/lib/services/hotels";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
@@ -29,38 +28,34 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -4, boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)" }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="min-w-[300px] w-[300px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden cursor-pointer group"
-    >
+    <div className="w-full bg-white rounded-[8px] overflow-hidden">
       {/* Image */}
       <div className="relative h-40 bg-background">
         {hotel.image ? (
           <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-100">
-            <span className="material-symbols-outlined text-purple-300/60 text-4xl">hotel</span>
+          <div className="w-full h-full flex items-center justify-center bg-gray-light">
+            <span className="material-symbols-outlined text-on-light-tertiary text-4xl">hotel</span>
           </div>
         )}
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
           {bestValue && (
-            <span className="text-[10px] font-bold uppercase tracking-widest bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full font-body">
+            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
               Best value
             </span>
           )}
           {hotel.rating >= 9.0 && (
-            <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-body">
+            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
               Exceptional
             </span>
           )}
           {hotel.rating >= 8.0 && hotel.rating < 9.0 && (
-            <span className="text-[10px] font-bold uppercase tracking-widest bg-teal-100 text-teal-700 px-2.5 py-1 rounded-full font-body">
+            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
               Highly rated
             </span>
           )}
           {!bestValue && hotel.pricePerNight < 150 && (
-            <span className="text-[10px] font-bold uppercase tracking-widest bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-body">
+            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
               Budget-friendly
             </span>
           )}
@@ -69,59 +64,52 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
 
       <div className="p-6">
         {/* Name & Location */}
-        <p className="font-headline font-bold text-on-surface mb-1 leading-tight line-clamp-2">{hotel.name}</p>
+        <p className="font-semibold text-on-surface mb-1 leading-tight line-clamp-2">{hotel.name}</p>
         {hotel.neighborhood && (
-          <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body mb-3">{hotel.neighborhood}</p>
+          <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mb-3">{hotel.neighborhood}</p>
         )}
 
         {/* Rating */}
         <div className="flex items-center gap-1.5 mb-4">
           {hotel.rating > 0 && (
             <>
-              <span className="material-symbols-outlined text-amber-500 text-base">star</span>
-              <span className="text-sm font-bold font-headline text-on-surface">{hotel.rating}/10</span>
+              <span className="material-symbols-outlined text-accent text-base">star</span>
+              <span className="text-sm font-semibold text-on-surface">{hotel.rating}/10</span>
               {hotel.reviewWord && (
-                <span className="text-xs text-on-surface-variant font-body">{hotel.reviewWord}</span>
+                <span className="text-xs text-on-surface-variant">{hotel.reviewWord}</span>
               )}
               {hotel.reviewCount > 0 && (
-                <span className="text-xs text-outline-variant font-body">({hotel.reviewCount.toLocaleString()})</span>
+                <span className="text-xs text-on-light-tertiary">({hotel.reviewCount.toLocaleString()})</span>
               )}
             </>
           )}
         </div>
 
         {/* Price & Add to Trip */}
-        <div className="flex items-end justify-between pt-4 border-t border-outline-variant/15">
+        <div className="flex items-end justify-between pt-4 border-t border-on-light-tertiary/15">
           <div>
-            <motion.p
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-              className="font-headline font-black text-primary text-xl"
-            >
+            <p className="font-semibold text-accent text-[21px]">
               ${hotel.pricePerNight}
-            </motion.p>
-            <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+            </p>
+            <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
               per night -- ${hotel.totalPrice.toLocaleString()} total
             </p>
           </div>
-          <motion.button
+          <button
             onClick={handleToggle}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className={`rounded-full px-5 py-2 text-sm font-bold font-headline flex items-center gap-1.5 transition-colors ${
+            className={`rounded-[8px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
               added
-                ? "bg-primary text-white"
-                : "border border-primary text-primary hover:bg-primary/5"
+                ? "bg-accent text-white"
+                : "border border-accent text-accent"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">
               {added ? "check" : "add"}
             </span>
             {added ? "Added" : "Add to Trip"}
-          </motion.button>
+          </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
