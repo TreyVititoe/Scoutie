@@ -187,8 +187,8 @@ export default function ResultsPage() {
   /* --- Initial load --- */
   if (!pageReady) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gray-light flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -208,16 +208,16 @@ export default function ResultsPage() {
   const allEvents = [...events, ...(events.length < 3 ? similarEvents : []), ...topEvents];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-light">
       {/* --- Header --- */}
-      <header className="fixed top-0 left-0 right-0 z-20 bg-white/70 backdrop-blur-xl shadow-xl shadow-teal-900/5">
-        <div className="max-w-screen-2xl mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="font-headline font-black italic text-2xl text-teal-700">
-            Walter
+      <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
+        <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
+          <Link href="/" className="text-white text-[17px] font-semibold">
+            Scoutie
           </Link>
           <Link
             href="/quiz"
-            className="text-sm font-bold font-body text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
+            className="text-accent text-sm hover:underline transition-colors flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[18px]">edit</span>
             Edit trip
@@ -225,25 +225,17 @@ export default function ResultsPage() {
         </div>
       </header>
 
-      <div className="max-w-screen-2xl mx-auto px-4 lg:px-8 pt-28 pb-10">
+      <div className="max-w-content mx-auto px-4 lg:px-8 pt-28 pb-10">
         {/* --- Page Header --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-14"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container mb-5"
-          >
-            <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-            <span className="text-xs font-bold tracking-widest uppercase font-body">Trip Builder</span>
-          </motion.div>
-          <h1 className="font-headline font-extrabold text-5xl text-on-surface mb-3 tracking-tight">
-            Build your trip to <span className="text-gradient">{destination}</span>
+          <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
+            Build your trip to <span className="text-accent">{destination}</span>
           </h1>
-          <p className="text-on-surface-variant text-xl font-body">
+          <p className="text-on-light-secondary text-[17px]">
             Browse flights, stays, events, and curated picks. Add what you love to your trip.
           </p>
         </motion.div>
@@ -261,57 +253,50 @@ export default function ResultsPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-teal-600 text-xl">flight</span>
-                    </div>
+                    <span className="material-symbols-outlined text-accent text-[21px]">flight</span>
                     <div>
-                      <h2 className="font-headline text-xl font-bold text-on-surface">Flights</h2>
-                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                      <h2 className="text-[21px] font-semibold text-gray-dark">Flights</h2>
+                      <p className="text-on-light-tertiary text-sm">
                         {flightsLoading ? "Searching..." : "Live prices via Skyscanner"}
                       </p>
                     </div>
                   </div>
                   {!flightsLoading && (
-                    <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{flights.length} found</span>
+                    <span className="text-xs text-on-light-tertiary">{flights.length} found</span>
                   )}
                 </div>
 
                 {flightsLoading && (
-                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                    {[0, 1, 2, 3].map((i) => (
-                      <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] p-6 animate-pulse">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="bg-white rounded-[8px] p-6 animate-pulse">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-8 h-8 rounded-lg bg-surface-container-low" />
-                          <div className="h-4 bg-surface-container-low rounded-lg w-24" />
+                          <div className="w-8 h-8 rounded-lg bg-gray-light" />
+                          <div className="h-4 bg-gray-light rounded-lg w-24" />
                         </div>
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <div className="h-5 bg-surface-container-low rounded-lg w-12 mb-1" />
-                            <div className="h-3 bg-surface-container-low rounded-lg w-16" />
+                            <div className="h-5 bg-gray-light rounded-lg w-12 mb-1" />
+                            <div className="h-3 bg-gray-light rounded-lg w-16" />
                           </div>
-                          <div className="h-3 bg-surface-container-low rounded-lg w-16" />
+                          <div className="h-3 bg-gray-light rounded-lg w-16" />
                           <div>
-                            <div className="h-5 bg-surface-container-low rounded-lg w-12 mb-1" />
-                            <div className="h-3 bg-surface-container-low rounded-lg w-16" />
+                            <div className="h-5 bg-gray-light rounded-lg w-12 mb-1" />
+                            <div className="h-3 bg-gray-light rounded-lg w-16" />
                           </div>
                         </div>
-                        <div className="h-6 bg-surface-container-low rounded-full w-20 mt-4" />
+                        <div className="h-6 bg-gray-light rounded-full w-20 mt-4" />
                       </div>
                     ))}
                   </div>
                 )}
 
                 {!flightsLoading && flights.length > 0 && (
-                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                    {flights.map((f, i) => (
-                      <motion.div
-                        key={f.id}
-                        initial={{ opacity: 0, x: 40 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
-                      >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {flights.map((f) => (
+                      <div key={f.id}>
                         <FlightCard flight={f} cheapest={cheapestFlight?.id === f.id} />
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -328,30 +313,28 @@ export default function ResultsPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-purple-600 text-xl">hotel</span>
-                    </div>
+                    <span className="material-symbols-outlined text-accent text-[21px]">hotel</span>
                     <div>
-                      <h2 className="font-headline text-xl font-bold text-on-surface">Stays</h2>
-                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                      <h2 className="text-[21px] font-semibold text-gray-dark">Stays</h2>
+                      <p className="text-on-light-tertiary text-sm">
                         {hotelsLoading ? "Searching..." : "Availability from Booking.com"}
                       </p>
                     </div>
                   </div>
                   {!hotelsLoading && (
-                    <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">{hotels.length} found</span>
+                    <span className="text-xs text-on-light-tertiary">{hotels.length} found</span>
                   )}
                 </div>
 
                 {hotelsLoading && (
-                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                    {[0, 1, 2, 3].map((i) => (
-                      <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden animate-pulse">
-                        <div className="w-full h-40 bg-surface-container-low" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="bg-white rounded-[8px] overflow-hidden animate-pulse">
+                        <div className="w-full h-40 bg-gray-light" />
                         <div className="p-5">
-                          <div className="h-5 bg-surface-container-low rounded-lg w-3/4 mb-3" />
-                          <div className="h-4 bg-surface-container-low rounded-lg w-1/2 mb-3" />
-                          <div className="h-6 bg-surface-container-low rounded-full w-24 mt-3" />
+                          <div className="h-5 bg-gray-light rounded-lg w-3/4 mb-3" />
+                          <div className="h-4 bg-gray-light rounded-lg w-1/2 mb-3" />
+                          <div className="h-6 bg-gray-light rounded-full w-24 mt-3" />
                         </div>
                       </div>
                     ))}
@@ -359,16 +342,11 @@ export default function ResultsPage() {
                 )}
 
                 {!hotelsLoading && hotels.length > 0 && (
-                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                    {hotels.map((h, i) => (
-                      <motion.div
-                        key={h.id}
-                        initial={{ opacity: 0, x: 40 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
-                      >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {hotels.map((h) => (
+                      <div key={h.id}>
                         <HotelCard hotel={h} bestValue={bestValueHotel?.id === h.id} />
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -385,32 +363,30 @@ export default function ResultsPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-amber-600 text-xl">local_activity</span>
-                    </div>
+                    <span className="material-symbols-outlined text-accent text-[21px]">local_activity</span>
                     <div>
-                      <h2 className="font-headline text-xl font-bold text-on-surface">Live Events & Experiences</h2>
-                      <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                      <h2 className="text-[21px] font-semibold text-gray-dark">Live Events & Experiences</h2>
+                      <p className="text-on-light-tertiary text-sm">
                         {eventsLoading ? "Searching..." : "Ticketmaster events during your trip"}
                       </p>
                     </div>
                   </div>
                   {!eventsLoading && (
-                    <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">
+                    <span className="text-xs text-on-light-tertiary">
                       {allEvents.length} found
                     </span>
                   )}
                 </div>
 
                 {eventsLoading && (
-                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                    {[0, 1, 2, 3].map((i) => (
-                      <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] overflow-hidden animate-pulse">
-                        <div className="w-full h-40 bg-surface-container-low" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="bg-white rounded-[8px] overflow-hidden animate-pulse">
+                        <div className="w-full h-40 bg-gray-light" />
                         <div className="p-5">
-                          <div className="h-5 bg-surface-container-low rounded-lg w-3/4 mb-3" />
-                          <div className="h-4 bg-surface-container-low rounded-lg w-1/2 mb-2" />
-                          <div className="h-3 bg-surface-container-low rounded-lg w-2/3" />
+                          <div className="h-5 bg-gray-light rounded-lg w-3/4 mb-3" />
+                          <div className="h-4 bg-gray-light rounded-lg w-1/2 mb-2" />
+                          <div className="h-3 bg-gray-light rounded-lg w-2/3" />
                         </div>
                       </div>
                     ))}
@@ -418,23 +394,18 @@ export default function ResultsPage() {
                 )}
 
                 {!eventsLoading && allEvents.length > 0 && (
-                  <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                    {allEvents.map((ev, i) => (
-                      <motion.div
-                        key={ev.id}
-                        initial={{ opacity: 0, x: 40 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
-                      >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {allEvents.map((ev) => (
+                      <div key={ev.id}>
                         <EventCard event={ev} />
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 )}
               </motion.section>
             )}
 
-            {/* --- Walter's Picks --- */}
+            {/* --- Scoutie's Picks --- */}
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -443,18 +414,16 @@ export default function ResultsPage() {
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary text-xl">auto_awesome</span>
-                  </div>
+                  <span className="material-symbols-outlined text-accent text-[21px]">auto_awesome</span>
                   <div>
-                    <h2 className="font-headline text-xl font-bold text-on-surface">Walter&apos;s Picks</h2>
-                    <p className="text-[10px] uppercase tracking-widest text-outline-variant font-bold font-body">
+                    <h2 className="text-[21px] font-semibold text-gray-dark">Scoutie&apos;s Picks</h2>
+                    <p className="text-on-light-tertiary text-sm">
                       {suggestionsLoading ? "Finding the best spots for you..." : "AI-curated activities, restaurants & sites"}
                     </p>
                   </div>
                 </div>
                 {suggestions.length > 0 && (
-                  <span className="text-xs font-bold font-body text-outline-variant bg-surface px-3 py-1.5 rounded-full">
+                  <span className="text-xs text-on-light-tertiary">
                     {suggestions.length} picks
                   </span>
                 )}
@@ -462,17 +431,17 @@ export default function ResultsPage() {
 
               {/* Skeleton loaders */}
               {suggestionsLoading && (
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                  {[0, 1, 2, 3].map((i) => (
-                    <div key={i} className="min-w-[280px] w-[280px] flex-shrink-0 card-3d rounded-[2rem] p-6 animate-pulse">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="bg-white rounded-[8px] p-6 animate-pulse">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-2xl bg-surface-container-low" />
-                        <div className="h-4 bg-surface-container-low rounded-lg w-20" />
+                        <div className="w-10 h-10 rounded-2xl bg-gray-light" />
+                        <div className="h-4 bg-gray-light rounded-lg w-20" />
                       </div>
-                      <div className="h-5 bg-surface-container-low rounded-lg w-3/4 mb-3" />
-                      <div className="h-4 bg-surface-container-low rounded-lg w-full mb-2" />
-                      <div className="h-4 bg-surface-container-low rounded-lg w-2/3 mb-4" />
-                      <div className="h-10 bg-surface-container-low rounded-full mt-4" />
+                      <div className="h-5 bg-gray-light rounded-lg w-3/4 mb-3" />
+                      <div className="h-4 bg-gray-light rounded-lg w-full mb-2" />
+                      <div className="h-4 bg-gray-light rounded-lg w-2/3 mb-4" />
+                      <div className="h-10 bg-gray-light rounded-full mt-4" />
                     </div>
                   ))}
                 </div>
@@ -480,26 +449,21 @@ export default function ResultsPage() {
 
               {/* Suggestion cards */}
               {!suggestionsLoading && suggestions.length > 0 && (
-                <div className="flex gap-5 overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-8 lg:px-8 scrollbar-hide">
-                  {suggestions.map((s, i) => (
-                    <motion.div
-                      key={s.id}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 * i, duration: 0.35, ease: "easeOut" }}
-                    >
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {suggestions.map((s) => (
+                    <div key={s.id}>
                       <SuggestionCard suggestion={s} />
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               )}
 
               {/* Empty state */}
               {!suggestionsLoading && suggestions.length === 0 && (
-                <div className="card-3d rounded-[2rem] p-8 text-center">
-                  <span className="material-symbols-outlined text-outline-variant text-3xl mb-3 block">explore</span>
-                  <p className="font-headline font-bold text-on-surface mb-1">No suggestions yet</p>
-                  <p className="text-on-surface-variant font-body text-sm">We could not find curated picks for this destination right now.</p>
+                <div className="bg-white rounded-[8px] p-8 text-center">
+                  <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">explore</span>
+                  <p className="font-semibold text-gray-dark mb-1">No suggestions yet</p>
+                  <p className="text-on-light-secondary text-sm">We could not find curated picks for this destination right now.</p>
                 </div>
               )}
             </motion.section>
@@ -510,8 +474,8 @@ export default function ResultsPage() {
         </div>
 
         {/* --- FTC Disclosure --- */}
-        <p className="text-xs text-outline-variant text-center mt-10 font-body">
-          Walter earns a commission when you book through our links at no extra cost to you.
+        <p className="text-xs text-on-light-tertiary text-center mt-10">
+          Scoutie earns a commission when you book through our links at no extra cost to you.
         </p>
       </div>
     </div>
