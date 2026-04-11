@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-gray-light">
+    <div className="min-h-screen bg-page-bg">
       {/* Nav */}
       <nav className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
       </nav>
 
       <main className="max-w-3xl mx-auto px-6 py-16">
-        <div className="bg-white rounded-[8px] p-8">
+        <div className="card-base p-8">
           <h1 className="font-semibold text-[28px] text-gray-dark mb-4">
             Privacy Policy
           </h1>
@@ -276,7 +276,7 @@ export default function PrivacyPage() {
                 exercise your data rights, please contact us at{" "}
                 <a
                   href="mailto:privacy@scoutie.com"
-                  className="text-accent hover:underline"
+                  className="text-accent hover:text-accent-light"
                 >
                   privacy@scoutie.com
                 </a>

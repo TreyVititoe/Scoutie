@@ -73,7 +73,7 @@ export default function SharedTripPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-light flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -81,12 +81,12 @@ export default function SharedTripPage() {
 
   if (error || !trip) {
     return (
-      <div className="min-h-screen bg-gray-light flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-page-bg flex flex-col items-center justify-center px-4">
         <p className="text-2xl font-semibold text-gray-dark mb-3">Trip not found</p>
         <p className="text-on-light-secondary mb-6">This link may have expired or the trip was removed.</p>
         <Link
           href="/"
-          className="px-6 py-3 rounded-[8px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
+          className="px-6 py-3 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
         >
           Plan your own trip
         </Link>
@@ -98,7 +98,7 @@ export default function SharedTripPage() {
     trip.trip_days.find((d) => d.day_number === activeDay) || trip.trip_days[0];
 
   return (
-    <div className="min-h-screen bg-gray-light">
+    <div className="min-h-screen bg-page-bg">
       {/* Header */}
       <header className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -107,7 +107,7 @@ export default function SharedTripPage() {
           </Link>
           <Link
             href="/quiz"
-            className="px-4 py-2 rounded-[8px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors"
+            className="px-4 py-2 rounded-[10px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors"
           >
             Plan your own trip
           </Link>
@@ -115,35 +115,37 @@ export default function SharedTripPage() {
       </header>
 
       {/* Shared banner */}
-      <div className="bg-gray-light">
+      <div className="bg-hero-gradient relative">
+        <div className="hero-glow" />
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-2">
-          <span className="text-gray-dark/80 text-sm font-semibold">Shared trip</span>
-          <span className="text-on-light-tertiary text-sm">— Someone shared this itinerary with you</span>
+          <span className="text-white/80 text-sm font-semibold">Shared trip</span>
+          <span className="text-on-dark-tertiary text-sm">— Someone shared this itinerary with you</span>
         </div>
       </div>
 
       {/* Trip hero */}
-      <div className="bg-gray-light">
+      <div className="bg-hero-gradient relative">
+        <div className="hero-glow" />
         <div className="max-w-5xl mx-auto px-6 py-8">
-          <span className="inline-block text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 bg-black/5 text-on-light-tertiary">
+          <span className="inline-block text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 bg-white/10 text-on-dark-secondary">
             {trip.tier}
           </span>
-          <h1 className="font-semibold text-3xl sm:text-4xl text-gray-dark mb-2">
+          <h1 className="font-semibold text-3xl sm:text-4xl text-white mb-2">
             {trip.title}
           </h1>
-          <p className="text-on-light-secondary max-w-2xl">{trip.summary}</p>
+          <p className="text-on-dark-secondary max-w-2xl">{trip.summary}</p>
           <div className="flex items-center gap-6 mt-4">
             <div>
-              <p className="text-xs text-on-light-tertiary uppercase tracking-wider">Destination</p>
-              <p className="font-semibold text-gray-dark">{trip.destination}</p>
+              <p className="text-xs text-on-dark-tertiary uppercase tracking-wider">Destination</p>
+              <p className="font-semibold text-white">{trip.destination}</p>
             </div>
             <div>
-              <p className="text-xs text-on-light-tertiary uppercase tracking-wider">Duration</p>
-              <p className="font-semibold text-gray-dark">{trip.trip_days.length} days</p>
+              <p className="text-xs text-on-dark-tertiary uppercase tracking-wider">Duration</p>
+              <p className="font-semibold text-white">{trip.trip_days.length} days</p>
             </div>
             <div>
-              <p className="text-xs text-on-light-tertiary uppercase tracking-wider">Total cost</p>
-              <p className="font-semibold text-accent text-lg">
+              <p className="text-xs text-on-dark-tertiary uppercase tracking-wider">Total cost</p>
+              <p className="font-semibold text-cyan text-lg">
                 ${trip.total_estimated_cost.toLocaleString()}
               </p>
             </div>
@@ -158,10 +160,10 @@ export default function SharedTripPage() {
             <button
               key={day.day_number}
               onClick={() => setActiveDay(day.day_number)}
-              className={`flex-shrink-0 px-5 py-3 rounded-[8px] font-medium transition-all ${
+              className={`flex-shrink-0 px-5 py-3 rounded-[10px] font-medium transition-all ${
                 activeDay === day.day_number
                   ? "bg-accent text-white shadow-elevated"
-                  : "bg-white text-on-light-secondary hover:bg-white/80"
+                  : "card-base text-on-light-secondary hover:bg-white/80"
               }`}
             >
               <span className="block text-xs opacity-70">Day {day.day_number}</span>
@@ -192,7 +194,7 @@ export default function SharedTripPage() {
 
             {/* Timeline */}
             <div className="relative pl-8">
-              <div className="absolute left-3 top-0 bottom-0 w-px bg-black/10" />
+              <div className="absolute left-3 top-0 bottom-0 w-px bg-[rgba(0,101,113,0.08)]" />
               <div className="space-y-4">
                 {currentDay.trip_items.map((item, i) => (
                   <motion.div
@@ -200,13 +202,13 @@ export default function SharedTripPage() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="relative bg-white rounded-[8px] p-4"
+                    className="relative card-base p-4"
                   >
-                    <div className="absolute -left-[1.4rem] top-5 w-3 h-3 rounded-full bg-accent border-2 border-gray-light" />
+                    <div className="absolute -left-[1.4rem] top-5 w-3 h-3 rounded-full bg-accent border-2 border-page-bg" />
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-on-light-tertiary text-[12px] font-semibold tracking-wider uppercase">
+                          <span className="bg-[#e6f7f9] text-accent rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
                             {item.item_type}
                           </span>
                           {item.start_time && (
@@ -240,7 +242,7 @@ export default function SharedTripPage() {
       </div>
 
       {/* CTA */}
-      <div className="bg-gray-light mt-10">
+      <div className="bg-page-bg mt-10">
         <div className="max-w-5xl mx-auto px-6 py-12 text-center">
           <h2 className="font-semibold text-2xl text-gray-dark mb-3">
             Want a trip like this?
@@ -250,7 +252,7 @@ export default function SharedTripPage() {
           </p>
           <Link
             href="/quiz"
-            className="inline-flex px-8 py-4 rounded-[8px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
+            className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
           >
             Plan my trip
           </Link>
