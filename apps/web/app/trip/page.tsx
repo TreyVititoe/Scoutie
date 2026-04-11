@@ -18,7 +18,7 @@ import type { MapItem } from "@/components/trip/TripMap";
 const TripMap = dynamic(() => import("@/components/trip/TripMap"), {
   ssr: false,
   loading: () => (
-    <div className="rounded-[8px] bg-gray-light flex items-center justify-center h-80 lg:min-h-[400px] text-on-light-tertiary text-sm">
+    <div className="rounded-[14px] bg-page-bg flex items-center justify-center h-80 lg:min-h-[400px] text-on-light-tertiary text-sm">
       Loading map...
     </div>
   ),
@@ -42,7 +42,7 @@ export default function TripPageWrapper() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-light flex items-center justify-center">
+        <div className="min-h-screen bg-page-bg flex items-center justify-center">
           <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
         </div>
       }
@@ -171,7 +171,7 @@ function TripPage() {
   /* ── Empty state ── */
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-light">
+      <div className="min-h-screen bg-page-bg">
         <header className="nav-glass sticky top-0 z-20">
           <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
             <Link
@@ -205,7 +205,7 @@ function TripPage() {
           </p>
           <Link
             href="/results"
-            className="bg-accent text-white rounded-[8px] px-8 py-3 text-sm font-semibold flex items-center gap-2"
+            className="bg-accent text-white rounded-[10px] px-8 py-3 text-sm font-semibold flex items-center gap-2 hover:bg-accent-light transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">
               search
@@ -219,7 +219,7 @@ function TripPage() {
 
   /* ── Main render ── */
   return (
-    <div className="min-h-screen bg-gray-light">
+    <div className="min-h-screen bg-page-bg">
       {/* ── Dark Nav Header ── */}
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
@@ -254,14 +254,15 @@ function TripPage() {
       </header>
 
       {/* ── Trip Overview Hero ── */}
-      <section className="relative overflow-hidden bg-gray-light">
-        <div className="max-w-content mx-auto px-6 pt-12 pb-10">
-          <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-2">
+      <section className="bg-hero-gradient relative overflow-hidden">
+        <div className="hero-glow absolute inset-0 pointer-events-none" />
+        <div className="relative z-10 max-w-content mx-auto px-6 pt-12 pb-10">
+          <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-2">
             Your Trip
           </p>
-          <h1 className="text-[40px] font-semibold text-gray-dark leading-section mb-4">
+          <h1 className="text-[40px] font-semibold text-white leading-section mb-4">
             {destination ? (
-              <span className="text-gray-dark">{destination}</span>
+              <span className="text-white">{destination}</span>
             ) : (
               "Your Custom Trip"
             )}
@@ -271,68 +272,68 @@ function TripPage() {
             {destination && (
               <>
                 <div>
-                  <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
+                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
                     Destination
                   </p>
-                  <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-accent text-[20px]">
+                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-cyan text-[20px]">
                       location_on
                     </span>
                     {destination}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-black/5" />
+                <div className="w-px h-10 bg-cyan/10" />
               </>
             )}
 
             {dateRange && (
               <>
                 <div>
-                  <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
+                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
                     Dates
                   </p>
-                  <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-accent text-[20px]">
+                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-cyan text-[20px]">
                       calendar_today
                     </span>
                     {dateRange}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-black/5" />
+                <div className="w-px h-10 bg-cyan/10" />
               </>
             )}
 
             <div>
-              <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
                 Travelers
               </p>
-              <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-accent text-[20px]">
+              <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-cyan text-[20px]">
                   group
                 </span>
                 {travelers}
               </p>
             </div>
-            <div className="w-px h-10 bg-black/5" />
+            <div className="w-px h-10 bg-cyan/10" />
 
             <div>
-              <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
                 Items
               </p>
-              <p className="font-semibold text-[17px] text-gray-dark flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-accent text-[20px]">
+              <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-cyan text-[20px]">
                   shopping_bag
                 </span>
                 {items.length}
               </p>
             </div>
-            <div className="w-px h-10 bg-black/5" />
+            <div className="w-px h-10 bg-cyan/10" />
 
             <div>
-              <p className="text-on-light-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
                 Est. Total
               </p>
-              <p className="font-semibold text-[28px] text-gray-dark">
+              <p className="text-cyan font-semibold text-[28px]">
                 ${totalPrice.toLocaleString()}
               </p>
             </div>
@@ -388,7 +389,7 @@ function TripPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="bg-white rounded-[8px] p-6"
+              className="card-base p-6"
             >
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-accent text-[22px]">
@@ -407,7 +408,7 @@ function TripPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.35, ease: "easeOut", delay: 0.1 }}
-              className="bg-white rounded-[8px] p-6"
+              className="card-base p-6"
             >
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-accent text-[22px]">
@@ -437,7 +438,7 @@ function TripPage() {
                     </div>
                   );
                 })}
-                <div className="border-t border-black/5 pt-2 mt-2 flex items-center justify-between">
+                <div className="border-t border-[rgba(0,101,113,0.08)] pt-2 mt-2 flex items-center justify-between">
                   <span className="font-semibold text-gray-dark">
                     Total
                   </span>
@@ -484,12 +485,12 @@ function ItemCard({
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="bg-white rounded-[8px] p-5 group"
+      className="card-base p-5 group"
     >
       <div className="flex items-start gap-4">
         {/* Image thumbnail */}
         {item.image && (
-          <div className="w-20 h-20 rounded-[8px] overflow-hidden flex-shrink-0 bg-gray-light">
+          <div className="w-20 h-20 rounded-[8px] overflow-hidden flex-shrink-0 bg-page-bg">
             <img
               src={item.image}
               alt={item.title}
@@ -502,7 +503,7 @@ function ItemCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span
-              className="text-[12px] text-on-light-tertiary font-semibold tracking-micro uppercase"
+              className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase"
             >
               {item.type}
             </span>
@@ -571,7 +572,7 @@ function ItemCard({
                   destinationUrl: item.bookingUrl!,
                 })
               }
-              className="bg-accent text-white rounded-[8px] px-4 py-1.5 text-[12px] font-semibold flex items-center gap-1.5 whitespace-nowrap"
+              className="bg-accent text-white rounded-[10px] px-4 py-1.5 text-[12px] font-semibold flex items-center gap-1.5 whitespace-nowrap hover:bg-accent-light transition-colors"
             >
               <span className="material-symbols-outlined text-[14px]">
                 open_in_new
