@@ -80,29 +80,29 @@ export default function HomePage() {
     <div className="min-h-screen">
       {/* ========== HEADER ========== */}
       <nav className="fixed top-0 left-0 right-0 z-50 nav-glass">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 h-[48px] flex items-center justify-between">
           <Link
             href="/"
-            className="text-white text-[17px] font-semibold"
+            className="text-white text-[15px] font-semibold"
           >
             Walter
           </Link>
           <div className="flex items-center gap-8">
             <Link
               href="/explore"
-              className="text-white text-[12px] hidden sm:block"
+              className="text-white/80 text-[11px] hidden sm:block"
             >
               Explore
             </Link>
             <Link
               href="/quiz"
-              className="text-white text-[12px] hidden sm:block"
+              className="text-white/80 text-[11px] hidden sm:block"
             >
               Plan a Trip
             </Link>
             <Link
               href="/quiz"
-              className="bg-accent text-white rounded-pill px-4 py-1.5 text-[14px]"
+              className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
             >
               Get Started
             </Link>
@@ -111,69 +111,93 @@ export default function HomePage() {
       </nav>
 
       {/* ========== HERO ========== */}
-      <section className="bg-gray-light min-h-[92vh] flex items-center">
+      <section className="bg-hero-gradient relative min-h-[85vh] flex">
+        <div className="hero-glow absolute inset-0 pointer-events-none" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="max-w-6xl mx-auto px-6 pt-36 pb-24"
+          className="w-full flex flex-col md:flex-row pt-[48px]"
         >
-          <div className="max-w-3xl">
-            <h1 className="text-gray-dark text-[56px] font-semibold leading-display tracking-display mb-7">
+          {/* Left side */}
+          <div className="flex-[0_0_42%] p-8 md:p-12 flex flex-col justify-center">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
+              <span className="text-cyan/70 text-[10px] uppercase tracking-[2px]">
+                AI-powered travel
+              </span>
+            </div>
+            <h1 className="text-white text-[28px] md:text-[32px] font-semibold leading-tight">
               One quiz.
               <br />
-              Your whole trip.
+              <span className="text-cyan">Your whole trip.</span>
             </h1>
-
-            <p className="text-on-light-secondary text-[21px] leading-card-title mb-12 max-w-xl">
-              Tell Walter how you like to travel. Get complete, bookable
-              itineraries with flights, hotels, activities, and more -- in
-              seconds.
+            <p className="text-on-dark-secondary text-[13px] mt-3 leading-relaxed max-w-md">
+              Flights, hotels, events, restaurants. All real, all bookable.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#how-it-works"
-                className="border border-accent text-accent rounded-pill px-5 py-2 text-sm inline-flex items-center justify-center"
-              >
-                Learn more
-              </a>
+            <div className="flex flex-row gap-3 mt-5">
               <Link
                 href="/quiz"
-                className="bg-accent text-white rounded-[8px] px-4 py-2 text-[17px] inline-flex items-center justify-center"
+                className="bg-accent text-white rounded-[10px] px-5 py-2.5 text-[13px] font-semibold hover:bg-accent-light transition-colors"
               >
-                Get started
+                Plan your trip
               </Link>
+              <a
+                href="#how-it-works"
+                className="border border-cyan/30 text-cyan rounded-[10px] px-5 py-2.5 text-[13px] hover:bg-cyan/5 transition-colors"
+              >
+                How it works
+              </a>
             </div>
+          </div>
+
+          {/* Right side */}
+          <div className="flex-[0_0_58%] bg-accent-deep/50 p-4 md:p-6 flex flex-col gap-3 justify-center">
+            {destinations.slice(0, 3).map((d) => (
+              <div
+                key={d.name}
+                className="glass-card-dark rounded-[14px] p-3 flex items-center gap-3"
+              >
+                <img
+                  src={d.image}
+                  alt={d.name}
+                  className="w-[50px] h-[36px] rounded-[8px] object-cover"
+                />
+                <div>
+                  <p className="text-white text-[13px] font-semibold">{d.name}</p>
+                  <p className="text-white/50 text-[10px]">
+                    {d.tag} &middot; {d.price}
+                  </p>
+                </div>
+                <span className="text-cyan text-[10px] ml-auto">
+                  12 flights found
+                </span>
+              </div>
+            ))}
           </div>
         </motion.div>
       </section>
 
       {/* ========== FEATURES STRIP ========== */}
-      <section className="bg-gray-light overflow-hidden">
+      <section className="bg-white border-y border-[rgba(0,101,113,0.06)] py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true }}
           transition={{ duration: 0.3 }}
-          className="max-w-6xl mx-auto px-6 py-8"
+          className="max-w-6xl mx-auto px-6"
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
             {features.map((f) => (
-              <div
-                key={f.title}
-                className="flex items-start gap-3 py-2"
-              >
-                <span className="material-symbols-outlined text-accent text-xl mt-0.5">
-                  {f.icon}
-                </span>
+              <div key={f.title} className="flex items-start gap-3">
+                <div className="icon-gradient w-9 h-9 flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-accent text-lg">
+                    {f.icon}
+                  </span>
+                </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-dark leading-tight">
-                    {f.title}
-                  </p>
-                  <p className="text-xs text-on-light-secondary mt-0.5">
-                    {f.desc}
-                  </p>
+                  <p className="text-sm font-semibold text-gray-dark">{f.title}</p>
+                  <p className="text-xs text-on-light-secondary">{f.desc}</p>
                 </div>
               </div>
             ))}
@@ -182,67 +206,57 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section id="how-it-works" className="bg-gray-light">
-        <div className="max-w-6xl mx-auto px-6 py-28">
+      <section id="how-it-works" className="bg-page-bg py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-[32px] font-semibold text-gray-dark text-center mb-12">
+            Three steps to your perfect trip
+          </h2>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.3 }}
-            className="text-center mb-20"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-8"
           >
-            <h2 className="text-gray-dark text-[40px] font-semibold leading-section tracking-section">
-              Three steps to your perfect trip
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {steps.map((step) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-[8px] p-8"
-              >
-                <div className="w-14 h-14 rounded-[8px] bg-accent/20 flex items-center justify-center mb-6">
-                  <span className="material-symbols-outlined text-accent text-2xl">
+            {steps.map((step, i) => (
+              <div key={step.title} className="card-base p-8">
+                <div className="bg-accent text-white text-[11px] font-semibold w-6 h-6 rounded-[8px] flex items-center justify-center mb-4">
+                  {i + 1}
+                </div>
+                <div className="icon-gradient w-12 h-12 flex items-center justify-center mb-4">
+                  <span className="material-symbols-outlined text-accent text-xl">
                     {step.icon}
                   </span>
                 </div>
-                <h3 className="text-gray-dark font-semibold text-[17px] mb-3">
+                <h3 className="font-semibold text-[17px] text-gray-dark mb-2">
                   {step.title}
                 </h3>
-                <p className="text-on-light-secondary leading-relaxed">
+                <p className="text-on-light-secondary text-sm leading-relaxed">
                   {step.desc}
                 </p>
-              </motion.div>
+              </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ========== EVENTS SHOWCASE ========== */}
-      <section className="bg-gray-light">
-        <div className="max-w-6xl mx-auto px-6 py-28">
+      <section className="bg-white py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-[32px] font-semibold text-gray-dark text-center">
+            Never miss a moment
+          </h2>
+          <p className="text-on-light-secondary text-lg mt-3 mb-12 max-w-2xl mx-auto text-center">
+            Concerts, games, festivals, theater — Walter finds what&apos;s happening
+            during your trip and lets you add it with one tap.
+          </p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.3 }}
-            className="text-center mb-16"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           >
-            <h2 className="text-gray-dark text-[40px] font-semibold leading-section tracking-section">
-              Never miss a moment
-            </h2>
-            <p className="text-on-light-secondary mt-4 text-lg max-w-2xl mx-auto leading-relaxed">
-              Concerts, games, festivals, theater — Walter finds what&apos;s happening
-              during your trip and lets you add it with one tap.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 icon: "music_note",
@@ -265,16 +279,9 @@ export default function HomePage() {
                 desc: "Food festivals, art fairs, nightlife events. Discover the local scene during your dates.",
               },
             ].map((card) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-[8px] p-7"
-              >
-                <div className="w-14 h-14 rounded-full bg-gray-light flex items-center justify-center mb-5">
-                  <span className="material-symbols-outlined text-accent text-2xl">
+              <div key={card.title} className="card-base p-7">
+                <div className="icon-gradient w-12 h-12 flex items-center justify-center mb-4">
+                  <span className="material-symbols-outlined text-accent text-xl">
                     {card.icon}
                   </span>
                 </div>
@@ -284,58 +291,50 @@ export default function HomePage() {
                 <p className="text-on-light-secondary text-sm leading-relaxed">
                   {card.desc}
                 </p>
-              </motion.div>
+              </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ========== DESTINATION TEASERS ========== */}
-      <section className="bg-gray-light">
-        <div className="max-w-6xl mx-auto px-6 py-28">
+      {/* ========== DESTINATIONS ========== */}
+      <section className="bg-page-bg py-20">
+        <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.3 }}
             className="flex items-end justify-between mb-12"
           >
-            <div>
-              <h2 className="text-gray-dark text-[40px] font-semibold">
-                Popular destinations
-              </h2>
-              <p className="text-on-light-secondary mt-3">
-                Click to start your trip with a destination pre-filled.
-              </p>
-            </div>
+            <h2 className="text-[32px] font-semibold text-gray-dark">
+              Popular destinations
+            </h2>
             <Link
               href="/explore"
-              className="hidden sm:flex items-center gap-1 text-accent text-sm"
+              className="text-accent text-sm font-semibold hover:text-accent-light"
             >
               View all
-              <span className="material-symbols-outlined text-lg">
-                arrow_forward
-              </span>
             </Link>
           </motion.div>
 
-          {/* Bento grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
             {destinations.map((d, i) => (
               <motion.div
                 key={d.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
+                viewport={{ once: true }}
                 transition={{ duration: 0.3 }}
               >
                 <Link
                   href={`/quiz?destination=${encodeURIComponent(d.name)}`}
-                  className={`relative block overflow-hidden rounded-[8px] shadow-elevated ${
+                  className={`relative block overflow-hidden rounded-[14px] group hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,101,113,0.1)] transition-all duration-200 ${
                     i === 0 || i === 3
                       ? "aspect-[4/5] sm:row-span-1"
                       : "aspect-[4/3]"
                   }`}
+                  style={{ boxShadow: "0 2px 12px rgba(0,101,113,0.06)" }}
                 >
                   <img
                     src={d.image}
@@ -345,14 +344,14 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.15em] bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full">
+                      <span className="bg-white/15 backdrop-blur-md text-white rounded-pill px-3 py-1 text-[11px] font-semibold">
                         {d.tag}
                       </span>
                     </div>
                     <p className="font-semibold text-2xl text-white">
                       {d.name}
                     </p>
-                    <p className="text-on-dark-tertiary text-sm mt-1">
+                    <p className="text-white/50 text-sm mt-1">
                       {d.price}
                     </p>
                   </div>
@@ -363,30 +362,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ========== CTA ========== */}
-      <section className="bg-gray-light">
-        <div className="max-w-6xl mx-auto px-6 py-28 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.3 }}
+      {/* ========== FINAL CTA ========== */}
+      <section className="bg-hero-gradient relative py-20 text-center">
+        <div className="hero-glow absolute inset-0 pointer-events-none" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.3 }}
+          className="relative z-10 max-w-6xl mx-auto px-6"
+        >
+          <h2 className="text-white text-[32px] font-semibold">
+            Ready to plan your next adventure?
+          </h2>
+          <p className="text-on-dark-secondary text-lg mt-3 mb-8 max-w-xl mx-auto">
+            No sign-up required. Take the quiz, get your trip, book when
+            you&apos;re ready.
+          </p>
+          <Link
+            href="/quiz"
+            className="bg-accent text-white rounded-[10px] px-6 py-3 text-[17px] font-semibold hover:bg-accent-light transition-colors inline-flex items-center gap-2"
           >
-            <h2 className="text-gray-dark text-[40px] font-semibold mb-6">
-              Ready to plan your next adventure?
-            </h2>
-            <p className="text-on-light-secondary text-lg mb-12 max-w-xl mx-auto">
-              No sign-up required. Take the quiz, get your trip, book when
-              you&apos;re ready.
-            </p>
-            <Link
-              href="/quiz"
-              className="bg-accent text-white rounded-[8px] px-6 py-3 text-[17px] inline-flex items-center justify-center"
-            >
-              Start planning
-            </Link>
-          </motion.div>
-        </div>
+            Start planning
+          </Link>
+        </motion.div>
       </section>
 
       {/* Footer is rendered by root layout */}
