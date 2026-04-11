@@ -51,7 +51,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-light flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -60,7 +60,7 @@ export default function DashboardPage() {
   const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || "";
 
   return (
-    <div className="min-h-screen bg-gray-light">
+    <div className="min-h-screen bg-page-bg">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
@@ -91,10 +91,10 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
             <Link
               href="/quiz"
-              className="bg-white rounded-[8px] p-6 transition-colors group"
+              className="card-base p-6 transition-colors group"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-gray-light rounded-[8px] flex items-center justify-center">
+                <div className="w-10 h-10 icon-gradient rounded-[8px] flex items-center justify-center">
                   <span className="material-symbols-outlined text-accent text-xl">add</span>
                 </div>
                 <h2 className="font-semibold text-[17px] text-gray-dark">Start New Trip</h2>
@@ -107,10 +107,10 @@ export default function DashboardPage() {
             {cartItemCount > 0 && (
               <Link
                 href="/results"
-                className="bg-white rounded-[8px] p-6 transition-colors"
+                className="card-base p-6 transition-colors"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-gray-light rounded-[8px] flex items-center justify-center">
+                  <div className="w-10 h-10 icon-gradient rounded-[8px] flex items-center justify-center">
                     <span className="material-symbols-outlined text-accent text-xl">shopping_cart</span>
                   </div>
                   <h2 className="font-semibold text-[17px] text-gray-dark">Continue Building</h2>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
             </div>
 
             {trips.length === 0 ? (
-              <div className="bg-white rounded-[8px] p-10 text-center">
+              <div className="card-base p-10 text-center">
                 <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">explore</span>
                 <p className="font-semibold text-gray-dark mb-1">No trips yet</p>
                 <p className="text-on-light-secondary text-sm mb-6">
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   href="/quiz"
-                  className="inline-flex bg-accent text-white rounded-[8px] px-6 py-3 font-semibold hover:bg-accent-light transition-colors"
+                  className="inline-flex bg-accent text-white rounded-[10px] px-6 py-3 font-semibold hover:bg-accent-light transition-colors"
                 >
                   Plan your first trip
                 </Link>
@@ -149,7 +149,7 @@ export default function DashboardPage() {
                   <Link
                     key={trip.id}
                     href={`/trips/${trip.id}`}
-                    className="bg-white rounded-[8px] p-5 block hover:shadow-elevated transition-shadow"
+                    className="card-base p-5 block transition-shadow"
                   >
                     <h3 className="font-semibold text-gray-dark mb-1">
                       {trip.title || trip.destination}
