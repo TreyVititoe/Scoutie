@@ -252,7 +252,7 @@ export default function ResultsPage() {
 
         <div>
           {/* --- Floating Tab Bar --- */}
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 lg:bottom-auto lg:top-[72px] lg:left-1/2 lg:-translate-x-1/2">
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 lg:bottom-auto lg:top-[180px] lg:left-1/2 lg:-translate-x-1/2">
             <div className="flex items-center gap-1 p-1.5 rounded-full bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(0,101,113,0.12),0_0_0_1px_rgba(0,101,113,0.04)]">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -298,7 +298,7 @@ export default function ResultsPage() {
           </div>
 
           {/* --- Tab Content --- */}
-          <main className="pb-24 lg:pb-0 lg:pt-14">
+          <main className="pb-24 lg:pb-0 lg:pt-20">
             {/* --- Flights Tab --- */}
             {activeTab === "flights" && (
               <motion.section
