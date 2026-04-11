@@ -83,17 +83,14 @@ export default function SharedTripPage() {
         body: JSON.stringify({ tripId: trip.id }),
       });
 
-      if (res.status === 401) {
-        window.location.href = `/auth/login?redirect=/shared/${slug}`;
-        return;
-      }
-
       if (!res.ok) {
         setForking(false);
         return;
       }
 
-      window.location.href = `/dashboard`;
+      const data = await res.json();
+      // Redirect to the forked trip's shared page so they can see it
+      window.location.href = `/shared/${data.shareSlug}`;
     } catch {
       setForking(false);
     }

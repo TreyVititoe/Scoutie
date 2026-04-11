@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { nanoid } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if user is logged in (optional -- fork works without auth)
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
 
     const { tripId } = await req.json();
 
@@ -19,7 +17,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing tripId" }, { status: 400 });
     }
 
-    const { data: source, error: fetchError } = await supabase
+    // Use admin client to bypass RLS for anonymous forks
+    const { data: source, error: fetchError } = await supabaseAdmin
       .from("trips")
       .select(`
         title, summary, destination, tier, start_date, end_date,
@@ -45,10 +44,10 @@ export async function POST(req: NextRequest) {
 
     const newSlug = nanoid(10);
 
-    const { data: newTrip, error: tripError } = await supabase
+    const { data: newTrip, error: tripError } = await supabaseAdmin
       .from("trips")
       .insert({
-        user_id: user.id,
+        user_id: user?.id || null,
         title: source.title,
         summary: source.summary,
         destination: source.destination,
@@ -76,7 +75,7 @@ export async function POST(req: NextRequest) {
     );
 
     for (const day of sortedDays) {
-      const { data: newDay } = await supabase
+      const { data: newDay } = await supabaseAdmin
         .from("trip_days")
         .insert({
           trip_id: newTrip.id,
@@ -111,14 +110,17 @@ export async function POST(req: NextRequest) {
           sort_order: item.sort_order,
         }));
 
-        await supabase.from("trip_items").insert(itemInserts);
+        await supabaseAdmin.from("trip_items").insert(itemInserts);
       }
     }
 
-    await supabase.from("saved_trips").insert({
-      user_id: user.id,
-      trip_id: newTrip.id,
-    });
+    // Only save to saved_trips if user is logged in
+    if (user) {
+      await supabaseAdmin.from("saved_trips").insert({
+        user_id: user.id,
+        trip_id: newTrip.id,
+      });
+    }
 
     return NextResponse.json({
       tripId: newTrip.id,
