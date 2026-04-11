@@ -19,7 +19,7 @@ export default function StepWrapper({
       transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
       className="w-full max-w-2xl mx-auto"
     >
-      <div className="bg-white rounded-[8px] p-8">
+      <div className="card-base p-8">
         <h2 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
           {title}
         </h2>

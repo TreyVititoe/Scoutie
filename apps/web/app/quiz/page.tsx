@@ -88,7 +88,7 @@ export default function QuizPage() {
               return (
                 <div
                   key={label}
-                  className="w-12 h-0.5 rounded-full bg-on-light-tertiary/20 overflow-hidden"
+                  className="w-12 h-0.5 rounded-full bg-accent/15 overflow-hidden"
                 >
                   <motion.div
                     initial={{ scaleX: 0 }}
@@ -106,7 +106,7 @@ export default function QuizPage() {
               store.resetQuiz();
               router.push("/");
             }}
-            className="flex items-center gap-1 text-sm text-on-light-secondary hover:text-gray-dark transition-colors"
+            className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
           >
             <span className="material-symbols-outlined text-[20px]">close</span>
             Exit
@@ -122,7 +122,7 @@ export default function QuizPage() {
       </main>
 
       {/* Bottom Navigation */}
-      <div className="sticky bottom-0 z-20 bg-white border-t border-black/5">
+      <div className="sticky bottom-0 z-20 bg-white border-t border-[rgba(0,101,113,0.08)]">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => store.prevStep()}
@@ -140,7 +140,7 @@ export default function QuizPage() {
           {isLastStep ? (
             <button
               onClick={handleGenerate}
-              className="bg-accent text-white rounded-[8px] px-8 py-3 text-[17px] flex items-center gap-2"
+              className="bg-accent text-white rounded-[10px] px-8 py-3 text-[17px] flex items-center gap-2 hover:bg-accent-light transition-colors"
             >
               <span className="material-symbols-outlined text-[22px]">auto_awesome</span>
               Generate My Trip
@@ -148,7 +148,7 @@ export default function QuizPage() {
           ) : (
             <button
               onClick={() => store.nextStep()}
-              className="bg-accent text-white rounded-[8px] px-8 py-3 text-[17px] flex items-center gap-2"
+              className="bg-accent text-white rounded-[10px] px-8 py-3 text-[17px] flex items-center gap-2 hover:bg-accent-light transition-colors"
             >
               Continue
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
