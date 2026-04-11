@@ -111,69 +111,46 @@ export default function HomePage() {
       </nav>
 
       {/* ========== HERO ========== */}
-      <section className="bg-hero-gradient relative min-h-[85vh] flex">
-        <div className="hero-glow absolute inset-0 pointer-events-none" />
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+        <img
+          src="/hero-bg.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/30" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="w-full flex flex-col md:flex-row pt-[48px]"
+          transition={{ duration: 0.5 }}
+          className="relative z-10 text-center px-6 pt-[48px]"
         >
-          {/* Left side */}
-          <div className="flex-[0_0_42%] p-8 md:p-12 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
-              <span className="text-cyan/70 text-[10px] uppercase tracking-[2px]">
-                AI-powered travel
-              </span>
-            </div>
-            <h1 className="text-white text-[28px] md:text-[32px] font-semibold leading-tight">
-              One quiz.
-              <br />
-              <span className="text-cyan">Your whole trip.</span>
-            </h1>
-            <p className="text-on-dark-secondary text-[13px] mt-3 leading-relaxed max-w-md">
-              Flights, hotels, events, restaurants. All real, all bookable.
-            </p>
-            <div className="flex flex-row gap-3 mt-5">
-              <Link
-                href="/quiz"
-                className="bg-accent text-white rounded-[10px] px-5 py-2.5 text-[13px] font-semibold hover:bg-accent-light transition-colors"
-              >
-                Plan your trip
-              </Link>
-              <a
-                href="#how-it-works"
-                className="border border-cyan/30 text-cyan rounded-[10px] px-5 py-2.5 text-[13px] hover:bg-cyan/5 transition-colors"
-              >
-                How it works
-              </a>
-            </div>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
+            <span className="text-white/60 text-[10px] uppercase tracking-[2px]">
+              AI-powered travel
+            </span>
           </div>
-
-          {/* Right side */}
-          <div className="flex-[0_0_58%] bg-accent-deep/50 p-4 md:p-6 flex flex-col gap-3 justify-center">
-            {destinations.slice(0, 3).map((d) => (
-              <div
-                key={d.name}
-                className="glass-card-dark rounded-[14px] p-3 flex items-center gap-3"
-              >
-                <img
-                  src={d.image}
-                  alt={d.name}
-                  className="w-[50px] h-[36px] rounded-[8px] object-cover"
-                />
-                <div>
-                  <p className="text-white text-[13px] font-semibold">{d.name}</p>
-                  <p className="text-white/50 text-[10px]">
-                    {d.tag} &middot; {d.price}
-                  </p>
-                </div>
-                <span className="text-cyan text-[10px] ml-auto">
-                  12 flights found
-                </span>
-              </div>
-            ))}
+          <h1 className="text-white text-[40px] md:text-[56px] font-semibold leading-display tracking-display">
+            One quiz.
+            <br />
+            <span className="text-cyan">Your whole trip.</span>
+          </h1>
+          <p className="text-white/70 text-[17px] mt-4 leading-relaxed max-w-lg mx-auto">
+            Flights, hotels, events, restaurants. All real, all bookable.
+          </p>
+          <div className="flex flex-row gap-3 mt-8 justify-center">
+            <Link
+              href="/quiz"
+              className="bg-accent text-white rounded-[10px] px-6 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors"
+            >
+              Plan your trip
+            </Link>
+            <a
+              href="#how-it-works"
+              className="bg-white/15 backdrop-blur-sm border border-white/20 text-white rounded-[10px] px-6 py-3 text-[15px] hover:bg-white/25 transition-colors"
+            >
+              How it works
+            </a>
           </div>
         </motion.div>
       </section>
