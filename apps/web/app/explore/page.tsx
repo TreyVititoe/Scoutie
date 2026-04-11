@@ -107,7 +107,7 @@ export default function ExplorePage() {
     : destinations;
 
   return (
-    <div className="min-h-screen bg-gray-light">
+    <div className="min-h-screen bg-page-bg">
       {/* Header */}
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
@@ -140,7 +140,7 @@ export default function ExplorePage() {
             className={`px-4 py-2 rounded-pill text-sm transition-all ${
               activeTag === null
                 ? "bg-accent text-white"
-                : "bg-white border border-black/10 text-on-light-secondary hover:border-accent/30"
+                : "bg-white border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30"
             }`}
           >
             All
@@ -152,7 +152,7 @@ export default function ExplorePage() {
               className={`px-4 py-2 rounded-pill text-sm transition-all ${
                 activeTag === tag
                   ? "bg-accent text-white"
-                  : "bg-white border border-black/10 text-on-light-secondary hover:border-accent/30"
+                  : "bg-white border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30"
               }`}
             >
               {tag}
@@ -166,7 +166,7 @@ export default function ExplorePage() {
             <Link
               key={dest.city}
               href={`/quiz?destination=${encodeURIComponent(dest.city)}`}
-              className="block bg-white rounded-[8px] overflow-hidden shadow-elevated transition-all group"
+              className="block card-base overflow-hidden transition-all group"
             >
               <div className="relative h-48 overflow-hidden">
                 <img
@@ -196,7 +196,7 @@ export default function ExplorePage() {
                   {dest.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[12px] font-semibold text-on-light-tertiary bg-gray-light rounded-pill px-2 py-0.5"
+                      className="text-[12px] font-semibold text-on-light-tertiary bg-page-bg rounded-pill px-2 py-0.5"
                     >
                       {tag}
                     </span>
@@ -208,19 +208,22 @@ export default function ExplorePage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-16 bg-white rounded-[8px] p-10 text-center">
-          <h2 className="text-gray-dark font-semibold text-[40px] mb-3">
-            Can&apos;t decide?
-          </h2>
-          <p className="text-on-light-secondary mb-6">
-            Let Walter pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
-          </p>
-          <Link
-            href="/quiz"
-            className="inline-flex px-8 py-4 rounded-[8px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
-          >
-            Surprise me
-          </Link>
+        <div className="mt-16 bg-hero-gradient relative rounded-[14px] p-10 text-center overflow-hidden">
+          <div className="hero-glow absolute inset-0 pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="text-white font-semibold text-[40px] mb-3">
+              Can&apos;t decide?
+            </h2>
+            <p className="text-on-dark-secondary mb-6">
+              Let Walter pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
+            </p>
+            <Link
+              href="/quiz"
+              className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
+            >
+              Surprise me
+            </Link>
+          </div>
         </div>
       </main>
     </div>
