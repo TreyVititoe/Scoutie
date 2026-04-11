@@ -41,10 +41,10 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
             <button
               key={o.id}
               onClick={() => toggle(o.id)}
-              className={`w-full flex items-center gap-4 px-5 py-4 rounded-[8px] border transition-all text-left ${
+              className={`w-full flex items-center gap-4 px-5 py-4 rounded-[14px] border transition-all text-left ${
                 selected
                   ? "bg-accent/5 border-accent"
-                  : "bg-white border-black/10 hover:border-accent/30"
+                  : "bg-white border-[rgba(0,101,113,0.08)] hover:border-accent/30"
               }`}
             >
               <div>
@@ -66,13 +66,13 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-black/10 text-on-light-secondary font-semibold py-4 rounded-[8px] text-lg hover:bg-gray-light transition-colors">
+        <button onClick={onBack} className="flex-1 border border-[rgba(0,101,113,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
           Back
         </button>
         <button
           onClick={onNext}
           disabled={prefs.stay.length === 0}
-          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent/90 disabled:bg-gray-light disabled:text-on-light-tertiary text-white font-semibold py-4 rounded-[8px] text-lg transition-colors"
+          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light disabled:bg-gray-light disabled:text-on-light-tertiary text-white font-semibold py-4 rounded-[10px] text-lg transition-colors"
         >
           Find my trip
         </button>

@@ -20,7 +20,7 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       {/* Toggle */}
-      <div className="flex bg-gray-light rounded-pill p-1 mb-6">
+      <div className="flex bg-page-bg rounded-pill p-1 mb-6">
         {(["total", "per_day"] as const).map((type) => (
           <button
             key={type}
@@ -68,7 +68,7 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
               className={`px-4 py-2 rounded-pill border text-sm font-medium transition-colors ${
                 prefs.budget === p
                   ? "bg-accent border-accent text-white"
-                  : "border-black/10 text-on-light-secondary hover:border-accent/30"
+                  : "border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30"
               }`}
             >
               ${p.toLocaleString()}
@@ -77,10 +77,10 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-black/10 text-on-light-secondary font-semibold py-4 rounded-[8px] text-lg hover:bg-gray-light transition-colors">
+        <button onClick={onBack} className="flex-1 border border-[rgba(0,101,113,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
           Back
         </button>
-        <button onClick={onNext} className="flex-grow-[2] flex-1 bg-accent hover:bg-accent/90 text-white font-semibold py-4 rounded-[8px] text-lg transition-colors">
+        <button onClick={onNext} className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light text-white font-semibold py-4 rounded-[10px] text-lg transition-colors">
           Continue
         </button>
       </div>
