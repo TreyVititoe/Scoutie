@@ -2,51 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-
-const destinations = [
-  {
-    name: "Tokyo",
-    image:
-      "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop",
-    tag: "Culture",
-    price: "from $2,500",
-  },
-  {
-    name: "Barcelona",
-    image:
-      "https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&h=400&fit=crop",
-    tag: "Architecture",
-    price: "from $1,800",
-  },
-  {
-    name: "Bali",
-    image:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&h=400&fit=crop",
-    tag: "Relaxation",
-    price: "from $1,200",
-  },
-  {
-    name: "New York",
-    image:
-      "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&h=400&fit=crop",
-    tag: "Nightlife",
-    price: "from $2,800",
-  },
-  {
-    name: "Iceland",
-    image:
-      "https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=600&h=400&fit=crop",
-    tag: "Adventure",
-    price: "from $3,000",
-  },
-  {
-    name: "Paris",
-    image:
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop",
-    tag: "Romance",
-    price: "from $2,200",
-  },
-];
+import CommunityTrips from "../components/CommunityTrips";
 
 const steps = [
   {
@@ -274,70 +230,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ========== DESTINATIONS ========== */}
-      <section className="bg-page-bg py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.3 }}
-            className="flex items-end justify-between mb-12"
-          >
-            <h2 className="text-[32px] font-semibold text-gray-dark">
-              Popular destinations
-            </h2>
-            <Link
-              href="/explore"
-              className="text-accent text-sm font-semibold hover:text-accent-light"
-            >
-              View all
-            </Link>
-          </motion.div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-            {destinations.map((d, i) => (
-              <motion.div
-                key={d.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link
-                  href={`/quiz?destination=${encodeURIComponent(d.name)}`}
-                  className={`relative block overflow-hidden rounded-[14px] group hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,101,113,0.1)] transition-all duration-200 ${
-                    i === 0 || i === 3
-                      ? "aspect-[4/5] sm:row-span-1"
-                      : "aspect-[4/3]"
-                  }`}
-                  style={{ boxShadow: "0 2px 12px rgba(0,101,113,0.06)" }}
-                >
-                  <img
-                    src={d.image}
-                    alt={d.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="bg-white/15 backdrop-blur-md text-white rounded-pill px-3 py-1 text-[11px] font-semibold">
-                        {d.tag}
-                      </span>
-                    </div>
-                    <p className="font-semibold text-2xl text-white">
-                      {d.name}
-                    </p>
-                    <p className="text-white/50 text-sm mt-1">
-                      {d.price}
-                    </p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ========== COMMUNITY TRIPS ========== */}
+      <CommunityTrips />
 
       {/* ========== FINAL CTA ========== */}
       <section className="bg-hero-gradient relative py-20 text-center">
