@@ -10,14 +10,18 @@ const config: Config = {
       colors: {
         "gray-light": "#f5f5f7",
         "gray-dark": "#1d1d1f",
+        "page-bg": "#f0f4f5",
         accent: {
           DEFAULT: "#006571",
           light: "#007d8a",
         },
-        "on-dark-secondary": "rgba(255,255,255,0.8)",
-        "on-dark-tertiary": "rgba(255,255,255,0.48)",
-        "on-light-secondary": "rgba(0,0,0,0.8)",
-        "on-light-tertiary": "rgba(0,0,0,0.48)",
+        "accent-dark": "#003d47",
+        "accent-deep": "#001f26",
+        cyan: "#79e7f8",
+        "on-dark-secondary": "rgba(255,255,255,0.7)",
+        "on-dark-tertiary": "rgba(255,255,255,0.4)",
+        "on-light-secondary": "rgba(0,0,0,0.55)",
+        "on-light-tertiary": "rgba(0,0,0,0.35)",
         "surface-dark": {
           1: "#272729",
           2: "#2a2a2d",
@@ -27,7 +31,7 @@ const config: Config = {
         sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
       },
       borderRadius: {
-        DEFAULT: "8px",
+        DEFAULT: "14px",
         pill: "980px",
       },
       boxShadow: {

@@ -22,7 +22,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
         />
       </head>
-      <body className="font-sans bg-gray-light text-gray-dark antialiased">
+      <body className="font-sans bg-page-bg text-gray-dark antialiased">
         {children}
         <Footer />
       </body>
