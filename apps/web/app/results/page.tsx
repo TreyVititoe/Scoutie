@@ -13,8 +13,18 @@ import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
 import type { ScoredEvent, Suggestion } from "@/lib/types";
 
+const tabs = [
+  { id: "flights", label: "Flights", icon: "flight" },
+  { id: "stays", label: "Stays", icon: "hotel" },
+  { id: "events", label: "Events", icon: "local_activity" },
+  { id: "picks", label: "Walter's Picks", icon: "auto_awesome" },
+] as const;
+
+type TabId = (typeof tabs)[number]["id"];
+
 export default function ResultsPage() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<TabId>("flights");
   const [flights, setFlights] = useState<FlightResult[]>([]);
   const [hotels, setHotels] = useState<HotelResult[]>([]);
   const [events, setEvents] = useState<ScoredEvent[]>([]);
@@ -241,16 +251,61 @@ export default function ResultsPage() {
         </motion.div>
 
         <div>
-          {/* --- Main Content --- */}
-          <main className="pb-20 lg:pb-0">
-            {/* --- Flights --- */}
-            {(flightsLoading || flights.length > 0) && (
+          {/* --- Floating Tab Bar --- */}
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 lg:bottom-auto lg:top-[72px] lg:left-1/2 lg:-translate-x-1/2">
+            <div className="flex items-center gap-1 p-1.5 rounded-full bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(0,101,113,0.12),0_0_0_1px_rgba(0,101,113,0.04)]">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const isLoading =
+                  (tab.id === "flights" && flightsLoading) ||
+                  (tab.id === "stays" && hotelsLoading) ||
+                  (tab.id === "events" && eventsLoading) ||
+                  (tab.id === "picks" && suggestionsLoading);
+                const count =
+                  tab.id === "flights" ? flights.length :
+                  tab.id === "stays" ? hotels.length :
+                  tab.id === "events" ? allEvents.length :
+                  suggestions.length;
+
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 ${
+                      isActive
+                        ? "bg-accent text-white shadow-[0_2px_12px_rgba(0,101,113,0.3)]"
+                        : "text-on-light-secondary hover:text-gray-dark hover:bg-white/80"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    {!isLoading && count > 0 && (
+                      <span className={`text-[10px] font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${
+                        isActive ? "bg-white/20 text-white" : "bg-accent/10 text-accent"
+                      }`}>
+                        {count}
+                      </span>
+                    )}
+                    {isLoading && (
+                      <span className={`w-3 h-3 border-2 rounded-full animate-spin ${
+                        isActive ? "border-white/40 border-t-white" : "border-accent/30 border-t-accent"
+                      }`} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* --- Tab Content --- */}
+          <main className="pb-24 lg:pb-0 lg:pt-14">
+            {/* --- Flights Tab --- */}
+            {activeTab === "flights" && (
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-                className="mb-14"
+                key="flights"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
@@ -262,7 +317,7 @@ export default function ResultsPage() {
                       </p>
                     </div>
                   </div>
-                  {!flightsLoading && (
+                  {!flightsLoading && flights.length > 0 && (
                     <span className="text-xs text-on-light-tertiary">{flights.length} found</span>
                   )}
                 </div>
@@ -301,17 +356,24 @@ export default function ResultsPage() {
                     ))}
                   </div>
                 )}
+
+                {!flightsLoading && flights.length === 0 && (
+                  <div className="card-base p-8 text-center">
+                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">flight_off</span>
+                    <p className="font-semibold text-gray-dark mb-1">No flights found</p>
+                    <p className="text-on-light-secondary text-sm">Try adjusting your dates or departure city.</p>
+                  </div>
+                )}
               </motion.section>
             )}
 
-            {/* --- Stays --- */}
-            {(hotelsLoading || hotels.length > 0) && (
+            {/* --- Stays Tab --- */}
+            {activeTab === "stays" && (
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-                className="mb-14"
+                key="stays"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
@@ -323,7 +385,7 @@ export default function ResultsPage() {
                       </p>
                     </div>
                   </div>
-                  {!hotelsLoading && (
+                  {!hotelsLoading && hotels.length > 0 && (
                     <span className="text-xs text-on-light-tertiary">{hotels.length} found</span>
                   )}
                 </div>
@@ -352,17 +414,24 @@ export default function ResultsPage() {
                     ))}
                   </div>
                 )}
+
+                {!hotelsLoading && hotels.length === 0 && (
+                  <div className="card-base p-8 text-center">
+                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">night_shelter</span>
+                    <p className="font-semibold text-gray-dark mb-1">No stays found</p>
+                    <p className="text-on-light-secondary text-sm">Try adjusting your dates or destination.</p>
+                  </div>
+                )}
               </motion.section>
             )}
 
-            {/* --- Events --- */}
-            {(eventsLoading || allEvents.length > 0) && (
+            {/* --- Events Tab --- */}
+            {activeTab === "events" && (
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-                className="mb-14"
+                key="events"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
@@ -374,10 +443,8 @@ export default function ResultsPage() {
                       </p>
                     </div>
                   </div>
-                  {!eventsLoading && (
-                    <span className="text-xs text-on-light-tertiary">
-                      {allEvents.length} found
-                    </span>
+                  {!eventsLoading && allEvents.length > 0 && (
+                    <span className="text-xs text-on-light-tertiary">{allEvents.length} found</span>
                   )}
                 </div>
 
@@ -405,72 +472,76 @@ export default function ResultsPage() {
                     ))}
                   </div>
                 )}
+
+                {!eventsLoading && allEvents.length === 0 && (
+                  <div className="card-base p-8 text-center">
+                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">event_busy</span>
+                    <p className="font-semibold text-gray-dark mb-1">No events found</p>
+                    <p className="text-on-light-secondary text-sm">No live events during your travel dates.</p>
+                  </div>
+                )}
               </motion.section>
             )}
 
-            {/* --- Walter's Picks --- */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3 }}
-              className="mb-14"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-accent text-[21px]">auto_awesome</span>
-                  <div>
-                    <h2 className="text-[21px] font-semibold text-gray-dark">Walter&apos;s Picks</h2>
-                    <p className="text-on-light-tertiary text-sm">
-                      {suggestionsLoading ? "Finding the best spots for you..." : "AI-curated activities, restaurants & sites"}
-                    </p>
+            {/* --- Walter's Picks Tab --- */}
+            {activeTab === "picks" && (
+              <motion.section
+                key="picks"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-accent text-[21px]">auto_awesome</span>
+                    <div>
+                      <h2 className="text-[21px] font-semibold text-gray-dark">Walter&apos;s Picks</h2>
+                      <p className="text-on-light-tertiary text-sm">
+                        {suggestionsLoading ? "Finding the best spots for you..." : "AI-curated activities, restaurants & sites"}
+                      </p>
+                    </div>
                   </div>
+                  {suggestions.length > 0 && (
+                    <span className="text-xs text-on-light-tertiary">{suggestions.length} picks</span>
+                  )}
                 </div>
-                {suggestions.length > 0 && (
-                  <span className="text-xs text-on-light-tertiary">
-                    {suggestions.length} picks
-                  </span>
-                )}
-              </div>
 
-              {/* Skeleton loaders */}
-              {suggestionsLoading && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} className="card-base p-6 animate-pulse">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-2xl bg-page-bg" />
-                        <div className="h-4 bg-page-bg rounded-lg w-20" />
+                {suggestionsLoading && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="card-base p-6 animate-pulse">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-2xl bg-page-bg" />
+                          <div className="h-4 bg-page-bg rounded-lg w-20" />
+                        </div>
+                        <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
+                        <div className="h-4 bg-page-bg rounded-lg w-full mb-2" />
+                        <div className="h-4 bg-page-bg rounded-lg w-2/3 mb-4" />
+                        <div className="h-10 bg-page-bg rounded-full mt-4" />
                       </div>
-                      <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
-                      <div className="h-4 bg-page-bg rounded-lg w-full mb-2" />
-                      <div className="h-4 bg-page-bg rounded-lg w-2/3 mb-4" />
-                      <div className="h-10 bg-page-bg rounded-full mt-4" />
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {/* Suggestion cards */}
-              {!suggestionsLoading && suggestions.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {suggestions.map((s) => (
-                    <div key={s.id}>
-                      <SuggestionCard suggestion={s} />
-                    </div>
-                  ))}
-                </div>
-              )}
+                {!suggestionsLoading && suggestions.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {suggestions.map((s) => (
+                      <div key={s.id}>
+                        <SuggestionCard suggestion={s} />
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-              {/* Empty state */}
-              {!suggestionsLoading && suggestions.length === 0 && (
-                <div className="card-base p-8 text-center">
-                  <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">explore</span>
-                  <p className="font-semibold text-gray-dark mb-1">No suggestions yet</p>
-                  <p className="text-on-light-secondary text-sm">We could not find curated picks for this destination right now.</p>
-                </div>
-              )}
-            </motion.section>
+                {!suggestionsLoading && suggestions.length === 0 && (
+                  <div className="card-base p-8 text-center">
+                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">explore</span>
+                    <p className="font-semibold text-gray-dark mb-1">No suggestions yet</p>
+                    <p className="text-on-light-secondary text-sm">We could not find curated picks for this destination right now.</p>
+                  </div>
+                )}
+              </motion.section>
+            )}
           </main>
 
           {/* --- Trip Tracker (renders its own desktop sidebar + mobile bar) --- */}
