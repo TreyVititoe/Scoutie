@@ -252,8 +252,8 @@ export default function ResultsPage() {
 
         <div>
           {/* --- Floating Tab Bar --- */}
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 lg:bottom-auto lg:top-[180px] lg:left-1/2 lg:-translate-x-1/2">
-            <div className="flex items-center gap-1 p-1.5 rounded-full bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(0,101,113,0.12),0_0_0_1px_rgba(0,101,113,0.04)]">
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 lg:bottom-auto lg:top-[200px] lg:left-1/2 lg:-translate-x-1/2">
+            <div className="flex items-center gap-1.5 p-2 rounded-full bg-white/25 backdrop-blur-2xl backdrop-saturate-150 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(255,255,255,0.2)]">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
                 const isLoading =
@@ -271,13 +271,13 @@ export default function ResultsPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`relative flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 ${
+                    className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[14px] font-semibold transition-all duration-200 ${
                       isActive
-                        ? "bg-accent text-white shadow-[0_2px_12px_rgba(0,101,113,0.3)]"
-                        : "text-on-light-secondary hover:text-gray-dark hover:bg-white/80"
+                        ? "bg-accent/90 text-white shadow-[0_2px_16px_rgba(0,101,113,0.35)] backdrop-blur-sm"
+                        : "text-gray-dark/70 hover:text-gray-dark hover:bg-white/30"
                     }`}
                   >
-                    <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
+                    <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
                     <span className="hidden sm:inline">{tab.label}</span>
                     {!isLoading && count > 0 && (
                       <span className={`text-[10px] font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${
@@ -298,7 +298,7 @@ export default function ResultsPage() {
           </div>
 
           {/* --- Tab Content --- */}
-          <main className="pb-24 lg:pb-0 lg:pt-20">
+          <main className="pb-24 lg:pb-0 lg:pt-24">
             {/* --- Flights Tab --- */}
             {activeTab === "flights" && (
               <motion.section
