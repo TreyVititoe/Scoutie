@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         end_date: quizData?.endDate || null,
         total_estimated_cost: trip.totalEstimatedCost || 0,
         status: "saved",
-        is_public: false,
+        is_public: body.isPublic === true,
         share_slug: shareSlug,
       })
       .select("id, share_slug")
