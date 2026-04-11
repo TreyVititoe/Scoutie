@@ -187,7 +187,7 @@ export default function ResultsPage() {
   /* --- Initial load --- */
   if (!pageReady) {
     return (
-      <div className="min-h-screen bg-gray-light flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -208,7 +208,7 @@ export default function ResultsPage() {
   const allEvents = [...events, ...(events.length < 3 ? similarEvents : []), ...topEvents];
 
   return (
-    <div className="min-h-screen bg-gray-light">
+    <div className="min-h-screen bg-page-bg">
       {/* --- Header --- */}
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
@@ -247,8 +247,9 @@ export default function ResultsPage() {
             {(flightsLoading || flights.length > 0) && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3 }}
                 className="mb-14"
               >
                 <div className="flex items-center justify-between mb-6">
@@ -269,23 +270,23 @@ export default function ResultsPage() {
                 {flightsLoading && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[0, 1, 2].map((i) => (
-                      <div key={i} className="bg-white rounded-[8px] p-6 animate-pulse">
+                      <div key={i} className="card-base p-6 animate-pulse">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-8 h-8 rounded-lg bg-gray-light" />
-                          <div className="h-4 bg-gray-light rounded-lg w-24" />
+                          <div className="w-8 h-8 rounded-lg bg-page-bg" />
+                          <div className="h-4 bg-page-bg rounded-lg w-24" />
                         </div>
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <div className="h-5 bg-gray-light rounded-lg w-12 mb-1" />
-                            <div className="h-3 bg-gray-light rounded-lg w-16" />
+                            <div className="h-5 bg-page-bg rounded-lg w-12 mb-1" />
+                            <div className="h-3 bg-page-bg rounded-lg w-16" />
                           </div>
-                          <div className="h-3 bg-gray-light rounded-lg w-16" />
+                          <div className="h-3 bg-page-bg rounded-lg w-16" />
                           <div>
-                            <div className="h-5 bg-gray-light rounded-lg w-12 mb-1" />
-                            <div className="h-3 bg-gray-light rounded-lg w-16" />
+                            <div className="h-5 bg-page-bg rounded-lg w-12 mb-1" />
+                            <div className="h-3 bg-page-bg rounded-lg w-16" />
                           </div>
                         </div>
-                        <div className="h-6 bg-gray-light rounded-full w-20 mt-4" />
+                        <div className="h-6 bg-page-bg rounded-full w-20 mt-4" />
                       </div>
                     ))}
                   </div>
@@ -307,8 +308,9 @@ export default function ResultsPage() {
             {(hotelsLoading || hotels.length > 0) && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3 }}
                 className="mb-14"
               >
                 <div className="flex items-center justify-between mb-6">
@@ -329,12 +331,12 @@ export default function ResultsPage() {
                 {hotelsLoading && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[0, 1, 2].map((i) => (
-                      <div key={i} className="bg-white rounded-[8px] overflow-hidden animate-pulse">
-                        <div className="w-full h-40 bg-gray-light" />
+                      <div key={i} className="card-base overflow-hidden animate-pulse">
+                        <div className="w-full h-40 bg-page-bg" />
                         <div className="p-5">
-                          <div className="h-5 bg-gray-light rounded-lg w-3/4 mb-3" />
-                          <div className="h-4 bg-gray-light rounded-lg w-1/2 mb-3" />
-                          <div className="h-6 bg-gray-light rounded-full w-24 mt-3" />
+                          <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
+                          <div className="h-4 bg-page-bg rounded-lg w-1/2 mb-3" />
+                          <div className="h-6 bg-page-bg rounded-full w-24 mt-3" />
                         </div>
                       </div>
                     ))}
@@ -357,8 +359,9 @@ export default function ResultsPage() {
             {(eventsLoading || allEvents.length > 0) && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3 }}
                 className="mb-14"
               >
                 <div className="flex items-center justify-between mb-6">
@@ -381,12 +384,12 @@ export default function ResultsPage() {
                 {eventsLoading && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[0, 1, 2].map((i) => (
-                      <div key={i} className="bg-white rounded-[8px] overflow-hidden animate-pulse">
-                        <div className="w-full h-40 bg-gray-light" />
+                      <div key={i} className="card-base overflow-hidden animate-pulse">
+                        <div className="w-full h-40 bg-page-bg" />
                         <div className="p-5">
-                          <div className="h-5 bg-gray-light rounded-lg w-3/4 mb-3" />
-                          <div className="h-4 bg-gray-light rounded-lg w-1/2 mb-2" />
-                          <div className="h-3 bg-gray-light rounded-lg w-2/3" />
+                          <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
+                          <div className="h-4 bg-page-bg rounded-lg w-1/2 mb-2" />
+                          <div className="h-3 bg-page-bg rounded-lg w-2/3" />
                         </div>
                       </div>
                     ))}
@@ -408,8 +411,9 @@ export default function ResultsPage() {
             {/* --- Walter's Picks --- */}
             <motion.section
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3 }}
               className="mb-14"
             >
               <div className="flex items-center justify-between mb-6">
@@ -433,15 +437,15 @@ export default function ResultsPage() {
               {suggestionsLoading && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[0, 1, 2].map((i) => (
-                    <div key={i} className="bg-white rounded-[8px] p-6 animate-pulse">
+                    <div key={i} className="card-base p-6 animate-pulse">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-2xl bg-gray-light" />
-                        <div className="h-4 bg-gray-light rounded-lg w-20" />
+                        <div className="w-10 h-10 rounded-2xl bg-page-bg" />
+                        <div className="h-4 bg-page-bg rounded-lg w-20" />
                       </div>
-                      <div className="h-5 bg-gray-light rounded-lg w-3/4 mb-3" />
-                      <div className="h-4 bg-gray-light rounded-lg w-full mb-2" />
-                      <div className="h-4 bg-gray-light rounded-lg w-2/3 mb-4" />
-                      <div className="h-10 bg-gray-light rounded-full mt-4" />
+                      <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
+                      <div className="h-4 bg-page-bg rounded-lg w-full mb-2" />
+                      <div className="h-4 bg-page-bg rounded-lg w-2/3 mb-4" />
+                      <div className="h-10 bg-page-bg rounded-full mt-4" />
                     </div>
                   ))}
                 </div>
@@ -460,7 +464,7 @@ export default function ResultsPage() {
 
               {/* Empty state */}
               {!suggestionsLoading && suggestions.length === 0 && (
-                <div className="bg-white rounded-[8px] p-8 text-center">
+                <div className="card-base p-8 text-center">
                   <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">explore</span>
                   <p className="font-semibold text-gray-dark mb-1">No suggestions yet</p>
                   <p className="text-on-light-secondary text-sm">We could not find curated picks for this destination right now.</p>

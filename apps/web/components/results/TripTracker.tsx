@@ -80,7 +80,7 @@ function DesktopSidebar() {
 
   return (
     <aside className="hidden lg:block fixed top-24 right-8 w-[300px] z-30">
-      <div className="bg-white rounded-[8px] p-6">
+      <div className="card-base p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-[21px] font-semibold text-gray-dark">
@@ -122,7 +122,7 @@ function DesktopSidebar() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20, height: 0, marginBottom: 0 }}
                         transition={{ duration: 0.25, ease: "easeOut" }}
-                        className="bg-gray-light rounded-[8px] p-3 flex items-center gap-3 mb-2 group"
+                        className="bg-page-bg rounded-[14px] p-3 flex items-center gap-3 mb-2 group"
                       >
                         <span className="material-symbols-outlined text-on-light-secondary text-lg flex-shrink-0">
                           {typeIcons[item.type]}
@@ -168,8 +168,8 @@ function DesktopSidebar() {
               href="/trip"
               className={`flex-1 block text-center text-sm font-semibold transition-colors ${
                 itemCount > 0
-                  ? "bg-accent text-white rounded-[8px] px-4 py-2"
-                  : "bg-gray-light text-on-light-tertiary rounded-[8px] px-4 py-2 pointer-events-none"
+                  ? "bg-accent text-white rounded-[10px] px-4 py-2 hover:bg-accent-light transition-colors"
+                  : "bg-gray-light text-on-light-tertiary rounded-[10px] px-4 py-2 pointer-events-none"
               }`}
               aria-disabled={itemCount === 0}
               tabIndex={itemCount === 0 ? -1 : undefined}
@@ -179,7 +179,7 @@ function DesktopSidebar() {
             {itemCount > 0 && (
               <button
                 onClick={share}
-                className="relative flex-shrink-0 border border-gray-dark text-gray-dark rounded-[8px] px-4 py-2 text-sm flex items-center justify-center transition-colors"
+                className="relative flex-shrink-0 border border-accent text-accent rounded-[10px] px-4 py-2 text-sm flex items-center justify-center hover:bg-accent/5 transition-colors"
                 aria-label="Share trip"
                 title="Share trip"
               >
@@ -242,7 +242,7 @@ function MobileBar() {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white rounded-t-[8px] max-h-[70vh] flex flex-col shadow-elevated"
+            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white rounded-t-[14px] max-h-[70vh] flex flex-col shadow-elevated"
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-1">
@@ -288,7 +288,7 @@ function MobileBar() {
                             marginBottom: 0,
                           }}
                           transition={{ duration: 0.25, ease: "easeOut" }}
-                          className="bg-gray-light rounded-[8px] p-3 flex items-center gap-3 mb-2"
+                          className="bg-page-bg rounded-[14px] p-3 flex items-center gap-3 mb-2"
                         >
                           <span className="material-symbols-outlined text-on-light-secondary text-lg flex-shrink-0">
                             {typeIcons[item.type]}
@@ -331,13 +331,13 @@ function MobileBar() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/trip"
-                  className="flex-1 block bg-accent text-white rounded-[8px] px-4 py-2 text-center text-sm font-semibold"
+                  className="flex-1 block bg-accent text-white rounded-[10px] px-4 py-2 text-center text-sm font-semibold hover:bg-accent-light transition-colors"
                 >
                   View My Trip
                 </Link>
                 <button
                   onClick={share}
-                  className="relative flex-shrink-0 border border-gray-dark text-gray-dark rounded-[8px] px-4 py-2 text-sm flex items-center justify-center transition-colors"
+                  className="relative flex-shrink-0 border border-accent text-accent rounded-[10px] px-4 py-2 text-sm flex items-center justify-center hover:bg-accent/5 transition-colors"
                   aria-label="Share trip"
                   title="Share trip"
                 >
@@ -365,7 +365,7 @@ function MobileBar() {
 
       {/* Collapsed bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden pb-[env(safe-area-inset-bottom)]">
-        <div className="bg-white border-t border-black/5 px-5 py-3 flex items-center justify-between">
+        <div className="bg-white border-t border-[rgba(0,101,113,0.08)] px-5 py-3 flex items-center justify-between">
           <button
             onClick={() => setExpanded(true)}
             className="flex items-center gap-3"
@@ -380,7 +380,7 @@ function MobileBar() {
           <div className="flex items-center gap-2">
             <button
               onClick={share}
-              className="relative border border-gray-dark text-gray-dark rounded-[8px] px-3 py-1.5 flex items-center justify-center transition-colors"
+              className="relative border border-accent text-accent rounded-[10px] px-3 py-1.5 flex items-center justify-center hover:bg-accent/5 transition-colors"
               aria-label="Share trip"
             >
               <span className="material-symbols-outlined text-lg">
@@ -401,7 +401,7 @@ function MobileBar() {
             </button>
             <Link
               href="/trip"
-              className="bg-accent text-white rounded-[8px] px-4 py-2 text-sm font-semibold"
+              className="bg-accent text-white rounded-[10px] px-4 py-2 text-sm font-semibold hover:bg-accent-light transition-colors"
             >
               View Trip
             </Link>
