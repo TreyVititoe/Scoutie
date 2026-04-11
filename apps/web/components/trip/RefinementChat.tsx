@@ -146,7 +146,7 @@ export default function RefinementChat({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 350, damping: 30 }}
-            className="w-[400px] h-[500px] bg-white rounded-[8px] shadow-elevated flex flex-col overflow-hidden mb-3"
+            className="w-[400px] h-[500px] card-base flex flex-col overflow-hidden mb-3"
           >
             {/* Header */}
             <div className="bg-accent px-5 py-3.5 flex items-center justify-between flex-shrink-0">
@@ -188,10 +188,10 @@ export default function RefinementChat({
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] px-3.5 py-2.5 rounded-[8px] text-sm font-sans leading-relaxed ${
+                    className={`max-w-[85%] px-3.5 py-2.5 rounded-[14px] text-sm font-sans leading-relaxed ${
                       msg.role === "user"
                         ? "bg-accent text-white"
-                        : "bg-gray-light text-gray-dark"
+                        : "bg-page-bg text-gray-dark"
                     }`}
                   >
                     {msg.content}
@@ -201,7 +201,7 @@ export default function RefinementChat({
 
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-light rounded-[8px] px-4 py-3">
+                  <div className="bg-page-bg rounded-[14px] px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:0ms]" />
                       <span className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:150ms]" />
@@ -223,7 +223,7 @@ export default function RefinementChat({
                     onClick={() => sendMessage(suggestion)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-3 py-1.5 text-xs font-sans font-medium rounded-pill border border-black/10 text-on-light-secondary hover:border-accent/30 transition-colors"
+                    className="px-3 py-1.5 text-xs font-sans font-medium rounded-pill border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30 hover:bg-accent/5 transition-colors"
                   >
                     {suggestion}
                   </motion.button>
@@ -242,13 +242,13 @@ export default function RefinementChat({
                   onKeyDown={handleKeyDown}
                   placeholder="e.g. swap the museum for a food tour"
                   disabled={loading}
-                  className="flex-1 px-3.5 py-2.5 rounded-[8px] border border-black/10 bg-white text-sm font-sans text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-accent focus:ring-1 disabled:opacity-50 transition-colors"
+                  className="flex-1 px-3.5 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] bg-white text-sm font-sans text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-accent/20 focus:ring-accent focus:ring-1 disabled:opacity-50 transition-colors"
                 />
                 <motion.button
                   onClick={() => sendMessage(input)}
                   disabled={loading || !input.trim()}
                   whileTap={{ scale: 0.9 }}
-                  className="px-4 py-2.5 rounded-[8px] bg-accent text-white text-sm font-sans font-semibold hover:bg-accent/90 transition-colors disabled:opacity-40 flex-shrink-0"
+                  className="px-4 py-2.5 rounded-[10px] bg-accent text-white text-sm font-sans font-semibold hover:bg-accent-light transition-colors disabled:opacity-40 flex-shrink-0"
                 >
                   Send
                 </motion.button>

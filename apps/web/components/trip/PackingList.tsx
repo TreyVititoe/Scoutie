@@ -122,7 +122,7 @@ export default function PackingList({
   const checkedCount = checkedItems.size;
 
   return (
-    <div className="bg-white rounded-[8px] p-6 overflow-hidden">
+    <div className="card-base p-6 overflow-hidden">
       {/* Header */}
       <div className="pb-5 mb-5 border-b border-black/10 flex items-center justify-between">
         <div>
@@ -139,7 +139,7 @@ export default function PackingList({
           {generated && categories.length > 0 && (
             <button
               onClick={handleCopy}
-              className="px-3 py-1.5 rounded-[8px] text-xs font-semibold text-accent hover:underline transition-colors"
+              className="px-3 py-1.5 rounded-[8px] text-xs font-semibold text-accent hover:text-accent-light transition-colors"
             >
               {copied ? "Copied" : "Copy list"}
             </button>
@@ -188,7 +188,7 @@ export default function PackingList({
           <>
             {/* Progress bar */}
             <div className="mb-6">
-              <div className="h-1.5 w-full bg-gray-light rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-page-bg rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-accent rounded-full"
                   initial={{ width: "0%" }}

@@ -145,7 +145,7 @@ export default function TripMap({ items, destination }: TripMapProps) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-[8px] p-6 flex items-center justify-center h-80 lg:min-h-[400px] text-on-light-secondary text-sm animate-pulse">
+      <div className="card-base p-6 flex items-center justify-center h-80 lg:min-h-[400px] text-on-light-secondary text-sm animate-pulse">
         Loading map...
       </div>
     );
@@ -153,7 +153,7 @@ export default function TripMap({ items, destination }: TripMapProps) {
 
   if (resolved.length === 0) {
     return (
-      <div className="bg-white rounded-[8px] p-6 flex items-center justify-center h-64 text-on-light-secondary text-sm">
+      <div className="card-base p-6 flex items-center justify-center h-64 text-on-light-secondary text-sm">
         Map locations will appear here
       </div>
     );
@@ -162,7 +162,7 @@ export default function TripMap({ items, destination }: TripMapProps) {
   return (
     <div
       ref={mapContainerRef}
-      className="bg-white rounded-[8px] p-6 overflow-hidden h-80 lg:h-full lg:min-h-[400px] w-full"
+      className="card-base p-6 overflow-hidden h-80 lg:h-full lg:min-h-[400px] w-full"
     />
   );
 }
