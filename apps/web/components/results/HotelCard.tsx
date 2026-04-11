@@ -28,34 +28,34 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
   };
 
   return (
-    <div className="w-full bg-white rounded-[8px] overflow-hidden">
+    <div className="w-full card-base overflow-hidden">
       {/* Image */}
       <div className="relative h-40 bg-background">
         {hotel.image ? (
           <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-light">
+          <div className="w-full h-full flex items-center justify-center bg-page-bg">
             <span className="material-symbols-outlined text-on-light-tertiary text-4xl">hotel</span>
           </div>
         )}
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
           {bestValue && (
-            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+            <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Best value
             </span>
           )}
           {hotel.rating >= 9.0 && (
-            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+            <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Exceptional
             </span>
           )}
           {hotel.rating >= 8.0 && hotel.rating < 9.0 && (
-            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+            <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Highly rated
             </span>
           )}
           {!bestValue && hotel.pricePerNight < 150 && (
-            <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+            <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Budget-friendly
             </span>
           )}
@@ -97,10 +97,10 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
           </div>
           <button
             onClick={handleToggle}
-            className={`rounded-[8px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
+            className={`rounded-[10px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
               added
-                ? "bg-accent text-white"
-                : "border border-accent text-accent"
+                ? "bg-accent text-white hover:bg-accent-light"
+                : "border border-accent text-accent hover:bg-accent/5"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">

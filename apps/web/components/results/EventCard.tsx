@@ -42,33 +42,33 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
   };
 
   return (
-    <div className="w-full bg-white rounded-[8px] overflow-hidden">
+    <div className="w-full card-base overflow-hidden">
       {/* Image */}
-      <div className="relative h-40 bg-gray-light">
+      <div className="relative h-40 bg-page-bg">
         {event.image ? (
           <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-light">
+          <div className="w-full h-full flex items-center justify-center bg-page-bg">
             <span className="material-symbols-outlined text-on-light-tertiary text-4xl">local_activity</span>
           </div>
         )}
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
-          <span className="text-[12px] font-semibold text-gray-dark bg-white/90 backdrop-blur-sm rounded-pill px-2.5 py-1">
+          <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             {event.category}
           </span>
           {(event.priceMin === null || event.priceMin === 0) && (
-            <span className="text-[12px] text-on-light-tertiary">
+            <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Free
             </span>
           )}
           {event.priceMin !== null && event.priceMin > 0 && event.priceMin < 30 && (
-            <span className="text-[12px] text-on-light-tertiary">
+            <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Under $30
             </span>
           )}
         </div>
         {event.matchReason && (
-          <span className="absolute top-3 right-3 text-[10px] font-semibold bg-gray-light text-gray-dark px-2.5 py-1 rounded-full max-w-[140px] truncate">
+          <span className="absolute top-3 right-3 text-[10px] font-semibold bg-[#e6f7f9] text-accent px-2.5 py-1 rounded-full max-w-[140px] truncate">
             {event.matchReason}
           </span>
         )}
@@ -116,10 +116,10 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
           </div>
           <button
             onClick={handleToggle}
-            className={`rounded-[8px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
+            className={`rounded-[10px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
               added
-                ? "bg-accent text-white"
-                : "border border-accent text-accent"
+                ? "bg-accent text-white hover:bg-accent-light"
+                : "border border-accent text-accent hover:bg-accent/5"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">

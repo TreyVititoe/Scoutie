@@ -36,10 +36,10 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
   };
 
   return (
-    <div className="bg-white rounded-[8px] p-5">
+    <div className="card-base p-5">
       {/* Type badge & context badges */}
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-2xl bg-gray-light flex items-center justify-center">
+        <div className="w-10 h-10 rounded-2xl icon-gradient flex items-center justify-center">
           <span className="material-symbols-outlined text-accent text-xl">{icon}</span>
         </div>
         <span className="text-[12px] text-on-light-tertiary">
@@ -48,7 +48,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
       </div>
       <div className="flex flex-wrap items-center gap-1.5 mb-4">
         {suggestion.bestTime && (
-          <span className="text-[12px] font-semibold bg-gray-light text-gray-dark px-2.5 py-1 rounded-full">
+          <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             {suggestion.bestTime.toLowerCase().includes("morning")
               ? "Best in morning"
               : suggestion.bestTime.toLowerCase().includes("evening")
@@ -109,10 +109,10 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
         </div>
         <button
           onClick={handleToggle}
-          className={`rounded-[8px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
+          className={`rounded-[10px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
             added
-              ? "bg-accent text-white"
-              : "border border-accent text-accent"
+              ? "bg-accent text-white hover:bg-accent-light"
+              : "border border-accent text-accent hover:bg-accent/5"
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">

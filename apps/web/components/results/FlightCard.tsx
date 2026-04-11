@@ -36,26 +36,26 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
   };
 
   return (
-    <div className="w-full bg-white rounded-[8px] p-6">
+    <div className="w-full card-base p-6">
       {/* Tags */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {cheapest && (
-          <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+          <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             Best price
           </span>
         )}
         {flight.stops === 0 && (
-          <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+          <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             Direct
           </span>
         )}
         {!cheapest && flight.stops === 0 && isQuickFlight && (
-          <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+          <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             Quick flight
           </span>
         )}
         {flight.stops === 1 && (
-          <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
+          <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             1 stop
           </span>
         )}
@@ -63,7 +63,7 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
 
       {/* Airline */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-9 h-9 rounded-full bg-gray-light flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 rounded-full icon-gradient flex items-center justify-center flex-shrink-0">
           {flight.airlineLogo ? (
             <img src={flight.airlineLogo} alt="" className="w-5 h-5 rounded" />
           ) : (
@@ -102,10 +102,10 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
         </p>
         <button
           onClick={handleToggle}
-          className={`rounded-[8px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
+          className={`rounded-[10px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
             added
-              ? "bg-accent text-white"
-              : "border border-accent text-accent"
+              ? "bg-accent text-white hover:bg-accent-light"
+              : "border border-accent text-accent hover:bg-accent/5"
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">

@@ -8,12 +8,12 @@ export default function ExperienceCard({ experience }: { experience: Experience 
       href={experience.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="bg-white rounded-[8px] overflow-hidden cursor-pointer group"
+      className="card-base block overflow-hidden cursor-pointer group"
     >
       {/* Image */}
-      <div className="relative h-40 bg-gray-light">
+      <div className="relative h-40 bg-page-bg">
         <img src={experience.image} alt={experience.name} className="w-full h-full object-cover" />
-        <span className="absolute top-3 left-3 text-[12px] font-semibold text-gray-dark bg-white/90 backdrop-blur-sm rounded-pill px-2.5 py-1">
+        <span className="absolute top-3 left-3 bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
           {experience.category}
         </span>
       </div>
