@@ -56,6 +56,7 @@ export default function SharedTripPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [activeDay, setActiveDay] = useState(1);
+  const [forking, setForking] = useState(false);
 
   useEffect(() => {
     fetch(`/api/trips/shared?slug=${slug}`)
@@ -70,6 +71,33 @@ export default function SharedTripPage() {
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  const handleFork = async () => {
+    if (!trip || forking) return;
+    setForking(true);
+
+    try {
+      const res = await fetch("/api/trips/fork", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tripId: trip.id }),
+      });
+
+      if (res.status === 401) {
+        window.location.href = `/auth/login?redirect=/shared/${slug}`;
+        return;
+      }
+
+      if (!res.ok) {
+        setForking(false);
+        return;
+      }
+
+      window.location.href = `/dashboard`;
+    } catch {
+      setForking(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -134,6 +162,14 @@ export default function SharedTripPage() {
             {trip.title}
           </h1>
           <p className="text-on-dark-secondary max-w-2xl">{trip.summary}</p>
+          <button
+            onClick={handleFork}
+            disabled={forking}
+            className="bg-accent text-white rounded-[10px] px-4 py-2 text-sm font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-1.5 mt-4"
+          >
+            <span className="material-symbols-outlined text-[16px]">content_copy</span>
+            {forking ? "Forking..." : "Fork this trip"}
+          </button>
           <div className="flex items-center gap-6 mt-4">
             <div>
               <p className="text-xs text-on-dark-tertiary uppercase tracking-wider">Destination</p>
@@ -250,12 +286,22 @@ export default function SharedTripPage() {
           <p className="text-on-light-secondary mb-6">
             Take a 2-minute quiz and get a personalized itinerary built for you.
           </p>
-          <Link
-            href="/quiz"
-            className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
-          >
-            Plan my trip
-          </Link>
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <Link
+              href="/quiz"
+              className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
+            >
+              Plan my trip
+            </Link>
+            <button
+              onClick={handleFork}
+              disabled={forking}
+              className="bg-accent text-white rounded-[10px] px-6 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">content_copy</span>
+              {forking ? "Forking..." : "Fork this trip"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
