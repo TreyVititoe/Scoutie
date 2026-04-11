@@ -42,15 +42,15 @@ export default function Step6Activities() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.04 }}
                 onClick={() => store.toggleActivityInterest(a.value)}
-                className={`flex flex-col items-center gap-3 p-4 rounded-[8px] border transition-colors cursor-pointer ${
+                className={`flex flex-col items-center gap-3 p-4 rounded-[14px] border transition-colors cursor-pointer ${
                   selected
                     ? "border-accent bg-accent text-white"
-                    : "border-black/10 bg-white hover:border-accent/30"
+                    : "border-[rgba(0,101,113,0.08)] bg-white hover:border-accent/30"
                 }`}
               >
                 <div
-                  className={`w-12 h-12 rounded-[8px] flex items-center justify-center ${
-                    selected ? "bg-white/20" : "bg-gray-light"
+                  className={`w-12 h-12 rounded-[10px] flex items-center justify-center ${
+                    selected ? "bg-white/20" : "icon-gradient"
                   }`}
                 >
                   <span
@@ -94,7 +94,7 @@ export default function Step6Activities() {
                   className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                     selected
                       ? "bg-accent text-white shadow-md"
-                      : "bg-gray-light text-on-light-secondary hover:bg-black/5"
+                      : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:bg-[#e6f7f9]"
                   }`}
                 >
                   <span className="material-symbols-outlined text-[16px]">{a.icon}</span>

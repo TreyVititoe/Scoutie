@@ -45,15 +45,15 @@ export default function Step4Budget() {
     >
       <div className="space-y-6">
         {/* Budget mode toggle — 3 options */}
-        <div className="flex rounded-[8px] bg-gray-light p-1 gap-1">
+        <div className="flex rounded-[10px] bg-page-bg p-1 gap-1">
           {budgetOptions.map((opt) => (
             <button
               key={opt.value}
               onClick={() => handleBudgetOption(opt.value)}
-              className={`flex-1 py-3 rounded-[8px] text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-3 rounded-[10px] text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
                 activeBudgetOption === opt.value
                   ? "bg-accent text-white shadow-md"
-                  : "text-on-light-secondary hover:bg-black/5"
+                  : "text-on-light-secondary hover:bg-[#e6f7f9]"
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
@@ -69,7 +69,7 @@ export default function Step4Budget() {
             <div className="flex items-center gap-4">
               <button
                 onClick={decrementBudget}
-                className="w-12 h-12 rounded-full bg-gray-light flex items-center justify-center hover:bg-black/5 transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
               >
                 <span className="material-symbols-outlined text-on-light-tertiary">remove</span>
               </button>
@@ -83,13 +83,13 @@ export default function Step4Budget() {
                   value={store.budgetAmount || ""}
                   onChange={(e) => store.setBudgetAmount(Number(e.target.value) || null)}
                   placeholder="0"
-                  className="w-full bg-white border border-black/10 rounded-[8px] py-3 pl-12 pr-4 text-2xl font-semibold text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-2xl font-semibold text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
 
               <button
                 onClick={incrementBudget}
-                className="w-12 h-12 rounded-full bg-gray-light flex items-center justify-center hover:bg-black/5 transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
               >
                 <span className="material-symbols-outlined text-on-light-tertiary">add</span>
               </button>
@@ -104,7 +104,7 @@ export default function Step4Budget() {
                   className={`px-4 py-2.5 rounded-pill text-sm font-semibold transition-all ${
                     store.budgetAmount === p
                       ? "bg-accent text-white shadow-md"
-                      : "bg-gray-light text-on-light-secondary hover:bg-black/5"
+                      : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:bg-[#e6f7f9]"
                   }`}
                 >
                   ${p.toLocaleString()}
@@ -114,7 +114,7 @@ export default function Step4Budget() {
 
             {/* Budget breakdown preview */}
             {store.budgetAmount && store.budgetMode === "total_trip" && (
-              <div className="bg-accent/5 rounded-[8px] p-5">
+              <div className="bg-accent/5 rounded-[10px] p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="material-symbols-outlined text-accent text-[20px]">pie_chart</span>
                   <p className="text-sm font-semibold text-accent">Estimated breakdown</p>
@@ -141,12 +141,12 @@ export default function Step4Budget() {
             )}
 
             {/* Flexible toggle */}
-            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-[8px] hover:bg-gray-light transition-colors">
+            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-[10px] hover:bg-page-bg transition-colors">
               <input
                 type="checkbox"
                 checked={store.budgetFlexible}
                 onChange={(e) => store.setBudgetFlexible(e.target.checked)}
-                className="w-5 h-5 rounded border-black/10 text-accent focus:ring-accent/20"
+                className="w-5 h-5 rounded border-[rgba(0,101,113,0.08)] text-accent focus:ring-accent/20"
               />
               <span className="text-on-light-secondary text-sm">I&apos;m flexible -- show me options slightly above my budget too</span>
             </label>
@@ -155,7 +155,7 @@ export default function Step4Budget() {
 
         {/* Skipped state messaging */}
         {store.budgetSkipped && (
-          <div className="flex items-center gap-3 bg-gray-light rounded-[8px] p-5">
+          <div className="flex items-center gap-3 bg-page-bg rounded-[10px] p-5">
             <span className="material-symbols-outlined text-on-light-tertiary text-[28px]">auto_awesome</span>
             <p className="text-sm text-on-light-secondary leading-relaxed">
               No worries — Walter will show you a range of options at different price points.

@@ -31,7 +31,7 @@ export default function Step1WhereWhen() {
             Where to?
           </label>
           {store.surpriseMe ? (
-            <div className="flex items-center justify-between bg-accent/5 border border-accent rounded-[8px] py-4 px-5">
+            <div className="flex items-center justify-between bg-accent/5 border border-accent rounded-[10px] py-4 px-5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-accent text-[22px]">explore</span>
                 <span className="font-semibold text-accent text-sm">
@@ -57,7 +57,7 @@ export default function Step1WhereWhen() {
         {!store.surpriseMe && (
           <button
             onClick={handleSurpriseMe}
-            className="w-full py-4 rounded-[8px] border-2 border-dashed border-accent/30 text-accent font-semibold hover:bg-accent/5 transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-[10px] border-2 border-dashed border-accent/30 text-accent font-semibold hover:bg-accent/5 transition-all flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[20px]">explore</span>
             Surprise me
@@ -82,7 +82,7 @@ export default function Step1WhereWhen() {
                   type="date"
                   value={store.startDate || ""}
                   onChange={(e) => store.setStartDate(e.target.value)}
-                  className="w-full bg-white border border-black/10 rounded-[8px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
             </div>
@@ -98,18 +98,18 @@ export default function Step1WhereWhen() {
                   type="date"
                   value={store.endDate || ""}
                   onChange={(e) => store.setEndDate(e.target.value)}
-                  className="w-full bg-white border border-black/10 rounded-[8px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
             </div>
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-[8px] hover:bg-gray-light transition-colors">
+          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-[10px] hover:bg-page-bg transition-colors">
             <input
               type="checkbox"
               checked={store.flexibleDates}
               onChange={(e) => store.setFlexibleDates(e.target.checked)}
-              className="w-5 h-5 rounded border-black/10 text-accent focus:ring-accent/20"
+              className="w-5 h-5 rounded border-[rgba(0,101,113,0.08)] text-accent focus:ring-accent/20"
             />
             <span className="text-on-light-secondary text-sm">
               My dates are flexible
@@ -128,7 +128,7 @@ export default function Step1WhereWhen() {
                 <select
                   value={store.tripDurationDays || ""}
                   onChange={(e) => store.setTripDurationDays(Number(e.target.value) || null)}
-                  className="w-full bg-white border border-black/10 rounded-[8px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent appearance-none"
+                  className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent appearance-none"
                 >
                   <option value="">Select...</option>
                   <option value="3">Long weekend (3 days)</option>

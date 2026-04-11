@@ -72,10 +72,10 @@ export default function Step5Accommodation() {
         {/* No accommodation toggle */}
         <button
           onClick={toggleNoAccommodation}
-          className={`w-full flex items-center gap-3 p-4 rounded-[8px] border transition-colors ${
+          className={`w-full flex items-center gap-3 p-4 rounded-[14px] border transition-colors ${
             store.noAccommodation
               ? "border-accent bg-accent text-white"
-              : "border-black/10 bg-white hover:border-accent/30"
+              : "border-[rgba(0,101,113,0.08)] bg-white hover:border-accent/30"
           }`}
         >
           <span className={`material-symbols-outlined text-[24px] ${store.noAccommodation ? "text-white" : "text-on-light-tertiary"}`}>
@@ -95,7 +95,7 @@ export default function Step5Accommodation() {
         </button>
 
         {store.noAccommodation && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-[8px] bg-accent/5 border border-accent/10">
+          <div className="flex items-center gap-2 px-4 py-3 rounded-[10px] bg-accent/5 border border-accent/10">
             <span className="material-symbols-outlined text-accent text-[18px]">info</span>
             <p className="text-sm text-on-light-secondary">
               We'll skip accommodation and focus on everything else.
@@ -112,10 +112,10 @@ export default function Step5Accommodation() {
                 <button
                   key={t.value}
                   onClick={() => toggleType(t.value)}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-[8px] border transition-colors ${
+                  className={`flex flex-col items-center gap-2 p-4 rounded-[14px] border transition-colors ${
                     isSelected
                       ? "border-accent bg-accent/5"
-                      : "border-black/10 bg-white hover:border-accent/30"
+                      : "border-[rgba(0,101,113,0.08)] bg-white hover:border-accent/30"
                   }`}
                 >
                   <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
@@ -147,7 +147,7 @@ export default function Step5Accommodation() {
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
                         ? "bg-accent text-white shadow-md"
-                        : "bg-gray-light text-on-light-secondary hover:bg-black/5"
+                        : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:bg-[#e6f7f9]"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
@@ -173,7 +173,7 @@ export default function Step5Accommodation() {
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
                         ? "bg-accent text-white shadow-md"
-                        : "bg-gray-light text-on-light-secondary hover:bg-black/5"
+                        : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:bg-[#e6f7f9]"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{loc.icon}</span>

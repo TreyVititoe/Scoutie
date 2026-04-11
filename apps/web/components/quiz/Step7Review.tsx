@@ -31,7 +31,7 @@ export default function Step7Review() {
     >
       <div className="space-y-4">
         {/* Trip Basics */}
-        <div className="bg-gray-light rounded-[8px] p-5">
+        <div className="bg-page-bg rounded-[10px] p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-accent text-[20px]">explore</span>
             <p className="text-xs font-semibold text-accent uppercase tracking-wider">Trip basics</p>
@@ -74,7 +74,7 @@ export default function Step7Review() {
         </div>
 
         {/* Flights */}
-        <div className="bg-gray-light rounded-[8px] p-5">
+        <div className="bg-page-bg rounded-[10px] p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-accent text-[20px]">flight</span>
             <p className="text-xs font-semibold text-accent uppercase tracking-wider">Flights</p>
@@ -90,7 +90,7 @@ export default function Step7Review() {
         </div>
 
         {/* Accommodation */}
-        <div className="bg-gray-light rounded-[8px] p-5">
+        <div className="bg-page-bg rounded-[10px] p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-accent text-[20px]">hotel</span>
             <p className="text-xs font-semibold text-accent uppercase tracking-wider">Accommodation</p>
@@ -112,7 +112,7 @@ export default function Step7Review() {
 
         {/* Interests */}
         {store.activityInterests.length > 0 && (
-          <div className="bg-gray-light rounded-[8px] p-5">
+          <div className="bg-page-bg rounded-[10px] p-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="material-symbols-outlined text-accent text-[20px]">interests</span>
               <p className="text-xs font-semibold text-accent uppercase tracking-wider">Interests</p>
