@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
 
 type TripDay = {
   dayNumber: number;
@@ -31,12 +32,22 @@ type CompareTrip = {
   days: TripDay[];
 };
 
+type FlightData = {
+  cheapest: number | null;
+  fastest: { price: number; duration: string } | null;
+  count: number;
+  loading: boolean;
+};
+
 export default function ComparePage() {
   const router = useRouter();
   const [trips, setTrips] = useState<CompareTrip[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedTrip, setExpandedTrip] = useState<number | null>(null);
+  const [flightData, setFlightData] = useState<Record<number, FlightData>>({});
+  const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+  const [quizPrefs, setQuizPrefs] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs");
@@ -46,6 +57,7 @@ export default function ComparePage() {
     }
 
     const quizData = JSON.parse(stored);
+    setQuizPrefs(quizData);
 
     fetch("/api/compare", {
       method: "POST",
@@ -57,7 +69,67 @@ export default function ComparePage() {
         if (data.error) {
           setError(data.error);
         } else {
-          setTrips(data.trips || []);
+          const tripList = data.trips || [];
+          setTrips(tripList);
+
+          // Fetch real flight prices in parallel for each destination
+          const departureCity = quizData.departureCity || "";
+          const startDate = quizData.startDate || "";
+          const endDate = quizData.endDate || "";
+          const adults = quizData.travelersCount || quizData.travelers || 1;
+          const cabinClass = quizData.flightClass || "economy";
+
+          if (departureCity && startDate && endDate) {
+            tripList.forEach((trip: CompareTrip, idx: number) => {
+              setFlightData((prev) => ({
+                ...prev,
+                [idx]: { cheapest: null, fastest: null, count: 0, loading: true },
+              }));
+
+              fetch("/api/flights", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  origin: departureCity,
+                  destination: trip.destination,
+                  departDate: startDate,
+                  returnDate: endDate,
+                  adults,
+                  cabinClass,
+                }),
+              })
+                .then((r) => r.json())
+                .then((fData) => {
+                  const flights = fData.flights || [];
+                  const cheapest = flights.length > 0
+                    ? Math.min(...flights.map((f: { price: number }) => f.price))
+                    : null;
+                  const fastest = flights.length > 0
+                    ? flights.reduce((a: { duration: string; price: number }, b: { duration: string; price: number }) => {
+                        const dA = parseInt(a.duration) || 99;
+                        const dB = parseInt(b.duration) || 99;
+                        return dA < dB ? a : b;
+                      })
+                    : null;
+
+                  setFlightData((prev) => ({
+                    ...prev,
+                    [idx]: {
+                      cheapest,
+                      fastest: fastest ? { price: fastest.price, duration: fastest.duration } : null,
+                      count: flights.length,
+                      loading: false,
+                    },
+                  }));
+                })
+                .catch(() => {
+                  setFlightData((prev) => ({
+                    ...prev,
+                    [idx]: { cheapest: null, fastest: null, count: 0, loading: false },
+                  }));
+                });
+            });
+          }
         }
       })
       .catch(() => setError("Failed to generate trip options. Please try again."))
@@ -65,7 +137,6 @@ export default function ComparePage() {
   }, [router]);
 
   const handleSelectTrip = (trip: CompareTrip) => {
-    // Store the selected destination and route to the results/cart builder
     const stored = localStorage.getItem("walter_prefs");
     if (stored) {
       const prefs = JSON.parse(stored);
@@ -75,6 +146,31 @@ export default function ComparePage() {
       localStorage.setItem("walter_prefs", JSON.stringify(prefs));
     }
     router.push("/results");
+  };
+
+  const handleSaveOption = (trip: CompareTrip, idx: number) => {
+    // Convert AI trip items to cart items and save
+    const cartItems = trip.days?.flatMap((day) =>
+      day.items.map((item, j) => ({
+        id: `compare-${idx}-${day.dayNumber}-${j}`,
+        type: (item.itemType || "activity") as "flight" | "hotel" | "event" | "activity" | "restaurant" | "site",
+        title: item.title,
+        subtitle: item.description || "",
+        price: item.estimatedCost || null,
+        image: null,
+        bookingUrl: null,
+        provider: null,
+        date: null,
+        meta: { locationName: item.locationName } as Record<string, unknown>,
+      }))
+    ) || [];
+
+    useSavedTripsStore.getState().saveTrip(
+      trip.title,
+      trip.destination,
+      cartItems
+    );
+    setSavedIds((prev) => new Set([...prev, idx]));
   };
 
   if (loading) {
@@ -190,25 +286,54 @@ export default function ComparePage() {
                   </div>
 
                   {/* Flight & Hotel */}
-                  <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
-                    <div>
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
-                        <span className="text-on-light-tertiary text-xs">Flights</span>
+                  <div className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
+                          <span className="text-on-light-tertiary text-xs">Flights</span>
+                        </div>
+                        {flightData[i]?.loading ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                            <span className="text-on-light-tertiary text-xs">Searching...</span>
+                          </div>
+                        ) : flightData[i]?.cheapest != null ? (
+                          <div>
+                            <p className="font-semibold text-accent text-[17px]">
+                              ${flightData[i].cheapest!.toLocaleString()}
+                            </p>
+                            <p className="text-[10px] text-on-light-tertiary">
+                              cheapest of {flightData[i].count} flights
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="font-semibold text-gray-dark">
+                            ~${trip.flightEstimate?.toLocaleString() || "N/A"}
+                            <span className="text-[10px] text-on-light-tertiary ml-1">est.</span>
+                          </p>
+                        )}
                       </div>
-                      <p className="font-semibold text-gray-dark">
-                        ~${trip.flightEstimate?.toLocaleString() || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <span className="material-symbols-outlined text-accent text-[16px]">hotel</span>
-                        <span className="text-on-light-tertiary text-xs">Per night</span>
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="material-symbols-outlined text-accent text-[16px]">hotel</span>
+                          <span className="text-on-light-tertiary text-xs">Per night</span>
+                        </div>
+                        <p className="font-semibold text-gray-dark">
+                          ~${trip.hotelEstimatePerNight?.toLocaleString() || "N/A"}
+                          <span className="text-[10px] text-on-light-tertiary ml-1">est.</span>
+                        </p>
                       </div>
-                      <p className="font-semibold text-gray-dark">
-                        ~${trip.hotelEstimatePerNight?.toLocaleString() || "N/A"}
-                      </p>
                     </div>
+                    {/* Flight duration */}
+                    {flightData[i]?.fastest && (
+                      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[rgba(0,101,113,0.04)]">
+                        <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">schedule</span>
+                        <span className="text-xs text-on-light-secondary">
+                          Fastest flight: {flightData[i].fastest!.duration} (${flightData[i].fastest!.price})
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Highlights */}
@@ -287,13 +412,29 @@ export default function ComparePage() {
                     >
                       {isExpanded ? "Show less" : "View day-by-day"}
                     </button>
-                    <button
-                      onClick={() => handleSelectTrip(trip)}
-                      className="w-full bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
-                    >
-                      Choose this trip
-                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleSaveOption(trip, i)}
+                        disabled={savedIds.has(i)}
+                        className={`flex-shrink-0 rounded-[10px] px-4 py-3 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                          savedIds.has(i)
+                            ? "bg-page-bg text-accent"
+                            : "border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent hover:text-accent"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          {savedIds.has(i) ? "check" : "bookmark"}
+                        </span>
+                        {savedIds.has(i) ? "Saved" : "Save"}
+                      </button>
+                      <button
+                        onClick={() => handleSelectTrip(trip)}
+                        className="flex-1 bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
+                      >
+                        Choose this trip
+                        <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
