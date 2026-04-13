@@ -598,8 +598,14 @@ export default function ResultsPage() {
   );
 }
 
-/* ── Date Picker ── */
+/* ── Date Comparison Picker ── */
 function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => void }) {
+  const [data, setData] = useState<Record<number, {
+    flights: { min: number; max: number; count: number; loading: boolean };
+    hotels: { min: number; max: number; count: number; loading: boolean };
+    events: { count: number; categories: string[]; topEvents: { name: string; venue: string; date: string; image: string | null }[]; loading: boolean };
+  }>>({});
+
   const tripDays = (() => {
     try {
       const stored = localStorage.getItem("walter_prefs");
@@ -611,57 +617,299 @@ function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => vo
     return 5;
   })();
 
+  const prefs = (() => {
+    try {
+      const stored = localStorage.getItem("walter_prefs");
+      return stored ? JSON.parse(stored) : {};
+    } catch { return {}; }
+  })();
+
+  const destination = prefs.destinations?.[0] || prefs.destination || "";
+  const departureCity = prefs.departureCity || "";
+  const adults = prefs.travelersCount || prefs.travelers || 1;
+  const cabinClass = prefs.flightClass || "economy";
+  const vibes = prefs.activityInterests || prefs.vibes || [];
+
   const formatDate = (d: Date) => d.toISOString().split("T")[0];
   const formatDisplay = (d: Date) =>
-    d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
   const now = new Date();
   const options = [
     { label: "Next week", offset: 7 },
     { label: "In 2 weeks", offset: 14 },
     { label: "In 3 weeks", offset: 21 },
-    { label: "Next month", offset: 30 },
   ];
 
+  const dateRanges = options.map((opt) => {
+    const start = new Date(now);
+    start.setDate(start.getDate() + opt.offset);
+    const end = new Date(start);
+    end.setDate(end.getDate() + tripDays);
+    return { ...opt, start, end, startStr: formatDate(start), endStr: formatDate(end) };
+  });
+
+  useEffect(() => {
+    if (!destination) return;
+
+    dateRanges.forEach((range, idx) => {
+      setData((prev) => ({
+        ...prev,
+        [idx]: {
+          flights: { min: 0, max: 0, count: 0, loading: true },
+          hotels: { min: 0, max: 0, count: 0, loading: true },
+          events: { count: 0, categories: [], topEvents: [], loading: true },
+        },
+      }));
+
+      // Flights
+      if (departureCity) {
+        fetch("/api/flights", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ origin: departureCity, destination, departDate: range.startStr, returnDate: range.endStr, adults, cabinClass }),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            const fl = d.flights || [];
+            const prices = fl.map((f: { price: number }) => f.price).filter((p: number) => p > 0);
+            setData((prev) => ({
+              ...prev,
+              [idx]: {
+                ...prev[idx],
+                flights: {
+                  min: prices.length ? Math.min(...prices) : 0,
+                  max: prices.length ? Math.max(...prices) : 0,
+                  count: fl.length,
+                  loading: false,
+                },
+              },
+            }));
+          })
+          .catch(() => setData((prev) => ({ ...prev, [idx]: { ...prev[idx], flights: { min: 0, max: 0, count: 0, loading: false } } })));
+      } else {
+        setData((prev) => ({ ...prev, [idx]: { ...prev[idx], flights: { min: 0, max: 0, count: 0, loading: false } } }));
+      }
+
+      // Hotels
+      fetch("/api/hotels", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ destination, checkIn: range.startStr, checkOut: range.endStr, adults }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          const ht = d.hotels || [];
+          const prices = ht.map((h: { totalPrice: number }) => h.totalPrice).filter((p: number) => p > 0);
+          setData((prev) => ({
+            ...prev,
+            [idx]: {
+              ...prev[idx],
+              hotels: {
+                min: prices.length ? Math.min(...prices) : 0,
+                max: prices.length ? Math.max(...prices) : 0,
+                count: ht.length,
+                loading: false,
+              },
+            },
+          }));
+        })
+        .catch(() => setData((prev) => ({ ...prev, [idx]: { ...prev[idx], hotels: { min: 0, max: 0, count: 0, loading: false } } })));
+
+      // Events
+      fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ destination, startDate: range.startStr, endDate: range.endStr, vibes, travelers: adults }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          const all = [...(d.exactMatches || []), ...(d.similarMatches || []), ...(d.topInArea || [])];
+          const cats = [...new Set(all.map((e: { category: string }) => e.category))].slice(0, 3) as string[];
+          const top = all.slice(0, 2).map((e: Record<string, unknown>) => ({
+            name: e.name as string,
+            venue: e.venueName as string,
+            date: e.date as string,
+            image: (e.image as string) || null,
+          }));
+          setData((prev) => ({
+            ...prev,
+            [idx]: { ...prev[idx], events: { count: all.length, categories: cats, topEvents: top, loading: false } },
+          }));
+        })
+        .catch(() => setData((prev) => ({ ...prev, [idx]: { ...prev[idx], events: { count: 0, categories: [], topEvents: [], loading: false } } })));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="card-base p-6 mb-6"
-    >
-      <div className="flex items-center gap-3 mb-4">
+    <div className="mb-8">
+      <div className="flex items-center gap-3 mb-6">
         <div className="icon-gradient w-9 h-9 flex items-center justify-center">
           <span className="material-symbols-outlined text-accent text-[18px]">calendar_month</span>
         </div>
         <div>
-          <p className="font-semibold text-gray-dark text-sm">When do you want to go?</p>
-          <p className="text-on-light-tertiary text-xs">Pick your dates to see real flights, hotels, and events</p>
+          <p className="font-semibold text-gray-dark text-[17px]">When do you want to go?</p>
+          <p className="text-on-light-tertiary text-sm">Compare real prices and events across different dates</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {options.map((opt) => {
-          const start = new Date(now);
-          start.setDate(start.getDate() + opt.offset);
-          const end = new Date(start);
-          end.setDate(end.getDate() + tripDays);
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {dateRanges.map((range, idx) => {
+          const d = data[idx];
+          const allLoading = !d || d.flights.loading || d.hotels.loading || d.events.loading;
+          const someLoading = d && (d.flights.loading || d.hotels.loading || d.events.loading);
+
+          // Estimate total
+          const flightMin = d?.flights.min || 0;
+          const flightMax = d?.flights.max || 0;
+          const hotelMin = d?.hotels.min || 0;
+          const hotelMax = d?.hotels.max || 0;
+          const totalMin = flightMin + hotelMin;
+          const totalMax = flightMax + hotelMax;
 
           return (
-            <button
-              key={opt.offset}
-              onClick={() => onSelect(formatDate(start), formatDate(end))}
-              className="card-base p-4 text-center hover:border-accent/30 transition-colors cursor-pointer"
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: idx * 0.1 }}
+              className="card-base overflow-hidden flex flex-col"
             >
-              <p className="font-semibold text-gray-dark text-sm mb-1">{opt.label}</p>
-              <p className="text-on-light-tertiary text-xs">
-                {formatDisplay(start)} - {formatDisplay(end)}
-              </p>
-              <p className="text-accent text-[11px] font-semibold mt-1">{tripDays} days</p>
-            </button>
+              {/* Header */}
+              <div className="p-5 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
+                    <h3 className="font-semibold text-gray-dark text-[17px]">{destination}</h3>
+                  </div>
+                  <span className="bg-accent text-white rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+                    {tripDays} nights
+                  </span>
+                </div>
+                <p className="text-on-light-secondary text-sm flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[14px]">calendar_today</span>
+                  {formatDisplay(range.start)} - {formatDisplay(range.end)}
+                </p>
+              </div>
+
+              <div className="p-5 flex-1 flex flex-col">
+                {/* Estimated Total */}
+                <div className="mb-5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-on-light-secondary text-sm">Estimated Total</span>
+                    <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
+                  </div>
+                  {allLoading ? (
+                    <div className="h-8 bg-page-bg rounded animate-pulse w-2/3" />
+                  ) : totalMin > 0 ? (
+                    <div>
+                      <p className="font-semibold text-gray-dark text-[24px]">
+                        ${totalMin.toLocaleString()} - ${totalMax.toLocaleString()}
+                      </p>
+                      <p className="text-on-light-tertiary text-xs">per person</p>
+                    </div>
+                  ) : (
+                    <p className="text-on-light-tertiary text-sm">No pricing available</p>
+                  )}
+                </div>
+
+                {/* Flights */}
+                <div className="flex items-center justify-between py-3 border-t border-[rgba(0,101,113,0.06)]">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
+                    <span className="text-gray-dark text-sm font-semibold">Flights</span>
+                  </div>
+                  {d?.flights.loading ? (
+                    <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                  ) : d?.flights.count > 0 ? (
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-dark text-sm">
+                        ${d.flights.min.toLocaleString()} - ${d.flights.max.toLocaleString()}
+                      </p>
+                    </div>
+                  ) : (
+                    <span className="text-on-light-tertiary text-xs">No flights found</span>
+                  )}
+                </div>
+
+                {/* Hotels */}
+                <div className="flex items-center justify-between py-3 border-t border-[rgba(0,101,113,0.06)]">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
+                    <span className="text-gray-dark text-sm font-semibold">Hotels</span>
+                  </div>
+                  {d?.hotels.loading ? (
+                    <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                  ) : d?.hotels.count > 0 ? (
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-dark text-sm">
+                        ${d.hotels.min.toLocaleString()} - ${d.hotels.max.toLocaleString()}
+                      </p>
+                    </div>
+                  ) : (
+                    <span className="text-on-light-tertiary text-xs">No hotels found</span>
+                  )}
+                </div>
+
+                {/* Events */}
+                <div className="py-3 border-t border-[rgba(0,101,113,0.06)]">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
+                      <span className="text-gray-dark text-sm font-semibold">Events Found</span>
+                    </div>
+                    {d?.events.loading ? (
+                      <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                    ) : (
+                      <span className="font-semibold text-gray-dark text-[17px]">{d?.events.count || 0}</span>
+                    )}
+                  </div>
+
+                  {/* Category pills */}
+                  {d?.events.categories && d.events.categories.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {d.events.categories.map((cat, j) => (
+                        <span key={j} className="bg-gray-dark text-white rounded-pill px-2.5 py-0.5 text-[10px] font-semibold">
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Top events */}
+                  {d?.events.topEvents && d.events.topEvents.length > 0 && (
+                    <div className="space-y-2 mt-2">
+                      {d.events.topEvents.map((ev, j) => (
+                        <div key={j} className="flex items-center gap-2.5">
+                          {ev.image && (
+                            <img src={ev.image} alt="" className="w-10 h-10 rounded-[6px] object-cover flex-shrink-0" />
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-sm text-gray-dark font-semibold truncate">{ev.name}</p>
+                            <p className="text-[11px] text-on-light-tertiary truncate">{ev.venue}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* CTA */}
+                <button
+                  onClick={() => onSelect(range.startStr, range.endStr)}
+                  disabled={someLoading}
+                  className="mt-auto w-full bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  View Full Details
+                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+              </div>
+            </motion.div>
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
