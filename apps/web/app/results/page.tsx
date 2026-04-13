@@ -39,6 +39,9 @@ export default function ResultsPage() {
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
   const [pageReady, setPageReady] = useState(false);
 
+  const [needsDates, setNeedsDates] = useState(false);
+  const [fetchKey, setFetchKey] = useState(0); // bump to re-trigger fetches
+
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
     if (!stored) {
@@ -54,6 +57,15 @@ export default function ResultsPage() {
     const startDate = quizData.startDate || "";
     const endDate = quizData.endDate || "";
     const adults = quizData.travelersCount || quizData.travelers || 1;
+
+    // If no dates, show date picker instead of empty results
+    if (!startDate || !endDate) {
+      setNeedsDates(true);
+      setFlightsLoading(false);
+      setHotelsLoading(false);
+      setEventsLoading(false);
+      // Still fetch suggestions (they work without dates)
+    }
     const cabinClass = quizData.flightClass || "economy";
 
     // AbortControllers for timeouts
@@ -188,7 +200,7 @@ export default function ResultsPage() {
       eventsController.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [router, fetchKey]);
 
   const destination =
     (prefs as { destinations?: string[] })?.destinations?.[0] ||
@@ -250,6 +262,29 @@ export default function ResultsPage() {
             Browse flights, stays, events, and curated picks. Add what you love to your trip.
           </p>
         </motion.div>
+
+        {/* Date Picker -- show when no dates were set */}
+        {needsDates && <DatePicker onSelect={(start, end) => {
+          // Save dates to prefs
+          const stored = localStorage.getItem("walter_prefs");
+          if (stored) {
+            const p = JSON.parse(stored);
+            p.startDate = start;
+            p.endDate = end;
+            localStorage.setItem("walter_prefs", JSON.stringify(p));
+          }
+          setNeedsDates(false);
+          // Reset loading states and re-trigger fetches
+          setFlightsLoading(true);
+          setHotelsLoading(true);
+          setEventsLoading(true);
+          setFlights([]);
+          setHotels([]);
+          setEvents([]);
+          setSimilarEvents([]);
+          setTopEvents([]);
+          setFetchKey((k) => k + 1);
+        }} />}
 
         {/* AI Itinerary Banner -- show when items came from compare page */}
         <AiItineraryBanner />
@@ -560,6 +595,73 @@ export default function ResultsPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+/* ── Date Picker ── */
+function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => void }) {
+  const tripDays = (() => {
+    try {
+      const stored = localStorage.getItem("walter_prefs");
+      if (stored) {
+        const p = JSON.parse(stored);
+        return p.tripDurationDays || 5;
+      }
+    } catch {}
+    return 5;
+  })();
+
+  const formatDate = (d: Date) => d.toISOString().split("T")[0];
+  const formatDisplay = (d: Date) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+  const now = new Date();
+  const options = [
+    { label: "Next week", offset: 7 },
+    { label: "In 2 weeks", offset: 14 },
+    { label: "In 3 weeks", offset: 21 },
+    { label: "Next month", offset: 30 },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="card-base p-6 mb-6"
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <div className="icon-gradient w-9 h-9 flex items-center justify-center">
+          <span className="material-symbols-outlined text-accent text-[18px]">calendar_month</span>
+        </div>
+        <div>
+          <p className="font-semibold text-gray-dark text-sm">When do you want to go?</p>
+          <p className="text-on-light-tertiary text-xs">Pick your dates to see real flights, hotels, and events</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {options.map((opt) => {
+          const start = new Date(now);
+          start.setDate(start.getDate() + opt.offset);
+          const end = new Date(start);
+          end.setDate(end.getDate() + tripDays);
+
+          return (
+            <button
+              key={opt.offset}
+              onClick={() => onSelect(formatDate(start), formatDate(end))}
+              className="card-base p-4 text-center hover:border-accent/30 transition-colors cursor-pointer"
+            >
+              <p className="font-semibold text-gray-dark text-sm mb-1">{opt.label}</p>
+              <p className="text-on-light-tertiary text-xs">
+                {formatDisplay(start)} - {formatDisplay(end)}
+              </p>
+              <p className="text-accent text-[11px] font-semibold mt-1">{tripDays} days</p>
+            </button>
+          );
+        })}
+      </div>
+    </motion.div>
   );
 }
 
