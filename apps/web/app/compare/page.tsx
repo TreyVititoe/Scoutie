@@ -750,6 +750,9 @@ function DateCompare({
               transition={{ duration: 0.3, delay: idx * 0.1 }}
               className="card-base overflow-hidden flex flex-col"
             >
+              {/* Accent bar */}
+              <div className="h-1 bg-gradient-to-r from-accent to-cyan" />
+
               {/* Header */}
               <div className="p-5 pb-4 border-b border-[rgba(0,101,113,0.06)]">
                 <div className="flex items-center justify-between mb-1">
@@ -765,11 +768,15 @@ function DateCompare({
                   <span className="material-symbols-outlined text-[14px]">calendar_today</span>
                   {formatDisplay(range.start)} - {formatDisplay(range.end)}
                 </p>
+                <p className="text-on-light-secondary text-sm flex items-center gap-1.5 mt-1">
+                  <span className="material-symbols-outlined text-[14px]">group</span>
+                  {adults} traveler{adults !== 1 ? "s" : ""}
+                </p>
               </div>
 
               <div className="p-5 flex-1 flex flex-col">
                 {/* Estimated Total */}
-                <div className="mb-5">
+                <div className="mb-5 bg-[#e6f7f9]/30 rounded-[10px] p-4 -mx-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-on-light-secondary text-sm">Estimated Total</span>
                     <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
@@ -778,7 +785,7 @@ function DateCompare({
                     <div className="h-8 bg-page-bg rounded animate-pulse w-2/3" />
                   ) : totalMin > 0 ? (
                     <div>
-                      <p className="font-semibold text-gray-dark text-[24px]">
+                      <p className="font-semibold text-accent text-[24px]">
                         ${totalMin.toLocaleString()} - ${totalMax.toLocaleString()}
                       </p>
                       <p className="text-on-light-tertiary text-xs">per person</p>
@@ -797,7 +804,7 @@ function DateCompare({
                   {d?.flights.loading ? (
                     <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
                   ) : d?.flights.count > 0 ? (
-                    <p className="font-semibold text-gray-dark text-sm">${d.flights.min.toLocaleString()} - ${d.flights.max.toLocaleString()}</p>
+                    <p className="font-semibold text-accent text-sm">${d.flights.min.toLocaleString()} - ${d.flights.max.toLocaleString()}</p>
                   ) : (
                     <span className="text-on-light-tertiary text-xs">No flights found</span>
                   )}
@@ -812,7 +819,7 @@ function DateCompare({
                   {d?.hotels.loading ? (
                     <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
                   ) : d?.hotels.count > 0 ? (
-                    <p className="font-semibold text-gray-dark text-sm">${d.hotels.min.toLocaleString()} - ${d.hotels.max.toLocaleString()}</p>
+                    <p className="font-semibold text-accent text-sm">${d.hotels.min.toLocaleString()} - ${d.hotels.max.toLocaleString()}</p>
                   ) : (
                     <span className="text-on-light-tertiary text-xs">No hotels found</span>
                   )}
@@ -828,16 +835,19 @@ function DateCompare({
                     {d?.events.loading ? (
                       <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
                     ) : (
-                      <span className="font-semibold text-gray-dark text-[17px]">{d?.events.count || 0}</span>
+                      <span className="font-semibold text-accent text-[24px]">{d?.events.count || 0}</span>
                     )}
                   </div>
-                  {d?.events.categories && d.events.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {d.events.categories.map((cat, j) => (
-                        <span key={j} className="bg-gray-dark text-white rounded-pill px-2.5 py-0.5 text-[10px] font-semibold">{cat}</span>
-                      ))}
-                    </div>
-                  )}
+                  {d?.events.categories && d.events.categories.length > 0 && (() => {
+                    const pillColors = ["bg-accent text-white", "bg-cyan text-gray-dark", "bg-accent-dark text-white"];
+                    return (
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {d.events.categories.map((cat, j) => (
+                          <span key={j} className={`${pillColors[j % pillColors.length]} rounded-pill px-2.5 py-0.5 text-[10px] font-semibold`}>{cat}</span>
+                        ))}
+                      </div>
+                    );
+                  })()}
                   {d?.events.topEvents && d.events.topEvents.length > 0 && (
                     <div className="space-y-2 mt-2">
                       {d.events.topEvents.map((ev, j) => (

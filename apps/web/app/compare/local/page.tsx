@@ -11,6 +11,7 @@ export default function CompareLocalPage() {
   const router = useRouter();
   const allTrips = useSavedTripsStore((s) => s.trips);
   const [trips, setTrips] = useState<SavedTrip[]>([]);
+  const [travelers, setTravelers] = useState(1);
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_compare_local");
@@ -28,6 +29,12 @@ export default function CompareLocalPage() {
       return;
     }
     setTrips(matched);
+
+    const prefs = localStorage.getItem("walter_prefs");
+    if (prefs) {
+      const p = JSON.parse(prefs);
+      setTravelers(p.travelersCount || p.travelers || 1);
+    }
   }, [allTrips, router]);
 
   const handleChoose = (trip: SavedTrip) => {
@@ -117,6 +124,9 @@ export default function CompareLocalPage() {
                 transition={{ duration: 0.3, delay: i * 0.1 }}
                 className="card-base overflow-hidden flex flex-col"
               >
+                {/* Accent bar */}
+                <div className="h-1 bg-gradient-to-r from-accent to-cyan" />
+
                 {/* Header */}
                 <div className="p-5 pb-4 border-b border-[rgba(0,101,113,0.06)]">
                   <div className="flex items-center justify-between mb-1">
@@ -129,18 +139,22 @@ export default function CompareLocalPage() {
                     </span>
                   </div>
                   <p className="text-on-light-secondary text-sm">{trip.name}</p>
+                  <p className="text-on-light-secondary text-sm flex items-center gap-1.5 mt-1">
+                    <span className="material-symbols-outlined text-[14px]">group</span>
+                    {travelers} traveler{travelers !== 1 ? "s" : ""}
+                  </p>
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col">
                   {/* Estimated Total */}
-                  <div className="mb-5">
+                  <div className="mb-5 bg-[#e6f7f9]/30 rounded-[10px] p-4 -mx-1">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-on-light-secondary text-sm">Estimated Total</span>
                       <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
                     </div>
                     {totalMin > 0 ? (
                       <div>
-                        <p className="font-semibold text-gray-dark text-[24px]">
+                        <p className="font-semibold text-accent text-[24px]">
                           {totalMin === totalMax
                             ? `$${totalMin.toLocaleString()}`
                             : `$${totalMin.toLocaleString()} - $${totalMax.toLocaleString()}`}
@@ -149,7 +163,7 @@ export default function CompareLocalPage() {
                       </div>
                     ) : trip.totalCost > 0 ? (
                       <div>
-                        <p className="font-semibold text-gray-dark text-[24px]">${trip.totalCost.toLocaleString()}</p>
+                        <p className="font-semibold text-accent text-[24px]">${trip.totalCost.toLocaleString()}</p>
                         <p className="text-on-light-tertiary text-xs">per person</p>
                       </div>
                     ) : (
@@ -164,7 +178,7 @@ export default function CompareLocalPage() {
                       <span className="text-gray-dark text-sm font-semibold">Flights</span>
                     </div>
                     {flightItems.length > 0 ? (
-                      <p className="font-semibold text-gray-dark text-sm">
+                      <p className="font-semibold text-accent text-sm">
                         {flightMin === flightMax
                           ? `$${flightMin.toLocaleString()}`
                           : `$${flightMin.toLocaleString()} - $${flightMax.toLocaleString()}`}
@@ -181,7 +195,7 @@ export default function CompareLocalPage() {
                       <span className="text-gray-dark text-sm font-semibold">Hotels</span>
                     </div>
                     {hotelItems.length > 0 ? (
-                      <p className="font-semibold text-gray-dark text-sm">
+                      <p className="font-semibold text-accent text-sm">
                         {hotelMin === hotelMax
                           ? `$${hotelMin.toLocaleString()}`
                           : `$${hotelMin.toLocaleString()} - $${hotelMax.toLocaleString()}`}
@@ -198,19 +212,22 @@ export default function CompareLocalPage() {
                         <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
                         <span className="text-gray-dark text-sm font-semibold">Events Found</span>
                       </div>
-                      <span className="font-semibold text-gray-dark text-[17px]">{eventItems.length}</span>
+                      <span className="font-semibold text-accent text-[24px]">{eventItems.length}</span>
                     </div>
 
                     {/* Category pills */}
-                    {eventCategories.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {eventCategories.map((cat, j) => (
-                          <span key={j} className="bg-gray-dark text-white rounded-pill px-2.5 py-0.5 text-[10px] font-semibold">
-                            {cat}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {eventCategories.length > 0 && (() => {
+                      const pillColors = ["bg-accent text-white", "bg-cyan text-gray-dark", "bg-accent-dark text-white"];
+                      return (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {eventCategories.map((cat, j) => (
+                            <span key={j} className={`${pillColors[j % pillColors.length]} rounded-pill px-2.5 py-0.5 text-[10px] font-semibold`}>
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
+                      );
+                    })()}
 
                     {/* Top events with images */}
                     {eventItems.length > 0 && (
