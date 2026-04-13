@@ -60,6 +60,11 @@ function TripPage() {
 
   const [prefs, setPrefs] = useState<Record<string, unknown>>({});
   const [shareLink, setShareLink] = useState<string | null>(null);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveName, setSaveName] = useState("");
+  const [savePublic, setSavePublic] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs");
@@ -144,6 +149,48 @@ function TripPage() {
       setTimeout(() => setShareLink(null), 2000);
     } catch {
       /* fallback */
+    }
+  };
+
+  /* Save handler */
+  const handleSave = async () => {
+    if (saving || !saveName.trim()) return;
+    setSaving(true);
+
+    try {
+      const res = await fetch("/api/trips/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          trip: {
+            title: saveName.trim(),
+            destination: destination || "Custom Trip",
+            totalEstimatedCost: totalPrice,
+            days: [{
+              dayNumber: 1,
+              items: items.map((item, idx) => ({
+                itemType: item.type,
+                title: item.title,
+                description: item.subtitle || "",
+                estimatedCost: item.price || 0,
+                locationName: (item.meta?.locationName as string) || (item.meta?.venueName as string) || "",
+              })),
+            }],
+          },
+          quizData: prefs,
+          isPublic: savePublic,
+        }),
+      });
+
+      if (res.ok) {
+        setSaved(true);
+        setShowSaveModal(false);
+        setTimeout(() => setSaved(false), 3000);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -239,6 +286,15 @@ function TripPage() {
               </span>
               Back to results
             </Link>
+            <button
+              onClick={() => setShowSaveModal(true)}
+              className="px-5 py-2.5 rounded-[8px] border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                {saved ? "check" : "bookmark"}
+              </span>
+              {saved ? "Saved!" : "Save trip"}
+            </button>
             <motion.button
               onClick={handleShare}
               whileTap={{ scale: 0.95 }}
@@ -465,6 +521,68 @@ function TripPage() {
           </div>
         )}
       </div>
+
+      {/* ── Save Trip Modal ── */}
+      {showSaveModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowSaveModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2 }}
+            className="relative card-base p-6 w-full max-w-md"
+          >
+            <h3 className="font-semibold text-[21px] text-gray-dark mb-1">Save this trip</h3>
+            <p className="text-on-light-secondary text-sm mb-6">
+              Give your trip a name so you can find it later.
+            </p>
+
+            <label className="block text-sm font-semibold text-gray-dark mb-1.5">
+              Trip name
+            </label>
+            <input
+              type="text"
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              placeholder={destination ? `My ${destination} trip` : "My trip"}
+              className="w-full px-4 py-3 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
+              autoFocus
+            />
+
+            <label className="flex items-center gap-3 cursor-pointer mb-6">
+              <input
+                type="checkbox"
+                checked={savePublic}
+                onChange={(e) => setSavePublic(e.target.checked)}
+                className="w-4 h-4 rounded text-accent focus:ring-accent/20"
+              />
+              <div>
+                <p className="text-sm font-semibold text-gray-dark">Share with community</p>
+                <p className="text-xs text-on-light-tertiary">Let others discover and fork your trip</p>
+              </div>
+            </label>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowSaveModal(false)}
+                className="flex-1 py-3 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-on-light-secondary font-semibold hover:bg-page-bg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving || !saveName.trim()}
+                className="flex-1 py-3 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save trip"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

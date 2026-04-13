@@ -3,14 +3,16 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug");
-  if (!slug) {
-    return NextResponse.json({ error: "Missing slug" }, { status: 400 });
+  const id = req.nextUrl.searchParams.get("id");
+
+  if (!slug && !id) {
+    return NextResponse.json({ error: "Missing slug or id" }, { status: 400 });
   }
 
   const supabase = await createClient();
 
-  // Fetch trip by share_slug (public trips or own trips)
-  const { data: trip, error } = await supabase
+  // Fetch trip by share_slug or by id
+  let query = supabase
     .from("trips")
     .select(`
       id, title, summary, destination, tier, start_date, end_date,
@@ -23,9 +25,15 @@ export async function GET(req: NextRequest) {
           location_lat, location_lng, rating, sort_order
         )
       )
-    `)
-    .eq("share_slug", slug)
-    .single();
+    `);
+
+  if (id) {
+    query = query.eq("id", id);
+  } else {
+    query = query.eq("share_slug", slug!);
+  }
+
+  const { data: trip, error } = await query.single();
 
   if (error || !trip) {
     return NextResponse.json({ error: "Trip not found" }, { status: 404 });
