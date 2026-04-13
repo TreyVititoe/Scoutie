@@ -9,6 +9,7 @@ import HotelCard from "@/components/results/HotelCard";
 import EventCard from "@/components/results/EventCard";
 import SuggestionCard from "@/components/results/SuggestionCard";
 import TripTracker from "@/components/results/TripTracker";
+import { useTripCartStore, selectItemCount } from "@/lib/stores/tripCartStore";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
 import type { ScoredEvent, Suggestion } from "@/lib/types";
@@ -249,6 +250,9 @@ export default function ResultsPage() {
             Browse flights, stays, events, and curated picks. Add what you love to your trip.
           </p>
         </motion.div>
+
+        {/* AI Itinerary Banner -- show when items came from compare page */}
+        <AiItineraryBanner />
       </div>
 
       {/* --- Sticky Tab Bar (outside content container so sticky works) --- */}
@@ -556,5 +560,100 @@ export default function ResultsPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+/* ── AI Itinerary Banner ── */
+function AiItineraryBanner() {
+  const items = useTripCartStore((s) => s.items);
+  const itemCount = useTripCartStore(selectItemCount);
+  const aiItems = items.filter((i) => i.provider === "walter-ai");
+
+  if (aiItems.length === 0) return null;
+
+  // Group by day
+  const byDay = new Map<number, typeof aiItems>();
+  aiItems.forEach((item) => {
+    const day = (item.meta?.dayNumber as number) || 1;
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day)!.push(item);
+  });
+
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="card-base p-5 mb-6"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="icon-gradient w-9 h-9 flex items-center justify-center">
+            <span className="material-symbols-outlined text-accent text-[18px]">auto_awesome</span>
+          </div>
+          <div>
+            <p className="font-semibold text-gray-dark text-sm">
+              Walter&apos;s itinerary loaded ({aiItems.length} items)
+            </p>
+            <p className="text-on-light-tertiary text-xs">
+              Your AI-planned trip is in the cart. Swap items with real bookings below.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-accent text-sm font-semibold hover:text-accent-light transition-colors flex items-center gap-1"
+        >
+          {expanded ? "Hide" : "View"}
+          <span className="material-symbols-outlined text-[16px]">
+            {expanded ? "expand_less" : "expand_more"}
+          </span>
+        </button>
+      </div>
+
+      {expanded && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ duration: 0.2 }}
+          className="mt-4 pt-4 border-t border-[rgba(0,101,113,0.06)]"
+        >
+          <div className="space-y-3">
+            {Array.from(byDay.entries())
+              .sort(([a], [b]) => a - b)
+              .map(([day, dayItems]) => (
+                <div key={day}>
+                  <p className="text-xs font-semibold text-on-light-tertiary uppercase tracking-wider mb-1.5">
+                    Day {day}
+                  </p>
+                  <div className="space-y-1">
+                    {dayItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-2 text-sm bg-page-bg rounded-[8px] px-3 py-2"
+                      >
+                        <span className="text-[10px] text-on-light-tertiary w-12">
+                          {(item.meta?.startTime as string) || ""}
+                        </span>
+                        <span className="bg-[#e6f7f9] text-accent rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
+                          {item.type}
+                        </span>
+                        <span className="flex-1 truncate text-gray-dark">{item.title}</span>
+                        {item.price != null && item.price > 0 && (
+                          <span className="text-accent font-semibold text-xs">${item.price}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+          </div>
+          <p className="text-xs text-on-light-tertiary mt-3">
+            These are AI estimates. Browse the tabs below to find real bookable options and swap them in.
+          </p>
+        </motion.div>
+      )}
+    </motion.div>
   );
 }

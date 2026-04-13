@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 type TripDay = {
   dayNumber: number;
@@ -200,7 +201,8 @@ export default function ComparePage() {
       .finally(() => setLoading(false));
   }, [router]);
 
-  const handleSelectTrip = (trip: CompareTrip) => {
+  const handleSelectTrip = (trip: CompareTrip, tripIdx: number) => {
+    // Update prefs with selected destination
     const stored = localStorage.getItem("walter_prefs");
     if (stored) {
       const prefs = JSON.parse(stored);
@@ -209,6 +211,33 @@ export default function ComparePage() {
       prefs.surpriseMe = false;
       localStorage.setItem("walter_prefs", JSON.stringify(prefs));
     }
+
+    // Pre-load AI itinerary items into the cart
+    const cart = useTripCartStore.getState();
+    cart.clearCart();
+
+    trip.days?.forEach((day) => {
+      day.items?.forEach((item, j) => {
+        cart.addItem({
+          id: `ai-${tripIdx}-${day.dayNumber}-${j}`,
+          type: (item.itemType || "activity") as "flight" | "hotel" | "event" | "activity" | "restaurant" | "site",
+          title: item.title,
+          subtitle: `Day ${day.dayNumber} -- ${item.description || ""}`,
+          price: item.estimatedCost || null,
+          image: null,
+          bookingUrl: null,
+          provider: "walter-ai",
+          date: null,
+          meta: {
+            locationName: item.locationName,
+            aiGenerated: true,
+            dayNumber: day.dayNumber,
+            startTime: item.startTime,
+          } as Record<string, unknown>,
+        });
+      });
+    });
+
     router.push("/results");
   };
 
@@ -531,7 +560,7 @@ export default function ComparePage() {
                         {savedIds.has(i) ? "Saved" : "Save"}
                       </button>
                       <button
-                        onClick={() => handleSelectTrip(trip)}
+                        onClick={() => handleSelectTrip(trip, i)}
                         className="flex-1 bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
                       >
                         Choose this trip
