@@ -274,6 +274,86 @@ Give me 8-10 top picks — the absolute must-dos. Mix of activities, restaurants
 }
 
 /**
+ * Generate compare-ready trip options for multiple destinations.
+ * Returns one "balanced" trip per destination with key comparison metrics.
+ */
+const COMPARE_SYSTEM_PROMPT = `You are Walter, an expert AI travel planner. Generate trip options for comparison.
+
+RULES:
+- Every recommendation must be a REAL place
+- Include specific names and approximate prices in USD
+- Structure each day with morning, afternoon, and evening blocks
+- Factor in realistic travel times
+- Mix popular highlights and hidden gems
+- Respect the budget strictly
+- Consider seasonality
+
+CRITICAL OUTPUT RULES:
+- Descriptions MUST be under 10 words each
+- Max 3 items per day
+- No null fields — omit optional fields instead
+- Raw JSON only — no markdown, no code fences, no explanation
+
+RESPONSE FORMAT:
+{"trips":[{"destination":"City, Country","title":"...","summary":"One compelling sentence about why this trip","totalEstimatedCost":0,"flightEstimate":0,"hotelEstimatePerNight":0,"topEvents":["Event 1","Event 2","Event 3"],"highlights":["Highlight 1","Highlight 2","Highlight 3"],"bestTimeToVisit":"...","days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}`;
+
+export async function generateCompareTrips(quizData: QuizData) {
+  const budget = quizData.budgetAmount || quizData.budget || 2000;
+  const travelers = quizData.travelersCount || quizData.travelers || 1;
+  const interests =
+    quizData.activityInterests?.join(", ") || quizData.vibes?.join(", ") || "general sightseeing";
+  const nights =
+    quizData.startDate && quizData.endDate
+      ? Math.round(
+          (new Date(quizData.endDate).getTime() -
+            new Date(quizData.startDate).getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
+      : quizData.tripDurationDays || 5;
+
+  const destinations = quizData.destinations?.length
+    ? quizData.destinations
+    : [];
+  const isSurprise = quizData.surpriseMe || destinations.length === 0;
+
+  let destinationLine: string;
+  if (isSurprise) {
+    destinationLine = `Pick 3 diverse, exciting destinations that match these interests: ${interests}. Budget: $${budget}. Make them surprising and different from each other.`;
+  } else if (destinations.length === 1) {
+    destinationLine = `Generate 3 trip options for ${destinations[0]} at different times or with different themes.`;
+  } else {
+    destinationLine = `Generate one trip option for each: ${destinations.join(", ")}`;
+  }
+
+  const userPrompt = `Generate trip options for comparison:
+
+${destinationLine}
+
+DATES: ${quizData.startDate || "flexible"} to ${quizData.endDate || "flexible"} (${nights} nights)
+DEPARTING FROM: ${quizData.departureCity || "Not specified"}
+TRAVELERS: ${travelers} ${quizData.travelerType || "travelers"}
+BUDGET: $${budget.toLocaleString()} ${quizData.budgetMode === "per_day" ? "per day" : "total"}
+FLIGHT CLASS: ${quizData.flightClass || "economy"}
+INTERESTS: ${interests}
+
+Generate ${isSurprise || destinations.length <= 1 ? "3" : destinations.length} complete trip itineraries as JSON. Each trip should have a different destination${destinations.length === 1 ? " theme or time period" : ""}. Include estimated flight cost and hotel cost per night for comparison.`;
+
+  const message = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 16384,
+    system: COMPARE_SYSTEM_PROMPT,
+    messages: [{ role: "user", content: userPrompt }],
+  });
+
+  if (message.stop_reason === "max_tokens") {
+    throw new Error("Response truncated — try fewer destinations or shorter trips");
+  }
+
+  const text = message.content[0].type === "text" ? message.content[0].text : "";
+  return parseClaudeJson(text);
+}
+
+/**
  * Generate a personalized AI summary of the trip results.
  */
 export async function generateTripSummary(params: {

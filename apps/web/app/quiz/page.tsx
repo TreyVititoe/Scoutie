@@ -68,7 +68,13 @@ export default function QuizPage() {
         vibes: store.activityInterests,
       })
     );
-    router.push("/results");
+    // Route to compare page if multiple destinations or surprise me
+    const shouldCompare =
+      store.surpriseMe ||
+      store.destinations.length > 1 ||
+      store.destinations.length === 0;
+
+    router.push(shouldCompare ? "/compare" : "/results");
   };
 
   return (
