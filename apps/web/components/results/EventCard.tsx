@@ -111,7 +111,7 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
                 <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">per ticket</p>
               </>
             ) : (
-              <p className="text-sm font-semibold text-on-light-tertiary">See prices</p>
+              <p className="text-sm font-semibold text-accent">View tickets</p>
             )}
           </div>
           <button
