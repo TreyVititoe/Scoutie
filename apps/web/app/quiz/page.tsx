@@ -68,11 +68,13 @@ export default function QuizPage() {
         vibes: store.activityInterests,
       })
     );
-    // Route to compare page if multiple destinations or surprise me
+    // Route to compare page if multiple destinations, surprise me, or no dates
     const shouldCompare =
       store.surpriseMe ||
       store.destinations.length > 1 ||
-      store.destinations.length === 0;
+      store.destinations.length === 0 ||
+      !store.startDate ||
+      !store.endDate;
 
     router.push(shouldCompare ? "/compare" : "/results");
   };

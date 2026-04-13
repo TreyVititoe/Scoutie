@@ -39,9 +39,6 @@ export default function ResultsPage() {
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
   const [pageReady, setPageReady] = useState(false);
 
-  const [needsDates, setNeedsDates] = useState(false);
-  const [fetchKey, setFetchKey] = useState(0); // bump to re-trigger fetches
-
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
     if (!stored) {
@@ -58,14 +55,6 @@ export default function ResultsPage() {
     const endDate = quizData.endDate || "";
     const adults = quizData.travelersCount || quizData.travelers || 1;
 
-    // If no dates, show date picker instead of empty results
-    if (!startDate || !endDate) {
-      setNeedsDates(true);
-      setFlightsLoading(false);
-      setHotelsLoading(false);
-      setEventsLoading(false);
-      // Still fetch suggestions (they work without dates)
-    }
     const cabinClass = quizData.flightClass || "economy";
 
     // AbortControllers for timeouts
@@ -200,7 +189,7 @@ export default function ResultsPage() {
       eventsController.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, fetchKey]);
+  }, [router]);
 
   const destination =
     (prefs as { destinations?: string[] })?.destinations?.[0] ||
@@ -262,29 +251,6 @@ export default function ResultsPage() {
             Browse flights, stays, events, and curated picks. Add what you love to your trip.
           </p>
         </motion.div>
-
-        {/* Date Picker -- show when no dates were set */}
-        {needsDates && <DatePicker onSelect={(start, end) => {
-          // Save dates to prefs
-          const stored = localStorage.getItem("walter_prefs");
-          if (stored) {
-            const p = JSON.parse(stored);
-            p.startDate = start;
-            p.endDate = end;
-            localStorage.setItem("walter_prefs", JSON.stringify(p));
-          }
-          setNeedsDates(false);
-          // Reset loading states and re-trigger fetches
-          setFlightsLoading(true);
-          setHotelsLoading(true);
-          setEventsLoading(true);
-          setFlights([]);
-          setHotels([]);
-          setEvents([]);
-          setSimilarEvents([]);
-          setTopEvents([]);
-          setFetchKey((k) => k + 1);
-        }} />}
 
         {/* AI Itinerary Banner -- show when items came from compare page */}
         <AiItineraryBanner />
