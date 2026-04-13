@@ -251,8 +251,8 @@ export default function ResultsPage() {
         </motion.div>
 
         <div>
-          {/* --- Floating Tab Bar --- */}
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 lg:bottom-auto lg:top-[200px] lg:left-1/2 lg:-translate-x-1/2">
+          {/* --- Tab Bar --- */}
+          <div className="sticky top-[64px] z-30 flex justify-center py-4 -mx-4 px-4 lg:-mx-8 lg:px-8">
             <div className="flex items-center gap-1.5 p-2 rounded-full bg-white/25 backdrop-blur-2xl backdrop-saturate-150 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(255,255,255,0.2)]">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -298,7 +298,7 @@ export default function ResultsPage() {
           </div>
 
           {/* --- Tab Content --- */}
-          <main className="pb-24 lg:pb-0 lg:pt-24">
+          <main className="pb-24 lg:pb-0 pt-4">
             {/* --- Flights Tab --- */}
             {activeTab === "flights" && (
               <motion.section
