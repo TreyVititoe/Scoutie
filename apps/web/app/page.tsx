@@ -57,6 +57,12 @@ export default function HomePage() {
               Plan a Trip
             </Link>
             <Link
+              href="/saved"
+              className="text-white/80 text-[11px] hidden sm:block"
+            >
+              Saved Trips
+            </Link>
+            <Link
               href="/quiz"
               className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
             >

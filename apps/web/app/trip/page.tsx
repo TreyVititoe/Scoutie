@@ -12,6 +12,7 @@ import {
   type CartItemType,
 } from "@/lib/stores/tripCartStore";
 import { trackAndOpen } from "@/lib/affiliate";
+import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
 import PackingList from "@/components/trip/PackingList";
 import type { MapItem } from "@/components/trip/TripMap";
 
@@ -152,46 +153,22 @@ function TripPage() {
     }
   };
 
-  /* Save handler */
-  const handleSave = async () => {
-    if (saving || !saveName.trim()) return;
+  /* Save handler -- uses localStorage, no login required */
+  const handleSave = () => {
+    if (!saveName.trim()) return;
     setSaving(true);
 
-    try {
-      const res = await fetch("/api/trips/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          trip: {
-            title: saveName.trim(),
-            destination: destination || "Custom Trip",
-            totalEstimatedCost: totalPrice,
-            days: [{
-              dayNumber: 1,
-              items: items.map((item, idx) => ({
-                itemType: item.type,
-                title: item.title,
-                description: item.subtitle || "",
-                estimatedCost: item.price || 0,
-                locationName: (item.meta?.locationName as string) || (item.meta?.venueName as string) || "",
-              })),
-            }],
-          },
-          quizData: prefs,
-          isPublic: savePublic,
-        }),
-      });
+    useSavedTripsStore.getState().saveTrip(
+      saveName.trim(),
+      destination || "Custom Trip",
+      items
+    );
 
-      if (res.ok) {
-        setSaved(true);
-        setShowSaveModal(false);
-        setTimeout(() => setSaved(false), 3000);
-      }
-    } catch {
-      // silently fail
-    } finally {
-      setSaving(false);
-    }
+    setSaved(true);
+    setShowSaveModal(false);
+    setSaving(false);
+    setSaveName("");
+    setTimeout(() => setSaved(false), 3000);
   };
 
   /* Date formatting */
