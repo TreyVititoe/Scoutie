@@ -11,7 +11,6 @@ export default function CompareLocalPage() {
   const router = useRouter();
   const allTrips = useSavedTripsStore((s) => s.trips);
   const [trips, setTrips] = useState<SavedTrip[]>([]);
-  const [expandedTrip, setExpandedTrip] = useState<number | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_compare_local");
@@ -69,22 +68,46 @@ export default function CompareLocalPage() {
           className="mb-10"
         >
           <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
-            Compare your trips
+            Compare your saved trips
           </h1>
           <p className="text-on-light-secondary text-[17px]">
             {trips.length} trips side-by-side. Pick the one you love.
           </p>
         </motion.div>
 
-        <div className={`grid gap-6 ${trips.length === 2 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1 lg:grid-cols-3"}`}>
+        <div className={`grid gap-5 ${trips.length === 2 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1 lg:grid-cols-3"}`}>
           {trips.map((trip, i) => {
-            const isExpanded = expandedTrip === i;
             const flightItems = trip.items.filter((it) => it.type === "flight");
             const hotelItems = trip.items.filter((it) => it.type === "hotel");
             const eventItems = trip.items.filter((it) => it.type === "event");
             const activityItems = trip.items.filter(
               (it) => it.type === "activity" || it.type === "restaurant" || it.type === "site"
             );
+
+            // Price ranges
+            const flightPrices = flightItems.map((f) => f.price || 0).filter((p) => p > 0);
+            const flightMin = flightPrices.length ? Math.min(...flightPrices) : 0;
+            const flightMax = flightPrices.length ? Math.max(...flightPrices) : 0;
+
+            const hotelPrices = hotelItems.map((h) => h.price || 0).filter((p) => p > 0);
+            const hotelMin = hotelPrices.length ? Math.min(...hotelPrices) : 0;
+            const hotelMax = hotelPrices.length ? Math.max(...hotelPrices) : 0;
+
+            const totalMin = (flightMin || 0) + (hotelMin || 0);
+            const totalMax = (flightMax || 0) + (hotelMax || 0);
+
+            // Event categories
+            const eventCategories = [...new Set(
+              eventItems
+                .map((e) => (e.meta?.category as string) || "")
+                .filter(Boolean)
+            )].slice(0, 3);
+
+            // Interest/vibe tags from activities
+            const interestTags = [...new Set(
+              activityItems
+                .map((a) => a.type === "restaurant" ? "Food" : a.type === "site" ? "Sightseeing" : "Activities")
+            )].slice(0, 4);
 
             return (
               <motion.div
@@ -95,121 +118,153 @@ export default function CompareLocalPage() {
                 className="card-base overflow-hidden flex flex-col"
               >
                 {/* Header */}
-                <div className="bg-hero-gradient relative p-6 pb-8">
-                  <div className="hero-glow absolute inset-0 pointer-events-none" />
-                  <div className="relative z-10">
-                    <h2 className="text-white text-[21px] font-semibold leading-card-title mb-1">
-                      {trip.destination}
-                    </h2>
-                    <p className="text-on-dark-secondary text-sm">{trip.name}</p>
-                  </div>
-                </div>
-
-                <div className="p-6 flex-1 flex flex-col">
-                  {/* Total cost */}
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
-                    <span className="text-on-light-secondary text-sm">Total cost</span>
-                    <span className="text-accent text-[21px] font-semibold">
-                      {trip.totalCost > 0 ? `$${trip.totalCost.toLocaleString()}` : "N/A"}
+                <div className="p-5 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
+                      <h3 className="font-semibold text-gray-dark text-[17px]">{trip.destination}</h3>
+                    </div>
+                    <span className="bg-accent text-white rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+                      {trip.items.length} items
                     </span>
                   </div>
+                  <p className="text-on-light-secondary text-sm">{trip.name}</p>
+                </div>
 
-                  {/* Stats */}
-                  <div className="grid grid-cols-4 gap-2 mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
-                    <div className="text-center">
-                      <p className="text-[17px] font-semibold text-gray-dark">{flightItems.length}</p>
-                      <p className="text-[10px] text-on-light-tertiary">Flights</p>
+                <div className="p-5 flex-1 flex flex-col">
+                  {/* Estimated Total */}
+                  <div className="mb-5">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-on-light-secondary text-sm">Estimated Total</span>
+                      <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
                     </div>
-                    <div className="text-center">
-                      <p className="text-[17px] font-semibold text-gray-dark">{hotelItems.length}</p>
-                      <p className="text-[10px] text-on-light-tertiary">Hotels</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[17px] font-semibold text-gray-dark">{eventItems.length}</p>
-                      <p className="text-[10px] text-on-light-tertiary">Events</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[17px] font-semibold text-gray-dark">{activityItems.length}</p>
-                      <p className="text-[10px] text-on-light-tertiary">Activities</p>
-                    </div>
+                    {totalMin > 0 ? (
+                      <div>
+                        <p className="font-semibold text-gray-dark text-[24px]">
+                          {totalMin === totalMax
+                            ? `$${totalMin.toLocaleString()}`
+                            : `$${totalMin.toLocaleString()} - $${totalMax.toLocaleString()}`}
+                        </p>
+                        <p className="text-on-light-tertiary text-xs">per person</p>
+                      </div>
+                    ) : trip.totalCost > 0 ? (
+                      <div>
+                        <p className="font-semibold text-gray-dark text-[24px]">${trip.totalCost.toLocaleString()}</p>
+                        <p className="text-on-light-tertiary text-xs">per person</p>
+                      </div>
+                    ) : (
+                      <p className="text-on-light-tertiary text-sm">No pricing available</p>
+                    )}
                   </div>
 
-                  {/* Flights detail */}
-                  {flightItems.length > 0 && (
-                    <div className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Flights</p>
-                      {flightItems.map((fl, j) => (
-                        <p key={j} className="text-sm text-gray-dark mb-1 flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-accent text-[14px]">flight</span>
-                          <span className="flex-1 truncate">{fl.title}</span>
-                          {fl.price != null && (
-                            <span className="text-on-light-tertiary">${fl.price}</span>
-                          )}
-                        </p>
-                      ))}
+                  {/* Flights */}
+                  <div className="flex items-center justify-between py-3 border-t border-[rgba(0,101,113,0.06)]">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
+                      <span className="text-gray-dark text-sm font-semibold">Flights</span>
                     </div>
-                  )}
+                    {flightItems.length > 0 ? (
+                      <p className="font-semibold text-gray-dark text-sm">
+                        {flightMin === flightMax
+                          ? `$${flightMin.toLocaleString()}`
+                          : `$${flightMin.toLocaleString()} - $${flightMax.toLocaleString()}`}
+                      </p>
+                    ) : (
+                      <span className="text-on-light-tertiary text-xs">None added</span>
+                    )}
+                  </div>
+
+                  {/* Hotels */}
+                  <div className="flex items-center justify-between py-3 border-t border-[rgba(0,101,113,0.06)]">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
+                      <span className="text-gray-dark text-sm font-semibold">Hotels</span>
+                    </div>
+                    {hotelItems.length > 0 ? (
+                      <p className="font-semibold text-gray-dark text-sm">
+                        {hotelMin === hotelMax
+                          ? `$${hotelMin.toLocaleString()}`
+                          : `$${hotelMin.toLocaleString()} - $${hotelMax.toLocaleString()}`}
+                      </p>
+                    ) : (
+                      <span className="text-on-light-tertiary text-xs">None added</span>
+                    )}
+                  </div>
 
                   {/* Events */}
-                  {eventItems.length > 0 && (
-                    <div className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Events</p>
-                      {eventItems.slice(0, 4).map((ev, j) => (
-                        <p key={j} className="text-sm text-gray-dark mb-1 flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-accent text-[14px]">confirmation_number</span>
-                          <span className="flex-1 truncate">{ev.title}</span>
-                          {ev.price != null && ev.price > 0 && (
-                            <span className="text-on-light-tertiary">${ev.price}</span>
-                          )}
-                        </p>
-                      ))}
-                      {eventItems.length > 4 && (
-                        <p className="text-xs text-on-light-tertiary mt-1">+{eventItems.length - 4} more</p>
-                      )}
+                  <div className="py-3 border-t border-[rgba(0,101,113,0.06)]">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
+                        <span className="text-gray-dark text-sm font-semibold">Events Found</span>
+                      </div>
+                      <span className="font-semibold text-gray-dark text-[17px]">{eventItems.length}</span>
                     </div>
-                  )}
 
-                  {/* All items expandable */}
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      transition={{ duration: 0.2 }}
-                      className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]"
-                    >
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-3">All items</p>
-                      <div className="space-y-1.5">
-                        {trip.items.map((item, k) => (
-                          <div key={k} className="flex items-center gap-2 text-sm bg-page-bg rounded-[8px] px-3 py-2">
-                            <span className="bg-[#e6f7f9] text-accent rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
-                              {item.type}
-                            </span>
-                            <span className="flex-1 truncate text-gray-dark">{item.title}</span>
-                            {item.price != null && item.price > 0 && (
-                              <span className="text-accent font-semibold text-xs">${item.price}</span>
+                    {/* Category pills */}
+                    {eventCategories.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {eventCategories.map((cat, j) => (
+                          <span key={j} className="bg-gray-dark text-white rounded-pill px-2.5 py-0.5 text-[10px] font-semibold">
+                            {cat}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Top events with images */}
+                    {eventItems.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {eventItems.slice(0, 2).map((ev, j) => (
+                          <div key={j} className="flex items-center gap-2.5">
+                            {ev.image && (
+                              <img src={ev.image} alt="" className="w-10 h-10 rounded-[6px] object-cover flex-shrink-0" />
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-sm text-gray-dark font-semibold truncate">{ev.title}</p>
+                              <p className="text-[11px] text-on-light-tertiary truncate">{ev.subtitle}</p>
+                            </div>
+                            {ev.bookingUrl && (
+                              <a href={ev.bookingUrl} target="_blank" rel="noopener noreferrer" className="text-accent flex-shrink-0">
+                                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                              </a>
                             )}
                           </div>
                         ))}
                       </div>
-                    </motion.div>
+                    )}
+                  </div>
+
+                  {/* Interests / Activities */}
+                  {(interestTags.length > 0 || activityItems.length > 0) && (
+                    <div className="py-3 border-t border-[rgba(0,101,113,0.06)]">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-accent text-[18px]">interests</span>
+                        <span className="text-gray-dark text-sm font-semibold">Your Interests</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {activityItems.slice(0, 4).map((act, j) => (
+                          <span key={j} className="bg-page-bg text-gray-dark rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(0,101,113,0.08)]">
+                            {act.title.length > 20 ? act.title.slice(0, 20) + "..." : act.title}
+                          </span>
+                        ))}
+                        {activityItems.length > 4 && (
+                          <span className="bg-page-bg text-on-light-tertiary rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(0,101,113,0.08)]">
+                            +{activityItems.length - 4} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   )}
 
-                  {/* Actions */}
-                  <div className="mt-auto pt-2 space-y-2">
-                    <button
-                      onClick={() => setExpandedTrip(isExpanded ? null : i)}
-                      className="w-full text-center text-accent text-sm font-semibold hover:text-accent-light transition-colors py-1"
-                    >
-                      {isExpanded ? "Show less" : `View all ${trip.items.length} items`}
-                    </button>
-                    <button
-                      onClick={() => handleChoose(trip)}
-                      className="w-full bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
-                    >
-                      Choose this trip
-                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                    </button>
-                  </div>
+                  {/* CTA */}
+                  <button
+                    onClick={() => handleChoose(trip)}
+                    className="mt-auto w-full bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
+                  >
+                    View Full Details
+                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  </button>
                 </div>
               </motion.div>
             );
