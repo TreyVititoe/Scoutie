@@ -39,6 +39,20 @@ type FlightData = {
   loading: boolean;
 };
 
+type RealEvent = {
+  name: string;
+  date: string;
+  venueName: string;
+  category: string;
+  priceMin: number | null;
+};
+
+type EventData = {
+  events: RealEvent[];
+  count: number;
+  loading: boolean;
+};
+
 export default function ComparePage() {
   const router = useRouter();
   const [trips, setTrips] = useState<CompareTrip[]>([]);
@@ -46,6 +60,7 @@ export default function ComparePage() {
   const [error, setError] = useState<string | null>(null);
   const [expandedTrip, setExpandedTrip] = useState<number | null>(null);
   const [flightData, setFlightData] = useState<Record<number, FlightData>>({});
+  const [eventData, setEventData] = useState<Record<number, EventData>>({});
   const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
   const [quizPrefs, setQuizPrefs] = useState<Record<string, unknown> | null>(null);
 
@@ -126,6 +141,55 @@ export default function ComparePage() {
                   setFlightData((prev) => ({
                     ...prev,
                     [idx]: { cheapest: null, fastest: null, count: 0, loading: false },
+                  }));
+                });
+            });
+          }
+
+          // Fetch real events in parallel for each destination
+          if (startDate && endDate) {
+            const vibes = quizData.activityInterests || quizData.vibes || [];
+            tripList.forEach((trip: CompareTrip, idx: number) => {
+              setEventData((prev) => ({
+                ...prev,
+                [idx]: { events: [], count: 0, loading: true },
+              }));
+
+              fetch("/api/search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  destination: trip.destination,
+                  startDate,
+                  endDate,
+                  vibes,
+                  travelers: adults,
+                }),
+              })
+                .then((r) => r.json())
+                .then((eData) => {
+                  const all = [
+                    ...(eData.exactMatches || []),
+                    ...(eData.similarMatches || []),
+                    ...(eData.topInArea || []),
+                  ];
+                  const mapped: RealEvent[] = all.slice(0, 8).map((ev: Record<string, unknown>) => ({
+                    name: ev.name as string,
+                    date: ev.date as string,
+                    venueName: ev.venueName as string,
+                    category: ev.category as string,
+                    priceMin: (ev.priceMin as number) || null,
+                  }));
+
+                  setEventData((prev) => ({
+                    ...prev,
+                    [idx]: { events: mapped, count: all.length, loading: false },
+                  }));
+                })
+                .catch(() => {
+                  setEventData((prev) => ({
+                    ...prev,
+                    [idx]: { events: [], count: 0, loading: false },
                   }));
                 });
             });
@@ -348,17 +412,56 @@ export default function ComparePage() {
                     </div>
                   </div>
 
-                  {/* Top Events */}
+                  {/* Live Events */}
                   <div className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
-                    <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Events & Activities</p>
-                    <ul className="space-y-1.5">
-                      {trip.topEvents?.slice(0, 3).map((ev, j) => (
-                        <li key={j} className="flex items-start gap-2 text-sm text-gray-dark">
-                          <span className="material-symbols-outlined text-accent text-[14px] mt-0.5">check_circle</span>
-                          {ev}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider">Live Events</p>
+                      {eventData[i] && !eventData[i].loading && (
+                        <span className="text-[10px] text-on-light-tertiary">
+                          {eventData[i].count} found
+                        </span>
+                      )}
+                    </div>
+                    {eventData[i]?.loading ? (
+                      <div className="flex items-center gap-2 py-2">
+                        <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                        <span className="text-on-light-tertiary text-xs">Searching events...</span>
+                      </div>
+                    ) : eventData[i]?.events.length > 0 ? (
+                      <ul className="space-y-2">
+                        {eventData[i].events.slice(0, 4).map((ev, j) => (
+                          <li key={j} className="flex items-start gap-2 text-sm">
+                            <span className="material-symbols-outlined text-accent text-[14px] mt-0.5">confirmation_number</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-gray-dark truncate">{ev.name}</p>
+                              <p className="text-[11px] text-on-light-tertiary">
+                                {ev.category} -- {ev.venueName}
+                                {ev.priceMin != null && ev.priceMin > 0 && (
+                                  <span className="text-accent ml-1">${ev.priceMin}+</span>
+                                )}
+                              </p>
+                            </div>
+                          </li>
+                        ))}
+                        {eventData[i].count > 4 && (
+                          <li className="text-xs text-on-light-tertiary pl-6">
+                            +{eventData[i].count - 4} more events
+                          </li>
+                        )}
+                      </ul>
+                    ) : trip.topEvents?.length > 0 ? (
+                      /* Fallback to AI suggestions if no real events */
+                      <ul className="space-y-1.5">
+                        {trip.topEvents.slice(0, 3).map((ev, j) => (
+                          <li key={j} className="flex items-start gap-2 text-sm text-gray-dark">
+                            <span className="material-symbols-outlined text-on-light-tertiary text-[14px] mt-0.5">auto_awesome</span>
+                            <span>{ev} <span className="text-[10px] text-on-light-tertiary">(suggested)</span></span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-xs text-on-light-tertiary py-1">No events found for these dates</p>
+                    )}
                   </div>
 
                   {/* Trip Duration */}
