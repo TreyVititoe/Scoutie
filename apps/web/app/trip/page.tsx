@@ -574,17 +574,19 @@ function ItemCard({
   ctaLabel: string;
   onRemove: (id: string) => void;
 }) {
+  const isAi = item.provider === "walter-ai";
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="card-base p-5 group"
+      className={`card-base p-5 group ${isAi ? "border-dashed" : ""}`}
     >
       <div className="flex items-start gap-4">
-        {/* Image thumbnail */}
-        {item.image && (
+        {/* Image thumbnail or AI placeholder */}
+        {item.image ? (
           <div className="w-20 h-20 rounded-[8px] overflow-hidden flex-shrink-0 bg-page-bg">
             <img
               src={item.image}
@@ -592,7 +594,11 @@ function ItemCard({
               className="w-full h-full object-cover"
             />
           </div>
-        )}
+        ) : isAi ? (
+          <div className="w-20 h-20 rounded-[8px] flex-shrink-0 bg-[#e6f7f9] flex items-center justify-center">
+            <span className="material-symbols-outlined text-accent/40 text-2xl">auto_awesome</span>
+          </div>
+        ) : null}
 
         {/* Content */}
         <div className="flex-1 min-w-0">
@@ -602,11 +608,16 @@ function ItemCard({
             >
               {item.type}
             </span>
-            {item.provider && (
+            {isAi ? (
+              <span className="text-[10px] text-accent/60 flex items-center gap-0.5">
+                <span className="material-symbols-outlined text-[10px]">auto_awesome</span>
+                AI suggestion
+              </span>
+            ) : item.provider ? (
               <span className="text-[10px] text-on-light-tertiary">
                 via {item.provider}
               </span>
-            )}
+            ) : null}
           </div>
 
           <h3 className="font-semibold text-[17px] text-gray-dark truncate">
@@ -652,13 +663,22 @@ function ItemCard({
 
           {/* Price */}
           {item.price != null && item.price > 0 && (
-            <p className="font-semibold text-accent text-[17px]">
+            <p className={`font-semibold text-[17px] ${isAi ? "text-on-light-tertiary" : "text-accent"}`}>
               ${item.price.toLocaleString()}
+              {isAi && <span className="text-[10px] ml-0.5">est.</span>}
             </p>
           )}
 
-          {/* CTA button */}
-          {item.bookingUrl && (
+          {/* CTA button or swap button */}
+          {isAi ? (
+            <Link
+              href="/results"
+              className="border border-accent text-accent rounded-[10px] px-4 py-1.5 text-[12px] font-semibold flex items-center gap-1.5 whitespace-nowrap hover:bg-accent/5 transition-colors"
+            >
+              <span className="material-symbols-outlined text-[14px]">swap_horiz</span>
+              Find real booking
+            </Link>
+          ) : item.bookingUrl ? (
             <button
               onClick={() =>
                 trackAndOpen({
@@ -674,7 +694,7 @@ function ItemCard({
               </span>
               {ctaLabel}
             </button>
-          )}
+          ) : null}
         </div>
       </div>
     </motion.div>
