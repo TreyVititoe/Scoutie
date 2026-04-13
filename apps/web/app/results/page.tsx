@@ -235,12 +235,12 @@ export default function ResultsPage() {
         </div>
       </header>
 
-      <div className="max-w-content mx-auto px-4 lg:px-8 pt-28 pb-10">
+      <div className="max-w-content mx-auto px-4 lg:px-8 pt-28">
         {/* --- Page Header --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-14"
+          className="mb-8"
         >
           <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
             Build your trip to <span className="text-accent">{destination}</span>
@@ -249,10 +249,10 @@ export default function ResultsPage() {
             Browse flights, stays, events, and curated picks. Add what you love to your trip.
           </p>
         </motion.div>
+      </div>
 
-        <div>
-          {/* --- Tab Bar --- */}
-          <div className="sticky top-[64px] z-30 flex justify-center py-4 -mx-4 px-4 lg:-mx-8 lg:px-8">
+      {/* --- Sticky Tab Bar (outside content container so sticky works) --- */}
+      <div className="sticky top-[56px] z-30 flex justify-center py-3">
             <div className="flex items-center gap-1.5 p-2 rounded-full bg-white/25 backdrop-blur-2xl backdrop-saturate-150 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(255,255,255,0.2)]">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -295,10 +295,12 @@ export default function ResultsPage() {
                 );
               })}
             </div>
-          </div>
+      </div>
 
+      <div className="max-w-content mx-auto px-4 lg:px-8 pb-10">
+        <div>
           {/* --- Tab Content --- */}
-          <main className="pb-24 lg:pb-0 pt-4">
+          <main className="pb-24 lg:pb-0 pt-6">
             {/* --- Flights Tab --- */}
             {activeTab === "flights" && (
               <motion.section
