@@ -65,6 +65,8 @@ export default function ComparePage() {
   const [eventData, setEventData] = useState<Record<number, EventData>>({});
   const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
   const [quizPrefs, setQuizPrefs] = useState<Record<string, unknown> | null>(null);
+  const [regenHint, setRegenHint] = useState("");
+  const [regenOpen, setRegenOpen] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs");
@@ -369,84 +371,130 @@ export default function ComparePage() {
           <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
             Compare your options
           </h1>
-          <div className="flex items-center justify-between">
-            <p className="text-on-light-secondary text-[17px]">
-              Walter found {trips.length} trip options for you. Compare them and pick your favorite.
-            </p>
-            <button
-              onClick={() => {
-                setTrips([]);
-                setFlightData({});
-                setEventData({});
-                setSavedIds(new Set());
-                setExpandedTrip(null);
-                setLoading(true);
-                setError(null);
+          <p className="text-on-light-secondary text-[17px] mb-5">
+            Walter found {trips.length} trip options for you. Compare them and pick your favorite.
+          </p>
 
-                const stored = localStorage.getItem("walter_prefs");
-                if (!stored) return;
-                const quizData = JSON.parse(stored);
-
-                fetch("/api/compare", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(quizData),
-                })
-                  .then((r) => r.json())
-                  .then((data) => {
-                    if (data.error) {
-                      setError(data.error);
-                    } else {
-                      const tripList = data.trips || [];
-                      setTrips(tripList);
-
-                      // Re-fetch flights + events for new trips
-                      const departureCity = quizData.departureCity || "";
-                      const startDate = quizData.startDate || "";
-                      const endDate = quizData.endDate || "";
-                      const adults = quizData.travelersCount || quizData.travelers || 1;
-                      const cabinClass = quizData.flightClass || "economy";
-                      const vibes = quizData.activityInterests || quizData.vibes || [];
-
-                      if (departureCity && startDate && endDate) {
-                        tripList.forEach((trip: CompareTrip, idx: number) => {
-                          setFlightData((prev) => ({ ...prev, [idx]: { cheapest: null, fastest: null, count: 0, loading: true } }));
-                          fetch("/api/flights", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ origin: departureCity, destination: trip.destination, departDate: startDate, returnDate: endDate, adults, cabinClass }) })
-                            .then((r) => r.json())
-                            .then((fData) => {
-                              const fl = fData.flights || [];
-                              const prices = fl.map((f: { price: number }) => f.price);
-                              const cheapest = prices.length ? Math.min(...prices) : null;
-                              const fastest = fl.length ? fl.reduce((a: { duration: string; price: number }, b: { duration: string; price: number }) => (parseInt(a.duration) || 99) < (parseInt(b.duration) || 99) ? a : b) : null;
-                              setFlightData((prev) => ({ ...prev, [idx]: { cheapest, fastest: fastest ? { price: fastest.price, duration: fastest.duration } : null, count: fl.length, loading: false } }));
-                            })
-                            .catch(() => setFlightData((prev) => ({ ...prev, [idx]: { cheapest: null, fastest: null, count: 0, loading: false } })));
-                        });
-                      }
-
-                      if (startDate && endDate) {
-                        tripList.forEach((trip: CompareTrip, idx: number) => {
-                          setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, loading: true } }));
-                          fetch("/api/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ destination: trip.destination, startDate, endDate, vibes, travelers: adults }) })
-                            .then((r) => r.json())
-                            .then((eData) => {
-                              const all = [...(eData.exactMatches || []), ...(eData.similarMatches || []), ...(eData.topInArea || [])];
-                              const mapped = all.slice(0, 8).map((ev: Record<string, unknown>) => ({ name: ev.name as string, date: ev.date as string, venueName: ev.venueName as string, category: ev.category as string, priceMin: (ev.priceMin as number) || null }));
-                              setEventData((prev) => ({ ...prev, [idx]: { events: mapped, count: all.length, loading: false } }));
-                            })
-                            .catch(() => setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, loading: false } })));
-                        });
-                      }
-                    }
-                  })
-                  .catch(() => setError("Failed to regenerate. Please try again."))
-                  .finally(() => setLoading(false));
-              }}
-              className="flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-light transition-colors flex-shrink-0"
+          {/* Regenerate bar */}
+          <div className="card-base p-4">
+            <div
+              className="flex items-center justify-between cursor-pointer"
+              onClick={() => setRegenOpen(!regenOpen)}
             >
-              <span className="material-symbols-outlined text-[18px]">refresh</span>
-              New suggestions
-            </button>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-accent text-[18px]">refresh</span>
+                <span className="text-sm font-semibold text-gray-dark">Not what you had in mind? Regenerate</span>
+              </div>
+              <span className="material-symbols-outlined text-on-light-tertiary text-[18px]">
+                {regenOpen ? "expand_less" : "expand_more"}
+              </span>
+            </div>
+
+            {regenOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                transition={{ duration: 0.2 }}
+                className="mt-4 pt-4 border-t border-[rgba(0,101,113,0.06)]"
+              >
+                <p className="text-on-light-secondary text-sm mb-3">
+                  Tell Walter what you are looking for -- a city, country, region, or vibe.
+                </p>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={regenHint}
+                    onChange={(e) => setRegenHint(e.target.value)}
+                    placeholder='e.g. "tropical", "Japan", "Malibu", "European cities"'
+                    className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        document.getElementById("regen-btn")?.click();
+                      }
+                    }}
+                  />
+                  <button
+                    id="regen-btn"
+                    onClick={() => {
+                      setTrips([]);
+                      setFlightData({});
+                      setEventData({});
+                      setSavedIds(new Set());
+                      setExpandedTrip(null);
+                      setLoading(true);
+                      setError(null);
+                      setRegenOpen(false);
+
+                      const stored = localStorage.getItem("walter_prefs");
+                      if (!stored) return;
+                      const quizData = JSON.parse(stored);
+                      if (regenHint.trim()) {
+                        quizData.destinationHint = regenHint.trim();
+                      }
+
+                      fetch("/api/compare", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(quizData),
+                      })
+                        .then((r) => r.json())
+                        .then((data) => {
+                          if (data.error) {
+                            setError(data.error);
+                          } else {
+                            const tripList = data.trips || [];
+                            setTrips(tripList);
+
+                            const dCity = quizData.departureCity || "";
+                            const sDate = quizData.startDate || "";
+                            const eDate = quizData.endDate || "";
+                            const adults = quizData.travelersCount || quizData.travelers || 1;
+                            const cabinClass = quizData.flightClass || "economy";
+                            const vibes = quizData.activityInterests || quizData.vibes || [];
+
+                            if (dCity && sDate && eDate) {
+                              tripList.forEach((trip: CompareTrip, idx: number) => {
+                                setFlightData((prev) => ({ ...prev, [idx]: { cheapest: null, fastest: null, count: 0, loading: true } }));
+                                fetch("/api/flights", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ origin: dCity, destination: trip.destination, departDate: sDate, returnDate: eDate, adults, cabinClass }) })
+                                  .then((r) => r.json())
+                                  .then((fData) => {
+                                    const fl = fData.flights || [];
+                                    const prices = fl.map((f: { price: number }) => f.price);
+                                    const cheapest = prices.length ? Math.min(...prices) : null;
+                                    const fastest = fl.length ? fl.reduce((a: { duration: string; price: number }, b: { duration: string; price: number }) => (parseInt(a.duration) || 99) < (parseInt(b.duration) || 99) ? a : b) : null;
+                                    setFlightData((prev) => ({ ...prev, [idx]: { cheapest, fastest: fastest ? { price: fastest.price, duration: fastest.duration } : null, count: fl.length, loading: false } }));
+                                  })
+                                  .catch(() => setFlightData((prev) => ({ ...prev, [idx]: { cheapest: null, fastest: null, count: 0, loading: false } })));
+                              });
+                            }
+
+                            if (sDate && eDate) {
+                              tripList.forEach((trip: CompareTrip, idx: number) => {
+                                setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, loading: true } }));
+                                fetch("/api/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ destination: trip.destination, startDate: sDate, endDate: eDate, vibes, travelers: adults }) })
+                                  .then((r) => r.json())
+                                  .then((eData) => {
+                                    const all = [...(eData.exactMatches || []), ...(eData.similarMatches || []), ...(eData.topInArea || [])];
+                                    const mapped = all.slice(0, 8).map((ev: Record<string, unknown>) => ({ name: ev.name as string, date: ev.date as string, venueName: ev.venueName as string, category: ev.category as string, priceMin: (ev.priceMin as number) || null }));
+                                    setEventData((prev) => ({ ...prev, [idx]: { events: mapped, count: all.length, loading: false } }));
+                                  })
+                                  .catch(() => setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, loading: false } })));
+                              });
+                            }
+                          }
+                        })
+                        .catch(() => setError("Failed to regenerate. Please try again."))
+                        .finally(() => setLoading(false));
+                    }}
+                    className="bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors flex items-center gap-1.5 flex-shrink-0"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">refresh</span>
+                    Regenerate
+                  </button>
+                </div>
+              </motion.div>
+            )}
           </div>
         </motion.div>
 

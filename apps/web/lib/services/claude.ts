@@ -49,6 +49,7 @@ type QuizData = {
   budgetSkipped?: boolean;
   activityInterests?: string[];
   destination?: string;
+  destinationHint?: string;
   travelers?: number;
   budget?: number;
   vibes?: string[];
@@ -320,10 +321,12 @@ export async function generateCompareTrips(quizData: QuizData) {
   const travelerType = quizData.travelerType || "travelers";
   const accommodationTypes = quizData.accommodationTypes?.join(", ") || "hotel";
 
+  const hint = quizData.destinationHint || "";
+
   let destinationLine: string;
   if (isSurprise) {
     destinationLine = `You MUST pick 3 specific destinations that are a PERFECT match for this traveler. Do NOT pick random cities.
-
+${hint ? `\nIMPORTANT PREFERENCE: The traveler specifically wants destinations like "${hint}". This could be a specific city, country, region, or vibe (like "tropical" or "European"). ALL 3 destinations must strongly relate to this preference. If it's a city, include that city and suggest 2 similar alternatives. If it's a vibe like "tropical", pick 3 tropical destinations. If it's a country, pick 3 cities in or near that country.\n` : ""}
 THINK ABOUT WHO THIS PERSON IS:
 - They are ${travelers} ${travelerType} with a budget of $${budget.toLocaleString()} for ${nights} nights
 - They love: ${interests}
