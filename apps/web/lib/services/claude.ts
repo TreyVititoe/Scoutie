@@ -369,7 +369,15 @@ export async function generateCompareTrips(quizData: QuizData) {
   let destinationLine: string;
   if (isSurprise) {
     destinationLine = `You MUST pick 3 specific destinations that are a PERFECT match for this traveler. Do NOT pick random cities.
-${hint ? `\nIMPORTANT PREFERENCE: The traveler specifically wants destinations like "${hint}". This could be a specific city, country, region, or vibe (like "tropical" or "European"). ALL 3 destinations must strongly relate to this preference. If it's a city, include that city and suggest 2 similar alternatives. If it's a vibe like "tropical", pick 3 tropical destinations. If it's a country, pick 3 cities in or near that country.\n` : ""}
+${hint ? `\nIMPORTANT — DESTINATION PREFERENCE FROM THE TRAVELER: "${hint}"
+
+You MUST interpret this preference correctly:
+- If it is a COUNTRY (like "China", "Japan", "Italy", "Mexico"), ALL 3 destinations MUST be cities INSIDE that country. Not near it, not similar countries — INSIDE the country. For "China" pick 3 Chinese cities. For "Japan" pick 3 Japanese cities.
+- If it is a CITY (like "Malibu", "Paris", "Tokyo"), include that exact city as one option and pick 2 similar cities.
+- If it is a REGION (like "Southeast Asia", "Scandinavia", "Caribbean"), pick 3 cities within that region.
+- If it is a VIBE (like "tropical", "mountainous", "party"), pick 3 destinations that match that vibe.
+
+Do NOT ignore this preference. Do NOT pick destinations outside the specified country/region.\n` : ""}
 THINK ABOUT WHO THIS PERSON IS:
 - They are ${travelers} ${travelerType} with a budget of $${budget.toLocaleString()} for ${nights} nights
 - They love: ${interests}
