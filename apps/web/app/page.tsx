@@ -100,19 +100,21 @@ export default function HomePage() {
           <p className="text-white/70 text-[17px] mt-4 leading-relaxed max-w-lg mx-auto">
             Flights, hotels, events, restaurants. All real, all bookable.
           </p>
-          <div className="flex flex-row gap-3 mt-8 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 mt-8 justify-center">
+            <Link
+              href="/quick"
+              className="bg-accent text-white rounded-[10px] px-6 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">bolt</span>
+              Quick Plan
+            </Link>
             <Link
               href="/quiz"
-              className="bg-accent text-white rounded-[10px] px-6 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors"
+              className="bg-white/15 backdrop-blur-sm border border-white/20 text-white rounded-[10px] px-6 py-3 text-[15px] hover:bg-white/25 transition-colors flex items-center justify-center gap-2"
             >
-              Plan your trip
+              <span className="material-symbols-outlined text-[18px]">tune</span>
+              Design My Trip
             </Link>
-            <a
-              href="#how-it-works"
-              className="bg-white/15 backdrop-blur-sm border border-white/20 text-white rounded-[10px] px-6 py-3 text-[15px] hover:bg-white/25 transition-colors"
-            >
-              How it works
-            </a>
           </div>
         </motion.div>
       </section>
