@@ -257,7 +257,7 @@ export default function ResultsPage() {
       </div>
 
       {/* --- Sticky Tab Bar (outside content container so sticky works) --- */}
-      <div className="sticky top-[56px] z-30 flex justify-center py-3">
+      <div className="sticky top-[56px] z-30 flex justify-center py-3 shadow-sm sm:shadow-none">
             <div className="flex items-center gap-1.5 p-2 rounded-full bg-white/25 backdrop-blur-2xl backdrop-saturate-150 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(255,255,255,0.2)]">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -364,13 +364,37 @@ export default function ResultsPage() {
                   </div>
                 )}
 
-                {!flightsLoading && flights.length === 0 && (
-                  <div className="card-base p-8 text-center">
-                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">flight_off</span>
-                    <p className="font-semibold text-gray-dark mb-1">No flights found</p>
-                    <p className="text-on-light-secondary text-sm">Try adjusting your dates or departure city.</p>
-                  </div>
-                )}
+                {!flightsLoading && flights.length === 0 && (() => {
+                  const p = prefs as Record<string, unknown> | null;
+                  const hasDeparture = !!(p?.departureCity || (p?.departureCities as string[])?.length);
+                  const hasDates = !!(p?.startDate && p?.endDate);
+                  return (
+                    <div className="card-base p-8 text-center">
+                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">
+                        {hasDeparture ? "flight_off" : "flight_takeoff"}
+                      </span>
+                      <p className="font-semibold text-gray-dark mb-1">
+                        {!hasDeparture ? "Add a departure city to see flights" : !hasDates ? "Add travel dates to see flights" : "No flights found"}
+                      </p>
+                      <p className="text-on-light-secondary text-sm mb-4">
+                        {!hasDeparture
+                          ? "Walter needs to know where you're flying from to search for flights."
+                          : !hasDates
+                            ? "Set your travel dates so we can find available flights."
+                            : "Try adjusting your dates or departure city."}
+                      </p>
+                      {(!hasDeparture || !hasDates) && (
+                        <Link
+                          href="/quiz"
+                          className="inline-flex bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors items-center gap-1.5"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">edit</span>
+                          Update trip details
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })()}
               </motion.section>
             )}
 
@@ -422,13 +446,27 @@ export default function ResultsPage() {
                   </div>
                 )}
 
-                {!hotelsLoading && hotels.length === 0 && (
-                  <div className="card-base p-8 text-center">
-                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">night_shelter</span>
-                    <p className="font-semibold text-gray-dark mb-1">No stays found</p>
-                    <p className="text-on-light-secondary text-sm">Try adjusting your dates or destination.</p>
-                  </div>
-                )}
+                {!hotelsLoading && hotels.length === 0 && (() => {
+                  const p = prefs as Record<string, unknown> | null;
+                  const hasDates = !!(p?.startDate && p?.endDate);
+                  return (
+                    <div className="card-base p-8 text-center">
+                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">night_shelter</span>
+                      <p className="font-semibold text-gray-dark mb-1">
+                        {!hasDates ? "Add travel dates to see hotels" : "No stays found"}
+                      </p>
+                      <p className="text-on-light-secondary text-sm mb-4">
+                        {!hasDates ? "Set your check-in and check-out dates to search availability." : "Try adjusting your dates or destination."}
+                      </p>
+                      {!hasDates && (
+                        <Link href="/quiz" className="inline-flex bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors items-center gap-1.5">
+                          <span className="material-symbols-outlined text-[16px]">edit</span>
+                          Update trip details
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })()}
               </motion.section>
             )}
 
@@ -480,13 +518,27 @@ export default function ResultsPage() {
                   </div>
                 )}
 
-                {!eventsLoading && allEvents.length === 0 && (
-                  <div className="card-base p-8 text-center">
-                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">event_busy</span>
-                    <p className="font-semibold text-gray-dark mb-1">No events found</p>
-                    <p className="text-on-light-secondary text-sm">No live events during your travel dates.</p>
-                  </div>
-                )}
+                {!eventsLoading && allEvents.length === 0 && (() => {
+                  const p = prefs as Record<string, unknown> | null;
+                  const hasDates = !!(p?.startDate && p?.endDate);
+                  return (
+                    <div className="card-base p-8 text-center">
+                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">event_busy</span>
+                      <p className="font-semibold text-gray-dark mb-1">
+                        {!hasDates ? "Add travel dates to see events" : "No events found"}
+                      </p>
+                      <p className="text-on-light-secondary text-sm mb-4">
+                        {!hasDates ? "Set your dates so we can find concerts, games, and shows happening during your trip." : "No live events during your travel dates."}
+                      </p>
+                      {!hasDates && (
+                        <Link href="/quiz" className="inline-flex bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors items-center gap-1.5">
+                          <span className="material-symbols-outlined text-[16px]">edit</span>
+                          Update trip details
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })()}
               </motion.section>
             )}
 

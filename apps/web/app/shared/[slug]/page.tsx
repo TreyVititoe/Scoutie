@@ -139,50 +139,60 @@ export default function SharedTripPage() {
         </div>
       </header>
 
-      {/* Shared banner */}
-      <div className="bg-hero-gradient relative">
-        <div className="hero-glow" />
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-2">
-          <span className="text-white/80 text-sm font-semibold">Shared trip</span>
-          <span className="text-on-dark-tertiary text-sm">— Someone shared this itinerary with you</span>
-        </div>
-      </div>
-
       {/* Trip hero */}
       <div className="bg-hero-gradient relative">
-        <div className="hero-glow" />
-        <div className="max-w-5xl mx-auto px-6 py-8">
-          <span className="inline-block text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 bg-white/10 text-on-dark-secondary">
-            {trip.tier}
-          </span>
-          <h1 className="font-semibold text-3xl sm:text-4xl text-white mb-2">
+        <div className="hero-glow absolute inset-0 pointer-events-none" />
+        <div className="relative z-10 max-w-5xl mx-auto px-6 pt-6 pb-10">
+          {/* Badges */}
+          <div className="flex items-center gap-2 mb-4">
+            <span className="bg-cyan/20 text-cyan rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+              Shared trip
+            </span>
+            {trip.tier && (
+              <span className="bg-white/10 text-on-dark-secondary rounded-pill px-2.5 py-0.5 text-[11px] font-semibold capitalize">
+                {trip.tier}
+              </span>
+            )}
+          </div>
+
+          <h1 className="font-semibold text-[28px] sm:text-[36px] text-white leading-tight mb-2">
             {trip.title}
           </h1>
-          <p className="text-on-dark-secondary max-w-2xl">{trip.summary}</p>
+          <p className="text-on-dark-secondary max-w-2xl text-[15px] leading-relaxed">{trip.summary}</p>
+
+          {/* Stats row */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-6">
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-cyan text-[18px]">location_on</span>
+              <span className="font-semibold text-white text-sm">{trip.destination}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-cyan text-[18px]">schedule</span>
+              <span className="font-semibold text-white text-sm">{trip.trip_days.length} days</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-cyan text-[18px]">payments</span>
+              <span className="font-semibold text-cyan text-[17px]">${trip.total_estimated_cost.toLocaleString()}</span>
+            </div>
+            {trip.start_date && trip.end_date && (
+              <div className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-cyan text-[18px]">calendar_today</span>
+                <span className="font-semibold text-white text-sm">
+                  {new Date(trip.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(trip.end_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Fork button */}
           <button
             onClick={handleFork}
             disabled={forking}
-            className="bg-accent text-white rounded-[10px] px-4 py-2 text-sm font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-1.5 mt-4"
+            className="mt-6 bg-white/15 border border-white/20 text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-white/25 transition-colors disabled:opacity-50 flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">content_copy</span>
             {forking ? "Forking..." : "Fork this trip"}
           </button>
-          <div className="flex items-center gap-6 mt-4">
-            <div>
-              <p className="text-xs text-on-dark-tertiary uppercase tracking-wider">Destination</p>
-              <p className="font-semibold text-white">{trip.destination}</p>
-            </div>
-            <div>
-              <p className="text-xs text-on-dark-tertiary uppercase tracking-wider">Duration</p>
-              <p className="font-semibold text-white">{trip.trip_days.length} days</p>
-            </div>
-            <div>
-              <p className="text-xs text-on-dark-tertiary uppercase tracking-wider">Total cost</p>
-              <p className="font-semibold text-cyan text-lg">
-                ${trip.total_estimated_cost.toLocaleString()}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -235,9 +245,11 @@ export default function SharedTripPage() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="relative card-base p-4"
+                    className="relative card-base overflow-hidden"
                   >
-                    <div className="absolute -left-[1.4rem] top-5 w-3 h-3 rounded-full bg-accent border-2 border-page-bg" />
+                    <div className="h-0.5 bg-gradient-to-r from-accent to-cyan" />
+                    <div className="p-4">
+                    <div className="absolute -left-[1.4rem] top-6 w-3 h-3 rounded-full bg-accent border-2 border-page-bg" />
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -266,6 +278,7 @@ export default function SharedTripPage() {
                         )}
                       </div>
                     </div>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -275,29 +288,30 @@ export default function SharedTripPage() {
       </div>
 
       {/* CTA */}
-      <div className="bg-page-bg mt-10">
-        <div className="max-w-5xl mx-auto px-6 py-12 text-center">
-          <h2 className="font-semibold text-2xl text-gray-dark mb-3">
+      <div className="bg-hero-gradient relative mt-10">
+        <div className="hero-glow absolute inset-0 pointer-events-none" />
+        <div className="relative z-10 max-w-5xl mx-auto px-6 py-16 text-center">
+          <h2 className="font-semibold text-[28px] text-white mb-3">
             Want a trip like this?
           </h2>
-          <p className="text-on-light-secondary mb-6">
-            Take a 2-minute quiz and get a personalized itinerary built for you.
+          <p className="text-on-dark-secondary mb-8 max-w-md mx-auto">
+            Take a 2-minute quiz and get a personalized itinerary built for you. Or fork this one and make it your own.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link
-              href="/quiz"
-              className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
+              href="/quick"
+              className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors items-center gap-2"
             >
-              Plan my trip
+              <span className="material-symbols-outlined text-[18px]">bolt</span>
+              Quick Plan
             </Link>
-            <button
-              onClick={handleFork}
-              disabled={forking}
-              className="bg-accent text-white rounded-[10px] px-6 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-2"
+            <Link
+              href="/quiz"
+              className="inline-flex px-8 py-4 rounded-[10px] bg-white/15 border border-white/20 text-white font-semibold hover:bg-white/25 transition-colors items-center gap-2"
             >
-              <span className="material-symbols-outlined text-[18px]">content_copy</span>
-              {forking ? "Forking..." : "Fork this trip"}
-            </button>
+              <span className="material-symbols-outlined text-[18px]">tune</span>
+              Design My Trip
+            </Link>
           </div>
         </div>
       </div>
