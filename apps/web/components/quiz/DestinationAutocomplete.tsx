@@ -3,6 +3,32 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuizStore } from "@/lib/stores/quizStore";
 
+const IATA_CODES: Record<string, string> = {
+  LAX: "Los Angeles, CA", SFO: "San Francisco, CA", JFK: "New York, NY",
+  ORD: "Chicago, IL", ATL: "Atlanta, GA", DFW: "Dallas, TX",
+  DEN: "Denver, CO", SEA: "Seattle, WA", MIA: "Miami, FL",
+  BOS: "Boston, MA", LAS: "Las Vegas, NV", MCO: "Orlando, FL",
+  PHX: "Phoenix, AZ", IAH: "Houston, TX", MSP: "Minneapolis, MN",
+  DTW: "Detroit, MI", PHL: "Philadelphia, PA", CLT: "Charlotte, NC",
+  SLC: "Salt Lake City, UT", SAN: "San Diego, CA", TPA: "Tampa, FL",
+  PDX: "Portland, OR", STL: "St. Louis, MO", BNA: "Nashville, TN",
+  AUS: "Austin, TX", RDU: "Raleigh-Durham, NC", IND: "Indianapolis, IN",
+  CMH: "Columbus, OH", MKE: "Milwaukee, WI", OAK: "Oakland, CA",
+  SJC: "San Jose, CA", SMF: "Sacramento, CA", BUR: "Burbank, CA",
+  LGA: "New York LaGuardia, NY", EWR: "Newark, NJ",
+  HNL: "Honolulu, HI", ANC: "Anchorage, AK",
+  LHR: "London Heathrow, UK", CDG: "Paris, France",
+  NRT: "Tokyo Narita, Japan", HND: "Tokyo Haneda, Japan",
+  ICN: "Seoul Incheon, South Korea", PEK: "Beijing, China",
+  PVG: "Shanghai, China", HKG: "Hong Kong",
+  SIN: "Singapore", BKK: "Bangkok, Thailand",
+  SYD: "Sydney, Australia", MEX: "Mexico City, Mexico",
+  CUN: "Cancun, Mexico", GRU: "Sao Paulo, Brazil",
+  FCO: "Rome, Italy", BCN: "Barcelona, Spain",
+  AMS: "Amsterdam, Netherlands", FRA: "Frankfurt, Germany",
+  DXB: "Dubai, UAE", DOH: "Doha, Qatar",
+};
+
 interface MapboxFeature {
   id: string;
   place_name: string;
@@ -30,6 +56,7 @@ export default function DestinationAutocomplete() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [iataMatches, setIataMatches] = useState<{code: string; city: string; display: string}[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -73,6 +100,19 @@ export default function DestinationAutocomplete() {
   const handleInputChange = (value: string) => {
     setInput(value);
 
+    // Find IATA matches immediately
+    if (value.trim().length >= 2) {
+      const upper = value.toUpperCase().trim();
+      const iata = Object.entries(IATA_CODES)
+        .filter(([code, city]) => code.startsWith(upper) || city.toLowerCase().includes(value.toLowerCase()))
+        .slice(0, 3)
+        .map(([code, city]) => ({ code, city, display: `${code} - ${city}` }));
+      setIataMatches(iata);
+      if (iata.length > 0) setIsOpen(true);
+    } else {
+      setIataMatches([]);
+    }
+
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
@@ -94,11 +134,37 @@ export default function DestinationAutocomplete() {
     inputRef.current?.focus();
   };
 
+  const selectIata = (match: {code: string; city: string; display: string}) => {
+    if (!store.destinations.includes(match.display)) {
+      store.setDestinations([...store.destinations, match.display]);
+    }
+    setInput("");
+    setResults([]);
+    setIataMatches([]);
+    setIsOpen(false);
+    setHighlightedIndex(-1);
+    inputRef.current?.focus();
+  };
+
   const removeDestination = (dest: string) => {
     store.setDestinations(store.destinations.filter((d) => d !== dest));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && input.trim().length >= 2) {
+      e.preventDefault();
+      if (isOpen && highlightedIndex >= 0 && highlightedIndex < results.length) {
+        selectPlace(results[highlightedIndex]);
+      } else {
+        // Expand IATA code on Enter
+        const upper = input.trim().toUpperCase();
+        if (IATA_CODES[upper]) {
+          selectIata({ code: upper, city: IATA_CODES[upper], display: `${upper} - ${IATA_CODES[upper]}` });
+        }
+      }
+      return;
+    }
+
     if (!isOpen || results.length === 0) return;
 
     if (e.key === "ArrowDown") {
@@ -107,11 +173,6 @@ export default function DestinationAutocomplete() {
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : results.length - 1));
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (highlightedIndex >= 0 && highlightedIndex < results.length) {
-        selectPlace(results[highlightedIndex]);
-      }
     } else if (e.key === "Escape") {
       setIsOpen(false);
       setHighlightedIndex(-1);
@@ -176,7 +237,7 @@ export default function DestinationAutocomplete() {
             onFocus={() => {
               if (results.length > 0) setIsOpen(true);
             }}
-            placeholder="Search for a city or country..."
+            placeholder="Search for a city, country, or airport code..."
             className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark placeholder:text-on-light-tertiary/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
             role="combobox"
             aria-expanded={isOpen}
@@ -190,12 +251,33 @@ export default function DestinationAutocomplete() {
           )}
         </div>
 
-        {isOpen && results.length > 0 && (
+        {isOpen && (iataMatches.length > 0 || results.length > 0) && (
           <ul
             id="destination-listbox"
             role="listbox"
             className="absolute z-50 w-full mt-2 bg-white rounded-[14px] border border-[rgba(0,101,113,0.08)] shadow-[0_2px_12px_rgba(0,101,113,0.06)] overflow-hidden"
           >
+            {iataMatches.map((match) => {
+              const isAlreadyAdded = store.destinations.includes(match.display);
+              return (
+                <li
+                  key={match.code}
+                  role="option"
+                  aria-selected={false}
+                  className={`px-4 py-3 cursor-pointer text-sm transition-colors flex items-center gap-3 text-gray-dark hover:bg-page-bg ${isAlreadyAdded ? "opacity-50" : ""} border-b border-black/5`}
+                  onClick={() => { if (!isAlreadyAdded) selectIata(match); }}
+                >
+                  <span className="material-symbols-outlined text-[18px] text-accent">flight</span>
+                  <div>
+                    <span className="font-semibold text-accent">{match.code}</span>
+                    <span className="text-on-light-secondary ml-1">- {match.city}</span>
+                    {isAlreadyAdded && (
+                      <span className="text-on-light-tertiary ml-2 text-xs">(already added)</span>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
             {results.map((feature, index) => {
               const label = formatPlace(feature);
               const isHighlighted = index === highlightedIndex;

@@ -4,6 +4,32 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuizStore, TravelerType } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 
+const IATA_CODES: Record<string, string> = {
+  LAX: "Los Angeles, CA", SFO: "San Francisco, CA", JFK: "New York, NY",
+  ORD: "Chicago, IL", ATL: "Atlanta, GA", DFW: "Dallas, TX",
+  DEN: "Denver, CO", SEA: "Seattle, WA", MIA: "Miami, FL",
+  BOS: "Boston, MA", LAS: "Las Vegas, NV", MCO: "Orlando, FL",
+  PHX: "Phoenix, AZ", IAH: "Houston, TX", MSP: "Minneapolis, MN",
+  DTW: "Detroit, MI", PHL: "Philadelphia, PA", CLT: "Charlotte, NC",
+  SLC: "Salt Lake City, UT", SAN: "San Diego, CA", TPA: "Tampa, FL",
+  PDX: "Portland, OR", STL: "St. Louis, MO", BNA: "Nashville, TN",
+  AUS: "Austin, TX", RDU: "Raleigh-Durham, NC", IND: "Indianapolis, IN",
+  CMH: "Columbus, OH", MKE: "Milwaukee, WI", OAK: "Oakland, CA",
+  SJC: "San Jose, CA", SMF: "Sacramento, CA", BUR: "Burbank, CA",
+  LGA: "New York LaGuardia, NY", EWR: "Newark, NJ",
+  HNL: "Honolulu, HI", ANC: "Anchorage, AK",
+  LHR: "London Heathrow, UK", CDG: "Paris, France",
+  NRT: "Tokyo Narita, Japan", HND: "Tokyo Haneda, Japan",
+  ICN: "Seoul Incheon, South Korea", PEK: "Beijing, China",
+  PVG: "Shanghai, China", HKG: "Hong Kong",
+  SIN: "Singapore", BKK: "Bangkok, Thailand",
+  SYD: "Sydney, Australia", MEX: "Mexico City, Mexico",
+  CUN: "Cancun, Mexico", GRU: "Sao Paulo, Brazil",
+  FCO: "Rome, Italy", BCN: "Barcelona, Spain",
+  AMS: "Amsterdam, Netherlands", FRA: "Frankfurt, Germany",
+  DXB: "Dubai, UAE", DOH: "Doha, Qatar",
+};
+
 interface MapboxFeature {
   id: string;
   place_name: string;
@@ -38,14 +64,26 @@ export default function StepAboutYou() {
   const [cityQuery, setCityQuery] = useState(store.departureCity || "");
   const [citySuggestions, setCitySuggestions] = useState<MapboxFeature[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [iataMatches, setIataMatches] = useState<{code: string; city: string; display: string}[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const searchCities = useCallback((query: string) => {
     if (query.length < 2) {
       setCitySuggestions([]);
+      setIataMatches([]);
       return;
     }
+
+    // Find IATA matches
+    const upper = query.toUpperCase();
+    const iata = Object.entries(IATA_CODES)
+      .filter(([code, city]) => code.startsWith(upper) || city.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 3)
+      .map(([code, city]) => ({ code, city, display: `${code} - ${city}` }));
+    setIataMatches(iata);
+
+    // Also search Mapbox
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       try {
@@ -60,6 +98,8 @@ export default function StepAboutYou() {
         setCitySuggestions([]);
       }
     }, 300);
+
+    if (iata.length > 0) setShowSuggestions(true);
   }, []);
 
   useEffect(() => {
@@ -227,11 +267,14 @@ export default function StepAboutYou() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && cityQuery.trim().length >= 2) {
                   e.preventDefault();
-                  // Allow direct entry of airport codes (3 letters) or city names
                   const value = cityQuery.trim();
-                  store.addDepartureCity(value);
+                  const upper = value.toUpperCase();
+                  // Expand IATA code to city name
+                  const expanded = IATA_CODES[upper] ? `${upper} - ${IATA_CODES[upper]}` : value;
+                  store.addDepartureCity(expanded);
                   setCityQuery("");
                   setCitySuggestions([]);
+                  setIataMatches([]);
                   setShowSuggestions(false);
                 }
               }}
@@ -239,8 +282,25 @@ export default function StepAboutYou() {
               className="w-full pl-10 pr-4 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
           </div>
-          {showSuggestions && citySuggestions.length > 0 && (
+          {showSuggestions && (iataMatches.length > 0 || citySuggestions.length > 0) && (
             <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(0,101,113,0.08)] shadow-[0_2px_12px_rgba(0,101,113,0.06)] overflow-hidden">
+              {iataMatches.map((match) => (
+                <button
+                  key={match.code}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    store.addDepartureCity(match.display);
+                    setCityQuery("");
+                    setCitySuggestions([]);
+                    setIataMatches([]);
+                    setShowSuggestions(false);
+                  }}
+                  className="w-full text-left px-4 py-3 text-sm text-gray-dark hover:bg-page-bg transition-colors flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
+                  <span className="text-accent font-semibold">{match.code}</span> - {match.city}
+                </button>
+              ))}
               {citySuggestions.map((feat) => (
                 <button
                   key={feat.id}
@@ -250,6 +310,7 @@ export default function StepAboutYou() {
                     store.addDepartureCity(formatted);
                     setCityQuery("");
                     setCitySuggestions([]);
+                    setIataMatches([]);
                     setShowSuggestions(false);
                   }}
                   className="w-full text-left px-4 py-3 text-sm text-gray-dark hover:bg-page-bg transition-colors"

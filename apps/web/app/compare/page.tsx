@@ -799,6 +799,9 @@ function DateCompare({
     hotels: { min: number; max: number; count: number; loading: boolean };
     events: { count: number; categories: string[]; topEvents: { name: string; venue: string; image: string | null }[]; loading: boolean };
   }>>({});
+  const [dateRegenOpen, setDateRegenOpen] = useState(false);
+  const [dateRegenHint, setDateRegenHint] = useState("");
+  const [fetchKey, setFetchKey] = useState(0);
 
   const prefs = quizPrefs || {};
   const tripDays = (prefs.tripDurationDays as number) || 5;
@@ -890,7 +893,7 @@ function DateCompare({
         .catch(() => setData((prev) => ({ ...prev, [idx]: { ...prev[idx], events: { count: 0, categories: [], topEvents: [], loading: false } } })));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchKey]);
 
   return (
     <>
@@ -902,6 +905,62 @@ function DateCompare({
           Compare real prices and events across different dates.
         </p>
       </motion.div>
+
+      {/* Regenerate bar */}
+      <div className="card-base p-4 mb-6">
+        <div
+          className="flex items-center justify-between cursor-pointer"
+          onClick={() => setDateRegenOpen(!dateRegenOpen)}
+        >
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-accent text-[18px]">refresh</span>
+            <span className="text-sm font-semibold text-gray-dark">Not what you had in mind? Regenerate</span>
+          </div>
+          <span className="material-symbols-outlined text-on-light-tertiary text-[18px]">
+            {dateRegenOpen ? "expand_less" : "expand_more"}
+          </span>
+        </div>
+
+        {dateRegenOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.2 }}
+            className="mt-4 pt-4 border-t border-[rgba(0,101,113,0.06)]"
+          >
+            <p className="text-on-light-secondary text-sm mb-3">
+              Tell Walter what dates you prefer -- a month, season, or time frame.
+            </p>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={dateRegenHint}
+                onChange={(e) => setDateRegenHint(e.target.value)}
+                placeholder='e.g. "next month", "summer", "December"'
+                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    document.getElementById("date-regen-btn")?.click();
+                  }
+                }}
+              />
+              <button
+                id="date-regen-btn"
+                onClick={() => {
+                  setData({});
+                  setDateRegenOpen(false);
+                  setFetchKey((k) => k + 1);
+                }}
+                className="px-5 py-2.5 bg-accent text-white rounded-[10px] text-sm font-semibold hover:bg-accent-light transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[16px]">refresh</span>
+                Regenerate
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {dateRanges.map((range, idx) => {
