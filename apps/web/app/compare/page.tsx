@@ -106,10 +106,22 @@ export default function ComparePage() {
 
           // Fetch real flight prices in parallel for each destination
           const departureCity = quizData.departureCity || "";
-          const startDate = quizData.startDate || "";
-          const endDate = quizData.endDate || "";
           const adults = quizData.travelersCount || quizData.travelers || 1;
           const cabinClass = quizData.flightClass || "economy";
+
+          // Generate fallback dates if none set (2 weeks out, trip duration or 5 days)
+          let startDate = quizData.startDate || "";
+          let endDate = quizData.endDate || "";
+          if (!startDate || !endDate) {
+            const now = new Date();
+            const fallbackStart = new Date(now);
+            fallbackStart.setDate(fallbackStart.getDate() + 14);
+            const tripDays = quizData.tripDurationDays || 5;
+            const fallbackEnd = new Date(fallbackStart);
+            fallbackEnd.setDate(fallbackEnd.getDate() + tripDays);
+            startDate = fallbackStart.toISOString().split("T")[0];
+            endDate = fallbackEnd.toISOString().split("T")[0];
+          }
 
           if (departureCity && startDate && endDate) {
             tripList.forEach((trip: CompareTrip, idx: number) => {
@@ -447,11 +459,20 @@ export default function ComparePage() {
                             setTrips(tripList);
 
                             const dCity = quizData.departureCity || "";
-                            const sDate = quizData.startDate || "";
-                            const eDate = quizData.endDate || "";
                             const adults = quizData.travelersCount || quizData.travelers || 1;
                             const cabinClass = quizData.flightClass || "economy";
                             const vibes = quizData.activityInterests || quizData.vibes || [];
+
+                            let sDate = quizData.startDate || "";
+                            let eDate = quizData.endDate || "";
+                            if (!sDate || !eDate) {
+                              const now = new Date();
+                              const fs = new Date(now); fs.setDate(fs.getDate() + 14);
+                              const td = quizData.tripDurationDays || 5;
+                              const fe = new Date(fs); fe.setDate(fe.getDate() + td);
+                              sDate = fs.toISOString().split("T")[0];
+                              eDate = fe.toISOString().split("T")[0];
+                            }
 
                             if (dCity && sDate && eDate) {
                               tripList.forEach((trip: CompareTrip, idx: number) => {
