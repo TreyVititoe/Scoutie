@@ -100,19 +100,19 @@ export default function HomePage() {
           <p className="text-white/70 text-[17px] mt-4 leading-relaxed max-w-lg mx-auto">
             Flights, hotels, events, restaurants. All real, all bookable.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 mt-8 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center">
             <Link
               href="/quick"
-              className="bg-accent text-white rounded-[10px] px-6 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
+              className="bg-accent text-white rounded-[14px] px-10 py-5 text-[19px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(0,101,113,0.3)]"
             >
-              <span className="material-symbols-outlined text-[18px]">bolt</span>
+              <span className="material-symbols-outlined text-[24px]">bolt</span>
               Quick Plan
             </Link>
             <Link
               href="/quiz"
-              className="bg-white/15 backdrop-blur-sm border border-white/20 text-white rounded-[10px] px-6 py-3 text-[15px] hover:bg-white/25 transition-colors flex items-center justify-center gap-2"
+              className="bg-white/15 backdrop-blur-sm border border-white/25 text-white rounded-[14px] px-10 py-5 text-[19px] font-semibold hover:bg-white/25 transition-colors flex items-center justify-center gap-3"
             >
-              <span className="material-symbols-outlined text-[18px]">tune</span>
+              <span className="material-symbols-outlined text-[24px]">tune</span>
               Design My Trip
             </Link>
           </div>
