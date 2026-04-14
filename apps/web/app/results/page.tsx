@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -38,6 +38,28 @@ export default function ResultsPage() {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
   const [pageReady, setPageReady] = useState(false);
+  const [fetchKey, setFetchKey] = useState(0);
+
+  // Called when user adds departure city or dates inline
+  const handleInlineUpdate = (updates: Record<string, unknown>) => {
+    const stored = localStorage.getItem("walter_prefs");
+    if (stored) {
+      const p = JSON.parse(stored);
+      Object.assign(p, updates);
+      localStorage.setItem("walter_prefs", JSON.stringify(p));
+      setPrefs(p);
+    }
+    // Reset loading and re-fetch
+    setFlights([]);
+    setHotels([]);
+    setEvents([]);
+    setSimilarEvents([]);
+    setTopEvents([]);
+    setFlightsLoading(true);
+    setHotelsLoading(true);
+    setEventsLoading(true);
+    setFetchKey((k) => k + 1);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
@@ -189,7 +211,7 @@ export default function ResultsPage() {
       eventsController.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [router, fetchKey]);
 
   const destination =
     (prefs as { destinations?: string[] })?.destinations?.[0] ||
@@ -368,30 +390,20 @@ export default function ResultsPage() {
                   const p = prefs as Record<string, unknown> | null;
                   const hasDeparture = !!(p?.departureCity || (p?.departureCities as string[])?.length);
                   const hasDates = !!(p?.startDate && p?.endDate);
+
+                  if (!hasDeparture) {
+                    return <InlineDepartureCity onSubmit={(city) => handleInlineUpdate({ departureCity: city, departureCities: [city] })} />;
+                  }
+
+                  if (!hasDates) {
+                    return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
+                  }
+
                   return (
                     <div className="card-base p-8 text-center">
-                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">
-                        {hasDeparture ? "flight_off" : "flight_takeoff"}
-                      </span>
-                      <p className="font-semibold text-gray-dark mb-1">
-                        {!hasDeparture ? "Add a departure city to see flights" : !hasDates ? "Add travel dates to see flights" : "No flights found"}
-                      </p>
-                      <p className="text-on-light-secondary text-sm mb-4">
-                        {!hasDeparture
-                          ? "Walter needs to know where you're flying from to search for flights."
-                          : !hasDates
-                            ? "Set your travel dates so we can find available flights."
-                            : "Try adjusting your dates or departure city."}
-                      </p>
-                      {(!hasDeparture || !hasDates) && (
-                        <Link
-                          href="/quiz"
-                          className="inline-flex bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors items-center gap-1.5"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">edit</span>
-                          Update trip details
-                        </Link>
-                      )}
+                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">flight_off</span>
+                      <p className="font-semibold text-gray-dark mb-1">No flights found</p>
+                      <p className="text-on-light-secondary text-sm">Try adjusting your dates or departure city.</p>
                     </div>
                   );
                 })()}
@@ -449,21 +461,14 @@ export default function ResultsPage() {
                 {!hotelsLoading && hotels.length === 0 && (() => {
                   const p = prefs as Record<string, unknown> | null;
                   const hasDates = !!(p?.startDate && p?.endDate);
+                  if (!hasDates) {
+                    return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
+                  }
                   return (
                     <div className="card-base p-8 text-center">
                       <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">night_shelter</span>
-                      <p className="font-semibold text-gray-dark mb-1">
-                        {!hasDates ? "Add travel dates to see hotels" : "No stays found"}
-                      </p>
-                      <p className="text-on-light-secondary text-sm mb-4">
-                        {!hasDates ? "Set your check-in and check-out dates to search availability." : "Try adjusting your dates or destination."}
-                      </p>
-                      {!hasDates && (
-                        <Link href="/quiz" className="inline-flex bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors items-center gap-1.5">
-                          <span className="material-symbols-outlined text-[16px]">edit</span>
-                          Update trip details
-                        </Link>
-                      )}
+                      <p className="font-semibold text-gray-dark mb-1">No stays found</p>
+                      <p className="text-on-light-secondary text-sm">Try adjusting your dates or destination.</p>
                     </div>
                   );
                 })()}
@@ -521,21 +526,14 @@ export default function ResultsPage() {
                 {!eventsLoading && allEvents.length === 0 && (() => {
                   const p = prefs as Record<string, unknown> | null;
                   const hasDates = !!(p?.startDate && p?.endDate);
+                  if (!hasDates) {
+                    return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
+                  }
                   return (
                     <div className="card-base p-8 text-center">
                       <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">event_busy</span>
-                      <p className="font-semibold text-gray-dark mb-1">
-                        {!hasDates ? "Add travel dates to see events" : "No events found"}
-                      </p>
-                      <p className="text-on-light-secondary text-sm mb-4">
-                        {!hasDates ? "Set your dates so we can find concerts, games, and shows happening during your trip." : "No live events during your travel dates."}
-                      </p>
-                      {!hasDates && (
-                        <Link href="/quiz" className="inline-flex bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors items-center gap-1.5">
-                          <span className="material-symbols-outlined text-[16px]">edit</span>
-                          Update trip details
-                        </Link>
-                      )}
+                      <p className="font-semibold text-gray-dark mb-1">No events found</p>
+                      <p className="text-on-light-secondary text-sm">No live events during your travel dates.</p>
                     </div>
                   );
                 })()}
@@ -1023,5 +1021,149 @@ function AiItineraryBanner() {
         </motion.div>
       )}
     </motion.div>
+  );
+}
+
+/* ── Inline Departure City Input ── */
+interface MapboxFeature {
+  id: string;
+  place_name: string;
+  text: string;
+  context?: Array<{ id: string; text: string }>;
+}
+
+function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void }) {
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<MapboxFeature[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const search = useCallback((q: string) => {
+    if (q.length < 2) { setSuggestions([]); return; }
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?types=place&limit=5&access_token=${token}`);
+        const data = await res.json();
+        setSuggestions(data.features || []);
+        setShowSuggestions(true);
+      } catch { setSuggestions([]); }
+    }, 300);
+  }, []);
+
+  useEffect(() => () => clearTimeout(debounceRef.current), []);
+
+  const formatCity = (f: MapboxFeature) => {
+    const country = f.context?.find((c) => c.id.startsWith("country"));
+    return country ? `${f.text}, ${country.text}` : f.place_name;
+  };
+
+  return (
+    <div className="card-base p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="icon-gradient w-10 h-10 flex items-center justify-center">
+          <span className="material-symbols-outlined text-accent text-[20px]">flight_takeoff</span>
+        </div>
+        <div>
+          <p className="font-semibold text-gray-dark">Where are you flying from?</p>
+          <p className="text-on-light-tertiary text-xs">Add your departure city to search for flights</p>
+        </div>
+      </div>
+      <div className="relative">
+        <div className="flex gap-3">
+          <div className="relative flex-1">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[18px]">search</span>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => { setQuery(e.target.value); search(e.target.value); }}
+              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && query.trim().length >= 2) {
+                  e.preventDefault();
+                  onSubmit(query.trim());
+                }
+              }}
+              placeholder="City or airport code (e.g. LAX, Chicago)"
+              className="w-full pl-10 pr-4 py-3 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+            />
+          </div>
+          <button
+            onClick={() => query.trim().length >= 2 && onSubmit(query.trim())}
+            disabled={query.trim().length < 2}
+            className="bg-accent text-white rounded-[10px] px-5 py-3 font-semibold hover:bg-accent-light transition-colors disabled:opacity-40 flex items-center gap-1.5"
+          >
+            <span className="material-symbols-outlined text-[18px]">search</span>
+            Search flights
+          </button>
+        </div>
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(0,101,113,0.08)] shadow-[0_2px_12px_rgba(0,101,113,0.06)] overflow-hidden">
+            {suggestions.map((f) => (
+              <button
+                key={f.id}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  onSubmit(formatCity(f));
+                  setShowSuggestions(false);
+                }}
+                className="w-full text-left px-4 py-3 text-sm text-gray-dark hover:bg-page-bg transition-colors"
+              >
+                {formatCity(f)}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Inline Date Picker ── */
+function InlineDatePicker({ onSubmit, tripDays }: { onSubmit: (start: string, end: string) => void; tripDays: number }) {
+  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  const display = (d: Date) => d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  const now = new Date();
+
+  const options = [
+    { label: "Next week", offset: 7 },
+    { label: "In 2 weeks", offset: 14 },
+    { label: "In 3 weeks", offset: 21 },
+    { label: "Next month", offset: 30 },
+  ];
+
+  return (
+    <div className="card-base p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="icon-gradient w-10 h-10 flex items-center justify-center">
+          <span className="material-symbols-outlined text-accent text-[20px]">calendar_month</span>
+        </div>
+        <div>
+          <p className="font-semibold text-gray-dark">When do you want to go?</p>
+          <p className="text-on-light-tertiary text-xs">Pick your travel dates to search for availability</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {options.map((opt) => {
+          const start = new Date(now);
+          start.setDate(start.getDate() + opt.offset);
+          const end = new Date(start);
+          end.setDate(end.getDate() + tripDays);
+          return (
+            <button
+              key={opt.offset}
+              onClick={() => onSubmit(fmt(start), fmt(end))}
+              className="card-base p-3 text-center hover:border-accent/30 transition-colors cursor-pointer"
+            >
+              <p className="font-semibold text-gray-dark text-sm mb-1">{opt.label}</p>
+              <p className="text-on-light-tertiary text-[11px]">{display(start)} - {display(end)}</p>
+              <p className="text-accent text-[11px] font-semibold mt-1">{tripDays} days</p>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
