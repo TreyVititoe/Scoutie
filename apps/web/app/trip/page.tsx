@@ -141,15 +141,40 @@ function TripPage() {
       }));
   }, [items]);
 
-  /* Share handler */
+  /* Share handler -- saves to Supabase and copies shareable link */
+  const [sharing, setSharing] = useState(false);
   const handleShare = async () => {
-    const url = window.location.href;
+    if (sharing) return;
+    setSharing(true);
+
     try {
-      await navigator.clipboard.writeText(url);
-      setShareLink(url);
-      setTimeout(() => setShareLink(null), 2000);
+      const res = await fetch("/api/trips/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: destination ? `Trip to ${destination}` : "My Trip",
+          destination: destination || "Custom Trip",
+          totalCost: totalPrice,
+          items,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const url = `${window.location.origin}/shared/${data.shareSlug}`;
+        await navigator.clipboard.writeText(url);
+        setShareLink(url);
+        setTimeout(() => setShareLink(null), 3000);
+      }
     } catch {
-      /* fallback */
+      // Fallback to copying current URL
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareLink(window.location.href);
+        setTimeout(() => setShareLink(null), 2000);
+      } catch { /* noop */ }
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -280,7 +305,7 @@ function TripPage() {
               <span className="material-symbols-outlined text-[18px]">
                 {shareLink ? "check" : "share"}
               </span>
-              <span className="hidden sm:inline">{shareLink ? "Copied!" : "Share trip"}</span>
+              <span className="hidden sm:inline">{shareLink ? "Link copied!" : sharing ? "Creating link..." : "Share trip"}</span>
             </motion.button>
           </div>
         </div>
