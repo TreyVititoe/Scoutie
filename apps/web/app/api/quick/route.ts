@@ -78,7 +78,7 @@ Interpret these creatively:
 - If they mention dates or a month, note it in the trip
 - If they mention a budget, respect it
 
-Generate 3 diverse trip options as JSON. Each trip should be 3 days (keep it short). Assume a moderate budget of $2,000-3,000 unless they specified otherwise.`;
+Generate 3 diverse trip options as JSON. If the user specified dates or a duration, use those exact dates/duration. Otherwise default to 3 days. Keep descriptions very short to avoid truncation. Assume a moderate budget of $2,000-3,000 unless they specified otherwise.`;
 
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
