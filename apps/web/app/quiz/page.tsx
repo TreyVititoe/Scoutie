@@ -4,36 +4,30 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuizStore } from "@/lib/stores/quizStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import StepAboutYou from "@/components/quiz/StepAboutYou";
 import Step1WhereWhen from "@/components/quiz/Step1WhereWhen";
-import Step3Travelers from "@/components/quiz/Step3Travelers";
-import Step4Budget from "@/components/quiz/Step4Budget";
-import Step4Flights from "@/components/quiz/Step4Flights";
-import Step5Accommodation from "@/components/quiz/Step5Accommodation";
 import Step6Activities from "@/components/quiz/Step6Activities";
 import Step7Review from "@/components/quiz/Step7Review";
 
 const steps: Record<number, React.ComponentType> = {
-  1: Step1WhereWhen,
-  2: Step3Travelers,
-  3: Step4Budget,
-  4: Step4Flights,
-  5: Step5Accommodation,
-  6: Step6Activities,
-  7: Step7Review,
+  1: StepAboutYou,
+  2: Step1WhereWhen,
+  3: Step6Activities,
+  4: Step7Review,
 };
 
-const stepLabels = [
-  "Trip", "Travelers", "Budget", "Flights", "Stay", "Interests", "Review",
-];
+const stepLabels = ["You", "Destination", "Interests", "Review"];
 
 export default function QuizPage() {
   const router = useRouter();
   const store = useQuizStore();
   const { currentStep } = store;
 
-  const StepComponent = steps[currentStep];
-  const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === 7;
+  // Clamp step to new range
+  const step = Math.min(currentStep, 4);
+  const StepComponent = steps[step];
+  const isFirstStep = step === 1;
+  const isLastStep = step === 4;
 
   const handleGenerate = () => {
     useTripCartStore.getState().clearCart();
@@ -68,7 +62,6 @@ export default function QuizPage() {
         vibes: store.activityInterests,
       })
     );
-    // Route to compare page if multiple destinations, surprise me, or no dates
     const shouldCompare =
       store.surpriseMe ||
       store.destinations.length > 1 ||
@@ -77,6 +70,14 @@ export default function QuizPage() {
       !store.endDate;
 
     router.push(shouldCompare ? "/compare" : "/results");
+  };
+
+  const handleNext = () => {
+    store.setStep(Math.min(step + 1, 4));
+  };
+
+  const handleBack = () => {
+    store.setStep(Math.max(step - 1, 1));
   };
 
   return (
@@ -92,11 +93,11 @@ export default function QuizPage() {
           <div className="flex items-center gap-1.5">
             {stepLabels.map((label, i) => {
               const stepNum = i + 1;
-              const isFilled = stepNum <= currentStep;
+              const isFilled = stepNum <= step;
               return (
                 <div
                   key={label}
-                  className="w-12 h-0.5 rounded-full bg-accent/15 overflow-hidden"
+                  className="w-14 h-1 rounded-full bg-accent/15 overflow-hidden"
                 >
                   <motion.div
                     initial={{ scaleX: 0 }}
@@ -116,7 +117,6 @@ export default function QuizPage() {
             }}
             className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
             Exit
           </button>
         </div>
@@ -125,7 +125,7 @@ export default function QuizPage() {
       {/* Step Content */}
       <main className="flex-1 flex items-start justify-center px-6 py-12">
         <AnimatePresence mode="wait">
-          <StepComponent key={currentStep} />
+          <StepComponent key={step} />
         </AnimatePresence>
       </main>
 
@@ -133,7 +133,7 @@ export default function QuizPage() {
       <div className="sticky bottom-0 z-20 bg-white border-t border-[rgba(0,101,113,0.08)]">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <button
-            onClick={() => store.prevStep()}
+            onClick={handleBack}
             disabled={isFirstStep}
             className={`text-sm flex items-center gap-2 ${
               isFirstStep
@@ -155,7 +155,7 @@ export default function QuizPage() {
             </button>
           ) : (
             <button
-              onClick={() => store.nextStep()}
+              onClick={handleNext}
               className="bg-accent text-white rounded-[10px] px-8 py-3 text-[17px] flex items-center gap-2 hover:bg-accent-light transition-colors"
             >
               Continue

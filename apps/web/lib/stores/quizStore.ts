@@ -27,7 +27,7 @@ export type BudgetMode = "total_trip" | "per_day";
 export interface QuizState {
   // Step tracking
   currentStep: number;
-  totalSteps: 7;
+  totalSteps: 4;
 
   // Legacy — no longer drives UI, kept for backward compat
   planningMode: PlanningMode | null;
@@ -115,7 +115,7 @@ export interface QuizActions {
 
 const initialState: QuizState = {
   currentStep: 1,
-  totalSteps: 7,
+  totalSteps: 4,
   planningMode: null,
   destinations: [],
   surpriseMe: false,
@@ -154,7 +154,7 @@ export const useQuizStore = create<QuizState & QuizActions>()(
       ...initialState,
 
       setStep: (step) => set({ currentStep: step }),
-      nextStep: () => set((s) => ({ currentStep: Math.min(s.currentStep + 1, 7) })),
+      nextStep: () => set((s) => ({ currentStep: Math.min(s.currentStep + 1, 4) })),
       prevStep: () => set((s) => ({ currentStep: Math.max(s.currentStep - 1, 1) })),
 
       setPlanningMode: (planningMode) => set({ planningMode }),
