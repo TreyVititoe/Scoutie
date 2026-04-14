@@ -109,12 +109,52 @@ Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
 
 function parseClaudeJson(text: string) {
   const cleaned = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
+
+  // Try direct parse first
   try {
     return JSON.parse(cleaned);
   } catch {
-    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("No JSON in response");
-    return JSON.parse(jsonMatch[0]);
+    // noop
+  }
+
+  // Try extracting the outermost JSON object
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    try {
+      return JSON.parse(jsonMatch[0]);
+    } catch {
+      // noop
+    }
+  }
+
+  // Try repairing truncated JSON by closing open brackets
+  let repaired = cleaned;
+  // Remove any trailing comma or partial content after last complete object
+  repaired = repaired.replace(/,\s*[^{}\[\]"]*$/, "");
+
+  // Count unclosed brackets and close them
+  let openBraces = 0;
+  let openBrackets = 0;
+  let inString = false;
+  let escaped = false;
+  for (const ch of repaired) {
+    if (escaped) { escaped = false; continue; }
+    if (ch === "\\") { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") openBraces++;
+    if (ch === "}") openBraces--;
+    if (ch === "[") openBrackets++;
+    if (ch === "]") openBrackets--;
+  }
+
+  for (let i = 0; i < openBrackets; i++) repaired += "]";
+  for (let i = 0; i < openBraces; i++) repaired += "}";
+
+  try {
+    return JSON.parse(repaired);
+  } catch {
+    throw new Error("Could not parse AI response as JSON");
   }
 }
 
@@ -294,6 +334,9 @@ CRITICAL OUTPUT RULES:
 - Max 3 items per day
 - No null fields — omit optional fields instead
 - Raw JSON only — no markdown, no code fences, no explanation
+- Keep ALL string values SHORT — summaries under 20 words, titles under 8 words
+- Use ASCII characters only — no special characters or non-Latin scripts
+- The ENTIRE response must be valid JSON — do not truncate
 
 RESPONSE FORMAT:
 {"trips":[{"destination":"City, Country","title":"...","summary":"One compelling sentence about why this trip","totalEstimatedCost":0,"flightEstimate":0,"hotelEstimatePerNight":0,"topEvents":["Event 1","Event 2","Event 3"],"highlights":["Highlight 1","Highlight 2","Highlight 3"],"bestTimeToVisit":"...","days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}`;
