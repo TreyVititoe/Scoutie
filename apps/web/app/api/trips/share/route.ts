@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
         destination: destination || "Custom Trip",
         total_estimated_cost: totalCost || 0,
         status: "saved",
-        is_public: false,
+        is_public: true,
         share_slug: shareSlug,
         upvote_count: 0,
       })

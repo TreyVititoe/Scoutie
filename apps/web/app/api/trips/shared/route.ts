@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug");
@@ -9,10 +9,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing slug or id" }, { status: 400 });
   }
 
-  const supabase = await createClient();
-
-  // Fetch trip by share_slug or by id
-  let query = supabase
+  // Use admin client to bypass RLS -- shared trips should be readable by anyone with the link
+  let query = supabaseAdmin
     .from("trips")
     .select(`
       id, title, summary, destination, tier, start_date, end_date,
