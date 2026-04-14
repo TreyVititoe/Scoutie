@@ -392,7 +392,7 @@ export default function ComparePage() {
                 <p className="text-on-light-secondary text-sm mb-3">
                   Tell Walter what you are looking for -- a city, country, region, or vibe.
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="text"
                     value={regenHint}
@@ -974,7 +974,7 @@ function DateCompare({
             <p className="text-on-light-secondary text-sm mb-3">
               Tell Walter what dates you prefer -- a month, season, or time frame.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
                 value={dateRegenHint}

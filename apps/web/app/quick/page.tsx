@@ -170,7 +170,7 @@ export default function QuickPlanPage() {
           </p>
 
           {/* Tags */}
-          <div className="card-base p-5">
+          <div className="card-base p-5 overflow-hidden">
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
                 <AnimatePresence>
@@ -226,21 +226,23 @@ export default function QuickPlanPage() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4">
               <p className="text-xs text-on-light-tertiary">
                 {tags.length}/15 tags -- press Enter or click Add
               </p>
               {tags.length > 0 && (
-                <button
-                  onClick={handleGenerate}
-                  disabled={loading}
-                  className="bg-accent text-white rounded-[10px] px-6 py-2.5 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-[18px]">
-                    {loading ? "hourglass_empty" : "auto_awesome"}
-                  </span>
-                  {loading ? "Planning..." : "Plan My Trip"}
-                </button>
+                <div className="sm:flex sm:justify-end w-full sm:w-auto">
+                  <button
+                    onClick={handleGenerate}
+                    disabled={loading}
+                    className="w-full sm:w-auto bg-accent text-white rounded-[10px] px-6 py-2.5 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {loading ? "hourglass_empty" : "auto_awesome"}
+                    </span>
+                    {loading ? "Planning..." : "Plan My Trip"}
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -427,7 +429,7 @@ export default function QuickPlanPage() {
                         >
                           {isExpanded ? "Show less" : "View itinerary"}
                         </button>
-                        <div className="ml-auto flex gap-2">
+                        <div className="ml-auto flex flex-col sm:flex-row gap-2">
                           <button
                             onClick={() => handleSave(trip, i)}
                             disabled={savedIds.has(i)}

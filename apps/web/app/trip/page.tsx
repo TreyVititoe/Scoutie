@@ -265,22 +265,22 @@ function TripPage() {
             </Link>
             <button
               onClick={() => setShowSaveModal(true)}
-              className="px-5 py-2.5 rounded-[8px] border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors flex items-center gap-2"
+              className="px-3 sm:px-5 py-2.5 rounded-[8px] border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">
                 {saved ? "check" : "bookmark"}
               </span>
-              {saved ? "Saved!" : "Save trip"}
+              <span className="hidden sm:inline">{saved ? "Saved!" : "Save trip"}</span>
             </button>
             <motion.button
               onClick={handleShare}
               whileTap={{ scale: 0.95 }}
-              className="px-5 py-2.5 rounded-[8px] bg-accent text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+              className="px-3 sm:px-5 py-2.5 rounded-[8px] bg-accent text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">
                 {shareLink ? "check" : "share"}
               </span>
-              {shareLink ? "Copied!" : "Share trip"}
+              <span className="hidden sm:inline">{shareLink ? "Copied!" : "Share trip"}</span>
             </motion.button>
           </div>
         </div>
@@ -315,7 +315,7 @@ function TripPage() {
                     {destination}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-cyan/10" />
+                <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
               </>
             )}
 
@@ -332,7 +332,7 @@ function TripPage() {
                     {dateRange}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-cyan/10" />
+                <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
               </>
             )}
 
@@ -347,7 +347,7 @@ function TripPage() {
                 {travelers}
               </p>
             </div>
-            <div className="w-px h-10 bg-cyan/10" />
+            <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
 
             <div>
               <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
@@ -360,7 +360,7 @@ function TripPage() {
                 {items.length}
               </p>
             </div>
-            <div className="w-px h-10 bg-cyan/10" />
+            <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
 
             <div>
               <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">

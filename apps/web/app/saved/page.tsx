@@ -103,7 +103,7 @@ export default function SavedTripsPage() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card-base p-4 mb-6 flex items-center justify-between"
+            className="card-base p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
           >
             <p className="text-sm text-on-light-secondary">
               {compareIds.length} selected <span className="text-on-light-tertiary">(pick 2-3)</span>
@@ -111,7 +111,7 @@ export default function SavedTripsPage() {
             <button
               onClick={handleCompare}
               disabled={compareIds.length < 2}
-              className="bg-accent text-white rounded-[10px] px-5 py-2 text-sm font-semibold hover:bg-accent-light transition-colors disabled:opacity-40"
+              className="w-full sm:w-auto bg-accent text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-accent-light transition-colors disabled:opacity-40"
             >
               Compare
             </button>
@@ -170,7 +170,7 @@ export default function SavedTripsPage() {
 
                     <div
                       onClick={() => handleLoadTrip(trip)}
-                      className={`card-base p-5 cursor-pointer transition-all ${
+                      className={`card-base p-5 overflow-hidden cursor-pointer transition-all ${
                         compareMode && isSelected ? "ring-2 ring-accent" : ""
                       }`}
                     >
