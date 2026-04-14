@@ -815,15 +815,58 @@ function DateCompare({
   const formatDisplay = (d: Date) =>
     d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
+  // Parse hint into a base date. Supports: "May", "June", "December", "May 15", "next month", etc.
+  function getBaseDateFromHint(hint: string): Date | null {
+    if (!hint.trim()) return null;
+    const h = hint.trim().toLowerCase();
+
+    const months: Record<string, number> = {
+      january: 0, jan: 0, february: 1, feb: 1, march: 2, mar: 2,
+      april: 3, apr: 3, may: 4, june: 5, jun: 5, july: 6, jul: 6,
+      august: 7, aug: 7, september: 8, sep: 8, october: 9, oct: 9,
+      november: 10, nov: 10, december: 11, dec: 11,
+    };
+
+    // Check for month name (with optional day)
+    for (const [name, monthIdx] of Object.entries(months)) {
+      if (h.startsWith(name)) {
+        const rest = h.slice(name.length).trim();
+        const day = parseInt(rest) || 1;
+        const now = new Date();
+        let year = now.getFullYear();
+        // If the month has already passed this year, use next year
+        if (monthIdx < now.getMonth() || (monthIdx === now.getMonth() && day < now.getDate())) {
+          year++;
+        }
+        return new Date(year, monthIdx, day);
+      }
+    }
+
+    // Try parsing as a date string
+    const parsed = new Date(hint);
+    if (!isNaN(parsed.getTime()) && parsed > new Date()) return parsed;
+
+    return null;
+  }
+
   const now = new Date();
-  const options = [
-    { label: "Next week", offset: 7 },
-    { label: "In 2 weeks", offset: 14 },
-    { label: "In 3 weeks", offset: 21 },
-  ];
+  const hintDate = getBaseDateFromHint(dateRegenHint);
+  const baseDate = hintDate || now;
+
+  const options = hintDate
+    ? [
+        { label: `Early ${hintDate.toLocaleDateString("en-US", { month: "long" })}`, offset: 0 },
+        { label: `Mid ${hintDate.toLocaleDateString("en-US", { month: "long" })}`, offset: 10 },
+        { label: `Late ${hintDate.toLocaleDateString("en-US", { month: "long" })}`, offset: 20 },
+      ]
+    : [
+        { label: "Next week", offset: 7 },
+        { label: "In 2 weeks", offset: 14 },
+        { label: "In 3 weeks", offset: 21 },
+      ];
 
   const dateRanges = options.map((opt) => {
-    const start = new Date(now);
+    const start = new Date(baseDate);
     start.setDate(start.getDate() + opt.offset);
     const end = new Date(start);
     end.setDate(end.getDate() + tripDays);
@@ -936,7 +979,7 @@ function DateCompare({
                 type="text"
                 value={dateRegenHint}
                 onChange={(e) => setDateRegenHint(e.target.value)}
-                placeholder='e.g. "next month", "summer", "December"'
+                placeholder='e.g. "May", "June 15", "December", "August"'
                 className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
