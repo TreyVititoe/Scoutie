@@ -184,11 +184,32 @@ export default function StepAboutYou() {
           )}
         </div>
 
-        {/* Departure City */}
+        {/* Departure Cities */}
         <div className="relative">
           <label className="block text-sm font-semibold text-gray-dark mb-3">
             Where are you flying from?
           </label>
+
+          {/* Tags for added cities */}
+          {store.departureCities.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {store.departureCities.map((city) => (
+                <span
+                  key={city}
+                  className="bg-[#e6f7f9] text-accent rounded-pill px-3 py-1 text-sm font-semibold flex items-center gap-1.5"
+                >
+                  {city}
+                  <button
+                    onClick={() => store.removeDepartureCity(city)}
+                    className="text-on-light-tertiary hover:text-accent transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[20px]">
               flight_takeoff
@@ -203,7 +224,18 @@ export default function StepAboutYou() {
               }}
               onFocus={() => citySuggestions.length > 0 && setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              placeholder="City or airport"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && cityQuery.trim().length >= 2) {
+                  e.preventDefault();
+                  // Allow direct entry of airport codes (3 letters) or city names
+                  const value = cityQuery.trim();
+                  store.addDepartureCity(value);
+                  setCityQuery("");
+                  setCitySuggestions([]);
+                  setShowSuggestions(false);
+                }
+              }}
+              placeholder={store.departureCities.length > 0 ? "Add another city or airport code" : "City or airport code (e.g. LAX, Chicago)"}
               className="w-full pl-10 pr-4 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
           </div>
@@ -215,8 +247,9 @@ export default function StepAboutYou() {
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     const formatted = formatCity(feat);
-                    setCityQuery(formatted);
-                    store.setDepartureCity(formatted);
+                    store.addDepartureCity(formatted);
+                    setCityQuery("");
+                    setCitySuggestions([]);
                     setShowSuggestions(false);
                   }}
                   className="w-full text-left px-4 py-3 text-sm text-gray-dark hover:bg-page-bg transition-colors"
@@ -226,7 +259,7 @@ export default function StepAboutYou() {
               ))}
             </div>
           )}
-          <p className="text-xs text-on-light-tertiary mt-1.5">Optional -- helps us find the best flights</p>
+          <p className="text-xs text-on-light-tertiary mt-1.5">Optional -- add multiple cities or airport codes. Press Enter or select from suggestions.</p>
         </div>
       </div>
     </StepWrapper>

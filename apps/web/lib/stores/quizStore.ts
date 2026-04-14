@@ -55,7 +55,8 @@ export interface QuizState {
   budgetSkipped: boolean;
 
   // Step 4: Flights
-  departureCity: string;
+  departureCity: string; // primary (first entry, for backward compat)
+  departureCities: string[];
   flightClass: FlightClass;
   flightPriority: FlightPriority;
   preferredAirlines: string[];
@@ -98,6 +99,9 @@ export interface QuizActions {
   setBudgetFlexible: (val: boolean) => void;
   setBudgetSkipped: (val: boolean) => void;
   setDepartureCity: (city: string) => void;
+  setDepartureCities: (cities: string[]) => void;
+  addDepartureCity: (city: string) => void;
+  removeDepartureCity: (city: string) => void;
   setFlightClass: (cls: FlightClass) => void;
   setFlightPriority: (priority: FlightPriority) => void;
   setPreferredAirlines: (airlines: string[]) => void;
@@ -134,6 +138,7 @@ const initialState: QuizState = {
   budgetFlexible: false,
   budgetSkipped: false,
   departureCity: "",
+  departureCities: [],
   flightClass: "economy",
   flightPriority: "best_value",
   preferredAirlines: [],
@@ -178,6 +183,18 @@ export const useQuizStore = create<QuizState & QuizActions>()(
       setBudgetSkipped: (budgetSkipped) => set({ budgetSkipped }),
 
       setDepartureCity: (departureCity) => set({ departureCity }),
+      setDepartureCities: (departureCities) => set({ departureCities, departureCity: departureCities[0] || "" }),
+      addDepartureCity: (city) =>
+        set((s) => {
+          if (s.departureCities.includes(city)) return s;
+          const updated = [...s.departureCities, city];
+          return { departureCities: updated, departureCity: updated[0] };
+        }),
+      removeDepartureCity: (city) =>
+        set((s) => {
+          const updated = s.departureCities.filter((c) => c !== city);
+          return { departureCities: updated, departureCity: updated[0] || "" };
+        }),
       setFlightClass: (flightClass) => set({ flightClass }),
       setFlightPriority: (flightPriority) => set({ flightPriority }),
       setPreferredAirlines: (preferredAirlines) => set({ preferredAirlines }),
