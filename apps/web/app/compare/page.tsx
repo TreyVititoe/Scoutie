@@ -294,29 +294,7 @@ export default function ComparePage() {
     setSavedIds((prev) => new Set([...prev, idx]));
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-page-bg">
-        <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
-          <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-            <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
-            <Link href="/quiz" className="text-accent-light text-sm hover:underline flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[18px]">edit</span>
-              Edit trip
-            </Link>
-          </div>
-        </header>
-
-        <div className="flex flex-col items-center justify-center min-h-screen px-6 pt-[48px]">
-          <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-6" />
-          <p className="text-[17px] font-semibold text-gray-dark mb-2">Walter is planning your options...</p>
-          <p className="text-on-light-secondary text-sm">Comparing destinations, flights, and events</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
+  if (error && trips.length === 0) {
     return (
       <div className="min-h-screen bg-page-bg">
         <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
@@ -384,11 +362,13 @@ export default function ComparePage() {
             Compare your options
           </h1>
           <p className="text-on-light-secondary text-[17px] mb-5">
-            Walter found {trips.length} trip options for you. Compare them and pick your favorite.
+            {loading
+              ? "Walter is finding the best options for you..."
+              : `Walter found ${trips.length} trip options for you. Compare them and pick your favorite.`}
           </p>
 
           {/* Regenerate bar */}
-          <div className="card-base p-4">
+          {!loading && <div className="card-base p-4">
             <div
               className="flex items-center justify-between cursor-pointer"
               onClick={() => setRegenOpen(!regenOpen)}
@@ -516,11 +496,58 @@ export default function ComparePage() {
                 </div>
               </motion.div>
             )}
-          </div>
+          </div>}
         </motion.div>
 
         {/* Comparison Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+        {/* Skeleton cards while loading */}
+        {loading && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="card-base overflow-hidden animate-pulse">
+                <div className="h-1 bg-gradient-to-r from-accent/30 to-cyan/30" />
+                <div className="p-5 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="h-5 bg-page-bg rounded w-2/3" />
+                    <div className="h-5 bg-page-bg rounded-pill w-16" />
+                  </div>
+                  <div className="h-3 bg-page-bg rounded w-1/2" />
+                </div>
+                <div className="p-5">
+                  <div className="bg-[#e6f7f9]/30 rounded-[10px] p-4 mb-5">
+                    <div className="h-3 bg-page-bg rounded w-1/3 mb-2" />
+                    <div className="h-8 bg-page-bg rounded w-2/3 mb-1" />
+                    <div className="h-3 bg-page-bg rounded w-1/4" />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between py-3 border-t border-[rgba(0,101,113,0.06)]">
+                      <div className="h-4 bg-page-bg rounded w-20" />
+                      <div className="h-4 bg-page-bg rounded w-24" />
+                    </div>
+                    <div className="flex justify-between py-3 border-t border-[rgba(0,101,113,0.06)]">
+                      <div className="h-4 bg-page-bg rounded w-16" />
+                      <div className="h-4 bg-page-bg rounded w-24" />
+                    </div>
+                    <div className="py-3 border-t border-[rgba(0,101,113,0.06)]">
+                      <div className="flex justify-between mb-3">
+                        <div className="h-4 bg-page-bg rounded w-24" />
+                        <div className="h-6 bg-page-bg rounded w-8" />
+                      </div>
+                      <div className="flex gap-1.5">
+                        <div className="h-5 bg-page-bg rounded-pill w-16" />
+                        <div className="h-5 bg-page-bg rounded-pill w-14" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="h-12 bg-page-bg rounded-[10px] mt-6" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Real cards */}
+        {!loading && <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
           {trips.map((trip, i) => {
             const isExpanded = expandedTrip === i;
             return (
@@ -751,7 +778,7 @@ export default function ComparePage() {
               </motion.div>
             );
           })}
-        </div>
+        </div>}
         </>
         )}
       </div>
