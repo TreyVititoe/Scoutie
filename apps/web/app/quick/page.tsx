@@ -43,6 +43,13 @@ export default function QuickPlanPage() {
   const [expandedTrip, setExpandedTrip] = useState<number | null>(null);
   const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
   const [generated, setGenerated] = useState(false);
+  const [flightData, setFlightData] = useState<Record<number, {
+    min: number; max: number; count: number; loading: boolean;
+  }>>({});
+  const [eventData, setEventData] = useState<Record<number, {
+    events: { name: string; venue: string; category: string; image: string | null; priceMin: number | null }[];
+    count: number; categories: string[]; loading: boolean;
+  }>>({});
 
   const addTag = (value: string) => {
     const trimmed = value.trim();
@@ -63,6 +70,8 @@ export default function QuickPlanPage() {
     setGenerated(true);
     setSavedIds(new Set());
     setExpandedTrip(null);
+    setFlightData({});
+    setEventData({});
 
     try {
       const res = await fetch("/api/quick", {
@@ -74,7 +83,54 @@ export default function QuickPlanPage() {
       if (data.error) {
         setError(data.error);
       } else {
-        setTrips(data.trips || []);
+        const tripList = data.trips || [];
+        setTrips(tripList);
+
+        // Generate fallback dates for API calls
+        const now = new Date();
+        const fallbackStart = new Date(now);
+        fallbackStart.setDate(fallbackStart.getDate() + 14);
+        const fallbackEnd = new Date(fallbackStart);
+        fallbackEnd.setDate(fallbackEnd.getDate() + 5);
+        const sDate = fallbackStart.toISOString().split("T")[0];
+        const eDate = fallbackEnd.toISOString().split("T")[0];
+
+        // Fetch flights + events for each destination
+        tripList.forEach((trip: QuickTrip, idx: number) => {
+          // Flights
+          setFlightData((prev) => ({ ...prev, [idx]: { min: 0, max: 0, count: 0, loading: true } }));
+          fetch("/api/flights", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ origin: "LAX", destination: trip.destination, departDate: sDate, returnDate: eDate, adults: 2, cabinClass: "economy" }),
+          })
+            .then((r) => r.json())
+            .then((fData) => {
+              const fl = fData.flights || [];
+              const prices = fl.map((f: { price: number }) => f.price).filter((p: number) => p > 0);
+              setFlightData((prev) => ({ ...prev, [idx]: { min: prices.length ? Math.min(...prices) : 0, max: prices.length ? Math.max(...prices) : 0, count: fl.length, loading: false } }));
+            })
+            .catch(() => setFlightData((prev) => ({ ...prev, [idx]: { min: 0, max: 0, count: 0, loading: false } })));
+
+          // Events
+          setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, categories: [], loading: true } }));
+          fetch("/api/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ destination: trip.destination, startDate: sDate, endDate: eDate, vibes: tags, travelers: 2 }),
+          })
+            .then((r) => r.json())
+            .then((eData) => {
+              const all = [...(eData.exactMatches || []), ...(eData.similarMatches || []), ...(eData.topInArea || [])];
+              const cats = [...new Set(all.map((e: { category: string }) => e.category))].slice(0, 3) as string[];
+              const top = all.slice(0, 2).map((ev: Record<string, unknown>) => ({
+                name: ev.name as string, venue: ev.venueName as string, category: ev.category as string,
+                image: (ev.image as string) || null, priceMin: (ev.priceMin as number) || null,
+              }));
+              setEventData((prev) => ({ ...prev, [idx]: { events: top, count: all.length, categories: cats, loading: false } }));
+            })
+            .catch(() => setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, categories: [], loading: false } })));
+        });
       }
     } catch {
       setError("Something went wrong. Try again.");
@@ -349,7 +405,7 @@ export default function QuickPlanPage() {
                         )}
                       </div>
 
-                      {/* Cost */}
+                      {/* Estimated Total */}
                       <div className="bg-[#e6f7f9]/30 rounded-[10px] p-4 my-4">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-on-light-secondary text-sm">Estimated Total</span>
@@ -361,22 +417,73 @@ export default function QuickPlanPage() {
                         <p className="text-on-light-tertiary text-xs">per person</p>
                       </div>
 
-                      {/* Quick stats */}
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-center justify-between py-2">
-                          <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
-                            <span className="text-sm text-gray-dark">Flights</span>
-                          </div>
-                          <span className="text-accent text-sm font-semibold">~${trip.flightEstimate?.toLocaleString() || "N/A"}</span>
+                      {/* Flights row */}
+                      <div className="flex items-center justify-between py-2 mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
+                          <span className="text-sm text-gray-dark">Flights</span>
                         </div>
-                        <div className="flex items-center justify-between py-2">
-                          <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-accent text-[16px]">hotel</span>
-                            <span className="text-sm text-gray-dark">Hotels/night</span>
-                          </div>
-                          <span className="text-accent text-sm font-semibold">~${trip.hotelEstimatePerNight?.toLocaleString() || "N/A"}</span>
+                        {flightData[i]?.loading ? (
+                          <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                        ) : flightData[i]?.count > 0 ? (
+                          <p className="font-semibold text-accent text-sm">${flightData[i].min.toLocaleString()} - ${flightData[i].max.toLocaleString()}</p>
+                        ) : (
+                          <p className="text-accent text-sm font-semibold">~${trip.flightEstimate?.toLocaleString() || "N/A"} <span className="text-on-light-tertiary font-normal text-xs">est.</span></p>
+                        )}
+                      </div>
+
+                      {/* Hotels row */}
+                      <div className="flex items-center justify-between py-2 mb-4">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-accent text-[16px]">hotel</span>
+                          <span className="text-sm text-gray-dark">Hotels/night</span>
                         </div>
+                        <p className="text-accent text-sm font-semibold">~${trip.hotelEstimatePerNight?.toLocaleString() || "N/A"} <span className="text-on-light-tertiary font-normal text-xs">est.</span></p>
+                      </div>
+
+                      {/* Events section */}
+                      <div className="mb-4 pt-3 border-t border-[rgba(0,101,113,0.06)]">
+                        {eventData[i]?.loading ? (
+                          <div className="flex items-center gap-2 py-2">
+                            <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                            <span className="text-on-light-tertiary text-xs">Searching events...</span>
+                          </div>
+                        ) : eventData[i]?.count > 0 ? (
+                          <>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-gray-dark text-sm font-semibold">Events Found</span>
+                              <span className="font-semibold text-accent text-[24px]">{eventData[i].count}</span>
+                            </div>
+                            {eventData[i].categories.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mb-3">
+                                {eventData[i].categories.map((cat, j) => (
+                                  <span key={j} className={`${pillColors[j % pillColors.length]} rounded-pill px-2.5 py-0.5 text-[10px] font-semibold`}>{cat}</span>
+                                ))}
+                              </div>
+                            )}
+                            {eventData[i].events.map((ev, j) => (
+                              <div key={j} className="flex items-center gap-2.5 mb-2">
+                                {ev.image && <img src={ev.image} alt="" className="w-10 h-10 rounded-[6px] object-cover flex-shrink-0" />}
+                                <div className="min-w-0">
+                                  <p className="text-sm text-gray-dark font-semibold truncate">{ev.name}</p>
+                                  <p className="text-[11px] text-on-light-tertiary truncate">{ev.venue}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        ) : (
+                          trip.topEvents && trip.topEvents.length > 0 && (
+                            <div>
+                              <p className="text-gray-dark text-sm font-semibold mb-2">Top Events</p>
+                              {trip.topEvents.slice(0, 3).map((ev, j) => (
+                                <p key={j} className="text-sm text-on-light-secondary mb-1 flex items-center gap-1.5">
+                                  <span className="material-symbols-outlined text-accent text-[14px]">local_activity</span>
+                                  {ev}
+                                </p>
+                              ))}
+                            </div>
+                          )
+                        )}
                       </div>
 
                       {/* Highlights */}
