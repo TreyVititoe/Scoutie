@@ -211,7 +211,7 @@ export default function QuickPlanPage() {
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-6 pt-28 pb-16">
+      <div className="max-w-6xl mx-auto px-6 pt-28 pb-16">
         {/* Input Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -329,7 +329,7 @@ export default function QuickPlanPage() {
 
         {/* Loading skeletons */}
         {loading && (
-          <div className="grid grid-cols-1 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {[0, 1, 2].map((i) => (
               <div key={i} className="card-base overflow-hidden animate-pulse">
                 <div className="h-1 bg-gradient-to-r from-accent/30 to-cyan/30" />
@@ -375,7 +375,7 @@ export default function QuickPlanPage() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
               {trips.map((trip, i) => {
                 const isExpanded = expandedTrip === i;
                 return (
