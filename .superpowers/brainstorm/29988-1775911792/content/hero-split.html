@@ -1,0 +1,121 @@
+<h2>Split Hero -- which balance?</h2>
+<p class="subtitle">How much space does the text vs visual side get?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 280px; display: flex; overflow: hidden; border-radius: 8px 8px 0 0;">
+      <!-- Left: text heavy -->
+      <div style="flex: 0 0 55%; background: linear-gradient(165deg, #003d47 0%, #001f26 100%); padding: 28px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle at 80% 20%, rgba(121,231,248,0.08) 0%, transparent 50%);"></div>
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 16px; position: relative;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #79e7f8; box-shadow: 0 0 8px rgba(121,231,248,0.6);"></div>
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(121,231,248,0.7);">AI-powered travel</div>
+        </div>
+        <div style="font-size: 26px; font-weight: 700; color: white; line-height: 1.1; letter-spacing: -0.5px; position: relative;">One quiz.<br><span style="color: #79e7f8;">Your whole trip.</span></div>
+        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 12px; line-height: 1.5; position: relative;">Flights, hotels, events, restaurants. All real, all bookable.</div>
+        <div style="display: flex; gap: 8px; margin-top: 20px; position: relative;">
+          <div style="background: #006571; color: white; padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 600;">Plan your trip</div>
+          <div style="border: 1px solid rgba(121,231,248,0.3); color: #79e7f8; padding: 8px 18px; border-radius: 8px; font-size: 12px;">How it works</div>
+        </div>
+      </div>
+      <!-- Right: destination card -->
+      <div style="flex: 0 0 45%; position: relative; overflow: hidden;">
+        <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop" style="width: 100%; height: 100%; object-fit: cover;" />
+        <div style="position: absolute; inset: 0; background: linear-gradient(to right, #001f26 0%, transparent 30%), linear-gradient(to top, rgba(0,31,38,0.8) 0%, transparent 50%);"></div>
+        <div style="position: absolute; bottom: 16px; left: 16px; right: 16px;">
+          <div style="background: rgba(0,101,113,0.3); backdrop-filter: blur(12px); border: 1px solid rgba(121,231,248,0.15); border-radius: 10px; padding: 12px 14px;">
+            <div style="font-size: 14px; font-weight: 600; color: white;">Tokyo</div>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px;">Culture -- from $2,500</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Text-Heavy Split (55/45)</h3>
+      <p>More room for the headline and CTAs. Destination image is a supporting element. The text side drives the action.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 280px; display: flex; overflow: hidden; border-radius: 8px 8px 0 0;">
+      <!-- Left: text compact -->
+      <div style="flex: 0 0 42%; background: linear-gradient(165deg, #003d47 0%, #001f26 100%); padding: 28px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle at 90% 10%, rgba(121,231,248,0.06) 0%, transparent 50%);"></div>
+        <div style="font-size: 24px; font-weight: 700; color: white; line-height: 1.1; letter-spacing: -0.5px; position: relative;">One quiz.<br><span style="color: #79e7f8;">Your whole trip.</span></div>
+        <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 10px; line-height: 1.5; position: relative;">AI builds your complete itinerary.</div>
+        <div style="margin-top: 16px; position: relative;">
+          <div style="background: #006571; color: white; padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-block;">Plan your trip</div>
+        </div>
+      </div>
+      <!-- Right: stacked destination cards -->
+      <div style="flex: 0 0 58%; position: relative; overflow: hidden; background: linear-gradient(165deg, #002a32 0%, #001a20 100%); padding: 16px; display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+        <div style="background: rgba(0,101,113,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(121,231,248,0.1); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px;">
+          <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=100&h=60&fit=crop" style="width: 50px; height: 36px; object-fit: cover; border-radius: 6px;" />
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: white;">Tokyo</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.5);">Culture -- $2,500</div>
+          </div>
+          <div style="margin-left: auto; font-size: 10px; color: #79e7f8;">3 flights</div>
+        </div>
+        <div style="background: rgba(0,101,113,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(121,231,248,0.1); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px;">
+          <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=100&h=60&fit=crop" style="width: 50px; height: 36px; object-fit: cover; border-radius: 6px;" />
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: white;">Paris</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.5);">Romance -- $2,200</div>
+          </div>
+          <div style="margin-left: auto; font-size: 10px; color: #79e7f8;">5 flights</div>
+        </div>
+        <div style="background: rgba(0,101,113,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(121,231,248,0.1); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px;">
+          <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=100&h=60&fit=crop" style="width: 50px; height: 36px; object-fit: cover; border-radius: 6px;" />
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: white;">Bali</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.5);">Relaxation -- $1,200</div>
+          </div>
+          <div style="margin-left: auto; font-size: 10px; color: #79e7f8;">2 flights</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Card-Heavy Split (42/58)</h3>
+      <p>Compact text, more room for interactive destination cards. The right side feels like a live dashboard preview. Shows off the product immediately.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 280px; display: flex; overflow: hidden; border-radius: 8px 8px 0 0;">
+      <!-- Left: text -->
+      <div style="flex: 0 0 50%; background: linear-gradient(165deg, #003d47 0%, #001f26 100%); padding: 28px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle at 80% 30%, rgba(121,231,248,0.08) 0%, transparent 50%);"></div>
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 14px; position: relative;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #79e7f8; box-shadow: 0 0 8px rgba(121,231,248,0.6);"></div>
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(121,231,248,0.7);">AI-powered</div>
+        </div>
+        <div style="font-size: 26px; font-weight: 700; color: white; line-height: 1.1; letter-spacing: -0.5px; position: relative;">One quiz.<br><span style="color: #79e7f8;">Your whole trip.</span></div>
+        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 12px; line-height: 1.5; position: relative;">Flights, hotels, events -- all real, all bookable.</div>
+        <div style="display: flex; gap: 8px; margin-top: 18px; position: relative;">
+          <div style="background: #006571; color: white; padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 600;">Plan your trip</div>
+          <div style="border: 1px solid rgba(121,231,248,0.3); color: #79e7f8; padding: 8px 18px; border-radius: 8px; font-size: 12px;">How it works</div>
+        </div>
+      </div>
+      <!-- Right: big image with glass overlay -->
+      <div style="flex: 0 0 50%; position: relative; overflow: hidden;">
+        <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop" style="width: 100%; height: 100%; object-fit: cover;" />
+        <div style="position: absolute; inset: 0; background: linear-gradient(to right, #001f26 0%, rgba(0,31,38,0.3) 30%, rgba(0,101,113,0.2) 100%);"></div>
+        <div style="position: absolute; top: 16px; right: 16px; background: rgba(0,101,113,0.3); backdrop-filter: blur(12px); border: 1px solid rgba(121,231,248,0.15); border-radius: 10px; padding: 10px 14px;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.5); margin-bottom: 4px;">Trending</div>
+          <div style="font-size: 16px; font-weight: 600; color: white;">Tokyo</div>
+          <div style="font-size: 11px; color: #79e7f8; margin-top: 2px;">from $2,500</div>
+        </div>
+        <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; gap: 6px;">
+          <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border-radius: 6px; padding: 6px 10px; font-size: 10px; color: rgba(255,255,255,0.7);">Culture</div>
+          <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border-radius: 6px; padding: 6px 10px; font-size: 10px; color: rgba(255,255,255,0.7);">5 days</div>
+          <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border-radius: 6px; padding: 6px 10px; font-size: 10px; color: rgba(255,255,255,0.7);">12 events</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Even Split (50/50)</h3>
+      <p>Balanced -- strong headline with full destination image. Glass cards float over the image with destination info. Classic and versatile.</p>
+    </div>
+  </div>
+</div>

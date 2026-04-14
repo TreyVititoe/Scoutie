@@ -316,9 +316,30 @@ export async function generateCompareTrips(quizData: QuizData) {
     : [];
   const isSurprise = quizData.surpriseMe || destinations.length === 0;
 
+  const departureCity = quizData.departureCity || "";
+  const travelerType = quizData.travelerType || "travelers";
+  const accommodationTypes = quizData.accommodationTypes?.join(", ") || "hotel";
+
   let destinationLine: string;
   if (isSurprise) {
-    destinationLine = `Pick 3 diverse, exciting destinations that match these interests: ${interests}. Budget: $${budget}. Make them surprising and different from each other.`;
+    destinationLine = `You MUST pick 3 specific destinations that are a PERFECT match for this traveler. Do NOT pick random cities.
+
+THINK ABOUT WHO THIS PERSON IS:
+- They are ${travelers} ${travelerType} with a budget of $${budget.toLocaleString()} for ${nights} nights
+- They love: ${interests}
+- They are departing from: ${departureCity || "unknown (pick destinations reachable from major US hubs)"}
+- They prefer: ${accommodationTypes}
+${quizData.childrenCount ? `- They have ${quizData.childrenCount} children (ages: ${quizData.childrenAges?.join(", ")})` : ""}
+
+DESTINATION SELECTION RULES:
+1. Each destination must genuinely match their interests. If they love food and nightlife, suggest cities famous for food and nightlife -- not random beach towns.
+2. Each destination must be realistic for their budget. Don't suggest Tokyo on a $1,000 budget.
+3. Each destination must be reachable from ${departureCity || "a major US city"} within their budget.
+4. Make the 3 options meaningfully different: one domestic/nearby, one mid-range, one aspirational (but still within budget).
+5. Consider seasonality -- what's great to visit during their travel dates.
+6. If they're a family with kids, pick family-friendly destinations. If they're friends looking for nightlife, pick cities with nightlife.
+
+Do NOT pick generic tourist traps unless they genuinely match the interests. Be specific and thoughtful.`;
   } else if (destinations.length === 1) {
     destinationLine = `Generate 3 trip options for ${destinations[0]} at different times or with different themes.`;
   } else {
@@ -330,13 +351,14 @@ export async function generateCompareTrips(quizData: QuizData) {
 ${destinationLine}
 
 DATES: ${quizData.startDate || "flexible"} to ${quizData.endDate || "flexible"} (${nights} nights)
-DEPARTING FROM: ${quizData.departureCity || "Not specified"}
-TRAVELERS: ${travelers} ${quizData.travelerType || "travelers"}
+DEPARTING FROM: ${departureCity || "Not specified"}
+TRAVELERS: ${travelers} ${travelerType}${quizData.childrenCount ? ` + ${quizData.childrenCount} children` : ""}
 BUDGET: $${budget.toLocaleString()} ${quizData.budgetMode === "per_day" ? "per day" : "total"}
 FLIGHT CLASS: ${quizData.flightClass || "economy"}
+ACCOMMODATION: ${accommodationTypes}
 INTERESTS: ${interests}
 
-Generate ${isSurprise || destinations.length <= 1 ? "3" : destinations.length} complete trip itineraries as JSON. Each trip should have a different destination${destinations.length === 1 ? " theme or time period" : ""}. Include estimated flight cost and hotel cost per night for comparison.`;
+Generate ${isSurprise || destinations.length <= 1 ? "3" : destinations.length} complete trip itineraries as JSON. Each trip should have a different destination${destinations.length === 1 ? " theme or time period" : ""}. Include estimated flight cost and hotel cost per night for comparison. The summary should explain WHY this destination is perfect for this specific traveler.`;
 
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",

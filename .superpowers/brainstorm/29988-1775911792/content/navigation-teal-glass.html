@@ -1,0 +1,94 @@
+<h2>Teal Glass Nav -- which intensity?</h2>
+<p class="subtitle">All three use backdrop-blur with teal tinting. The difference is opacity and saturation.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 220px; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="background: rgba(0,101,113,0.75); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); height: 48px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0;">
+        <div style="font-size: 15px; font-weight: 600; color: white;">Walter</div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 16px;">
+          <span style="font-size: 11px; color: rgba(255,255,255,0.8);">Explore</span>
+          <span style="font-size: 11px; color: rgba(255,255,255,0.8);">Plan a Trip</span>
+          <div style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 14px; border-radius: 980px; font-size: 11px; font-weight: 600;">Get Started</div>
+        </div>
+      </div>
+      <div style="flex: 1; background: #f0f4f5; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 18px; font-weight: 600; color: #1a1a1a;">Your trip to Tokyo</div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9992;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Delta -- JFK to NRT</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$850</div>
+        </div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9962;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Park Hyatt Tokyo</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$320</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Bold Teal Glass (75%)</h3>
+      <p>Strong teal presence, reads clearly as teal. Content behind shows through just slightly. Very branded.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 220px; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="background: rgba(0,80,90,0.55); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); height: 48px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0;">
+        <div style="font-size: 15px; font-weight: 600; color: white;">Walter</div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 16px;">
+          <span style="font-size: 11px; color: rgba(255,255,255,0.8);">Explore</span>
+          <span style="font-size: 11px; color: rgba(255,255,255,0.8);">Plan a Trip</span>
+          <div style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 14px; border-radius: 980px; font-size: 11px; font-weight: 600;">Get Started</div>
+        </div>
+      </div>
+      <div style="flex: 1; background: #f0f4f5; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 18px; font-weight: 600; color: #1a1a1a;">Your trip to Tokyo</div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9992;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Delta -- JFK to NRT</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$850</div>
+        </div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9962;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Park Hyatt Tokyo</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$320</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Medium Teal Glass (55%)</h3>
+      <p>Clearly teal but more translucent. Content behind bleeds through more, creating depth. Elegant balance.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 220px; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="background: rgba(0,70,80,0.35); backdrop-filter: saturate(200%) blur(24px); -webkit-backdrop-filter: saturate(200%) blur(24px); height: 48px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid rgba(0,101,113,0.15);">
+        <div style="font-size: 15px; font-weight: 600; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Walter</div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 16px;">
+          <span style="font-size: 11px; color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.15);">Explore</span>
+          <span style="font-size: 11px; color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.15);">Plan a Trip</span>
+          <div style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 5px 14px; border-radius: 980px; font-size: 11px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.15);">Get Started</div>
+        </div>
+      </div>
+      <div style="flex: 1; background: #f0f4f5; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 18px; font-weight: 600; color: #1a1a1a;">Your trip to Tokyo</div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9992;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Delta -- JFK to NRT</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$850</div>
+        </div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9962;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Park Hyatt Tokyo</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$320</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Subtle Teal Glass (35%)</h3>
+      <p>Light teal tint, very transparent. The glass effect does the heavy lifting -- you see the page through it with a teal wash. Subtle bottom border for definition.</p>
+    </div>
+  </div>
+</div>

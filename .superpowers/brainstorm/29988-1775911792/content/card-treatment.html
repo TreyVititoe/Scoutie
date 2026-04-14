@@ -1,0 +1,158 @@
+<h2>Card & Surface Treatment</h2>
+<p class="subtitle">This is what makes or breaks the "premium" feel. How should cards look across the site?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(165deg, #001a20 0%, #002a32 100%); height: 320px; padding: 20px; display: flex; flex-direction: column; gap: 12px; justify-content: center;">
+      <!-- Glass card 1: Flight -->
+      <div style="background: rgba(0,101,113,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(121,231,248,0.12); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(121,231,248,0.1); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: #79e7f8;">&#9992;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: white;">JFK to NRT</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.5);">Delta -- 14h 20m -- Nonstop</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #79e7f8;">$850</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.4);">round trip</div>
+        </div>
+      </div>
+      <!-- Glass card 2: Hotel -->
+      <div style="background: rgba(0,101,113,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(121,231,248,0.12); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(121,231,248,0.1); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: #79e7f8;">&#9962;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: white;">Park Hyatt Tokyo</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.5);">Shinjuku -- 9.2/10</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #79e7f8;">$320</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.4);">per night</div>
+        </div>
+      </div>
+      <!-- Glass card 3: Event -->
+      <div style="background: rgba(0,101,113,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(121,231,248,0.12); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(121,231,248,0.1); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: #79e7f8;">&#9835;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: white;">teamLab Borderless</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.5);">Odaiba -- Sat, Mar 15</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #79e7f8;">$32</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.4);">per ticket</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Full Dark + Glass</h3>
+      <p>Dark backgrounds everywhere with frosted teal glass cards. Consistent dark theme across all pages. Prices and accents glow in cyan. High contrast, very immersive.</p>
+      <p style="margin-top: 8px; font-size: 12px; color: #888;">Trade-off: Images (hotel photos, destinations) need careful treatment on dark bg</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #f0f4f5; height: 320px; padding: 20px; display: flex; flex-direction: column; gap: 12px; justify-content: center;">
+      <!-- Light card 1 -->
+      <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 12px rgba(0,101,113,0.06);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: #006571;">&#9992;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a;">JFK to NRT</div>
+          <div style="font-size: 11px; color: #888;">Delta -- 14h 20m -- Nonstop</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #006571;">$850</div>
+          <div style="font-size: 10px; color: #aaa;">round trip</div>
+        </div>
+      </div>
+      <!-- Light card 2 -->
+      <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 12px rgba(0,101,113,0.06);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: #006571;">&#9962;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Park Hyatt Tokyo</div>
+          <div style="font-size: 11px; color: #888;">Shinjuku -- 9.2/10</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #006571;">$320</div>
+          <div style="font-size: 10px; color: #aaa;">per night</div>
+        </div>
+      </div>
+      <!-- Light card 3 -->
+      <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 12px rgba(0,101,113,0.06);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: #006571;">&#9835;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a;">teamLab Borderless</div>
+          <div style="font-size: 11px; color: #888;">Odaiba -- Sat, Mar 15</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #006571;">$32</div>
+          <div style="font-size: 10px; color: #aaa;">per ticket</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Light + Teal Tint</h3>
+      <p>Light warm-gray page background, white cards with subtle teal-tinted borders and shadows. Teal gradient icon containers. Bright, clean, but with brand personality through tinting.</p>
+      <p style="margin-top: 8px; font-size: 12px; color: #888;">Trade-off: Less dramatic, but great for readability and data-heavy pages</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(165deg, #001a20 0%, #002a32 100%); height: 320px; padding: 20px; display: flex; flex-direction: column; gap: 12px; justify-content: center;">
+      <!-- Hybrid: elevated white cards on dark -->
+      <div style="background: white; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(121,231,248,0.06);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #006571, #007d8a); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: white;">&#9992;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a;">JFK to NRT</div>
+          <div style="font-size: 11px; color: #888;">Delta -- 14h 20m -- Nonstop</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #006571;">$850</div>
+          <div style="font-size: 10px; color: #aaa;">round trip</div>
+        </div>
+      </div>
+      <div style="background: white; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(121,231,248,0.06);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #006571, #007d8a); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: white;">&#9962;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Park Hyatt Tokyo</div>
+          <div style="font-size: 11px; color: #888;">Shinjuku -- 9.2/10</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #006571;">$320</div>
+          <div style="font-size: 10px; color: #aaa;">per night</div>
+        </div>
+      </div>
+      <div style="background: white; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(121,231,248,0.06);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #006571, #007d8a); display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px; color: white;">&#9835;</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a;">teamLab Borderless</div>
+          <div style="font-size: 11px; color: #888;">Odaiba -- Sat, Mar 15</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 15px; font-weight: 700; color: #006571;">$32</div>
+          <div style="font-size: 10px; color: #aaa;">per ticket</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Hybrid -- White Cards on Dark</h3>
+      <p>Dark page backgrounds for immersion, but cards themselves are white with strong shadows. Teal gradient icon badges. Best of both: dark drama + readable cards. Images look great.</p>
+      <p style="margin-top: 8px; font-size: 12px; color: #888;">Trade-off: Needs careful balance so cards don't feel "floating in void"</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<h2>Navigation Style</h2>
+<p class="subtitle">Which nav treatment fits the premium teal direction?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 220px; display: flex; flex-direction: column; overflow: hidden;">
+      <!-- Dark glass nav on light page -->
+      <div style="background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); height: 48px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0;">
+        <div style="font-size: 15px; font-weight: 600; color: white;">Walter</div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 16px;">
+          <span style="font-size: 11px; color: rgba(255,255,255,0.7);">Explore</span>
+          <span style="font-size: 11px; color: rgba(255,255,255,0.7);">Plan a Trip</span>
+          <div style="background: #006571; color: white; padding: 5px 14px; border-radius: 980px; font-size: 11px; font-weight: 600;">Get Started</div>
+        </div>
+      </div>
+      <!-- Light page content below -->
+      <div style="flex: 1; background: #f0f4f5; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 18px; font-weight: 600; color: #1a1a1a;">Your trip to Tokyo</div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9992;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Delta -- JFK to NRT</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$850</div>
+        </div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9962;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Park Hyatt Tokyo</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$320</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Dark Glass (current)</h3>
+      <p>Dark translucent bar on every page. Strong anchor, consistent. Contrasts nicely against light content pages.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 220px; display: flex; flex-direction: column; overflow: hidden;">
+      <!-- Adaptive: light nav on light page -->
+      <div style="background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); height: 48px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid rgba(0,101,113,0.08);">
+        <div style="font-size: 15px; font-weight: 600; color: #006571;">Walter</div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 16px;">
+          <span style="font-size: 11px; color: #666;">Explore</span>
+          <span style="font-size: 11px; color: #666;">Plan a Trip</span>
+          <div style="background: #006571; color: white; padding: 5px 14px; border-radius: 980px; font-size: 11px; font-weight: 600;">Get Started</div>
+        </div>
+      </div>
+      <!-- Light page content -->
+      <div style="flex: 1; background: #f0f4f5; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 18px; font-weight: 600; color: #1a1a1a;">Your trip to Tokyo</div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9992;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Delta -- JFK to NRT</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$850</div>
+        </div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9962;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Park Hyatt Tokyo</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$320</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Adaptive (light on light pages)</h3>
+      <p>White frosted glass on light pages, dark glass on the dark hero. Brand name in teal. Feels more integrated -- nav matches the page it's on.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 220px; display: flex; flex-direction: column; overflow: hidden;">
+      <!-- Teal gradient nav -->
+      <div style="background: linear-gradient(90deg, #006571, #007d8a); height: 48px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0;">
+        <div style="font-size: 15px; font-weight: 600; color: white;">Walter</div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 16px;">
+          <span style="font-size: 11px; color: rgba(255,255,255,0.8);">Explore</span>
+          <span style="font-size: 11px; color: rgba(255,255,255,0.8);">Plan a Trip</span>
+          <div style="background: white; color: #006571; padding: 5px 14px; border-radius: 980px; font-size: 11px; font-weight: 600;">Get Started</div>
+        </div>
+      </div>
+      <!-- Light page content -->
+      <div style="flex: 1; background: #f0f4f5; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 18px; font-weight: 600; color: #1a1a1a;">Your trip to Tokyo</div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9992;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Delta -- JFK to NRT</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$850</div>
+        </div>
+        <div style="background: white; border: 1px solid rgba(0,101,113,0.08); border-radius: 10px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(0,101,113,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #e6f7f9, #ccf0f5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #006571;">&#9962;</div>
+          <div style="font-size: 12px; color: #1a1a1a; font-weight: 600;">Park Hyatt Tokyo</div>
+          <div style="margin-left: auto; font-size: 12px; color: #006571; font-weight: 700;">$320</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Teal Gradient Bar</h3>
+      <p>Solid teal gradient, white text, white CTA button. Strong brand presence at the top of every page. Confident, bold. The nav IS the brand.</p>
+    </div>
+  </div>
+</div>

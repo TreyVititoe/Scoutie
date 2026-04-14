@@ -1,0 +1,83 @@
+<h2>What kind of "premium" are we going for?</h2>
+<p class="subtitle">These are different flavors of premium travel brands. Which energy fits Walter?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #2d4a7a 100%); height: 200px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+      <div style="position: absolute; top: 20px; left: 20px; right: 20px;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: rgba(255,255,255,0.4); margin-bottom: 8px;">Your next journey</div>
+        <div style="font-size: 32px; font-weight: 300; color: white; line-height: 1.1;">Discover<br>Tokyo</div>
+      </div>
+      <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 16px; font-size: 12px; color: rgba(255,255,255,0.8);">Explore</div>
+    </div>
+    <div class="card-body">
+      <h3>A. Dark & Luxe</h3>
+      <p>Deep navy/charcoal backgrounds, thin typography, frosted glass cards, subtle gradients. Think: private jet booking app. Moody, high-end, editorial.</p>
+      <p style="margin-top: 8px; font-size: 12px; color: #888;">Vibe: Amex Centurion, Scott's Cheap Flights Premium</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #ffffff; height: 200px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-bottom: 1px solid #eee;">
+      <div style="position: absolute; top: 20px; left: 20px; right: 20px;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: #999; margin-bottom: 8px;">Curated for you</div>
+        <div style="font-size: 32px; font-weight: 600; color: #1a1a1a; line-height: 1.1;">Tokyo<br><span style="color: #006571;">3 nights</span></div>
+      </div>
+      <div style="position: absolute; bottom: 20px; left: 20px; display: flex; gap: 8px;">
+        <div style="background: #f0fafb; color: #006571; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600;">Culture</div>
+        <div style="background: #f5f5f5; color: #666; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600;">$2,500</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Clean & Warm</h3>
+      <p>White backgrounds with warm accents, generous spacing but filled with content. Cards have subtle borders and soft shadows. Think: Airbnb meets Linear.</p>
+      <p style="margin-top: 8px; font-size: 12px; color: #888;">Vibe: Airbnb, Stripe, Notion</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(165deg, #006571 0%, #003d47 100%); height: 200px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+      <div style="position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(121, 231, 248, 0.15) 0%, transparent 60%);"></div>
+      <div style="position: absolute; top: 20px; left: 20px; right: 20px;">
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #79e7f8; animation: pulse 2s infinite;"></div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.6);">AI-powered</div>
+        </div>
+        <div style="font-size: 32px; font-weight: 700; color: white; line-height: 1.1;">Your trip to<br>Tokyo</div>
+      </div>
+      <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 12px; color: rgba(255,255,255,0.7);">3 flights found</div>
+        <div style="font-size: 12px; color: #79e7f8; font-weight: 600;">View all</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Branded Teal</h3>
+      <p>Lean into teal as a hero color. Rich teal gradients for key sections, glass cards, glowing accents. The AI feels present. Think: Vercel's dark mode energy but in your brand color.</p>
+      <p style="margin-top: 8px; font-size: 12px; color: #888;">Vibe: Vercel, Linear, Raycast</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #faf9f7; height: 200px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+      <div style="position: absolute; top: 20px; left: 20px; right: 20px;">
+        <div style="font-size: 40px; font-weight: 300; color: #2a2a2a; line-height: 1.05; letter-spacing: -1px;">Tokyo.</div>
+        <div style="font-size: 15px; color: #888; margin-top: 8px; line-height: 1.5;">Culture, cuisine, and neon lights.<br>3 nights from <strong style="color: #2a2a2a;">$2,500</strong></div>
+      </div>
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to right, #006571, #79e7f8); display: flex; align-items: center; padding: 0 20px;">
+        <div style="font-size: 13px; font-weight: 600; color: white; letter-spacing: 1px; text-transform: uppercase;">Plan this trip</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>D. Editorial & Bold</h3>
+      <p>Large typography as the hero element. Warm off-white backgrounds, dramatic type sizing, bold color accents as horizontal bands. Think: magazine meets travel app.</p>
+      <p style="margin-top: 8px; font-size: 12px; color: #888;">Vibe: Apple Newsroom, Loewe, Aesop</p>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+</style>

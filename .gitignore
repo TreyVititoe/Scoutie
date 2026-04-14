@@ -10,3 +10,4 @@ out
 build
 *.tsbuildinfo
 .DS_Store
+.superpowers/
