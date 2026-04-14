@@ -28,6 +28,7 @@ export type ScoutEvent = {
 export type ScoredEvent = ScoutEvent & {
   score: number;
   matchReason: string;
+  additionalDates?: number;
 };
 
 export type Suggestion = {

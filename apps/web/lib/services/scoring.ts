@@ -54,6 +54,45 @@ function matchReason(event: ScoutEvent, vibes: string[], expandedInterests: stri
   return "Popular in this area";
 }
 
+/**
+ * Deduplicate events by normalized name + venue.
+ * Keeps the highest-scored occurrence, attaches count of additional dates.
+ */
+function deduplicateEvents(events: ScoredEvent[]): ScoredEvent[] {
+  const groups = new Map<string, ScoredEvent[]>();
+
+  for (const event of events) {
+    // Normalize: lowercase, strip dates/numbers at the end, trim
+    const key = event.name
+      .toLowerCase()
+      .replace(/\s*-\s*\w{3},?\s*\w{3,9}\s*\d{1,2}.*$/i, "") // strip " - Mon, Jan 5" suffixes
+      .replace(/\s*\(\d+\/\d+\).*$/, "") // strip "(1/5)" suffixes
+      .replace(/\s*#\d+.*$/, "") // strip "#1" suffixes
+      .trim()
+      + "|" + event.venueName.toLowerCase().trim();
+
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key)!.push(event);
+  }
+
+  const deduped: ScoredEvent[] = [];
+  for (const [, group] of groups) {
+    // Sort by score desc, take the best one
+    group.sort((a, b) => b.score - a.score);
+    const best = { ...group[0] };
+    if (group.length > 1) {
+      best.additionalDates = group.length - 1;
+    }
+    deduped.push(best);
+  }
+
+  // Re-sort by score
+  deduped.sort((a, b) => b.score - a.score);
+  return deduped;
+}
+
 export type ScoredBuckets = {
   exactMatches: ScoredEvent[];
   similarMatches: ScoredEvent[];
@@ -98,5 +137,9 @@ export function scoreAndBucket(
       matchReason: "Popular in this area",
     }));
 
-  return { exactMatches, similarMatches, topInArea };
+  return {
+    exactMatches: deduplicateEvents(exactMatches),
+    similarMatches: deduplicateEvents(similarMatches),
+    topInArea: deduplicateEvents(topInArea),
+  };
 }

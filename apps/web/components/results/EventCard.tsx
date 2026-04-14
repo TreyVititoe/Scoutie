@@ -89,12 +89,19 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
         {/* Date/time */}
         <div className="flex items-center gap-1.5 mb-4">
           <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">calendar_today</span>
-          <p className="text-sm font-semibold text-on-surface">
-            {formatDate(event.date)}
-            {event.time && (
-              <span className="text-on-light-tertiary font-normal ml-1.5">{formatTime(event.time)}</span>
+          <div>
+            <p className="text-sm font-semibold text-on-surface">
+              {formatDate(event.date)}
+              {event.time && (
+                <span className="text-on-light-tertiary font-normal ml-1.5">{formatTime(event.time)}</span>
+              )}
+            </p>
+            {event.additionalDates != null && event.additionalDates > 0 && (
+              <p className="text-[11px] text-accent font-semibold mt-0.5">
+                +{event.additionalDates} more date{event.additionalDates !== 1 ? "s" : ""} during your trip
+              </p>
             )}
-          </p>
+          </div>
         </div>
 
         {/* Price & Add to Trip */}
