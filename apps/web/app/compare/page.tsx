@@ -369,9 +369,85 @@ export default function ComparePage() {
           <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
             Compare your options
           </h1>
-          <p className="text-on-light-secondary text-[17px]">
-            Walter found {trips.length} trip options for you. Compare them and pick your favorite.
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-on-light-secondary text-[17px]">
+              Walter found {trips.length} trip options for you. Compare them and pick your favorite.
+            </p>
+            <button
+              onClick={() => {
+                setTrips([]);
+                setFlightData({});
+                setEventData({});
+                setSavedIds(new Set());
+                setExpandedTrip(null);
+                setLoading(true);
+                setError(null);
+
+                const stored = localStorage.getItem("walter_prefs");
+                if (!stored) return;
+                const quizData = JSON.parse(stored);
+
+                fetch("/api/compare", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(quizData),
+                })
+                  .then((r) => r.json())
+                  .then((data) => {
+                    if (data.error) {
+                      setError(data.error);
+                    } else {
+                      const tripList = data.trips || [];
+                      setTrips(tripList);
+
+                      // Re-fetch flights + events for new trips
+                      const departureCity = quizData.departureCity || "";
+                      const startDate = quizData.startDate || "";
+                      const endDate = quizData.endDate || "";
+                      const adults = quizData.travelersCount || quizData.travelers || 1;
+                      const cabinClass = quizData.flightClass || "economy";
+                      const vibes = quizData.activityInterests || quizData.vibes || [];
+
+                      if (departureCity && startDate && endDate) {
+                        tripList.forEach((trip: CompareTrip, idx: number) => {
+                          setFlightData((prev) => ({ ...prev, [idx]: { cheapest: null, fastest: null, count: 0, loading: true } }));
+                          fetch("/api/flights", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ origin: departureCity, destination: trip.destination, departDate: startDate, returnDate: endDate, adults, cabinClass }) })
+                            .then((r) => r.json())
+                            .then((fData) => {
+                              const fl = fData.flights || [];
+                              const prices = fl.map((f: { price: number }) => f.price);
+                              const cheapest = prices.length ? Math.min(...prices) : null;
+                              const fastest = fl.length ? fl.reduce((a: { duration: string; price: number }, b: { duration: string; price: number }) => (parseInt(a.duration) || 99) < (parseInt(b.duration) || 99) ? a : b) : null;
+                              setFlightData((prev) => ({ ...prev, [idx]: { cheapest, fastest: fastest ? { price: fastest.price, duration: fastest.duration } : null, count: fl.length, loading: false } }));
+                            })
+                            .catch(() => setFlightData((prev) => ({ ...prev, [idx]: { cheapest: null, fastest: null, count: 0, loading: false } })));
+                        });
+                      }
+
+                      if (startDate && endDate) {
+                        tripList.forEach((trip: CompareTrip, idx: number) => {
+                          setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, loading: true } }));
+                          fetch("/api/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ destination: trip.destination, startDate, endDate, vibes, travelers: adults }) })
+                            .then((r) => r.json())
+                            .then((eData) => {
+                              const all = [...(eData.exactMatches || []), ...(eData.similarMatches || []), ...(eData.topInArea || [])];
+                              const mapped = all.slice(0, 8).map((ev: Record<string, unknown>) => ({ name: ev.name as string, date: ev.date as string, venueName: ev.venueName as string, category: ev.category as string, priceMin: (ev.priceMin as number) || null }));
+                              setEventData((prev) => ({ ...prev, [idx]: { events: mapped, count: all.length, loading: false } }));
+                            })
+                            .catch(() => setEventData((prev) => ({ ...prev, [idx]: { events: [], count: 0, loading: false } })));
+                        });
+                      }
+                    }
+                  })
+                  .catch(() => setError("Failed to regenerate. Please try again."))
+                  .finally(() => setLoading(false));
+              }}
+              className="flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-light transition-colors flex-shrink-0"
+            >
+              <span className="material-symbols-outlined text-[18px]">refresh</span>
+              New suggestions
+            </button>
+          </div>
         </motion.div>
 
         {/* Comparison Cards */}
