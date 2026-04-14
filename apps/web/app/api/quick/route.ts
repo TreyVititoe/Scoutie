@@ -3,6 +3,38 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+function parseClaudeJson(text: string) {
+  const cleaned = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
+  try { return JSON.parse(cleaned); } catch { /* noop */ }
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (jsonMatch) { try { return JSON.parse(jsonMatch[0]); } catch { /* noop */ } }
+  // Repair truncated JSON
+  let repaired = cleaned;
+  repaired = repaired.replace(/,\s*[^{}\[\]"]*$/, "");
+  // Close unclosed strings
+  let inStr = false, esc = false, lastQuoteIdx = -1;
+  for (let i = 0; i < repaired.length; i++) {
+    if (esc) { esc = false; continue; }
+    if (repaired[i] === "\\") { esc = true; continue; }
+    if (repaired[i] === '"') { inStr = !inStr; lastQuoteIdx = i; }
+  }
+  if (inStr && lastQuoteIdx >= 0) repaired = repaired.slice(0, lastQuoteIdx + 1);
+  if (inStr) repaired += '"';
+  // Close brackets
+  let ob = 0, oq = 0; inStr = false; esc = false;
+  for (const ch of repaired) {
+    if (esc) { esc = false; continue; }
+    if (ch === "\\") { esc = true; continue; }
+    if (ch === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (ch === "{") ob++; if (ch === "}") ob--;
+    if (ch === "[") oq++; if (ch === "]") oq--;
+  }
+  for (let i = 0; i < oq; i++) repaired += "]";
+  for (let i = 0; i < ob; i++) repaired += "}";
+  try { return JSON.parse(repaired); } catch { throw new Error("Could not parse AI response"); }
+}
+
 export const maxDuration = 300;
 
 const SYSTEM_PROMPT = `You are Walter, an expert AI travel planner. A user will give you a list of freeform keywords describing what they want in a trip. These could be ANYTHING: cities, countries, artists, activities, vibes, foods, dates, budgets, events, sports teams, TV shows, anything.
@@ -46,7 +78,7 @@ Interpret these creatively:
 - If they mention dates or a month, note it in the trip
 - If they mention a budget, respect it
 
-Generate 3 diverse trip options as JSON. Each trip should be 4-5 days. Assume a moderate budget of $2,000-3,000 unless they specified otherwise.`;
+Generate 3 diverse trip options as JSON. Each trip should be 3 days (keep it short). Assume a moderate budget of $2,000-3,000 unless they specified otherwise.`;
 
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
@@ -60,32 +92,7 @@ Generate 3 diverse trip options as JSON. Each trip should be 4-5 days. Assume a 
     }
 
     const text = message.content[0].type === "text" ? message.content[0].text : "";
-
-    // Parse with repair
-    let parsed;
-    try {
-      const cleaned = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
-      parsed = JSON.parse(cleaned);
-    } catch {
-      // Try to repair truncated JSON
-      let repaired = text.replace(/```(?:json)?\s*/g, "").replace(/```\s*$/g, "").trim();
-      repaired = repaired.replace(/,\s*[^{}\[\]"]*$/, "");
-      let openBraces = 0, openBrackets = 0, inString = false, escaped = false;
-      for (const ch of repaired) {
-        if (escaped) { escaped = false; continue; }
-        if (ch === "\\") { escaped = true; continue; }
-        if (ch === '"') { inString = !inString; continue; }
-        if (inString) continue;
-        if (ch === "{") openBraces++;
-        if (ch === "}") openBraces--;
-        if (ch === "[") openBrackets++;
-        if (ch === "]") openBrackets--;
-      }
-      for (let i = 0; i < openBrackets; i++) repaired += "]";
-      for (let i = 0; i < openBraces; i++) repaired += "}";
-      parsed = JSON.parse(repaired);
-    }
-
+    const parsed = parseClaudeJson(text);
     return NextResponse.json(parsed);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
