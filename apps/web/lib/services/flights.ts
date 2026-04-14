@@ -83,14 +83,28 @@ const CITY_TO_IATA: Record<string, string> = {
 function resolveIATA(input: string): string | null {
   if (!input) return null;
 
-  // If it's already a 3-letter uppercase code, use it directly
   const trimmed = input.trim();
+
+  // If it's already a 3-letter uppercase code, use it directly
   if (/^[A-Z]{3}$/.test(trimmed)) return trimmed;
+
+  // Handle "LAX - Los Angeles, CA" format (from IATA autocomplete)
+  const iataMatch = trimmed.match(/^([A-Z]{3})\s*-/);
+  if (iataMatch) return iataMatch[1];
+
+  // Handle "lax" or "LAX" without dash
+  if (/^[a-zA-Z]{3}$/.test(trimmed) && CITY_TO_IATA[trimmed.toLowerCase()]) {
+    return CITY_TO_IATA[trimmed.toLowerCase()];
+  }
+  if (/^[a-zA-Z]{3}$/.test(trimmed)) return trimmed.toUpperCase();
 
   // Extract the city name (before first comma from Mapbox geocoding)
   const city = trimmed.split(",")[0].trim().toLowerCase();
 
-  return CITY_TO_IATA[city] || null;
+  // Also try stripping " - ..." suffix (e.g. "Los Angeles - LAX")
+  const dashCity = city.split(" - ")[0].trim();
+
+  return CITY_TO_IATA[city] || CITY_TO_IATA[dashCity] || null;
 }
 
 function formatMinutes(mins: number): string {
