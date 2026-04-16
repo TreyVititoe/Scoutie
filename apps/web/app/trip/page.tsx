@@ -217,6 +217,15 @@ function TripPage() {
         ? formatDate(startDate)
         : "";
 
+  const tripDays = (() => {
+    if (!startDate || !endDate) return null;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const ms = end.getTime() - start.getTime();
+    if (Number.isNaN(ms) || ms < 0) return null;
+    return Math.max(1, Math.round(ms / 86400000) + 1);
+  })();
+
   /* ── Empty state ── */
   if (items.length === 0) {
     return (
@@ -355,6 +364,23 @@ function TripPage() {
                       calendar_today
                     </span>
                     {dateRange}
+                  </p>
+                </div>
+                <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
+              </>
+            )}
+
+            {tripDays !== null && (
+              <>
+                <div>
+                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+                    Length
+                  </p>
+                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-cyan text-[20px]">
+                      schedule
+                    </span>
+                    {tripDays} {tripDays === 1 ? "day" : "days"}
                   </p>
                 </div>
                 <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
