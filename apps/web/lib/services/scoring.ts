@@ -123,14 +123,14 @@ export function scoreAndBucket(
 
   scored.sort((a, b) => b.score - a.score);
 
-  const exactMatches = scored.filter((e) => e.score >= 0.5).slice(0, 6);
-  const similarMatches = scored.filter((e) => e.score >= 0.2 && e.score < 0.5).slice(0, 6);
+  const exactMatches = scored.filter((e) => e.score >= 0.5).slice(0, 20);
+  const similarMatches = scored.filter((e) => e.score >= 0.2 && e.score < 0.5).slice(0, 20);
 
   // topInArea: always populate — use general area events, exclude already shown
   const shownIds = new Set([...exactMatches, ...similarMatches].map((e) => e.id));
   const topInArea: ScoredEvent[] = topAreaEvents
     .filter((e) => !shownIds.has(e.id))
-    .slice(0, 6)
+    .slice(0, 20)
     .map((e) => ({
       ...e,
       score: proximityScore(e.date, startDate, endDate) * 0.5 + e.popularity / 100 * 0.5,

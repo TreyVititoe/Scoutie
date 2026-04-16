@@ -156,7 +156,7 @@ export async function fetchTopEventsInArea(
   destination: string,
   startDate: string,
   endDate: string,
-  size = 8
+  size = 40
 ): Promise<ScoutEvent[]> {
   const apiKey = process.env.TICKETMASTER_API_KEY;
   if (!apiKey) return [];
@@ -208,11 +208,11 @@ export async function fetchEventsByVibes(
   // Geocode once, reuse for all keyword searches
   const locationParams = await buildLocationParams(destination);
 
-  // Fetch in parallel for top 3 keyword groups
-  const keywordList = Array.from(allKeywords).slice(0, 3);
+  // Fetch in parallel for top keyword groups
+  const keywordList = Array.from(allKeywords).slice(0, 6);
   const results = await Promise.all(
     keywordList.map((kw) =>
-      fetchEventsByKeyword(destination, startDate, endDate, kw, locationParams, 5)
+      fetchEventsByKeyword(destination, startDate, endDate, kw, locationParams, 25)
     )
   );
 
