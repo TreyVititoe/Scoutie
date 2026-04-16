@@ -149,9 +149,9 @@ export default function ComparePage() {
                     ? Math.min(...flights.map((f: { price: number }) => f.price))
                     : null;
                   const fastest = flights.length > 0
-                    ? flights.reduce((a: { duration: string; price: number }, b: { duration: string; price: number }) => {
-                        const dA = parseInt(a.duration) || 99;
-                        const dB = parseInt(b.duration) || 99;
+                    ? flights.reduce((a: { outbound: { duration: string }; price: number }, b: { outbound: { duration: string }; price: number }) => {
+                        const dA = parseInt(a.outbound?.duration ?? "") || 99;
+                        const dB = parseInt(b.outbound?.duration ?? "") || 99;
                         return dA < dB ? a : b;
                       })
                     : null;
@@ -160,7 +160,7 @@ export default function ComparePage() {
                     ...prev,
                     [idx]: {
                       cheapest,
-                      fastest: fastest ? { price: fastest.price, duration: fastest.duration } : null,
+                      fastest: fastest ? { price: fastest.price, duration: fastest.outbound?.duration ?? "" } : null,
                       count: flights.length,
                       loading: false,
                     },
@@ -463,8 +463,8 @@ export default function ComparePage() {
                                     const fl = fData.flights || [];
                                     const prices = fl.map((f: { price: number }) => f.price);
                                     const cheapest = prices.length ? Math.min(...prices) : null;
-                                    const fastest = fl.length ? fl.reduce((a: { duration: string; price: number }, b: { duration: string; price: number }) => (parseInt(a.duration) || 99) < (parseInt(b.duration) || 99) ? a : b) : null;
-                                    setFlightData((prev) => ({ ...prev, [idx]: { cheapest, fastest: fastest ? { price: fastest.price, duration: fastest.duration } : null, count: fl.length, loading: false } }));
+                                    const fastest = fl.length ? fl.reduce((a: { outbound: { duration: string }; price: number }, b: { outbound: { duration: string }; price: number }) => (parseInt(a.outbound?.duration ?? "") || 99) < (parseInt(b.outbound?.duration ?? "") || 99) ? a : b) : null;
+                                    setFlightData((prev) => ({ ...prev, [idx]: { cheapest, fastest: fastest ? { price: fastest.price, duration: fastest.outbound?.duration ?? "" } : null, count: fl.length, loading: false } }));
                                   })
                                   .catch(() => setFlightData((prev) => ({ ...prev, [idx]: { cheapest: null, fastest: null, count: 0, loading: false } })));
                               });

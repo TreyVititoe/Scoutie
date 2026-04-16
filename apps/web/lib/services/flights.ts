@@ -1,15 +1,41 @@
 const SERPAPI_KEY = process.env.SERPAPI_KEY!;
 
-export type FlightResult = {
-  id: string;
+export type FlightLeg = {
   airline: string;
   airlineLogo: string | null;
+  flightNumber: string | null;
   departure: string;
   arrival: string;
   departTime: string;
   arriveTime: string;
   duration: string;
+  aircraft: string | null;
+};
+
+export type FlightLayover = {
+  airport: string;
+  city: string | null;
+  duration: string;
+  overnight: boolean;
+};
+
+export type FlightJourney = {
+  legs: FlightLeg[];
+  layovers: FlightLayover[];
+  duration: string;
   stops: number;
+  departure: string;
+  arrival: string;
+  departTime: string;
+  arriveTime: string;
+};
+
+export type FlightResult = {
+  id: string;
+  airline: string;
+  airlineLogo: string | null;
+  outbound: FlightJourney;
+  return: FlightJourney | null;
   price: number;
   currency: string;
   bookingUrl: string | null;
@@ -124,8 +150,86 @@ function formatTime(dateTimeStr: string): string {
   return `${h12}:${minutes} ${ampm}`;
 }
 
+function parseLeg(leg: Record<string, unknown>): FlightLeg {
+  const depAirport = (leg.departure_airport as Record<string, string>) || {};
+  const arrAirport = (leg.arrival_airport as Record<string, string>) || {};
+  const depTime = depAirport.time || "";
+  const arrTime = arrAirport.time || "";
+  return {
+    airline: (leg.airline as string) || "Unknown",
+    airlineLogo: (leg.airline_logo as string) || null,
+    flightNumber: (leg.flight_number as string) || null,
+    departure: depAirport.id || "",
+    arrival: arrAirport.id || "",
+    departTime: depTime ? formatTime(depTime) : "",
+    arriveTime: arrTime ? formatTime(arrTime) : "",
+    duration: formatMinutes((leg.duration as number) || 0),
+    aircraft: (leg.airplane as string) || null,
+  };
+}
+
+function parseLayover(lay: Record<string, unknown>): FlightLayover {
+  return {
+    airport: (lay.id as string) || "",
+    city: (lay.name as string) || null,
+    duration: formatMinutes((lay.duration as number) || 0),
+    overnight: Boolean(lay.overnight),
+  };
+}
+
+function buildJourney(flightObj: Record<string, unknown>): FlightJourney {
+  const rawLegs = (flightObj.flights as Array<Record<string, unknown>>) || [];
+  const rawLayovers = (flightObj.layovers as Array<Record<string, unknown>>) || [];
+  const legs = rawLegs.map(parseLeg);
+  const layovers = rawLayovers.map(parseLayover);
+  const first = legs[0];
+  const last = legs[legs.length - 1] || first;
+  return {
+    legs,
+    layovers,
+    duration: formatMinutes((flightObj.total_duration as number) || 0),
+    stops: Math.max(0, legs.length - 1),
+    departure: first?.departure || "",
+    arrival: last?.arrival || "",
+    departTime: first?.departTime || "",
+    arriveTime: last?.arriveTime || "",
+  };
+}
+
+/**
+ * Fetch the cheapest matching return journey for a given outbound via its departure_token.
+ * SerpAPI requires a 2nd google_flights call with the token to get return options.
+ */
+async function fetchReturnJourney(
+  departureToken: string,
+  baseParams: URLSearchParams
+): Promise<FlightJourney | null> {
+  const params = new URLSearchParams(baseParams);
+  params.set("departure_token", departureToken);
+  try {
+    const res = await fetch(`https://serpapi.com/search.json?${params}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.error) return null;
+    const options: Array<Record<string, unknown>> = [
+      ...(data.best_flights || []),
+      ...(data.other_flights || []),
+    ];
+    if (options.length === 0) return null;
+    options.sort(
+      (a, b) => ((a.price as number) ?? Infinity) - ((b.price as number) ?? Infinity)
+    );
+    return buildJourney(options[0]);
+  } catch (err) {
+    console.warn("[flights] return fetch failed:", err);
+    return null;
+  }
+}
+
 /**
  * Search roundtrip flights via SerpAPI (Google Flights).
+ * Outbound options come from the first call; the matching return journey for each
+ * is fetched in parallel via a second call per departure_token.
  */
 export async function searchFlights(params: {
   origin: string;
@@ -183,33 +287,32 @@ export async function searchFlights(params: {
   const otherFlights = data.other_flights || [];
   const allFlights = [...bestFlights, ...otherFlights];
 
-  return allFlights.slice(0, 8).map((flight: Record<string, unknown>, i: number): FlightResult => {
-    const legs = (flight.flights as Array<Record<string, unknown>>) || [];
-    const firstLeg = legs[0] || {};
-    const depAirport = (firstLeg.departure_airport as Record<string, string>) || {};
-    const arrAirport = (firstLeg.arrival_airport as Record<string, string>) || {};
-    const totalDuration = (flight.total_duration as number) || 0;
-    const stops = legs.length - 1;
+  const top = allFlights.slice(0, 8) as Array<Record<string, unknown>>;
+
+  // Fetch return journey for each outbound in parallel
+  const returnJourneys = await Promise.all(
+    top.map((flight) => {
+      const token = flight.departure_token as string | undefined;
+      return token ? fetchReturnJourney(token, searchParams) : Promise.resolve(null);
+    })
+  );
+
+  const bookingUrl = `https://www.google.com/travel/flights?q=flights+from+${originCode}+to+${destCode}+on+${departDate}+return+${returnDate}`;
+
+  return top.map((flight, i): FlightResult => {
+    const outbound = buildJourney(flight);
+    const ret = returnJourneys[i];
     const price = (flight.price as number) || 0;
-    const airline = (firstLeg.airline as string) || "Unknown";
-    const airlineLogo = (flight.airline_logo as string) || (firstLeg.airline_logo as string) || null;
-
-    const depTime = (depAirport.time as string) || "";
-    const arrTime = (arrAirport.time as string) || "";
-
-    // Build Google Flights booking URL
-    const bookingUrl = `https://www.google.com/travel/flights?q=flights+from+${originCode}+to+${destCode}+on+${departDate}+return+${returnDate}`;
+    const airline = outbound.legs[0]?.airline || "Unknown";
+    const airlineLogo =
+      (flight.airline_logo as string) || outbound.legs[0]?.airlineLogo || null;
 
     return {
       id: `flight-${i}`,
       airline,
       airlineLogo,
-      departure: depAirport.id || originCode,
-      arrival: arrAirport.id || destCode,
-      departTime: depTime ? formatTime(depTime) : "",
-      arriveTime: arrTime ? formatTime(arrTime) : "",
-      duration: formatMinutes(totalDuration),
-      stops,
+      outbound,
+      return: ret,
       price,
       currency: "USD",
       bookingUrl,
