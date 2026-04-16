@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTripCartStore, type CartItemType } from "@/lib/stores/tripCartStore";
 
 type TripItem = {
   id: string;
@@ -15,6 +16,20 @@ type TripItem = {
   estimated_cost: number;
   location_name: string | null;
   rating: number | null;
+  image_url: string | null;
+  booking_url: string | null;
+};
+
+// Map DB item_type -> cart CartItemType (cart doesn't have rental/transport/note)
+const DB_TO_CART_TYPE: Record<string, CartItemType> = {
+  flight: "flight",
+  hotel: "hotel",
+  event: "event",
+  activity: "activity",
+  restaurant: "restaurant",
+  rental: "activity",
+  transport: "activity",
+  note: "activity",
 };
 
 type TripDay = {
@@ -51,12 +66,15 @@ const typeIcons: Record<string, string> = {
 
 export default function SharedTripPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params.slug as string;
   const [trip, setTrip] = useState<SharedTrip | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [activeDay, setActiveDay] = useState(1);
   const [forking, setForking] = useState(false);
+  const clearCart = useTripCartStore((s) => s.clearCart);
+  const addItem = useTripCartStore((s) => s.addItem);
 
   useEffect(() => {
     fetch(`/api/trips/shared?slug=${slug}`)
@@ -72,26 +90,54 @@ export default function SharedTripPage() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  const handleFork = async () => {
+  // Fork = make this trip yours: load all items into your cart, set prefs, go edit.
+  const handleFork = () => {
     if (!trip || forking) return;
     setForking(true);
 
     try {
-      const res = await fetch("/api/trips/fork", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tripId: trip.id }),
+      // 1. Replace cart with items from the shared trip
+      clearCart();
+      const allItems = trip.trip_days.flatMap((d) => d.trip_items);
+      allItems.forEach((it, idx) => {
+        const cartType = DB_TO_CART_TYPE[it.item_type] || "activity";
+        addItem({
+          id: `forked-${trip.id}-${it.id || idx}`,
+          type: cartType,
+          title: it.title,
+          subtitle: it.description || it.location_name || "",
+          price: it.estimated_cost || null,
+          image: it.image_url || null,
+          bookingUrl: it.booking_url || null,
+          provider: "forked",
+          date: null,
+          meta: {
+            locationName: it.location_name || "",
+            rating: it.rating,
+            startTime: it.start_time,
+            forkedFromTripId: trip.id,
+          },
+        });
       });
 
-      if (!res.ok) {
-        setForking(false);
-        return;
-      }
+      // 2. Seed walter_prefs so /trip and /results know the destination/dates
+      const existing = (() => {
+        try { return JSON.parse(localStorage.getItem("walter_prefs") || "{}"); }
+        catch { return {}; }
+      })();
+      const next = {
+        ...existing,
+        destination: trip.destination,
+        destinations: [trip.destination],
+        startDate: trip.start_date || existing.startDate || null,
+        endDate: trip.end_date || existing.endDate || null,
+      };
+      localStorage.setItem("walter_prefs", JSON.stringify(next));
 
-      const data = await res.json();
-      // Redirect to the forked trip's shared page so they can see it
-      window.location.href = `/shared/${data.shareSlug}`;
-    } catch {
+      // 3. Off to the trip builder so they can edit it
+      router.push("/trip");
+    } catch (err) {
+      console.error("[fork]", err);
       setForking(false);
     }
   };
@@ -209,8 +255,8 @@ export default function SharedTripPage() {
             disabled={forking}
             className="mt-6 bg-white/15 border border-white/20 text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-white/25 transition-colors disabled:opacity-50 flex items-center gap-1.5"
           >
-            <span className="material-symbols-outlined text-[16px]">content_copy</span>
-            {forking ? "Forking..." : "Fork this trip"}
+            <span className="material-symbols-outlined text-[16px]">edit</span>
+            {forking ? "Loading..." : "Make this trip mine"}
           </button>
         </div>
       </div>

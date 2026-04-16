@@ -20,7 +20,8 @@ export async function GET(req: NextRequest) {
         trip_items (
           id, item_type, title, description, start_time, end_time,
           duration_minutes, estimated_cost, location_name,
-          location_lat, location_lng, rating, sort_order
+          location_lat, location_lng, rating, sort_order,
+          image_url, booking_url
         )
       )
     `);
