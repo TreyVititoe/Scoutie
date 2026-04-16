@@ -1,11 +1,37 @@
 "use client";
 
-import { useQuizStore } from "@/lib/stores/quizStore";
+import { useQuizStore, AccommodationType } from "@/lib/stores/quizStore";
 import StepWrapper from "./StepWrapper";
 import DestinationAutocomplete from "./DestinationAutocomplete";
 
+const accommodationOptions: { value: AccommodationType; label: string; icon: string }[] = [
+  { value: "hotel", label: "Hotel", icon: "hotel" },
+  { value: "vacation_rental", label: "Rental", icon: "cottage" },
+  { value: "hostel", label: "Hostel", icon: "bunk_bed" },
+  { value: "resort", label: "Resort", icon: "spa" },
+  { value: "boutique", label: "Boutique", icon: "store" },
+];
+
 export default function Step1WhereWhen() {
   const store = useQuizStore();
+
+  const toggleAccommodationType = (type: AccommodationType) => {
+    if (store.noAccommodation) store.setNoAccommodation(false);
+    if (store.accommodationTypes.includes(type)) {
+      store.setAccommodationTypes(store.accommodationTypes.filter((t) => t !== type));
+    } else {
+      store.setAccommodationTypes([...store.accommodationTypes, type]);
+    }
+  };
+
+  const toggleNoAccommodation = () => {
+    if (store.noAccommodation) {
+      store.setNoAccommodation(false);
+    } else {
+      store.setNoAccommodation(true);
+      store.setAccommodationTypes([]);
+    }
+  };
 
   const handleSurpriseMe = () => {
     store.setDestinations([]);
@@ -141,6 +167,47 @@ export default function Step1WhereWhen() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Where are you staying? */}
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-dark">
+            Where are you staying?
+          </label>
+          <div className={`grid grid-cols-3 sm:grid-cols-5 gap-2 transition-opacity ${store.noAccommodation ? "opacity-30 pointer-events-none" : ""}`}>
+            {accommodationOptions.map((opt) => {
+              const isSelected = store.accommodationTypes.includes(opt.value);
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => toggleAccommodationType(opt.value)}
+                  className={`flex flex-col items-center gap-1 p-3 rounded-[12px] border transition-colors ${
+                    isSelected
+                      ? "border-accent bg-accent/5"
+                      : "border-[rgba(0,101,113,0.08)] bg-white hover:border-accent/30"
+                  }`}
+                >
+                  <span className={`material-symbols-outlined text-[22px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
+                    {opt.icon}
+                  </span>
+                  <span className={`text-xs font-semibold ${isSelected ? "text-accent" : "text-gray-dark"}`}>
+                    {opt.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={toggleNoAccommodation}
+            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-[10px] border text-sm transition-colors ${
+              store.noAccommodation
+                ? "border-accent bg-accent text-white"
+                : "border-[rgba(0,101,113,0.08)] bg-white text-on-light-secondary hover:border-accent/30"
+            }`}
+          >
+            <span className="material-symbols-outlined text-[18px]">group</span>
+            Don&apos;t need a place (staying with friends/family)
+          </button>
         </div>
       </div>
     </StepWrapper>
