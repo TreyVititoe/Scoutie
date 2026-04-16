@@ -141,7 +141,7 @@ export async function searchFlights(params: {
   const destCode = resolveIATA(destination);
 
   if (!originCode || !destCode) {
-    console.warn("[flights] Could not resolve IATA codes for", origin, "->", destination);
+    console.warn(`[flights] Could not resolve IATA: origin="${origin}"=>${originCode} dest="${destination}"=>${destCode}`);
     return [];
   }
 

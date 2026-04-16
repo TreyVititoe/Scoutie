@@ -85,7 +85,7 @@ export default function ResultsPage() {
     const hotelsController = new AbortController();
     const eventsController = new AbortController();
     const suggestionsTimeout = setTimeout(() => suggestionsController.abort(), 30000);
-    const flightsTimeout = setTimeout(() => flightsController.abort(), 15000);
+    const flightsTimeout = setTimeout(() => flightsController.abort(), 25000);
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
     const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
 
