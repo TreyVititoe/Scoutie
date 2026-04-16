@@ -122,6 +122,23 @@ export default function SharedTripPage() {
   const currentDay =
     trip.trip_days.find((d) => d.day_number === activeDay) || trip.trip_days[0];
 
+  // Single-day trips (hand-curated from cart) render grouped by item type instead of as a timeline
+  const isSingleDay = trip.trip_days.length === 1;
+  const allItems = trip.trip_days.flatMap((d) => d.trip_items);
+  const groupOrder: Array<{ key: string; label: string; icon: string }> = [
+    { key: "flight", label: "Flights", icon: "flight" },
+    { key: "hotel", label: "Stays", icon: "hotel" },
+    { key: "event", label: "Events", icon: "event" },
+    { key: "activity", label: "Activities", icon: "hiking" },
+    { key: "restaurant", label: "Dining", icon: "restaurant" },
+    { key: "rental", label: "Rentals", icon: "directions_car" },
+    { key: "transport", label: "Transport", icon: "directions_transit" },
+    { key: "note", label: "Notes", icon: "sticky_note_2" },
+  ];
+  const groupedItems = groupOrder
+    .map((g) => ({ ...g, items: allItems.filter((it) => it.item_type === g.key) }))
+    .filter((g) => g.items.length > 0);
+
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Header */}
@@ -168,7 +185,9 @@ export default function SharedTripPage() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-cyan text-[18px]">schedule</span>
-              <span className="font-semibold text-white text-sm">{trip.trip_days.length} days</span>
+              <span className="font-semibold text-white text-sm">
+                {isSingleDay ? `${allItems.length} items` : `${trip.trip_days.length} days`}
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-cyan text-[18px]">payments</span>
@@ -197,93 +216,153 @@ export default function SharedTripPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-8">
-        {/* Day selector */}
-        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-8">
-          {trip.trip_days.map((day) => (
-            <button
-              key={day.day_number}
-              onClick={() => setActiveDay(day.day_number)}
-              className={`flex-shrink-0 px-5 py-3 rounded-[10px] font-medium transition-all ${
-                activeDay === day.day_number
-                  ? "bg-accent text-white shadow-elevated"
-                  : "card-base text-on-light-secondary hover:bg-white/80"
-              }`}
-            >
-              <span className="block text-xs opacity-70">Day {day.day_number}</span>
-              <span className="block text-sm font-semibold">{day.title}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Day content */}
-        {currentDay && (
+        {isSingleDay ? (
+          /* Grouped-by-type view for hand-curated trips (no day plan) */
           <motion.div
-            key={activeDay}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
+            className="space-y-10"
           >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="font-semibold text-2xl text-gray-dark">
-                  Day {currentDay.day_number}: {currentDay.title}
-                </h2>
-                <p className="text-on-light-secondary mt-1">{currentDay.summary}</p>
-              </div>
-              <span className="text-accent font-semibold">
-                ~${currentDay.estimated_cost.toLocaleString()}
-              </span>
+            {groupedItems.map((group) => (
+              <section key={group.key}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="icon-gradient w-10 h-10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-accent text-[20px]">{group.icon}</span>
+                  </div>
+                  <h2 className="font-semibold text-xl text-gray-dark">{group.label}</h2>
+                  <span className="text-on-light-tertiary text-sm">
+                    {group.items.length}
+                  </span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {group.items.map((item, i) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.03 }}
+                      className="card-base overflow-hidden"
+                    >
+                      <div className="h-0.5 bg-gradient-to-r from-accent to-cyan" />
+                      <div className="p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm text-gray-dark">{item.title}</p>
+                            {item.description && (
+                              <p className="text-xs mt-1 text-on-light-secondary line-clamp-2">{item.description}</p>
+                            )}
+                            {item.location_name && (
+                              <p className="text-xs mt-1 text-on-light-tertiary truncate">{item.location_name}</p>
+                            )}
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            {item.estimated_cost > 0 && (
+                              <p className="text-accent font-semibold text-sm">${item.estimated_cost}</p>
+                            )}
+                            {item.rating && (
+                              <p className="text-on-light-tertiary text-xs mt-0.5">{item.rating}/5</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </motion.div>
+        ) : (
+          <>
+            {/* Day selector */}
+            <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-8">
+              {trip.trip_days.map((day) => (
+                <button
+                  key={day.day_number}
+                  onClick={() => setActiveDay(day.day_number)}
+                  className={`flex-shrink-0 px-5 py-3 rounded-[10px] font-medium transition-all ${
+                    activeDay === day.day_number
+                      ? "bg-accent text-white shadow-elevated"
+                      : "card-base text-on-light-secondary hover:bg-white/80"
+                  }`}
+                >
+                  <span className="block text-xs opacity-70">Day {day.day_number}</span>
+                  <span className="block text-sm font-semibold">{day.title}</span>
+                </button>
+              ))}
             </div>
 
-            {/* Timeline */}
-            <div className="relative pl-8">
-              <div className="absolute left-3 top-0 bottom-0 w-px bg-[rgba(0,101,113,0.08)]" />
-              <div className="space-y-4">
-                {currentDay.trip_items.map((item, i) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="relative card-base overflow-hidden"
-                  >
-                    <div className="h-0.5 bg-gradient-to-r from-accent to-cyan" />
-                    <div className="p-4">
-                    <div className="absolute -left-[1.4rem] top-6 w-3 h-3 rounded-full bg-accent border-2 border-page-bg" />
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="bg-[#e6f7f9] text-accent rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
-                            {item.item_type}
-                          </span>
-                          {item.start_time && (
-                            <span className="text-on-light-tertiary text-[12px]">
-                              {item.start_time}
-                              {item.end_time && ` - ${item.end_time}`}
-                            </span>
-                          )}
+            {/* Day content */}
+            {currentDay && (
+              <motion.div
+                key={activeDay}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="font-semibold text-2xl text-gray-dark">
+                      Day {currentDay.day_number}: {currentDay.title}
+                    </h2>
+                    <p className="text-on-light-secondary mt-1">{currentDay.summary}</p>
+                  </div>
+                  <span className="text-accent font-semibold">
+                    ~${currentDay.estimated_cost.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Timeline */}
+                <div className="relative pl-8">
+                  <div className="absolute left-3 top-0 bottom-0 w-px bg-[rgba(0,101,113,0.08)]" />
+                  <div className="space-y-4">
+                    {currentDay.trip_items.map((item, i) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="relative card-base overflow-hidden"
+                      >
+                        <div className="h-0.5 bg-gradient-to-r from-accent to-cyan" />
+                        <div className="p-4">
+                        <div className="absolute -left-[1.4rem] top-6 w-3 h-3 rounded-full bg-accent border-2 border-page-bg" />
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="bg-[#e6f7f9] text-accent rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
+                                {item.item_type}
+                              </span>
+                              {item.start_time && (
+                                <span className="text-on-light-tertiary text-[12px]">
+                                  {item.start_time}
+                                  {item.end_time && ` - ${item.end_time}`}
+                                </span>
+                              )}
+                            </div>
+                            <p className="font-semibold text-sm text-gray-dark">{item.title}</p>
+                            <p className="text-xs mt-1 text-on-light-secondary">{item.description}</p>
+                            {item.location_name && (
+                              <p className="text-xs mt-1 text-on-light-tertiary">{item.location_name}</p>
+                            )}
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            {item.estimated_cost > 0 && (
+                              <p className="text-accent font-semibold text-sm">${item.estimated_cost}</p>
+                            )}
+                            {item.rating && (
+                              <p className="text-on-light-tertiary text-xs mt-0.5">{item.rating}/5</p>
+                            )}
+                          </div>
                         </div>
-                        <p className="font-semibold text-sm text-gray-dark">{item.title}</p>
-                        <p className="text-xs mt-1 text-on-light-secondary">{item.description}</p>
-                        {item.location_name && (
-                          <p className="text-xs mt-1 text-on-light-tertiary">{item.location_name}</p>
-                        )}
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        {item.estimated_cost > 0 && (
-                          <p className="text-accent font-semibold text-sm">${item.estimated_cost}</p>
-                        )}
-                        {item.rating && (
-                          <p className="text-on-light-tertiary text-xs mt-0.5">{item.rating}/5</p>
-                        )}
-                      </div>
-                    </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
 
