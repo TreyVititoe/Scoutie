@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { nanoid } from "@/lib/utils";
 
+// Schema CHECK constraint allows only these item_type values
+const VALID_ITEM_TYPES = new Set(["flight", "hotel", "rental", "activity", "restaurant", "event", "transport", "note"]);
+
+// Cart's "site" type maps to "activity" in the DB
+function normalizeItemType(t: unknown): string {
+  const s = typeof t === "string" ? t : "activity";
+  if (s === "site") return "activity";
+  return VALID_ITEM_TYPES.has(s) ? s : "activity";
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { title, destination, totalCost, items } = await req.json();
@@ -75,7 +85,7 @@ export async function POST(req: NextRequest) {
             const itemInserts = dayItems.map((item: Record<string, unknown>, idx: number) => ({
               trip_day_id: newDay.id,
               trip_id: trip.id,
-              item_type: (item.type as string) || "activity",
+              item_type: normalizeItemType(item.type),
               title: (item.title as string) || "Untitled",
               description: (item.subtitle as string) || "",
               estimated_cost: (item.price as number) || 0,
@@ -84,7 +94,8 @@ export async function POST(req: NextRequest) {
               booking_url: (item.bookingUrl as string) || null,
               sort_order: idx,
             }));
-            await supabaseAdmin.from("trip_items").insert(itemInserts);
+            const { error: itemsErr } = await supabaseAdmin.from("trip_items").insert(itemInserts);
+            if (itemsErr) console.error("[/api/trips/share] items insert (day", dayNum, ")", itemsErr);
           }
         }
       } else {
@@ -92,7 +103,7 @@ export async function POST(req: NextRequest) {
         const itemInserts = items.map((item: Record<string, unknown>, idx: number) => ({
           trip_day_id: day.id,
           trip_id: trip.id,
-          item_type: (item.type as string) || "activity",
+          item_type: normalizeItemType(item.type),
           title: (item.title as string) || "Untitled",
           description: (item.subtitle as string) || "",
           estimated_cost: (item.price as number) || 0,
@@ -101,7 +112,8 @@ export async function POST(req: NextRequest) {
           booking_url: (item.bookingUrl as string) || null,
           sort_order: idx,
         }));
-        await supabaseAdmin.from("trip_items").insert(itemInserts);
+        const { error: itemsErr } = await supabaseAdmin.from("trip_items").insert(itemInserts);
+        if (itemsErr) console.error("[/api/trips/share] items insert", itemsErr);
       }
     }
 
