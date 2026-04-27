@@ -44,6 +44,7 @@ export default function QuizPage() {
         travelersCount: store.travelersCount,
         travelerType: store.travelerType,
         childrenCount: store.childrenCount,
+        infantsCount: store.infantsCount,
         childrenAges: store.childrenAges,
         budgetMode: store.budgetMode,
         budgetAmount: store.budgetAmount,
