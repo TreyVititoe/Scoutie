@@ -35,6 +35,21 @@
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
+/* Search bar glass — heavier blur, lower opacity than nav-glass */
+.search-glass {
+  background: rgba(0, 101, 113, 0.55);
+  backdrop-filter: saturate(180%) blur(28px);
+  -webkit-backdrop-filter: saturate(180%) blur(28px);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Active column inside the search bar — white surface that floats */
+.search-cell-active {
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  border-radius: 9999px;
+}
+
 /* Elevated card shadow */
 .shadow-elevated {
   box-shadow: 3px 5px 30px 0px rgba(0, 0, 0, 0.22);
