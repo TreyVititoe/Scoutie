@@ -267,7 +267,7 @@ function TripPage() {
       {/* ── Trip Overview Hero ── */}
       <section className="bg-hero-gradient relative overflow-hidden">
         <div className="hero-glow absolute inset-0 pointer-events-none" />
-        <div className="relative z-10 max-w-content mx-auto px-6 pt-12 pb-10">
+        <div className="relative z-10 max-w-content mx-auto px-6 pt-24 pb-10">
           <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-2">
             Your Trip
           </p>
