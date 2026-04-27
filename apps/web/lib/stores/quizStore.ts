@@ -44,6 +44,7 @@ export interface QuizState {
   travelersCount: number;
   travelerType: TravelerType | null;
   childrenCount: number;
+  infantsCount: number;
   childrenAges: number[];
   accessibilityNeeds: string[];
 
@@ -91,6 +92,7 @@ export interface QuizActions {
   setTravelersCount: (count: number) => void;
   setTravelerType: (type: TravelerType) => void;
   setChildrenCount: (count: number) => void;
+  setInfantsCount: (n: number) => void;
   setChildrenAges: (ages: number[]) => void;
   setAccessibilityNeeds: (needs: string[]) => void;
   setBudgetMode: (mode: BudgetMode) => void;
@@ -130,6 +132,7 @@ const initialState: QuizState = {
   travelersCount: 1,
   travelerType: null,
   childrenCount: 0,
+  infantsCount: 0,
   childrenAges: [],
   accessibilityNeeds: [],
   budgetMode: "total_trip",
@@ -173,6 +176,7 @@ export const useQuizStore = create<QuizState & QuizActions>()(
       setTravelersCount: (travelersCount) => set({ travelersCount }),
       setTravelerType: (travelerType) => set({ travelerType }),
       setChildrenCount: (childrenCount) => set({ childrenCount }),
+      setInfantsCount: (n) => set({ infantsCount: n }),
       setChildrenAges: (childrenAges) => set({ childrenAges }),
       setAccessibilityNeeds: (accessibilityNeeds) => set({ accessibilityNeeds }),
 
