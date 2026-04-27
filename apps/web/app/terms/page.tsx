@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Terms of Service — Walter",
@@ -9,17 +9,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-page-bg">
-      {/* Nav */}
-      <nav className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-white text-[17px] font-semibold"
-          >
-            Walter
-          </Link>
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="max-w-3xl mx-auto px-6 py-16">
         <div className="card-base p-8">

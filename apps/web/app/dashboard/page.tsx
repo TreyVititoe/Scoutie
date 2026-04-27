@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { useTripCartStore, selectItemCount } from "@/lib/stores/tripCartStore";
 import type { User } from "@supabase/supabase-js";
@@ -83,21 +84,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-page-bg">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
-        <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">
-            Walter
-          </Link>
-          <button
-            onClick={handleSignOut}
-            className="text-sm font-semibold text-on-dark-secondary hover:text-white transition-colors flex items-center gap-1.5"
-          >
-            <span className="material-symbols-outlined text-[18px]">logout</span>
-            Sign out
-          </button>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="max-w-content mx-auto px-6 pt-28 pb-16">
         <div>

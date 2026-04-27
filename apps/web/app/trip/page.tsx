@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import dynamic from "next/dynamic";
 import {
   useTripCartStore,
@@ -230,25 +231,7 @@ function TripPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-page-bg">
-        <header className="nav-glass sticky top-0 z-20">
-          <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-            <Link
-              href="/"
-              className="text-[17px] font-semibold text-white"
-            >
-              Walter
-            </Link>
-            <Link
-              href="/results"
-              className="flex items-center gap-1.5 text-sm font-semibold text-on-dark-secondary hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                arrow_back
-              </span>
-              Back to results
-            </Link>
-          </div>
-        </header>
+        <Navbar />
 
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
           <span className="material-symbols-outlined text-[64px] text-on-light-tertiary mb-4">
@@ -279,46 +262,7 @@ function TripPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* ── Dark Nav Header ── */}
-      <header className="nav-glass sticky top-0 z-20">
-        <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-[17px] font-semibold text-white"
-          >
-            Walter
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/results"
-              className="flex items-center gap-1.5 text-sm font-semibold text-on-dark-secondary hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                arrow_back
-              </span>
-              Back to results
-            </Link>
-            <button
-              onClick={() => setShowSaveModal(true)}
-              className="px-3 sm:px-5 py-2.5 rounded-[8px] border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                {saved ? "check" : "bookmark"}
-              </span>
-              <span className="hidden sm:inline">{saved ? "Saved!" : "Save trip"}</span>
-            </button>
-            <motion.button
-              onClick={handleShare}
-              whileTap={{ scale: 0.95 }}
-              className="px-3 sm:px-5 py-2.5 rounded-[8px] bg-accent text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                {shareLink ? "check" : "share"}
-              </span>
-              <span className="hidden sm:inline">{shareLink ? "Link copied!" : sharing ? "Creating link..." : "Share trip"}</span>
-            </motion.button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* ── Trip Overview Hero ── */}
       <section className="bg-hero-gradient relative overflow-hidden">

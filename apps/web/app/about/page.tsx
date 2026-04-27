@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 
 const steps = [
   {
@@ -42,23 +43,7 @@ const values = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen">
-      {/* Nav */}
-      <nav className="nav-glass">
-        <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="font-semibold text-[17px] text-white"
-          >
-            Walter
-          </Link>
-          <Link
-            href="/quiz"
-            className="bg-accent text-white rounded-[10px] px-5 py-2 text-sm font-semibold hover:bg-accent-light transition-colors"
-          >
-            Get started
-          </Link>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero */}
       <section className="bg-hero-gradient relative">
