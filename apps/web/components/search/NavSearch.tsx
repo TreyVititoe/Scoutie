@@ -33,6 +33,11 @@ export default function NavSearch({ onInPageSubmit }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, [forcedOpen]);
 
+  // Reset on route change
+  useEffect(() => {
+    setForcedOpen(false);
+  }, [pathname]);
+
   // Expanded above the fold on the homepage; collapsed elsewhere or once
   // the user has scrolled past the hero.
   const collapsed = !forcedOpen && (pathname !== "/" || scrollY > 80);
