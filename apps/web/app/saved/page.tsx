@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 import {
   useSavedTripsStore,
   type SavedTrip,
@@ -54,7 +53,22 @@ export default function SavedTripsPage() {
 
   return (
     <div className="min-h-screen bg-page-bg">
-      <Navbar />
+      <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
+        <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
+          <div className="flex items-center gap-4">
+            <Link href="/quiz" className="text-on-dark-secondary text-[11px] hidden sm:block hover:text-white transition-colors">
+              Plan a Trip
+            </Link>
+            <Link
+              href="/quiz"
+              className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
+            >
+              New Trip
+            </Link>
+          </div>
+        </div>
+      </header>
 
       <main className="max-w-content mx-auto px-6 pt-28 pb-16">
         <div className="flex items-center justify-between mb-10">

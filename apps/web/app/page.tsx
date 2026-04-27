@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import CommunityTrips from "../components/CommunityTrips";
-import Navbar from "@/components/Navbar";
 
 const steps = [
   {
@@ -36,7 +35,42 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* ========== HEADER ========== */}
-      <Navbar hideSearch />
+      <nav className="fixed top-0 left-0 right-0 z-50 nav-glass">
+        <div className="max-w-6xl mx-auto px-6 h-[48px] flex items-center justify-between">
+          <Link
+            href="/"
+            className="text-white text-[15px] font-semibold"
+          >
+            Walter
+          </Link>
+          <div className="flex items-center gap-8">
+            <Link
+              href="/explore"
+              className="text-white/80 text-[11px] hidden sm:block"
+            >
+              Explore
+            </Link>
+            <Link
+              href="/quiz"
+              className="text-white/80 text-[11px] hidden sm:block"
+            >
+              Plan a Trip
+            </Link>
+            <Link
+              href="/saved"
+              className="text-white/80 text-[11px] hidden sm:block"
+            >
+              Saved Trips
+            </Link>
+            <Link
+              href="/quiz"
+              className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </nav>
 
       {/* ========== HERO ========== */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 
 type Destination = {
   city: string;
@@ -109,9 +108,22 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-page-bg">
-      <Navbar />
+      {/* Header */}
+      <header className="nav-glass sticky top-0 z-20">
+        <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="text-white text-[17px] font-semibold">
+            Walter
+          </Link>
+          <Link
+            href="/quiz"
+            className="px-4 py-2 rounded-[8px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors"
+          >
+            Plan a trip
+          </Link>
+        </div>
+      </header>
 
-      <main className="max-w-content mx-auto px-6 pt-24 pb-10">
+      <main className="max-w-content mx-auto px-6 py-10">
         <div className="mb-10">
           <h1 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
             Explore destinations

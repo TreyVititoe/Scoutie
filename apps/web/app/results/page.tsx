@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import FlightCard from "@/components/results/FlightCard";
@@ -14,9 +13,6 @@ import { useTripCartStore, selectItemCount } from "@/lib/stores/tripCartStore";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
 import type { ScoredEvent, Suggestion } from "@/lib/types";
-import Navbar from "@/components/Navbar";
-import InlineSearch from "@/components/search/InlineSearch";
-import type { Category, SearchState } from "@/components/search/searchTypes";
 
 const tabs = [
   { id: "flights", label: "Flights", icon: "flight" },
@@ -30,13 +26,6 @@ type TabId = (typeof tabs)[number]["id"];
 export default function ResultsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("flights");
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    const t = searchParams.get("tab");
-    if (t === "flights" || t === "stays" || t === "events" || t === "picks") {
-      setActiveTab(t);
-    }
-  }, [searchParams]);
   const [flights, setFlights] = useState<FlightResult[]>([]);
   const [hotels, setHotels] = useState<HotelResult[]>([]);
   const [events, setEvents] = useState<ScoredEvent[]>([]);
@@ -50,23 +39,6 @@ export default function ResultsPage() {
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
   const [pageReady, setPageReady] = useState(false);
   const [fetchKey, setFetchKey] = useState(0);
-
-  const handleSearchSubmit = (state: SearchState) => {
-    handleInlineUpdate({
-      destinations: state.where ? [state.where] : undefined,
-      departureCity: state.whereOrigin,
-      startDate: state.startDate,
-      endDate: state.endDate,
-      flexibleDates: state.flexibleDates,
-      travelersCount: state.adults + state.children + state.infants,
-      childrenCount: state.children,
-      infantsCount: state.infants,
-      flightClass: state.cabin,
-      activityInterests:
-        state.category === "events" ? state.interests : state.vibe,
-    });
-    setActiveTab(state.category);
-  };
 
   // Called when user adds departure city or dates inline
   const handleInlineUpdate = (updates: Record<string, unknown>) => {
@@ -271,7 +243,21 @@ export default function ResultsPage() {
 
   return (
     <div className="min-h-screen bg-page-bg">
-      <Navbar onInPageSubmit={handleSearchSubmit} />
+      {/* --- Header --- */}
+      <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
+        <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
+          <Link href="/" className="text-white text-[17px] font-semibold">
+            Walter
+          </Link>
+          <Link
+            href="/quiz"
+            className="text-accent text-sm hover:underline transition-colors flex items-center gap-1.5"
+          >
+            <span className="material-symbols-outlined text-[18px]">edit</span>
+            Edit trip
+          </Link>
+        </div>
+      </header>
 
       <div className="max-w-content mx-auto px-4 lg:px-8 pt-28">
         {/* --- Page Header --- */}
@@ -292,13 +278,50 @@ export default function ResultsPage() {
         <AiItineraryBanner />
       </div>
 
-      {/* --- Sticky InlineSearch (replaces tab bar) --- */}
-      <div className="sticky top-[64px] z-30 bg-transparent">
-        <InlineSearch
-          initial={{ category: activeTab as Category }}
-          onCategoryChange={(c) => setActiveTab(c)}
-          onRefine={handleSearchSubmit}
-        />
+      {/* --- Sticky Tab Bar (outside content container so sticky works) --- */}
+      <div className="sticky top-[56px] z-30 flex justify-center py-3 shadow-sm sm:shadow-none">
+            <div className="flex items-center gap-1.5 p-2 rounded-full bg-white/25 backdrop-blur-2xl backdrop-saturate-150 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(255,255,255,0.2)]">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const isLoading =
+                  (tab.id === "flights" && flightsLoading) ||
+                  (tab.id === "stays" && hotelsLoading) ||
+                  (tab.id === "events" && eventsLoading) ||
+                  (tab.id === "picks" && suggestionsLoading);
+                const count =
+                  tab.id === "flights" ? flights.length :
+                  tab.id === "stays" ? hotels.length :
+                  tab.id === "events" ? allEvents.length :
+                  suggestions.length;
+
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[14px] font-semibold transition-all duration-200 ${
+                      isActive
+                        ? "bg-accent/90 text-white shadow-[0_2px_16px_rgba(0,101,113,0.35)] backdrop-blur-sm"
+                        : "text-gray-dark/70 hover:text-gray-dark hover:bg-white/30"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    {!isLoading && count > 0 && (
+                      <span className={`text-[10px] font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${
+                        isActive ? "bg-white/20 text-white" : "bg-accent/10 text-accent"
+                      }`}>
+                        {count}
+                      </span>
+                    )}
+                    {isLoading && (
+                      <span className={`w-3 h-3 border-2 rounded-full animate-spin ${
+                        isActive ? "border-white/40 border-t-white" : "border-accent/30 border-t-accent"
+                      }`} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
       </div>
 
       <div className="max-w-content mx-auto px-4 lg:px-8 pb-10">

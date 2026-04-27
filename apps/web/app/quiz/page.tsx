@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuizStore } from "@/lib/stores/quizStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
@@ -44,7 +43,6 @@ export default function QuizPage() {
         travelersCount: store.travelersCount,
         travelerType: store.travelerType,
         childrenCount: store.childrenCount,
-        infantsCount: store.infantsCount ?? 0,
         childrenAges: store.childrenAges,
         budgetMode: store.budgetMode,
         budgetAmount: store.budgetAmount,
@@ -85,7 +83,45 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen bg-gray-light flex flex-col">
-      <Navbar hideSearch />
+      {/* Dark Nav Header */}
+      <header className="sticky top-0 z-20 nav-glass">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+          <a href="/" className="text-white text-[17px] font-semibold">
+            Walter
+          </a>
+
+          {/* Progress Bars */}
+          <div className="flex items-center gap-1.5">
+            {stepLabels.map((label, i) => {
+              const stepNum = i + 1;
+              const isFilled = stepNum <= step;
+              return (
+                <div
+                  key={label}
+                  className="w-14 h-1 rounded-full bg-accent/15 overflow-hidden"
+                >
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: isFilled ? 1 : 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="w-full h-full bg-accent rounded-full origin-left"
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => {
+              store.resetQuiz();
+              router.push("/");
+            }}
+            className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
+          >
+            Exit
+          </button>
+        </div>
+      </header>
 
       {/* Step Content */}
       <main className="flex-1 flex items-start justify-center px-6 py-12">
