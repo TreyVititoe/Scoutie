@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import CommunityTrips from "../components/CommunityTrips";
+import Navbar from "@/components/Navbar";
+import HeroSearch from "@/components/search/HeroSearch";
 
 const steps = [
   {
@@ -35,42 +37,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* ========== HEADER ========== */}
-      <nav className="fixed top-0 left-0 right-0 z-50 nav-glass">
-        <div className="max-w-6xl mx-auto px-6 h-[48px] flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-white text-[15px] font-semibold"
-          >
-            Walter
-          </Link>
-          <div className="flex items-center gap-8">
-            <Link
-              href="/explore"
-              className="text-white/80 text-[11px] hidden sm:block"
-            >
-              Explore
-            </Link>
-            <Link
-              href="/quiz"
-              className="text-white/80 text-[11px] hidden sm:block"
-            >
-              Plan a Trip
-            </Link>
-            <Link
-              href="/saved"
-              className="text-white/80 text-[11px] hidden sm:block"
-            >
-              Saved Trips
-            </Link>
-            <Link
-              href="/quiz"
-              className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* ========== HERO ========== */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
@@ -100,21 +67,8 @@ export default function HomePage() {
           <p className="text-white/70 text-[17px] mt-4 leading-relaxed max-w-lg mx-auto">
             Flights, hotels, events, restaurants. All real, all bookable.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center">
-            <Link
-              href="/quick"
-              className="bg-accent text-white rounded-[14px] px-10 py-5 text-[19px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(0,101,113,0.3)]"
-            >
-              <span className="material-symbols-outlined text-[24px]">bolt</span>
-              Quick Plan
-            </Link>
-            <Link
-              href="/quiz"
-              className="bg-white/15 backdrop-blur-sm border border-white/25 text-white rounded-[14px] px-10 py-5 text-[19px] font-semibold hover:bg-white/25 transition-colors flex items-center justify-center gap-3"
-            >
-              <span className="material-symbols-outlined text-[24px]">tune</span>
-              Design My Trip
-            </Link>
+          <div className="relative z-10 w-full max-w-4xl px-4">
+            <HeroSearch />
           </div>
         </motion.div>
       </section>
