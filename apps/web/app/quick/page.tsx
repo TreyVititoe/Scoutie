@@ -201,7 +201,7 @@ export default function QuickPlanPage() {
 
   return (
     <div className="min-h-screen bg-page-bg">
-      <Navbar />
+      <Navbar hideSearch />
 
       <div className="max-w-6xl mx-auto px-6 pt-28 pb-16">
         {/* Input Section */}
