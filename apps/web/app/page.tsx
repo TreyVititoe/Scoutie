@@ -36,7 +36,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* ========== HEADER ========== */}
-      <Navbar />
+      <Navbar hideSearch />
 
       {/* ========== HERO ========== */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
