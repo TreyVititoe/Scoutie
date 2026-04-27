@@ -11,7 +11,7 @@ export default function TermsPage() {
     <div className="min-h-screen bg-page-bg">
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-6 py-16">
+      <main className="max-w-3xl mx-auto px-6 pt-24 pb-16">
         <div className="card-base p-8">
           <h1 className="font-semibold text-[28px] text-gray-dark mb-4">
             Terms of Service
