@@ -297,27 +297,32 @@ export default function QuickPlanPage() {
         </motion.div>
 
         {/* Quick suggestions */}
-        {tags.length === 0 && !generated && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-10"
-          >
-            <p className="text-sm font-semibold text-on-light-tertiary mb-3">Try these for inspiration:</p>
-            <div className="flex flex-wrap gap-2">
-              {["Beach", "Tokyo", "Italian food", "Hiking", "Nightlife", "Concert", "Budget-friendly", "Romantic", "Family", "Adventure"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => addTag(s)}
-                  className="bg-white border border-[rgba(0,101,113,0.08)] text-on-light-secondary rounded-pill px-3.5 py-1.5 text-sm hover:border-accent/30 hover:text-accent transition-colors"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
+        {!generated && (() => {
+          const allSuggestions = ["Beach", "Tokyo", "Italian food", "Hiking", "Nightlife", "Concert", "Budget-friendly", "Romantic", "Family", "Adventure"];
+          const remaining = allSuggestions.filter((s) => !tags.includes(s));
+          if (remaining.length === 0) return null;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mb-10"
+            >
+              <p className="text-sm font-semibold text-on-light-tertiary mb-3">Try these for inspiration:</p>
+              <div className="flex flex-wrap gap-2">
+                {remaining.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => addTag(s)}
+                    className="bg-white border border-[rgba(0,101,113,0.08)] text-on-light-secondary rounded-pill px-3.5 py-1.5 text-sm hover:border-accent/30 hover:text-accent transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          );
+        })()}
 
         {/* Loading skeletons */}
         {loading && (
