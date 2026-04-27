@@ -111,7 +111,7 @@ export default function ExplorePage() {
     <div className="min-h-screen bg-page-bg">
       <Navbar />
 
-      <main className="max-w-content mx-auto px-6 py-10">
+      <main className="max-w-content mx-auto px-6 pt-24 pb-10">
         <div className="mb-10">
           <h1 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
             Explore destinations
