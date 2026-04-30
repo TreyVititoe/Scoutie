@@ -343,7 +343,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="bg-page-bg py-20 sm:py-24">
+      <section className="bg-page-bg pt-20 sm:pt-24 pb-6">
         <div className="max-w-6xl mx-auto px-6">
          <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(0,101,113,0.06)] border border-[rgba(0,101,113,0.04)]">
           <div className="text-center mb-12 sm:mb-14">
@@ -427,7 +427,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== MOMENTS CALLOUT ========== */}
-      <section className="bg-page-bg py-20">
+      <section className="bg-page-bg pt-6 pb-20">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
