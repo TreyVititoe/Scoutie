@@ -274,7 +274,7 @@ export default function HomePage() {
               </div>
 
               {/* Card 3 — event */}
-              <div className="absolute top-[60%] left-0 right-0 float-anim-2 z-10 rounded-[18px] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] p-4 flex items-center gap-4">
+              <div className="absolute top-[62%] left-0 right-0 float-anim-2 z-10 rounded-[18px] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] p-4 flex items-center gap-4">
                 <div className="w-14 h-14 rounded-[12px] bg-gradient-to-br from-accent to-accent-light flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-cyan text-[24px]">music_note</span>
                 </div>
