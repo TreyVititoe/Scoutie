@@ -30,9 +30,9 @@
 
 /* Apple dark glass navigation */
 .nav-glass {
-  background: rgba(0, 101, 113, 0.75);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(20, 22, 26, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 /* Elevated card shadow */
@@ -90,4 +90,44 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Hero ambient cyan/teal glows (layered radial) — for dark hero */
+.hero-radial {
+  background:
+    radial-gradient(circle at 78% 18%, rgba(121, 231, 248, 0.22) 0%, transparent 55%),
+    radial-gradient(circle at 14% 82%, rgba(0, 125, 138, 0.28) 0%, transparent 50%);
+}
+
+/* Hero corner glow tuned for light bg — soft cyan/teal accent */
+.hero-radial-light {
+  background:
+    radial-gradient(ellipse at 75% 20%, rgba(121, 231, 248, 0.45) 0%, transparent 60%),
+    radial-gradient(ellipse at 90% 60%, rgba(0, 125, 138, 0.10) 0%, transparent 55%);
+}
+
+/* 3D perspective stack for floating itinerary mock */
+.perspective-stack {
+  perspective: 1600px;
+}
+.tilt-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Gentle vertical float for stacked mock cards */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.float-anim { animation: float-y 6s ease-in-out infinite; }
+.float-anim-1 { animation: float-y 6s ease-in-out infinite; animation-delay: 1.4s; }
+.float-anim-2 { animation: float-y 6s ease-in-out infinite; animation-delay: 2.8s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .float-anim,
+  .float-anim-1,
+  .float-anim-2 {
+    animation: none;
+  }
 }
