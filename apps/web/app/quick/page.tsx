@@ -145,25 +145,10 @@ export default function QuickPlanPage() {
   };
 
   const handleSelectTrip = (trip: QuickTrip, idx: number) => {
-    // Pre-load AI itinerary into cart
-    const cart = useTripCartStore.getState();
-    cart.clearCart();
-    trip.days?.forEach((day) => {
-      day.items?.forEach((item, j) => {
-        cart.addItem({
-          id: `quick-${idx}-${day.dayNumber}-${j}`,
-          type: (item.itemType || "activity") as "flight" | "hotel" | "event" | "activity" | "restaurant" | "site",
-          title: item.title,
-          subtitle: `Day ${day.dayNumber} -- ${item.description || ""}`,
-          price: item.estimatedCost || null,
-          image: null,
-          bookingUrl: null,
-          provider: "walter-ai",
-          date: null,
-          meta: { locationName: item.locationName, aiGenerated: true, dayNumber: day.dayNumber, startTime: item.startTime } as Record<string, unknown>,
-        });
-      });
-    });
+    // Accepting a trip option signals "I like this destination + dates" —
+    // the user picks their own itinerary items on /results. Cart stays empty.
+    void idx;
+    useTripCartStore.getState().clearCart();
 
     // Set prefs for results page
     localStorage.setItem("walter_prefs", JSON.stringify({
