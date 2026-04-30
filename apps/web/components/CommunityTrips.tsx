@@ -112,7 +112,10 @@ export default function CommunityTrips() {
                   </div>
                 </div>
               ))
-            : trips.map((trip) => {
+            : [...trips]
+                .sort((a, b) => b.upvote_count - a.upvote_count)
+                .slice(0, 3)
+                .map((trip) => {
                 const isUpvoted = upvotedIds.includes(trip.id);
                 return (
                   <motion.div
