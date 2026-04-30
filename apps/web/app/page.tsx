@@ -314,7 +314,7 @@ export default function HomePage() {
       </div>
 
       {/* ========== FINAL CTA — single dark→light transition point ========== */}
-      <section className="bg-page-bg relative -mt-10 rounded-t-[60px] py-24 sm:py-28 overflow-hidden z-10">
+      <section className="bg-page-bg relative -mt-10 rounded-t-[60px] pt-24 sm:pt-28 pb-8 overflow-hidden z-10">
         <div className="absolute top-0 right-0 w-[60%] h-[80%] hero-radial-light pointer-events-none opacity-70" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -343,7 +343,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="bg-page-bg pt-20 sm:pt-24 pb-6">
+      <section className="bg-page-bg pt-8 sm:pt-10 pb-6">
         <div className="max-w-6xl mx-auto px-6">
          <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(0,101,113,0.06)] border border-[rgba(0,101,113,0.04)]">
           <div className="text-center mb-12 sm:mb-14">
