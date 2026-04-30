@@ -309,12 +309,12 @@ export default function HomePage() {
       </section>
 
       {/* ========== REAL TRIPS (community) ========== */}
-      <div id="trips">
+      <div id="trips" className="relative -mt-6 rounded-t-[40px] overflow-hidden bg-page-bg z-10">
         <CommunityTrips />
       </div>
 
       {/* ========== FINAL CTA ========== */}
-      <section className="bg-hero-gradient relative py-24 overflow-hidden">
+      <section className="bg-hero-gradient relative -mt-6 rounded-t-[40px] py-24 overflow-hidden z-10">
         <div className="hero-glow absolute inset-0 pointer-events-none" />
         <div className="absolute inset-0 hero-radial pointer-events-none" />
         <motion.div
@@ -344,7 +344,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="bg-white py-24 sm:py-28">
+      <section className="bg-white relative -mt-6 rounded-t-[40px] py-24 sm:py-28 overflow-hidden z-10">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14 sm:mb-16">
             <p className="text-accent text-[12px] uppercase tracking-[2.5px] font-semibold mb-4">
@@ -426,7 +426,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== MOMENTS CALLOUT ========== */}
-      <section className="bg-page-bg py-20">
+      <section className="bg-page-bg relative -mt-6 rounded-t-[40px] py-20 overflow-hidden z-10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
