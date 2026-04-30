@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuizStore } from "@/lib/stores/quizStore";
@@ -28,6 +29,11 @@ export default function QuizPage() {
   const StepComponent = steps[step];
   const isFirstStep = step === 1;
   const isLastStep = step === 4;
+
+  // Reset cart on entry — fresh start for a new trip
+  useEffect(() => {
+    useTripCartStore.getState().clearCart();
+  }, []);
 
   const handleGenerate = () => {
     useTripCartStore.getState().clearCart();

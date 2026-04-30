@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -50,6 +50,11 @@ export default function QuickPlanPage() {
     events: { name: string; venue: string; category: string; image: string | null; priceMin: number | null }[];
     count: number; categories: string[]; loading: boolean;
   }>>({});
+
+  // Reset cart on entry — fresh start for a new trip
+  useEffect(() => {
+    useTripCartStore.getState().clearCart();
+  }, []);
 
   const addTag = (value: string) => {
     const trimmed = value.trim();
