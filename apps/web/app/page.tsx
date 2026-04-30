@@ -359,34 +359,68 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6"
           >
             {steps.map((step) => (
-              <div
-                key={step.num}
-                className="relative bg-page-bg rounded-[20px] p-8 sm:p-9 border border-[rgba(0,101,113,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(0,101,113,0.08)] hover:-translate-y-0.5 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-7">
-                  <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(0,101,113,0.08)]">
-                    <span className="material-symbols-outlined text-accent text-[26px]">
-                      {step.icon}
+              <div key={step.num} className="relative">
+                <div className="relative h-full bg-page-bg rounded-[20px] p-7 sm:p-8 border border-[rgba(0,101,113,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(0,101,113,0.08)] hover:-translate-y-0.5 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(0,101,113,0.08)]">
+                      <span className="material-symbols-outlined text-accent text-[26px]">
+                        {step.icon}
+                      </span>
+                    </div>
+                    <span
+                      aria-hidden="true"
+                      className="text-[40px] font-black text-accent/15 leading-none tracking-tight"
+                    >
+                      {step.num}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-[20px] text-gray-dark mb-2 tracking-tight">
+                    {step.title}
+                  </h3>
+                  <p className="text-on-light-secondary text-[14.5px] leading-relaxed">
+                    {step.desc}
+                  </p>
+                </div>
+                {/* Arrow to next card (lg only) */}
+                <span
+                  aria-hidden="true"
+                  className="hidden lg:flex absolute top-1/2 -right-[14px] -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white border border-accent/20 items-center justify-center shadow-[0_3px_10px_rgba(0,101,113,0.1)]"
+                >
+                  <span className="material-symbols-outlined text-accent text-[16px]">
+                    arrow_forward
+                  </span>
+                </span>
+              </div>
+            ))}
+
+            {/* Step 4 — punchline card */}
+            <div className="relative h-full bg-gradient-to-br from-accent to-accent-deep rounded-[20px] p-7 sm:p-8 shadow-[0_10px_40px_rgba(0,101,113,0.2)] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 hero-radial pointer-events-none opacity-50" />
+              <div className="relative">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-14 h-14 rounded-[14px] bg-cyan/15 border border-cyan/30 flex items-center justify-center backdrop-blur-sm">
+                    <span className="material-symbols-outlined text-cyan text-[26px]">
+                      celebration
                     </span>
                   </div>
                   <span
                     aria-hidden="true"
-                    className="text-[44px] font-black text-accent/15 leading-none tracking-tight"
+                    className="text-[40px] font-black text-white/15 leading-none tracking-tight line-through decoration-2 decoration-cyan/50"
                   >
-                    {step.num}
+                    04
                   </span>
                 </div>
-                <h3 className="font-semibold text-[22px] text-gray-dark mb-2.5 tracking-tight">
-                  {step.title}
+                <h3 className="font-semibold text-[20px] text-white mb-2 tracking-tight">
+                  Wait — there&apos;s no step 4.
                 </h3>
-                <p className="text-on-light-secondary text-[15px] leading-relaxed">
-                  {step.desc}
+                <p className="text-white/75 text-[14.5px] leading-relaxed">
+                  That&apos;s the whole thing. Quiz to itinerary in two minutes.
                 </p>
               </div>
-            ))}
+            </div>
           </motion.div>
         </div>
       </section>
