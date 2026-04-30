@@ -81,8 +81,9 @@ export default function CommunityTrips() {
   if (!loading && trips.length === 0) return null;
 
   return (
-    <section className="bg-page-bg py-20">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="bg-hero-gradient relative py-20 overflow-hidden">
+      <div className="absolute inset-0 hero-radial pointer-events-none opacity-50" />
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -90,10 +91,10 @@ export default function CommunityTrips() {
           transition={{ duration: 0.3 }}
           className="text-center mb-12"
         >
-          <h2 className="text-[32px] font-semibold text-gray-dark">
+          <h2 className="text-[32px] font-semibold text-white">
             Trips the community loves
           </h2>
-          <p className="text-on-light-secondary text-lg mt-3 max-w-2xl mx-auto">
+          <p className="text-white/70 text-lg mt-3 max-w-2xl mx-auto">
             Real trips built by real travelers. Upvote your favorites or fork
             one to make it your own.
           </p>

@@ -309,14 +309,13 @@ export default function HomePage() {
       </section>
 
       {/* ========== REAL TRIPS (community) ========== */}
-      <div id="trips" className="relative -mt-6 rounded-t-[40px] overflow-hidden bg-page-bg z-10">
+      <div id="trips">
         <CommunityTrips />
       </div>
 
-      {/* ========== FINAL CTA ========== */}
-      <section className="bg-hero-gradient relative -mt-6 rounded-t-[40px] py-24 overflow-hidden z-10">
-        <div className="hero-glow absolute inset-0 pointer-events-none" />
-        <div className="absolute inset-0 hero-radial pointer-events-none" />
+      {/* ========== FINAL CTA — single dark→light transition point ========== */}
+      <section className="bg-page-bg relative -mt-10 rounded-t-[60px] py-24 sm:py-28 overflow-hidden z-10">
+        <div className="absolute top-0 right-0 w-[60%] h-[80%] hero-radial-light pointer-events-none opacity-70" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -324,27 +323,27 @@ export default function HomePage() {
           transition={{ duration: 0.4 }}
           className="relative z-10 max-w-3xl mx-auto px-6 text-center"
         >
-          <h2 className="text-white text-[36px] sm:text-[52px] font-semibold tracking-display leading-[1.04]">
+          <h2 className="text-gray-dark text-[36px] sm:text-[52px] font-semibold tracking-display leading-[1.04]">
             Where to next?
           </h2>
-          <p className="text-on-dark-secondary text-[17px] mt-4 max-w-xl mx-auto leading-relaxed">
+          <p className="text-on-light-secondary text-[17px] mt-4 max-w-xl mx-auto leading-relaxed">
             Take the 2-minute quiz. Get a complete trip you can actually book.
           </p>
           <Link
             href="/quiz"
-            className="mt-9 inline-flex items-center gap-2 bg-cyan text-accent-deep rounded-[12px] px-8 py-4 text-[16px] font-bold hover:brightness-105 transition-all shadow-[0_8px_30px_rgba(121,231,248,0.4)]"
+            className="mt-9 inline-flex items-center gap-2 bg-accent text-white rounded-[12px] px-8 py-4 text-[16px] font-bold hover:bg-accent-light transition-all shadow-[0_8px_24px_rgba(0,101,113,0.25)]"
           >
             Start the quiz
             <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
           </Link>
-          <p className="text-white/45 text-[12px] mt-7 tracking-wide">
+          <p className="text-on-light-tertiary text-[12px] mt-7 tracking-wide">
             Free forever · No sign-up required
           </p>
         </motion.div>
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="bg-white relative -mt-6 rounded-t-[40px] py-24 sm:py-28 overflow-hidden z-10">
+      <section className="bg-white py-24 sm:py-28">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14 sm:mb-16">
             <p className="text-accent text-[12px] uppercase tracking-[2.5px] font-semibold mb-4">
@@ -426,7 +425,7 @@ export default function HomePage() {
       </section>
 
       {/* ========== MOMENTS CALLOUT ========== */}
-      <section className="bg-page-bg relative -mt-6 rounded-t-[40px] py-20 overflow-hidden z-10">
+      <section className="bg-page-bg py-20">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
