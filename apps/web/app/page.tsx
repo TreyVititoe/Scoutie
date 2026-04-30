@@ -344,13 +344,13 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="bg-white py-24">
+      <section className="bg-white py-24 sm:py-28">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3">
+          <div className="text-center mb-14 sm:mb-16">
+            <p className="text-accent text-[12px] uppercase tracking-[2.5px] font-semibold mb-4">
               How it works
             </p>
-            <h2 className="text-[32px] sm:text-[42px] font-semibold text-gray-dark tracking-display leading-[1.08] max-w-2xl mx-auto">
+            <h2 className="text-[36px] sm:text-[48px] font-semibold text-gray-dark tracking-display leading-[1.05] max-w-2xl mx-auto">
               From idea to itinerary, fast.
             </h2>
           </div>
@@ -359,24 +359,30 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8 relative"
+            className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6"
           >
-            <div
-              className="hidden sm:block absolute top-7 left-[16.66%] right-[16.66%] h-px bg-gradient-to-r from-transparent via-accent/25 to-transparent pointer-events-none"
-              aria-hidden="true"
-            />
             {steps.map((step) => (
-              <div key={step.num} className="relative text-center sm:text-left">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-[16px] bg-white border border-accent/15 text-accent mb-5 relative shadow-[0_2px_14px_rgba(0,101,113,0.08)]">
-                  <span className="material-symbols-outlined text-[24px]">{step.icon}</span>
-                  <span className="absolute -top-2 -right-2 bg-accent text-white text-[10px] font-bold rounded-full w-6 h-6 flex items-center justify-center tracking-tight">
+              <div
+                key={step.num}
+                className="relative bg-page-bg rounded-[20px] p-8 sm:p-9 border border-[rgba(0,101,113,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(0,101,113,0.08)] hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-7">
+                  <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(0,101,113,0.08)]">
+                    <span className="material-symbols-outlined text-accent text-[26px]">
+                      {step.icon}
+                    </span>
+                  </div>
+                  <span
+                    aria-hidden="true"
+                    className="text-[44px] font-black text-accent/15 leading-none tracking-tight"
+                  >
                     {step.num}
                   </span>
                 </div>
-                <h3 className="font-semibold text-[19px] text-gray-dark mb-2 tracking-tight">
+                <h3 className="font-semibold text-[22px] text-gray-dark mb-2.5 tracking-tight">
                   {step.title}
                 </h3>
-                <p className="text-on-light-secondary text-[15px] leading-relaxed max-w-xs mx-auto sm:mx-0">
+                <p className="text-on-light-secondary text-[15px] leading-relaxed">
                   {step.desc}
                 </p>
               </div>
