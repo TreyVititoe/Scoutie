@@ -343,13 +343,14 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="bg-white py-24 sm:py-28">
+      <section className="bg-page-bg py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-14 sm:mb-16">
-            <p className="text-accent text-[12px] uppercase tracking-[2.5px] font-semibold mb-4">
+         <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(0,101,113,0.06)] border border-[rgba(0,101,113,0.04)]">
+          <div className="text-center mb-12 sm:mb-14">
+            <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3">
               How it works
             </p>
-            <h2 className="text-[36px] sm:text-[48px] font-semibold text-gray-dark tracking-display leading-[1.05] max-w-2xl mx-auto">
+            <h2 className="text-[32px] sm:text-[44px] font-semibold text-gray-dark tracking-display leading-[1.05] max-w-2xl mx-auto">
               From idea to itinerary, fast.
             </h2>
           </div>
@@ -421,6 +422,7 @@ export default function HomePage() {
               </div>
             </div>
           </motion.div>
+         </div>
         </div>
       </section>
 
