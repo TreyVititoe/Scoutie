@@ -5,6 +5,25 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import CommunityTrips from "../components/CommunityTrips";
 
+// Magnetic hover — element drifts toward cursor on mouseover, returns to rest on leave.
+function useMagnetic(strength = 0.25) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  return {
+    onMouseMove: (e: React.MouseEvent<HTMLElement>) => {
+      const r = e.currentTarget.getBoundingClientRect();
+      setPos({
+        x: (e.clientX - r.left - r.width / 2) * strength,
+        y: (e.clientY - r.top - r.height / 2) * strength,
+      });
+    },
+    onMouseLeave: () => setPos({ x: 0, y: 0 }),
+    style: {
+      transform: `translate(${pos.x}px, ${pos.y}px)`,
+      transition: "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+    },
+  };
+}
+
 const steps = [
   {
     num: "01",
@@ -46,6 +65,9 @@ const trustItems = [
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+  const quickMag = useMagnetic(0.25);
+  const designMag = useMagnetic(0.25);
+  const [cardTilt, setCardTilt] = useState({ rY: -9, rX: 7 });
 
   return (
     <div className="min-h-screen">
@@ -169,20 +191,34 @@ export default function HomePage() {
               whole thing in 60 seconds. All real, all bookable.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mt-10 items-center justify-center lg:justify-start">
-              <Link
-                href="/quick"
-                className="bg-cyan text-accent-deep rounded-[14px] px-10 py-5 text-[18px] font-bold hover:brightness-105 transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(121,231,248,0.4)]"
+              <div
+                className="inline-flex"
+                onMouseMove={quickMag.onMouseMove}
+                onMouseLeave={quickMag.onMouseLeave}
+                style={quickMag.style}
               >
-                <span className="material-symbols-outlined text-[22px]">bolt</span>
-                Quick Plan
-              </Link>
-              <Link
-                href="/quiz"
-                className="bg-white/15 backdrop-blur-sm border border-white/25 text-white rounded-[14px] px-10 py-5 text-[18px] font-bold hover:bg-white/25 transition-all flex items-center justify-center gap-2.5"
+                <Link
+                  href="/quick"
+                  className="bg-cyan text-accent-deep rounded-[14px] px-10 py-5 text-[18px] font-bold hover:brightness-105 transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(121,231,248,0.4)]"
+                >
+                  <span className="material-symbols-outlined text-[22px]">bolt</span>
+                  Quick Plan
+                </Link>
+              </div>
+              <div
+                className="inline-flex"
+                onMouseMove={designMag.onMouseMove}
+                onMouseLeave={designMag.onMouseLeave}
+                style={designMag.style}
               >
-                <span className="material-symbols-outlined text-[22px]">tune</span>
-                Design My Trip
-              </Link>
+                <Link
+                  href="/quiz"
+                  className="bg-white/15 backdrop-blur-sm border border-white/25 text-white rounded-[14px] px-10 py-5 text-[18px] font-bold hover:bg-white/25 transition-all flex items-center justify-center gap-2.5"
+                >
+                  <span className="material-symbols-outlined text-[22px]">tune</span>
+                  Design My Trip
+                </Link>
+              </div>
             </div>
             <p className="text-white/80 text-[13px] font-medium mt-7 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
               Free forever · No sign-up required
@@ -196,10 +232,20 @@ export default function HomePage() {
             transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-6 perspective-stack hidden lg:block lg:mt-12"
             aria-hidden="true"
+            onMouseMove={(e: React.MouseEvent<HTMLDivElement>) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              const dx = (e.clientX - r.left - r.width / 2) / r.width;
+              const dy = (e.clientY - r.top - r.height / 2) / r.height;
+              setCardTilt({ rY: -9 + dx * 10, rX: 7 - dy * 10 });
+            }}
+            onMouseLeave={() => setCardTilt({ rY: -9, rX: 7 })}
           >
             <div
               className="relative mx-auto w-full max-w-[520px] aspect-[3/4] tilt-card"
-              style={{ transform: "rotateY(-9deg) rotateX(7deg)" }}
+              style={{
+                transform: `rotateY(${cardTilt.rY}deg) rotateX(${cardTilt.rX}deg)`,
+                transition: "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
+              }}
             >
               {/* Soft glow halo behind the stack */}
               <div className="absolute inset-0 -m-10 rounded-[48px] bg-cyan/15 blur-3xl pointer-events-none" />
