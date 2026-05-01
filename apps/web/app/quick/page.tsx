@@ -37,6 +37,7 @@ type QuickTrip = {
 
 export default function QuickPlanPage() {
   const router = useRouter();
+  const [step, setStep] = useState<"tags" | "details" | "results">("tags");
   const [tags, setTags] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [travelers, setTravelers] = useState<number>(2);
@@ -74,6 +75,7 @@ export default function QuickPlanPage() {
 
   const handleGenerate = async () => {
     if (tags.length === 0) return;
+    setStep("results");
     setLoading(true);
     setError(null);
     setTrips([]);
@@ -215,7 +217,8 @@ export default function QuickPlanPage() {
       </header>
 
       <div className="max-w-6xl mx-auto px-6 pt-28 pb-16">
-        {/* Input Section */}
+        {/* Step 1 — Tags */}
+        {step === "tags" && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -285,70 +288,6 @@ export default function QuickPlanPage() {
               </button>
             </div>
 
-            {/* Trip details — travelers + accommodation */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mt-4 pt-4 border-t border-[rgba(0,101,113,0.06)]">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold">Who</span>
-                {[
-                  { count: 1, label: "Solo" },
-                  { count: 2, label: "Couple" },
-                  { count: 4, label: "Group" },
-                ].map((opt) => (
-                  <button
-                    key={opt.label}
-                    onClick={() => setTravelers(opt.count)}
-                    className={`rounded-pill px-3 py-1 text-xs font-semibold transition-colors ${
-                      travelers === opt.count
-                        ? "bg-accent text-white"
-                        : "bg-page-bg text-on-light-secondary hover:bg-accent/5"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold">Stay</span>
-                {[
-                  { value: "hotel", label: "Hotel" },
-                  { value: "vrbo", label: "VRBO" },
-                  { value: "hostel", label: "Hostel" },
-                ].map((opt) => {
-                  const active = !noAccommodation && accommodationTypes.includes(opt.value);
-                  return (
-                    <button
-                      key={opt.value}
-                      onClick={() => {
-                        setNoAccommodation(false);
-                        setAccommodationTypes((prev) =>
-                          prev.includes(opt.value)
-                            ? prev.filter((v) => v !== opt.value)
-                            : [...prev, opt.value]
-                        );
-                      }}
-                      className={`rounded-pill px-3 py-1 text-xs font-semibold transition-colors ${
-                        active
-                          ? "bg-accent text-white"
-                          : "bg-page-bg text-on-light-secondary hover:bg-accent/5"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() => setNoAccommodation(true)}
-                  className={`rounded-pill px-3 py-1 text-xs font-semibold transition-colors ${
-                    noAccommodation
-                      ? "bg-accent text-white"
-                      : "bg-page-bg text-on-light-secondary hover:bg-accent/5"
-                  }`}
-                >
-                  No accommodation
-                </button>
-              </div>
-            </div>
-
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4">
               <p className="text-xs text-on-light-tertiary">
                 {tags.length}/15 tags -- press Enter or click Add
@@ -356,23 +295,152 @@ export default function QuickPlanPage() {
               {tags.length > 0 && (
                 <div className="sm:flex sm:justify-end w-full sm:w-auto">
                   <button
-                    onClick={handleGenerate}
-                    disabled={loading}
-                    className="w-full sm:w-auto bg-accent text-white rounded-[10px] px-6 py-2.5 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    onClick={() => setStep("details")}
+                    className="w-full sm:w-auto bg-accent text-white rounded-[10px] px-6 py-2.5 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
                   >
-                    <span className="material-symbols-outlined text-[18px]">
-                      {loading ? "hourglass_empty" : "auto_awesome"}
-                    </span>
-                    {loading ? "Planning..." : "Plan My Trip"}
+                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    Plan My Trip
                   </button>
                 </div>
               )}
             </div>
           </div>
         </motion.div>
+        )}
+
+        {/* Step 2 — Trip details (Who + Stay) */}
+        {step === "details" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-10"
+          >
+            <button
+              onClick={() => setStep("tags")}
+              className="text-on-light-secondary hover:text-accent text-sm font-medium flex items-center gap-1.5 mb-6 transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+              Back
+            </button>
+            <h1 className="text-[28px] md:text-[36px] font-semibold text-gray-dark leading-tight mb-3">
+              A few quick details
+            </h1>
+            <p className="text-on-light-secondary text-[17px] mb-8">
+              Walter needs two more things before planning your trip.
+            </p>
+
+            <div className="card-base p-6 sm:p-8 space-y-7">
+              {/* Tag review */}
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold mb-3">
+                  Trip ideas
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag, i) => (
+                    <span
+                      key={tag}
+                      className={`${pillColors[i % pillColors.length]} rounded-pill px-3 py-1 text-xs font-semibold`}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Who */}
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold mb-3">
+                  Who&apos;s going?
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { count: 1, label: "Just me", icon: "person" },
+                    { count: 2, label: "A couple", icon: "favorite" },
+                    { count: 4, label: "A group", icon: "groups" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.label}
+                      onClick={() => setTravelers(opt.count)}
+                      className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
+                        travelers === opt.count
+                          ? "bg-accent text-white border-accent"
+                          : "bg-white text-on-light-secondary border-[rgba(0,101,113,0.1)] hover:border-accent/40 hover:text-accent"
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stay */}
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold mb-3">
+                  Where will you stay?
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: "hotel", label: "Hotel", icon: "hotel" },
+                    { value: "vrbo", label: "VRBO", icon: "house" },
+                    { value: "hostel", label: "Hostel", icon: "bed" },
+                  ].map((opt) => {
+                    const active = !noAccommodation && accommodationTypes.includes(opt.value);
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => {
+                          setNoAccommodation(false);
+                          setAccommodationTypes((prev) =>
+                            prev.includes(opt.value)
+                              ? prev.filter((v) => v !== opt.value)
+                              : [...prev, opt.value]
+                          );
+                        }}
+                        className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
+                          active
+                            ? "bg-accent text-white border-accent"
+                            : "bg-white text-on-light-secondary border-[rgba(0,101,113,0.1)] hover:border-accent/40 hover:text-accent"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() => setNoAccommodation(true)}
+                    className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
+                      noAccommodation
+                        ? "bg-accent text-white border-accent"
+                        : "bg-white text-on-light-secondary border-[rgba(0,101,113,0.1)] hover:border-accent/40 hover:text-accent"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">no_accounts</span>
+                    No accommodation
+                  </button>
+                </div>
+              </div>
+
+              {/* Generate */}
+              <div className="pt-2 flex justify-end">
+                <button
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="bg-accent text-white rounded-[10px] px-7 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {loading ? "hourglass_empty" : "auto_awesome"}
+                  </span>
+                  {loading ? "Planning..." : "Generate trips"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Quick suggestions */}
-        {!generated && (() => {
+        {step === "tags" && !generated && (() => {
           const allSuggestions = ["Beach", "Tokyo", "Italian food", "Hiking", "Nightlife", "Concert", "Budget-friendly", "Romantic", "Family", "Adventure"];
           const remaining = allSuggestions.filter((s) => !tags.includes(s));
           if (remaining.length === 0) return null;
@@ -398,6 +466,17 @@ export default function QuickPlanPage() {
             </motion.div>
           );
         })()}
+
+        {/* Step 3 — Results (loading / error / trips) */}
+        {step === "results" && (
+          <button
+            onClick={() => setStep("details")}
+            className="text-on-light-secondary hover:text-accent text-sm font-medium flex items-center gap-1.5 mb-6 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            Refine details
+          </button>
+        )}
 
         {/* Loading skeletons */}
         {loading && (
