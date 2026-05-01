@@ -53,7 +53,9 @@ RULES:
 - The summary should explain WHY this trip matches their keywords
 
 RESPONSE FORMAT:
-{"trips":[{"destination":"City, Country","title":"...","summary":"One sentence explaining why this matches their keywords","totalEstimatedCost":0,"flightEstimate":0,"hotelEstimatePerNight":0,"topEvents":["Event 1","Event 2","Event 3"],"highlights":["Highlight 1","Highlight 2","Highlight 3"],"bestTimeToVisit":"...","days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}
+{"trips":[{"destination":"City, Country","title":"...","summary":"One sentence explaining why this matches their keywords","totalEstimatedCost":0,"flightEstimate":0,"hotelEstimatePerNight":0,"topEvents":["Event 1","Event 2","Event 3"],"highlights":["Highlight 1","Highlight 2","Highlight 3"],"bestTimeToVisit":"...","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}
+
+If the user mentioned specific dates or a date range, set startDate and endDate as YYYY-MM-DD strings using the next occurrence if year is omitted or in the past. If no dates were mentioned, omit startDate and endDate entirely (do not include them as null or empty strings).
 
 Generate EXACTLY 3 trips. Each should interpret the keywords differently — different destinations, different angles on the same interests.`;
 

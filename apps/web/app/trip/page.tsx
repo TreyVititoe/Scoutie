@@ -231,7 +231,7 @@ function TripPage() {
     return (
       <div className="min-h-screen bg-page-bg">
         <header className="nav-glass sticky top-0 z-20">
-          <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
             <Link
               href="/"
               className="text-[17px] font-semibold text-white"
@@ -280,7 +280,7 @@ function TripPage() {
     <div className="min-h-screen bg-page-bg">
       {/* ── Dark Nav Header ── */}
       <header className="nav-glass sticky top-0 z-20">
-        <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
             className="text-[17px] font-semibold text-white"
@@ -323,7 +323,7 @@ function TripPage() {
       {/* ── Trip Overview Hero ── */}
       <section className="bg-hero-gradient relative overflow-hidden">
         <div className="hero-glow absolute inset-0 pointer-events-none" />
-        <div className="relative z-10 max-w-content mx-auto px-6 pt-12 pb-10">
+        <div className="relative z-10 max-w-[1280px] mx-auto px-6 pt-12 pb-10">
           <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-2">
             Your Trip
           </p>
@@ -426,7 +426,7 @@ function TripPage() {
       </section>
 
       {/* ── Content Grid ── */}
-      <div className="max-w-content mx-auto px-6 py-8">
+      <div className="max-w-[1280px] mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* ── Left Column: Trip Items ── */}
           <div className="lg:col-span-8 space-y-8">

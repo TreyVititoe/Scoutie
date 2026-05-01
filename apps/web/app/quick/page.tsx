@@ -30,6 +30,8 @@ type QuickTrip = {
   topEvents: string[];
   highlights: string[];
   bestTimeToVisit: string;
+  startDate?: string;
+  endDate?: string;
   days: TripDay[];
 };
 
@@ -37,6 +39,9 @@ export default function QuickPlanPage() {
   const router = useRouter();
   const [tags, setTags] = useState<string[]>([]);
   const [input, setInput] = useState("");
+  const [travelers, setTravelers] = useState<number>(2);
+  const [accommodationTypes, setAccommodationTypes] = useState<string[]>(["hotel"]);
+  const [noAccommodation, setNoAccommodation] = useState<boolean>(false);
   const [trips, setTrips] = useState<QuickTrip[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,17 +102,20 @@ export default function QuickPlanPage() {
         fallbackStart.setDate(fallbackStart.getDate() + 14);
         const fallbackEnd = new Date(fallbackStart);
         fallbackEnd.setDate(fallbackEnd.getDate() + 5);
-        const sDate = fallbackStart.toISOString().split("T")[0];
-        const eDate = fallbackEnd.toISOString().split("T")[0];
+        const fallbackS = fallbackStart.toISOString().split("T")[0];
+        const fallbackE = fallbackEnd.toISOString().split("T")[0];
 
-        // Fetch flights + events for each destination
+        // Fetch flights + events for each destination — use trip dates if AI returned them
         tripList.forEach((trip: QuickTrip, idx: number) => {
+          const sDate = trip.startDate || fallbackS;
+          const eDate = trip.endDate || fallbackE;
+
           // Flights
           setFlightData((prev) => ({ ...prev, [idx]: { min: 0, max: 0, count: 0, loading: true } }));
           fetch("/api/flights", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ origin: "LAX", destination: trip.destination, departDate: sDate, returnDate: eDate, adults: 2, cabinClass: "economy" }),
+            body: JSON.stringify({ origin: "LAX", destination: trip.destination, departDate: sDate, returnDate: eDate, adults: travelers, cabinClass: "economy" }),
           })
             .then((r) => r.json())
             .then((fData) => {
@@ -122,7 +130,7 @@ export default function QuickPlanPage() {
           fetch("/api/search", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ destination: trip.destination, startDate: sDate, endDate: eDate, vibes: tags, travelers: 2 }),
+            body: JSON.stringify({ destination: trip.destination, startDate: sDate, endDate: eDate, vibes: tags, travelers }),
           })
             .then((r) => r.json())
             .then((eData) => {
@@ -155,7 +163,12 @@ export default function QuickPlanPage() {
       destinations: [trip.destination],
       destination: trip.destination,
       surpriseMe: false,
-      travelersCount: 2,
+      startDate: trip.startDate,
+      endDate: trip.endDate,
+      travelersCount: travelers,
+      travelers,
+      accommodationTypes: noAccommodation ? [] : accommodationTypes,
+      noAccommodation,
       budget: trip.totalEstimatedCost || 2000,
       budgetAmount: trip.totalEstimatedCost || 2000,
       activityInterests: [],
@@ -270,6 +283,70 @@ export default function QuickPlanPage() {
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 Add
               </button>
+            </div>
+
+            {/* Trip details — travelers + accommodation */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mt-4 pt-4 border-t border-[rgba(0,101,113,0.06)]">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold">Who</span>
+                {[
+                  { count: 1, label: "Solo" },
+                  { count: 2, label: "Couple" },
+                  { count: 4, label: "Group" },
+                ].map((opt) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => setTravelers(opt.count)}
+                    className={`rounded-pill px-3 py-1 text-xs font-semibold transition-colors ${
+                      travelers === opt.count
+                        ? "bg-accent text-white"
+                        : "bg-page-bg text-on-light-secondary hover:bg-accent/5"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold">Stay</span>
+                {[
+                  { value: "hotel", label: "Hotel" },
+                  { value: "vrbo", label: "VRBO" },
+                  { value: "hostel", label: "Hostel" },
+                ].map((opt) => {
+                  const active = !noAccommodation && accommodationTypes.includes(opt.value);
+                  return (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        setNoAccommodation(false);
+                        setAccommodationTypes((prev) =>
+                          prev.includes(opt.value)
+                            ? prev.filter((v) => v !== opt.value)
+                            : [...prev, opt.value]
+                        );
+                      }}
+                      className={`rounded-pill px-3 py-1 text-xs font-semibold transition-colors ${
+                        active
+                          ? "bg-accent text-white"
+                          : "bg-page-bg text-on-light-secondary hover:bg-accent/5"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+                <button
+                  onClick={() => setNoAccommodation(true)}
+                  className={`rounded-pill px-3 py-1 text-xs font-semibold transition-colors ${
+                    noAccommodation
+                      ? "bg-accent text-white"
+                      : "bg-page-bg text-on-light-secondary hover:bg-accent/5"
+                  }`}
+                >
+                  No accommodation
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4">
