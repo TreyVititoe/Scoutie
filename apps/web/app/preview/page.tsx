@@ -17,19 +17,20 @@ type Palette = {
 
 const palettes: Palette[] = [
   {
-    name: "Current — Teal + Cyan",
-    description: "What Walter ships today.",
-    primary: "#006571",
-    light: "#007d8a",
-    deep: "#003d47",
-    deepest: "#001f26",
-    pop: "#79e7f8",
-    popText: "#001f26",
+    name: "Soft Peach",
+    description:
+      "Softer, more refined. Pastel-leaning. Less shouty — feels boutique, magazine-y. Best if you want the warmth but without the 'energy drink' loudness.",
+    primary: "#EE8362",
+    light: "#F4A689",
+    deep: "#A24A29",
+    deepest: "#4A1E0C",
+    pop: "#FFE0A8",
+    popText: "#4A1E0C",
   },
   {
-    name: "Sunset Coral",
+    name: "Sunset Coral (original)",
     description:
-      "Warm, optimistic, adventurous. Reads as travel-and-discovery — Going.com / Hopper energy without the 'tech' coldness of teal.",
+      "The version you picked. Mid-saturation — warm and optimistic without tipping into either pastel or fire. Reference point for the others.",
     primary: "#E25A37",
     light: "#F08362",
     deep: "#8B2914",
@@ -38,26 +39,26 @@ const palettes: Palette[] = [
     popText: "#3F1207",
   },
   {
-    name: "Forest + Sage",
+    name: "Sunset Punch",
     description:
-      "Outdoorsy, grounded, trustworthy. Patagonia / Lonely Planet vibe — leans into the journey aspect over the booking aspect.",
-    primary: "#2D7A4F",
-    light: "#4FA374",
-    deep: "#143F26",
-    deepest: "#091F11",
-    pop: "#D5EE8E",
-    popText: "#091F11",
+      "Most saturated of the four. Vibrant, high-energy, wakes the page up — but the brightness can feel aggressive on long form.",
+    primary: "#F44726",
+    light: "#F76647",
+    deep: "#7A1A0A",
+    deepest: "#350A03",
+    pop: "#FFB938",
+    popText: "#350A03",
   },
   {
-    name: "Indigo + Pink",
+    name: "Terracotta",
     description:
-      "Premium, dreamy, aspirational. Modern boutique-travel feel — Mr. & Mrs. Smith / Going Places vibe. Loudest of the three but feels expensive.",
-    primary: "#4D52D8",
-    light: "#7176E2",
-    deep: "#22246E",
-    deepest: "#0E0F33",
-    pop: "#FFB3D9",
-    popText: "#0E0F33",
+      "Earthier and a touch desaturated. Reads more premium / editorial. Less 'sunset', more 'desert at golden hour'. Pairs naturally with travel imagery.",
+    primary: "#C25538",
+    light: "#D67A5C",
+    deep: "#6F2613",
+    deepest: "#321008",
+    pop: "#E8B569",
+    popText: "#321008",
   },
 ];
 
@@ -226,15 +227,16 @@ export default function PreviewPage() {
       <div className="max-w-5xl mx-auto px-6">
         <div className="mb-10">
           <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-2">
-            Walter · Brand color exploration
+            Walter · Sunset Coral — shade variations
           </p>
           <h1 className="text-[36px] sm:text-[44px] font-semibold text-gray-dark tracking-display leading-[1.05] mb-3">
-            Pick a direction.
+            Hone in on the warmth.
           </h1>
           <p className="text-on-light-secondary text-[17px] max-w-2xl">
-            Three options below the current teal. Each shows a hero band, the
-            two main CTAs, and the flight/hotel/event card row from /results —
-            scroll and compare. Nothing here is wired to the live site.
+            Four shades of the sunset/coral direction — softer pastel, the
+            original mid-tone, a bolder punch, and a more earthy terracotta.
+            Same hero band + CTA pair + flight/hotel/event row in each so
+            you can compare apples-to-apples.
           </p>
         </div>
 
