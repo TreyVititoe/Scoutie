@@ -36,7 +36,7 @@ export default function Step3Travelers() {
                 className={`flex flex-col items-center gap-2 p-4 rounded-[14px] border transition-colors cursor-pointer ${
                   isSelected
                     ? "border-accent bg-accent/5"
-                    : "border-[rgba(0,101,113,0.08)] bg-white hover:border-accent/30"
+                    : "border-[rgba(194,85,56,0.08)] bg-white hover:border-accent/30"
                 }`}
               >
                 <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
@@ -58,7 +58,7 @@ export default function Step3Travelers() {
           <div className="flex items-center gap-5">
             <button
               onClick={() => store.setTravelersCount(Math.max(1, store.travelersCount - 1))}
-              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
             >
               <span className="material-symbols-outlined text-on-light-tertiary">remove</span>
             </button>
@@ -67,7 +67,7 @@ export default function Step3Travelers() {
             </span>
             <button
               onClick={() => store.setTravelersCount(store.travelersCount + 1)}
-              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
             >
               <span className="material-symbols-outlined text-on-light-tertiary">add</span>
             </button>
@@ -87,7 +87,7 @@ export default function Step3Travelers() {
                   store.setChildrenCount(next);
                   store.setChildrenAges(store.childrenAges.slice(0, next));
                 }}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
               >
                 <span className="material-symbols-outlined text-on-light-tertiary">remove</span>
               </button>
@@ -99,7 +99,7 @@ export default function Step3Travelers() {
                   store.setChildrenCount(store.childrenCount + 1);
                   store.setChildrenAges([...store.childrenAges, 5]);
                 }}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
               >
                 <span className="material-symbols-outlined text-on-light-tertiary">add</span>
               </button>
@@ -120,7 +120,7 @@ export default function Step3Travelers() {
                         newAges[i] = Number(e.target.value);
                         store.setChildrenAges(newAges);
                       }}
-                      className="w-16 bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-2 px-3 text-center text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                      className="w-16 bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] py-2 px-3 text-center text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                     />
                   </div>
                 ))}

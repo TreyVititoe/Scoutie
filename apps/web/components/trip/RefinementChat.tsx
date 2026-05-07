@@ -223,7 +223,7 @@ export default function RefinementChat({
                     onClick={() => sendMessage(suggestion)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-3 py-1.5 text-xs font-sans font-medium rounded-pill border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30 hover:bg-accent/5 transition-colors"
+                    className="px-3 py-1.5 text-xs font-sans font-medium rounded-pill border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent/30 hover:bg-accent/5 transition-colors"
                   >
                     {suggestion}
                   </motion.button>
@@ -242,7 +242,7 @@ export default function RefinementChat({
                   onKeyDown={handleKeyDown}
                   placeholder="e.g. swap the museum for a food tour"
                   disabled={loading}
-                  className="flex-1 px-3.5 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] bg-white text-sm font-sans text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-accent/20 focus:ring-accent focus:ring-1 disabled:opacity-50 transition-colors"
+                  className="flex-1 px-3.5 py-2.5 rounded-[10px] border border-[rgba(194,85,56,0.08)] bg-white text-sm font-sans text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-accent/20 focus:ring-accent focus:ring-1 disabled:opacity-50 transition-colors"
                 />
                 <motion.button
                   onClick={() => sendMessage(input)}

@@ -53,7 +53,7 @@ export default function Step4Budget() {
               className={`flex-1 py-3 rounded-[10px] text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
                 activeBudgetOption === opt.value
                   ? "bg-accent text-white shadow-md"
-                  : "text-on-light-secondary hover:bg-[#e6f7f9]"
+                  : "text-on-light-secondary hover:bg-[#FFF2D9]"
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
@@ -69,7 +69,7 @@ export default function Step4Budget() {
             <div className="flex items-center gap-4">
               <button
                 onClick={decrementBudget}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
               >
                 <span className="material-symbols-outlined text-on-light-tertiary">remove</span>
               </button>
@@ -83,13 +83,13 @@ export default function Step4Budget() {
                   value={store.budgetAmount || ""}
                   onChange={(e) => store.setBudgetAmount(Number(e.target.value) || null)}
                   placeholder="0"
-                  className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-2xl font-semibold text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-2xl font-semibold text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
 
               <button
                 onClick={incrementBudget}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
               >
                 <span className="material-symbols-outlined text-on-light-tertiary">add</span>
               </button>
@@ -104,7 +104,7 @@ export default function Step4Budget() {
                   className={`px-4 py-2.5 rounded-pill text-sm font-semibold transition-all ${
                     store.budgetAmount === p
                       ? "bg-accent text-white shadow-md"
-                      : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:bg-[#e6f7f9]"
+                      : "bg-page-bg border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:bg-[#FFF2D9]"
                   }`}
                 >
                   ${p.toLocaleString()}
@@ -146,7 +146,7 @@ export default function Step4Budget() {
                 type="checkbox"
                 checked={store.budgetFlexible}
                 onChange={(e) => store.setBudgetFlexible(e.target.checked)}
-                className="w-5 h-5 rounded border-[rgba(0,101,113,0.08)] text-accent focus:ring-accent/20"
+                className="w-5 h-5 rounded border-[rgba(194,85,56,0.08)] text-accent focus:ring-accent/20"
               />
               <span className="text-on-light-secondary text-sm">I&apos;m flexible -- show me options slightly above my budget too</span>
             </label>

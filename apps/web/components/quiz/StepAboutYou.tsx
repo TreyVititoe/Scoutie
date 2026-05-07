@@ -132,7 +132,7 @@ export default function StepAboutYou() {
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-[14px] border transition-colors cursor-pointer ${
                     isSelected
                       ? "border-accent bg-accent/5"
-                      : "border-[rgba(0,101,113,0.08)] bg-white hover:border-accent/30"
+                      : "border-[rgba(194,85,56,0.08)] bg-white hover:border-accent/30"
                   }`}
                 >
                   <span className={`material-symbols-outlined text-[24px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
@@ -155,7 +155,7 @@ export default function StepAboutYou() {
           <div className="flex items-center gap-5">
             <button
               onClick={() => store.setTravelersCount(Math.max(1, store.travelersCount - 1))}
-              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
             >
               <span className="material-symbols-outlined text-on-light-tertiary text-[20px]">remove</span>
             </button>
@@ -164,7 +164,7 @@ export default function StepAboutYou() {
             </span>
             <button
               onClick={() => store.setTravelersCount(store.travelersCount + 1)}
-              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#e6f7f9] transition-colors"
+              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#FFF2D9] transition-colors"
             >
               <span className="material-symbols-outlined text-on-light-tertiary text-[20px]">add</span>
             </button>
@@ -187,7 +187,7 @@ export default function StepAboutYou() {
                 className={`px-4 py-2 rounded-pill text-sm font-semibold transition-colors ${
                   store.budgetAmount === amount && !store.budgetSkipped
                     ? "bg-accent text-white"
-                    : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30"
+                    : "bg-page-bg border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent/30"
                 }`}
               >
                 ${amount.toLocaleString()}
@@ -201,7 +201,7 @@ export default function StepAboutYou() {
               className={`px-4 py-2 rounded-pill text-sm font-semibold transition-colors ${
                 store.budgetSkipped
                   ? "bg-accent text-white"
-                  : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30"
+                  : "bg-page-bg border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent/30"
               }`}
             >
               Flexible
@@ -218,7 +218,7 @@ export default function StepAboutYou() {
                   store.setBudgetSkipped(false);
                 }}
                 placeholder="Or enter a custom amount"
-                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
               />
             </div>
           )}
@@ -236,7 +236,7 @@ export default function StepAboutYou() {
               {store.departureCities.map((city) => (
                 <span
                   key={city}
-                  className="bg-[#e6f7f9] text-accent rounded-pill px-3 py-1 text-sm font-semibold flex items-center gap-1.5"
+                  className="bg-[#FFF2D9] text-accent rounded-pill px-3 py-1 text-sm font-semibold flex items-center gap-1.5"
                 >
                   {city}
                   <button
@@ -279,11 +279,11 @@ export default function StepAboutYou() {
                 }
               }}
               placeholder={store.departureCities.length > 0 ? "Add another city or airport code" : "City or airport code (e.g. LAX, Chicago)"}
-              className="w-full pl-10 pr-4 py-2.5 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+              className="w-full pl-10 pr-4 py-2.5 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
           </div>
           {showSuggestions && (iataMatches.length > 0 || citySuggestions.length > 0) && (
-            <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(0,101,113,0.08)] shadow-[0_2px_12px_rgba(0,101,113,0.06)] overflow-hidden">
+            <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(194,85,56,0.08)] shadow-[0_2px_12px_rgba(194,85,56,0.06)] overflow-hidden">
               {iataMatches.map((match) => (
                 <button
                   key={match.code}

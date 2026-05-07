@@ -48,7 +48,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
       </div>
       <div className="flex flex-wrap items-center gap-1.5 mb-4">
         {suggestion.bestTime && (
-          <span className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             {suggestion.bestTime.toLowerCase().includes("morning")
               ? "Best in morning"
               : suggestion.bestTime.toLowerCase().includes("evening")

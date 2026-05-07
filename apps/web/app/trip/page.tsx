@@ -522,7 +522,7 @@ function TripPage() {
                     </div>
                   );
                 })}
-                <div className="border-t border-[rgba(0,101,113,0.08)] pt-2 mt-2 flex items-center justify-between">
+                <div className="border-t border-[rgba(194,85,56,0.08)] pt-2 mt-2 flex items-center justify-between">
                   <span className="font-semibold text-gray-dark">
                     Total
                   </span>
@@ -576,7 +576,7 @@ function TripPage() {
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
               placeholder={destination ? `My ${destination} trip` : "My trip"}
-              className="w-full px-4 py-3 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
+              className="w-full px-4 py-3 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
               autoFocus
             />
 
@@ -596,7 +596,7 @@ function TripPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="flex-1 py-3 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-on-light-secondary font-semibold hover:bg-page-bg transition-colors"
+                className="flex-1 py-3 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-on-light-secondary font-semibold hover:bg-page-bg transition-colors"
               >
                 Cancel
               </button>
@@ -646,7 +646,7 @@ function ItemCard({
             />
           </div>
         ) : isAi ? (
-          <div className="w-20 h-20 rounded-[8px] flex-shrink-0 bg-[#e6f7f9] flex items-center justify-center">
+          <div className="w-20 h-20 rounded-[8px] flex-shrink-0 bg-[#FFF2D9] flex items-center justify-center">
             <span className="material-symbols-outlined text-accent/40 text-2xl">auto_awesome</span>
           </div>
         ) : null}
@@ -655,7 +655,7 @@ function ItemCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span
-              className="bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase"
+              className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase"
             >
               {item.type}
             </span>

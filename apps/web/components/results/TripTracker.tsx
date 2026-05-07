@@ -365,7 +365,7 @@ function MobileBar() {
 
       {/* Collapsed bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden pb-[env(safe-area-inset-bottom)]">
-        <div className="bg-white border-t border-[rgba(0,101,113,0.08)] px-5 py-3 flex items-center justify-between">
+        <div className="bg-white border-t border-[rgba(194,85,56,0.08)] px-5 py-3 flex items-center justify-between">
           <button
             onClick={() => setExpanded(true)}
             className="flex items-center gap-3"

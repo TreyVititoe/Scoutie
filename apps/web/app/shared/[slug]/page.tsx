@@ -360,7 +360,7 @@ export default function SharedTripPage() {
 
                 {/* Timeline */}
                 <div className="relative pl-8">
-                  <div className="absolute left-3 top-0 bottom-0 w-px bg-[rgba(0,101,113,0.08)]" />
+                  <div className="absolute left-3 top-0 bottom-0 w-px bg-[rgba(194,85,56,0.08)]" />
                   <div className="space-y-4">
                     {currentDay.trip_items.map((item, i) => (
                       <motion.div
@@ -376,7 +376,7 @@ export default function SharedTripPage() {
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="bg-[#e6f7f9] text-accent rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
+                              <span className="bg-[#FFF2D9] text-accent rounded-full px-2.5 py-0.5 text-[11px] font-semibold">
                                 {item.item_type}
                               </span>
                               {item.start_time && (

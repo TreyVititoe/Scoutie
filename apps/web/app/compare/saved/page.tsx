@@ -150,7 +150,7 @@ export default function CompareSavedPage() {
 
                 <div className="p-6 flex-1 flex flex-col">
                   {/* Cost */}
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
                     <span className="text-on-light-secondary text-sm">Total cost</span>
                     <span className="text-accent text-[21px] font-semibold">
                       ${trip.total_estimated_cost?.toLocaleString() || "N/A"}
@@ -158,7 +158,7 @@ export default function CompareSavedPage() {
                   </div>
 
                   {/* Quick stats */}
-                  <div className="grid grid-cols-3 gap-3 mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                  <div className="grid grid-cols-3 gap-3 mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
                     <div className="text-center">
                       <p className="text-[21px] font-semibold text-gray-dark">{dayCount}</p>
                       <p className="text-[11px] text-on-light-tertiary">Days</p>
@@ -175,7 +175,7 @@ export default function CompareSavedPage() {
 
                   {/* Flights */}
                   {flightItems.length > 0 && (
-                    <div className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                    <div className="mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
                       <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Flights</p>
                       {flightItems.map((fl, j) => (
                         <p key={j} className="text-sm text-gray-dark mb-1 flex items-center gap-1.5">
@@ -191,7 +191,7 @@ export default function CompareSavedPage() {
 
                   {/* Top Events */}
                   {eventItems.length > 0 && (
-                    <div className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]">
+                    <div className="mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
                       <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Events</p>
                       {eventItems.slice(0, 3).map((ev, j) => (
                         <p key={j} className="text-sm text-gray-dark mb-1 flex items-center gap-1.5">
@@ -211,7 +211,7 @@ export default function CompareSavedPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ duration: 0.2 }}
-                      className="mb-4 pb-4 border-b border-[rgba(0,101,113,0.06)]"
+                      className="mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]"
                     >
                       <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-3">Day-by-day</p>
                       <div className="space-y-3">

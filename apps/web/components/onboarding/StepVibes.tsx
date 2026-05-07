@@ -46,7 +46,7 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
               className={`flex items-center gap-3 px-4 py-4 rounded-[14px] border transition-all text-left ${
                 selected
                   ? "bg-accent/5 border-accent"
-                  : "bg-white border-[rgba(0,101,113,0.08)] hover:border-accent/30"
+                  : "bg-white border-[rgba(194,85,56,0.08)] hover:border-accent/30"
               }`}
             >
               <span className={`font-semibold text-sm ${selected ? "text-accent" : "text-gray-dark"}`}>
@@ -58,7 +58,7 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-[rgba(0,101,113,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
+        <button onClick={onBack} className="flex-1 border border-[rgba(194,85,56,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
           Back
         </button>
         <button

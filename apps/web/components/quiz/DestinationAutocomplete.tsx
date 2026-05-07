@@ -207,7 +207,7 @@ export default function DestinationAutocomplete() {
           {store.destinations.map((d) => (
             <span
               key={d}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-[#e6f7f9] text-accent text-sm font-semibold"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-[#FFF2D9] text-accent text-sm font-semibold"
             >
               <span className="material-symbols-outlined text-[16px]">location_on</span>
               {d}
@@ -238,7 +238,7 @@ export default function DestinationAutocomplete() {
               if (results.length > 0) setIsOpen(true);
             }}
             placeholder="Search for a city, country, or airport code..."
-            className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark placeholder:text-on-light-tertiary/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+            className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark placeholder:text-on-light-tertiary/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
             role="combobox"
             aria-expanded={isOpen}
             aria-autocomplete="list"
@@ -255,7 +255,7 @@ export default function DestinationAutocomplete() {
           <ul
             id="destination-listbox"
             role="listbox"
-            className="absolute z-50 w-full mt-2 bg-white rounded-[14px] border border-[rgba(0,101,113,0.08)] shadow-[0_2px_12px_rgba(0,101,113,0.06)] overflow-hidden"
+            className="absolute z-50 w-full mt-2 bg-white rounded-[14px] border border-[rgba(194,85,56,0.08)] shadow-[0_2px_12px_rgba(194,85,56,0.06)] overflow-hidden"
           >
             {iataMatches.map((match) => {
               const isAlreadyAdded = store.destinations.includes(match.display);

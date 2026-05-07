@@ -45,7 +45,7 @@ export default function Step6Activities() {
                 className={`flex flex-col items-center gap-3 p-4 rounded-[14px] border transition-colors cursor-pointer ${
                   selected
                     ? "border-accent bg-accent text-white"
-                    : "border-[rgba(0,101,113,0.08)] bg-white hover:border-accent/30"
+                    : "border-[rgba(194,85,56,0.08)] bg-white hover:border-accent/30"
                 }`}
               >
                 <div
@@ -94,7 +94,7 @@ export default function Step6Activities() {
                   className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                     selected
                       ? "bg-accent text-white shadow-md"
-                      : "bg-page-bg border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:bg-[#e6f7f9]"
+                      : "bg-page-bg border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:bg-[#FFF2D9]"
                   }`}
                 >
                   <span className="material-symbols-outlined text-[16px]">{a.icon}</span>

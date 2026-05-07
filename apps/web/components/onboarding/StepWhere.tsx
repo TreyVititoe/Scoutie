@@ -23,7 +23,7 @@ export default function StepWhere({ prefs, update, onNext }: Props) {
         placeholder="e.g. Tokyo, Japan"
         value={prefs.destination}
         onChange={(e) => update({ destination: e.target.value })}
-        className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] px-5 py-4 text-lg text-gray-dark placeholder-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent transition mb-6"
+        className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] px-5 py-4 text-lg text-gray-dark placeholder-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent transition mb-6"
         autoFocus
       />
 
@@ -36,7 +36,7 @@ export default function StepWhere({ prefs, update, onNext }: Props) {
             className={`px-4 py-2 rounded-pill border text-sm font-medium transition-colors ${
               prefs.destination === place
                 ? "bg-accent border-accent text-white"
-                : "border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent/30"
+                : "border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent/30"
             }`}
           >
             {place}

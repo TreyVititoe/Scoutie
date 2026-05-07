@@ -276,7 +276,7 @@ export default function QuickPlanPage() {
                       : "Add more..."
                 }
                 disabled={tags.length >= 15}
-                className="flex-1 px-4 py-3 rounded-[10px] border border-[rgba(0,101,113,0.08)] text-gray-dark text-[15px] placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-gray-dark text-[15px] placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
               />
               <button
                 onClick={() => addTag(input)}
@@ -364,7 +364,7 @@ export default function QuickPlanPage() {
                       className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
                         travelers === opt.count
                           ? "bg-accent text-white border-accent"
-                          : "bg-white text-on-light-secondary border-[rgba(0,101,113,0.1)] hover:border-accent/40 hover:text-accent"
+                          : "bg-white text-on-light-secondary border-[rgba(194,85,56,0.1)] hover:border-accent/40 hover:text-accent"
                       }`}
                     >
                       <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
@@ -400,7 +400,7 @@ export default function QuickPlanPage() {
                         className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
                           active
                             ? "bg-accent text-white border-accent"
-                            : "bg-white text-on-light-secondary border-[rgba(0,101,113,0.1)] hover:border-accent/40 hover:text-accent"
+                            : "bg-white text-on-light-secondary border-[rgba(194,85,56,0.1)] hover:border-accent/40 hover:text-accent"
                         }`}
                       >
                         <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
@@ -413,7 +413,7 @@ export default function QuickPlanPage() {
                     className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
                       noAccommodation
                         ? "bg-accent text-white border-accent"
-                        : "bg-white text-on-light-secondary border-[rgba(0,101,113,0.1)] hover:border-accent/40 hover:text-accent"
+                        : "bg-white text-on-light-secondary border-[rgba(194,85,56,0.1)] hover:border-accent/40 hover:text-accent"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[18px]">no_accounts</span>
@@ -457,7 +457,7 @@ export default function QuickPlanPage() {
                   <button
                     key={s}
                     onClick={() => addTag(s)}
-                    className="bg-white border border-[rgba(0,101,113,0.08)] text-on-light-secondary rounded-pill px-3.5 py-1.5 text-sm hover:border-accent/30 hover:text-accent transition-colors"
+                    className="bg-white border border-[rgba(194,85,56,0.08)] text-on-light-secondary rounded-pill px-3.5 py-1.5 text-sm hover:border-accent/30 hover:text-accent transition-colors"
                   >
                     {s}
                   </button>
@@ -487,7 +487,7 @@ export default function QuickPlanPage() {
                 <div className="p-5">
                   <div className="h-5 bg-page-bg rounded w-1/2 mb-3" />
                   <div className="h-4 bg-page-bg rounded w-3/4 mb-4" />
-                  <div className="bg-[#e6f7f9]/30 rounded-[10px] p-4 mb-4">
+                  <div className="bg-[#FFF2D9]/30 rounded-[10px] p-4 mb-4">
                     <div className="h-8 bg-page-bg rounded w-1/3" />
                   </div>
                   <div className="space-y-2">
@@ -557,7 +557,7 @@ export default function QuickPlanPage() {
                       </div>
 
                       {/* Estimated Total */}
-                      <div className="bg-[#e6f7f9]/30 rounded-[10px] p-4 my-4">
+                      <div className="bg-[#FFF2D9]/30 rounded-[10px] p-4 my-4">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-on-light-secondary text-sm">Estimated Total</span>
                           <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
@@ -593,7 +593,7 @@ export default function QuickPlanPage() {
                       </div>
 
                       {/* Events section */}
-                      <div className="mb-4 pt-3 border-t border-[rgba(0,101,113,0.06)]">
+                      <div className="mb-4 pt-3 border-t border-[rgba(194,85,56,0.06)]">
                         {eventData[i]?.loading ? (
                           <div className="flex items-center gap-2 py-2">
                             <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
@@ -654,7 +654,7 @@ export default function QuickPlanPage() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           transition={{ duration: 0.2 }}
-                          className="mb-4 pt-4 border-t border-[rgba(0,101,113,0.06)]"
+                          className="mb-4 pt-4 border-t border-[rgba(194,85,56,0.06)]"
                         >
                           <div className="space-y-3">
                             {trip.days.map((day) => (
@@ -680,7 +680,7 @@ export default function QuickPlanPage() {
                       )}
 
                       {/* Actions */}
-                      <div className="flex items-center gap-2 pt-3 border-t border-[rgba(0,101,113,0.06)]">
+                      <div className="flex items-center gap-2 pt-3 border-t border-[rgba(194,85,56,0.06)]">
                         <button
                           onClick={() => setExpandedTrip(isExpanded ? null : i)}
                           className="text-accent text-sm font-semibold hover:text-accent-light transition-colors"
@@ -694,7 +694,7 @@ export default function QuickPlanPage() {
                             className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                               savedIds.has(i)
                                 ? "bg-page-bg text-accent"
-                                : "border border-[rgba(0,101,113,0.08)] text-on-light-secondary hover:border-accent hover:text-accent"
+                                : "border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent hover:text-accent"
                             }`}
                           >
                             <span className="material-symbols-outlined text-[16px]">{savedIds.has(i) ? "check" : "bookmark"}</span>

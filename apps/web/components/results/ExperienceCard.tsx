@@ -13,7 +13,7 @@ export default function ExperienceCard({ experience }: { experience: Experience 
       {/* Image */}
       <div className="relative h-40 bg-page-bg">
         <img src={experience.image} alt={experience.name} className="w-full h-full object-cover" />
-        <span className="absolute top-3 left-3 bg-[#e6f7f9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+        <span className="absolute top-3 left-3 bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
           {experience.category}
         </span>
       </div>

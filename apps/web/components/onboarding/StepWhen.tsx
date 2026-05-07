@@ -38,7 +38,7 @@ export default function StepWhen({ prefs, update, onNext, onBack }: Props) {
             min={today}
             value={prefs.startDate}
             onChange={(e) => update({ startDate: e.target.value })}
-            className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] px-5 py-4 text-lg text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent transition"
+            className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] px-5 py-4 text-lg text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent transition"
           />
         </div>
         <div>
@@ -48,7 +48,7 @@ export default function StepWhen({ prefs, update, onNext, onBack }: Props) {
             min={prefs.startDate || today}
             value={prefs.endDate}
             onChange={(e) => update({ endDate: e.target.value })}
-            className="w-full bg-white border border-[rgba(0,101,113,0.08)] rounded-[10px] px-5 py-4 text-lg text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent transition"
+            className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] px-5 py-4 text-lg text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent transition"
           />
         </div>
       </div>
@@ -62,7 +62,7 @@ export default function StepWhen({ prefs, update, onNext, onBack }: Props) {
       <div className="mt-auto flex gap-3">
         <button
           onClick={onBack}
-          className="flex-1 border border-[rgba(0,101,113,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors"
+          className="flex-1 border border-[rgba(194,85,56,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors"
         >
           Back
         </button>
