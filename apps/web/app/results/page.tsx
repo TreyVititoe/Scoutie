@@ -300,7 +300,7 @@ export default function ResultsPage() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[14px] font-semibold transition-all duration-200 ${
                       isActive
-                        ? "bg-accent/90 text-white shadow-[0_2px_16px_rgba(194,85,56,0.35)] backdrop-blur-sm"
+                        ? "bg-accent/90 text-white shadow-[0_2px_16px_rgba(37,99,235,0.35)] backdrop-blur-sm"
                         : "text-gray-dark/70 hover:text-gray-dark hover:bg-white/30"
                     }`}
                   >
@@ -793,7 +793,7 @@ function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => vo
               className="card-base overflow-hidden flex flex-col"
             >
               {/* Header */}
-              <div className="p-5 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+              <div className="p-5 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
@@ -831,7 +831,7 @@ function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => vo
                 </div>
 
                 {/* Flights */}
-                <div className="flex items-center justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                <div className="flex items-center justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
                     <span className="text-gray-dark text-sm font-semibold">Flights</span>
@@ -850,7 +850,7 @@ function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => vo
                 </div>
 
                 {/* Hotels */}
-                <div className="flex items-center justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                <div className="flex items-center justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
                     <span className="text-gray-dark text-sm font-semibold">Hotels</span>
@@ -869,7 +869,7 @@ function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => vo
                 </div>
 
                 {/* Events */}
-                <div className="py-3 border-t border-[rgba(194,85,56,0.06)]">
+                <div className="py-3 border-t border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
@@ -983,7 +983,7 @@ function AiItineraryBanner() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           transition={{ duration: 0.2 }}
-          className="mt-4 pt-4 border-t border-[rgba(194,85,56,0.06)]"
+          className="mt-4 pt-4 border-t border-[rgba(37,99,235,0.06)]"
         >
           <div className="space-y-3">
             {Array.from(byDay.entries())
@@ -1002,7 +1002,7 @@ function AiItineraryBanner() {
                         <span className="text-[10px] text-on-light-tertiary w-12">
                           {(item.meta?.startTime as string) || ""}
                         </span>
-                        <span className="bg-[#FFF2D9] text-accent rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
+                        <span className="bg-[#DBEAFE] text-accent rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
                           {item.type}
                         </span>
                         <span className="flex-1 truncate text-gray-dark">{item.title}</span>
@@ -1087,7 +1087,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
                 }
               }}
               placeholder="City or airport code (e.g. LAX, Chicago)"
-              className="w-full pl-10 pr-4 py-3 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+              className="w-full pl-10 pr-4 py-3 rounded-[10px] border border-[rgba(37,99,235,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
           </div>
           <button
@@ -1100,7 +1100,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
           </button>
         </div>
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(194,85,56,0.08)] shadow-[0_2px_12px_rgba(194,85,56,0.06)] overflow-hidden">
+          <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(37,99,235,0.08)] shadow-[0_2px_12px_rgba(37,99,235,0.06)] overflow-hidden">
             {suggestions.map((f) => (
               <button
                 key={f.id}

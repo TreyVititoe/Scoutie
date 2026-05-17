@@ -53,22 +53,22 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
           </div>
         )}
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
-          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             {event.category}
           </span>
           {(event.priceMin === null || event.priceMin === 0) && (
-            <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+            <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Free
             </span>
           )}
           {event.priceMin !== null && event.priceMin > 0 && event.priceMin < 30 && (
-            <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+            <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Under $30
             </span>
           )}
         </div>
         {event.matchReason && (
-          <span className="absolute top-3 right-3 text-[10px] font-semibold bg-[#FFF2D9] text-accent px-2.5 py-1 rounded-full max-w-[140px] truncate">
+          <span className="absolute top-3 right-3 text-[10px] font-semibold bg-[#DBEAFE] text-accent px-2.5 py-1 rounded-full max-w-[140px] truncate">
             {event.matchReason}
           </span>
         )}

@@ -32,7 +32,7 @@ export default function StepWho({ prefs, update, onNext, onBack }: Props) {
             className={`flex flex-col items-center justify-center py-6 rounded-[14px] border transition-all ${
               prefs.travelersType === t.id
                 ? "bg-accent/5 border-accent"
-                : "bg-white border-[rgba(194,85,56,0.08)] hover:border-accent/30"
+                : "bg-white border-[rgba(37,99,235,0.08)] hover:border-accent/30"
             }`}
           >
             <span className={`font-semibold ${prefs.travelersType === t.id ? "text-accent" : "text-gray-dark"}`}>
@@ -48,14 +48,14 @@ export default function StepWho({ prefs, update, onNext, onBack }: Props) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => update({ travelers: Math.max(1, prefs.travelers - 1) })}
-            className="w-9 h-9 rounded-full border border-[rgba(194,85,56,0.08)] bg-white text-gray-dark font-semibold text-lg flex items-center justify-center hover:border-accent/30 transition"
+            className="w-9 h-9 rounded-full border border-[rgba(37,99,235,0.08)] bg-white text-gray-dark font-semibold text-lg flex items-center justify-center hover:border-accent/30 transition"
           >
             −
           </button>
           <span className="text-xl font-semibold text-gray-dark w-6 text-center">{prefs.travelers}</span>
           <button
             onClick={() => update({ travelers: prefs.travelers + 1 })}
-            className="w-9 h-9 rounded-full border border-[rgba(194,85,56,0.08)] bg-white text-gray-dark font-semibold text-lg flex items-center justify-center hover:border-accent/30 transition"
+            className="w-9 h-9 rounded-full border border-[rgba(37,99,235,0.08)] bg-white text-gray-dark font-semibold text-lg flex items-center justify-center hover:border-accent/30 transition"
           >
             +
           </button>
@@ -63,7 +63,7 @@ export default function StepWho({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-[rgba(194,85,56,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
+        <button onClick={onBack} className="flex-1 border border-[rgba(37,99,235,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
           Back
         </button>
         <button onClick={onNext} className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light text-white font-semibold py-4 rounded-[10px] text-lg transition-colors">

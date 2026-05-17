@@ -75,7 +75,7 @@ export default function Step5Accommodation() {
           className={`w-full flex items-center gap-3 p-4 rounded-[14px] border transition-colors ${
             store.noAccommodation
               ? "border-accent bg-accent text-white"
-              : "border-[rgba(194,85,56,0.08)] bg-white hover:border-accent/30"
+              : "border-[rgba(37,99,235,0.08)] bg-white hover:border-accent/30"
           }`}
         >
           <span className={`material-symbols-outlined text-[24px] ${store.noAccommodation ? "text-white" : "text-on-light-tertiary"}`}>
@@ -115,7 +115,7 @@ export default function Step5Accommodation() {
                   className={`flex flex-col items-center gap-2 p-4 rounded-[14px] border transition-colors ${
                     isSelected
                       ? "border-accent bg-accent/5"
-                      : "border-[rgba(194,85,56,0.08)] bg-white hover:border-accent/30"
+                      : "border-[rgba(37,99,235,0.08)] bg-white hover:border-accent/30"
                   }`}
                 >
                   <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
@@ -147,7 +147,7 @@ export default function Step5Accommodation() {
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
                         ? "bg-accent text-white shadow-md"
-                        : "bg-page-bg border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:bg-[#FFF2D9]"
+                        : "bg-page-bg border border-[rgba(37,99,235,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
@@ -173,7 +173,7 @@ export default function Step5Accommodation() {
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
                         ? "bg-accent text-white shadow-md"
-                        : "bg-page-bg border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:bg-[#FFF2D9]"
+                        : "bg-page-bg border border-[rgba(37,99,235,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{loc.icon}</span>

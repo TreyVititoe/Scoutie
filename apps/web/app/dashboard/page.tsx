@@ -240,7 +240,7 @@ export default function DashboardPage() {
                             {trip.title || trip.destination}
                           </h3>
                           {trip.tier && (
-                            <span className="bg-[#FFF2D9] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex-shrink-0">
+                            <span className="bg-[#DBEAFE] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex-shrink-0">
                               {trip.tier.charAt(0).toUpperCase() + trip.tier.slice(1)}
                             </span>
                           )}
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                         {trip.title && trip.destination && (
                           <p className="text-sm text-on-light-secondary mb-2">{trip.destination}</p>
                         )}
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[rgba(194,85,56,0.06)]">
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[rgba(37,99,235,0.06)]">
                           {trip.total_estimated_cost > 0 && (
                             <span className="font-semibold text-accent">
                               ${trip.total_estimated_cost.toLocaleString()}

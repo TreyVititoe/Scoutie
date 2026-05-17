@@ -144,7 +144,7 @@ export default function CommunityTrips() {
                           </div>
                         )}
                         {trip.tier && (
-                          <span className="absolute bottom-3 left-3 bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+                          <span className="absolute bottom-3 left-3 bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
                             {trip.tier.charAt(0).toUpperCase() + trip.tier.slice(1)}
                           </span>
                         )}
@@ -156,7 +156,7 @@ export default function CommunityTrips() {
                         <p className="text-on-light-secondary text-sm mt-1 line-clamp-2">
                           {trip.title}
                         </p>
-                        <div className="flex items-center justify-between pt-3 mt-3 border-t border-[rgba(194,85,56,0.06)]">
+                        <div className="flex items-center justify-between pt-3 mt-3 border-t border-[rgba(37,99,235,0.06)]">
                           <span className="font-semibold text-accent">
                             ${trip.total_estimated_cost.toLocaleString()}
                           </span>

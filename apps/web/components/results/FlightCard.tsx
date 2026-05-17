@@ -111,22 +111,22 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
       {/* Tags */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {cheapest && (
-          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             Best price
           </span>
         )}
         {isDirect && (
-          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             Direct
           </span>
         )}
         {!cheapest && isDirect && isQuickFlight && (
-          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             Quick flight
           </span>
         )}
         {ret && (
-          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
             Roundtrip
           </span>
         )}

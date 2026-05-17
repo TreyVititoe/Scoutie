@@ -128,7 +128,7 @@ export default function CompareLocalPage() {
                 <div className="h-1 bg-gradient-to-r from-accent to-cyan" />
 
                 {/* Header */}
-                <div className="p-5 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+                <div className="p-5 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
@@ -147,7 +147,7 @@ export default function CompareLocalPage() {
 
                 <div className="p-5 flex-1 flex flex-col">
                   {/* Estimated Total */}
-                  <div className="mb-5 bg-[#FFF2D9]/30 rounded-[10px] p-4 -mx-1">
+                  <div className="mb-5 bg-[#DBEAFE]/30 rounded-[10px] p-4 -mx-1">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-on-light-secondary text-sm">Estimated Total</span>
                       <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
@@ -172,7 +172,7 @@ export default function CompareLocalPage() {
                   </div>
 
                   {/* Flights */}
-                  <div className="flex items-center justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                  <div className="flex items-center justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
                       <span className="text-gray-dark text-sm font-semibold">Flights</span>
@@ -189,7 +189,7 @@ export default function CompareLocalPage() {
                   </div>
 
                   {/* Hotels */}
-                  <div className="flex items-center justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                  <div className="flex items-center justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
                       <span className="text-gray-dark text-sm font-semibold">Hotels</span>
@@ -206,7 +206,7 @@ export default function CompareLocalPage() {
                   </div>
 
                   {/* Events */}
-                  <div className="py-3 border-t border-[rgba(194,85,56,0.06)]">
+                  <div className="py-3 border-t border-[rgba(37,99,235,0.06)]">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
@@ -254,19 +254,19 @@ export default function CompareLocalPage() {
 
                   {/* Interests / Activities */}
                   {(interestTags.length > 0 || activityItems.length > 0) && (
-                    <div className="py-3 border-t border-[rgba(194,85,56,0.06)]">
+                    <div className="py-3 border-t border-[rgba(37,99,235,0.06)]">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="material-symbols-outlined text-accent text-[18px]">interests</span>
                         <span className="text-gray-dark text-sm font-semibold">Your Interests</span>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {activityItems.slice(0, 4).map((act, j) => (
-                          <span key={j} className="bg-page-bg text-gray-dark rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(194,85,56,0.08)]">
+                          <span key={j} className="bg-page-bg text-gray-dark rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(37,99,235,0.08)]">
                             {act.title.length > 20 ? act.title.slice(0, 20) + "..." : act.title}
                           </span>
                         ))}
                         {activityItems.length > 4 && (
-                          <span className="bg-page-bg text-on-light-tertiary rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(194,85,56,0.08)]">
+                          <span className="bg-page-bg text-on-light-tertiary rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(37,99,235,0.08)]">
                             +{activityItems.length - 4} more
                           </span>
                         )}

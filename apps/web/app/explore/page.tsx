@@ -140,7 +140,7 @@ export default function ExplorePage() {
             className={`px-4 py-2 rounded-pill text-sm transition-all ${
               activeTag === null
                 ? "bg-accent text-white"
-                : "bg-white border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent/30"
+                : "bg-white border border-[rgba(37,99,235,0.08)] text-on-light-secondary hover:border-accent/30"
             }`}
           >
             All
@@ -152,7 +152,7 @@ export default function ExplorePage() {
               className={`px-4 py-2 rounded-pill text-sm transition-all ${
                 activeTag === tag
                   ? "bg-accent text-white"
-                  : "bg-white border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent/30"
+                  : "bg-white border border-[rgba(37,99,235,0.08)] text-on-light-secondary hover:border-accent/30"
               }`}
             >
               {tag}

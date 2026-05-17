@@ -366,7 +366,7 @@ export default function ComparePage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 transition={{ duration: 0.2 }}
-                className="mt-4 pt-4 border-t border-[rgba(194,85,56,0.06)]"
+                className="mt-4 pt-4 border-t border-[rgba(37,99,235,0.06)]"
               >
                 <p className="text-on-light-secondary text-sm mb-3">
                   Tell Walter what you are looking for -- a city, country, region, or vibe.
@@ -377,7 +377,7 @@ export default function ComparePage() {
                     value={regenHint}
                     onChange={(e) => setRegenHint(e.target.value)}
                     placeholder='e.g. "tropical", "Japan", "Malibu", "European cities"'
-                    className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(37,99,235,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -485,7 +485,7 @@ export default function ComparePage() {
             {[0, 1, 2].map((i) => (
               <div key={i} className="card-base overflow-hidden animate-pulse">
                 <div className="h-1 bg-gradient-to-r from-accent/30 to-cyan/30" />
-                <div className="p-5 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+                <div className="p-5 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center justify-between mb-3">
                     <div className="h-5 bg-page-bg rounded w-2/3" />
                     <div className="h-5 bg-page-bg rounded-pill w-16" />
@@ -493,21 +493,21 @@ export default function ComparePage() {
                   <div className="h-3 bg-page-bg rounded w-1/2" />
                 </div>
                 <div className="p-5">
-                  <div className="bg-[#FFF2D9]/30 rounded-[10px] p-4 mb-5">
+                  <div className="bg-[#DBEAFE]/30 rounded-[10px] p-4 mb-5">
                     <div className="h-3 bg-page-bg rounded w-1/3 mb-2" />
                     <div className="h-8 bg-page-bg rounded w-2/3 mb-1" />
                     <div className="h-3 bg-page-bg rounded w-1/4" />
                   </div>
                   <div className="space-y-4">
-                    <div className="flex justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                    <div className="flex justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                       <div className="h-4 bg-page-bg rounded w-20" />
                       <div className="h-4 bg-page-bg rounded w-24" />
                     </div>
-                    <div className="flex justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                    <div className="flex justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                       <div className="h-4 bg-page-bg rounded w-16" />
                       <div className="h-4 bg-page-bg rounded w-24" />
                     </div>
-                    <div className="py-3 border-t border-[rgba(194,85,56,0.06)]">
+                    <div className="py-3 border-t border-[rgba(37,99,235,0.06)]">
                       <div className="flex justify-between mb-3">
                         <div className="h-4 bg-page-bg rounded w-24" />
                         <div className="h-6 bg-page-bg rounded w-8" />
@@ -556,7 +556,7 @@ export default function ComparePage() {
                 {/* Key Metrics */}
                 <div className="p-6 flex-1 flex flex-col">
                   {/* Price */}
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                     <span className="text-on-light-secondary text-sm">Total estimated cost</span>
                     <span className="text-accent text-[21px] font-semibold">
                       ${trip.totalEstimatedCost.toLocaleString()}
@@ -564,7 +564,7 @@ export default function ComparePage() {
                   </div>
 
                   {/* Flight & Hotel */}
-                  <div className="mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+                  <div className="mb-4 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <div className="flex items-center gap-1.5 mb-1">
@@ -605,7 +605,7 @@ export default function ComparePage() {
                     </div>
                     {/* Flight duration */}
                     {flightData[i]?.fastest && (
-                      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[rgba(194,85,56,0.04)]">
+                      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[rgba(37,99,235,0.04)]">
                         <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">schedule</span>
                         <span className="text-xs text-on-light-secondary">
                           Fastest flight: {flightData[i].fastest!.duration} (${flightData[i].fastest!.price})
@@ -615,11 +615,11 @@ export default function ComparePage() {
                   </div>
 
                   {/* Highlights */}
-                  <div className="mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+                  <div className="mb-4 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                     <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Highlights</p>
                     <div className="flex flex-wrap gap-1.5">
                       {trip.highlights?.slice(0, 3).map((h, j) => (
-                        <span key={j} className="bg-[#FFF2D9] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+                        <span key={j} className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
                           {h}
                         </span>
                       ))}
@@ -627,7 +627,7 @@ export default function ComparePage() {
                   </div>
 
                   {/* Live Events */}
-                  <div className="mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+                  <div className="mb-4 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-on-light-tertiary text-xs uppercase tracking-wider">Live Events</p>
                       {eventData[i] && !eventData[i].loading && (
@@ -698,7 +698,7 @@ export default function ComparePage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ duration: 0.2 }}
-                      className="mb-4 pb-4 border-b border-[rgba(194,85,56,0.06)]"
+                      className="mb-4 pb-4 border-b border-[rgba(37,99,235,0.06)]"
                     >
                       <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-3">Day-by-day preview</p>
                       <div className="space-y-3">
@@ -736,7 +736,7 @@ export default function ComparePage() {
                         className={`flex-shrink-0 rounded-[10px] px-4 py-3 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                           savedIds.has(i)
                             ? "bg-page-bg text-accent"
-                            : "border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:border-accent hover:text-accent"
+                            : "border border-[rgba(37,99,235,0.08)] text-on-light-secondary hover:border-accent hover:text-accent"
                         }`}
                       >
                         <span className="material-symbols-outlined text-[16px]">
@@ -948,7 +948,7 @@ function DateCompare({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.2 }}
-            className="mt-4 pt-4 border-t border-[rgba(194,85,56,0.06)]"
+            className="mt-4 pt-4 border-t border-[rgba(37,99,235,0.06)]"
           >
             <p className="text-on-light-secondary text-sm mb-3">
               Tell Walter what dates you prefer -- a month, season, or time frame.
@@ -959,7 +959,7 @@ function DateCompare({
                 value={dateRegenHint}
                 onChange={(e) => setDateRegenHint(e.target.value)}
                 placeholder='e.g. "May", "June 15", "December", "August"'
-                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(194,85,56,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(37,99,235,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -1007,7 +1007,7 @@ function DateCompare({
               <div className="h-1 bg-gradient-to-r from-accent to-cyan" />
 
               {/* Header */}
-              <div className="p-5 pb-4 border-b border-[rgba(194,85,56,0.06)]">
+              <div className="p-5 pb-4 border-b border-[rgba(37,99,235,0.06)]">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
@@ -1029,7 +1029,7 @@ function DateCompare({
 
               <div className="p-5 flex-1 flex flex-col">
                 {/* Estimated Total */}
-                <div className="mb-5 bg-[#FFF2D9]/30 rounded-[10px] p-4 -mx-1">
+                <div className="mb-5 bg-[#DBEAFE]/30 rounded-[10px] p-4 -mx-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-on-light-secondary text-sm">Estimated Total</span>
                     <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
@@ -1049,7 +1049,7 @@ function DateCompare({
                 </div>
 
                 {/* Flights */}
-                <div className="flex items-center justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                <div className="flex items-center justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
                     <span className="text-gray-dark text-sm font-semibold">Flights</span>
@@ -1064,7 +1064,7 @@ function DateCompare({
                 </div>
 
                 {/* Hotels */}
-                <div className="flex items-center justify-between py-3 border-t border-[rgba(194,85,56,0.06)]">
+                <div className="flex items-center justify-between py-3 border-t border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
                     <span className="text-gray-dark text-sm font-semibold">Hotels</span>
@@ -1079,7 +1079,7 @@ function DateCompare({
                 </div>
 
                 {/* Events */}
-                <div className="py-3 border-t border-[rgba(194,85,56,0.06)]">
+                <div className="py-3 border-t border-[rgba(37,99,235,0.06)]">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>

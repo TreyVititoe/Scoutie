@@ -16,7 +16,7 @@
   }
 
   ::selection {
-    background-color: #C25538;
+    background-color: #2563EB;
     color: white;
   }
 }
@@ -30,7 +30,7 @@
 
 /* Apple dark glass navigation */
 .nav-glass {
-  background: rgba(20, 22, 26, 0.88);
+  background: rgba(11, 20, 55, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -42,44 +42,44 @@
 
 /* Hero gradient background */
 .bg-hero-gradient {
-  background: linear-gradient(165deg, #6F2613 0%, #321008 100%);
+  background: linear-gradient(165deg, #1E40AF 0%, #0B1437 100%);
 }
 
 /* Hero radial glow overlay */
 .hero-glow {
-  background: radial-gradient(circle at 70% 30%, rgba(255, 224, 168, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle at 70% 30%, rgba(56, 189, 248, 0.18) 0%, transparent 50%);
 }
 
 /* Glass card on dark backgrounds */
 .glass-card-dark {
-  background: rgba(194, 85, 56, 0.2);
+  background: rgba(37, 99, 235, 0.2);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 224, 168, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.18);
 }
 
 /* Card base styles */
 .card-base {
   background: white;
-  border: 1px solid rgba(194, 85, 56, 0.08);
-  box-shadow: 0 2px 12px rgba(194, 85, 56, 0.06);
+  border: 1px solid rgba(37, 99, 235, 0.08);
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.06);
   border-radius: 14px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-base:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(194, 85, 56, 0.1);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
 }
 
 /* Icon gradient container */
 .icon-gradient {
-  background: linear-gradient(135deg, #FFF2D9, #FFE7B5);
+  background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
   border-radius: 10px;
 }
 
 /* Focus rings */
 *:focus-visible {
-  outline: 2px solid #C25538;
+  outline: 2px solid #2563EB;
   outline-offset: 2px;
 }
 
@@ -92,18 +92,18 @@
   scrollbar-width: none;
 }
 
-/* Hero ambient cyan/teal glows (layered radial) — for dark hero */
+/* Hero ambient sky/electric blue glows (layered radial) — for dark hero */
 .hero-radial {
   background:
-    radial-gradient(circle at 78% 18%, rgba(255, 224, 168, 0.22) 0%, transparent 55%),
-    radial-gradient(circle at 14% 82%, rgba(214, 122, 92, 0.28) 0%, transparent 50%);
+    radial-gradient(circle at 78% 18%, rgba(56, 189, 248, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 14% 82%, rgba(59, 130, 246, 0.32) 0%, transparent 50%);
 }
 
-/* Hero corner glow tuned for light bg — soft cyan/teal accent */
+/* Hero corner glow tuned for light bg — soft sky accent */
 .hero-radial-light {
   background:
-    radial-gradient(ellipse at 75% 20%, rgba(255, 224, 168, 0.45) 0%, transparent 60%),
-    radial-gradient(ellipse at 90% 60%, rgba(214, 122, 92, 0.10) 0%, transparent 55%);
+    radial-gradient(ellipse at 75% 20%, rgba(56, 189, 248, 0.45) 0%, transparent 60%),
+    radial-gradient(ellipse at 90% 60%, rgba(59, 130, 246, 0.12) 0%, transparent 55%);
 }
 
 /* 3D perspective stack for floating itinerary mock */

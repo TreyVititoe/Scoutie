@@ -108,7 +108,7 @@ export default function Step1WhereWhen() {
                   type="date"
                   value={store.startDate || ""}
                   onChange={(e) => store.setStartDate(e.target.value)}
-                  className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(37,99,235,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function Step1WhereWhen() {
                   type="date"
                   value={store.endDate || ""}
                   onChange={(e) => store.setEndDate(e.target.value)}
-                  className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(37,99,235,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function Step1WhereWhen() {
               type="checkbox"
               checked={store.flexibleDates}
               onChange={(e) => store.setFlexibleDates(e.target.checked)}
-              className="w-5 h-5 rounded border-[rgba(194,85,56,0.08)] text-accent focus:ring-accent/20"
+              className="w-5 h-5 rounded border-[rgba(37,99,235,0.08)] text-accent focus:ring-accent/20"
             />
             <span className="text-on-light-secondary text-sm">
               My dates are flexible
@@ -154,7 +154,7 @@ export default function Step1WhereWhen() {
                 <select
                   value={store.tripDurationDays || ""}
                   onChange={(e) => store.setTripDurationDays(Number(e.target.value) || null)}
-                  className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent appearance-none"
+                  className="w-full bg-white border border-[rgba(37,99,235,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent appearance-none"
                 >
                   <option value="">Select...</option>
                   <option value="3">Long weekend (3 days)</option>
@@ -184,7 +184,7 @@ export default function Step1WhereWhen() {
                   className={`flex flex-col items-center gap-1 p-3 rounded-[12px] border transition-colors ${
                     isSelected
                       ? "border-accent bg-accent/5"
-                      : "border-[rgba(194,85,56,0.08)] bg-white hover:border-accent/30"
+                      : "border-[rgba(37,99,235,0.08)] bg-white hover:border-accent/30"
                   }`}
                 >
                   <span className={`material-symbols-outlined text-[22px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
@@ -202,7 +202,7 @@ export default function Step1WhereWhen() {
             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-[10px] border text-sm transition-colors ${
               store.noAccommodation
                 ? "border-accent bg-accent text-white"
-                : "border-[rgba(194,85,56,0.08)] bg-white text-on-light-secondary hover:border-accent/30"
+                : "border-[rgba(37,99,235,0.08)] bg-white text-on-light-secondary hover:border-accent/30"
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">group</span>

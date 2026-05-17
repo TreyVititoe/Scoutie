@@ -172,7 +172,7 @@ export default function Step4Flights() {
                   if (results.length > 0) setIsOpen(true);
                 }}
                 placeholder="Search for a city..."
-                className="w-full bg-white border border-[rgba(194,85,56,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark placeholder:text-on-light-tertiary/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                className="w-full bg-white border border-[rgba(37,99,235,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark placeholder:text-on-light-tertiary/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 role="combobox"
                 aria-expanded={isOpen}
                 aria-autocomplete="list"
@@ -189,7 +189,7 @@ export default function Step4Flights() {
               <ul
                 id="departure-city-listbox"
                 role="listbox"
-                className="absolute z-50 w-full mt-2 bg-white rounded-[14px] border border-[rgba(194,85,56,0.08)] shadow-[0_2px_12px_rgba(194,85,56,0.06)] overflow-hidden"
+                className="absolute z-50 w-full mt-2 bg-white rounded-[14px] border border-[rgba(37,99,235,0.08)] shadow-[0_2px_12px_rgba(37,99,235,0.06)] overflow-hidden"
               >
                 {results.map((feature, index) => {
                   const label = formatCity(feature);
@@ -257,7 +257,7 @@ export default function Step4Flights() {
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-pill text-sm font-semibold transition-all ${
                   store.flightClass === fc.value
                     ? "bg-accent text-white shadow-md"
-                    : "bg-page-bg border border-[rgba(194,85,56,0.08)] text-on-light-secondary hover:bg-[#FFF2D9]"
+                    : "bg-page-bg border border-[rgba(37,99,235,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
                 }`}
               >
                 <span className="material-symbols-outlined text-[18px]">{fc.icon}</span>
@@ -282,7 +282,7 @@ export default function Step4Flights() {
                   className={`p-4 rounded-[14px] border text-left transition-colors ${
                     isSelected
                       ? "border-accent bg-accent/5"
-                      : "border-[rgba(194,85,56,0.08)] bg-white hover:border-accent/30"
+                      : "border-[rgba(37,99,235,0.08)] bg-white hover:border-accent/30"
                   }`}
                 >
                   <span className={`material-symbols-outlined text-[24px] mb-2 block ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
@@ -302,7 +302,7 @@ export default function Step4Flights() {
             type="checkbox"
             checked={store.carryOnOnly}
             onChange={(e) => store.setCarryOnOnly(e.target.checked)}
-            className="w-5 h-5 rounded border-[rgba(194,85,56,0.08)] text-accent focus:ring-accent/20"
+            className="w-5 h-5 rounded border-[rgba(37,99,235,0.08)] text-accent focus:ring-accent/20"
           />
           <span className="material-symbols-outlined text-on-light-tertiary text-[20px]">luggage</span>
           <span className="text-on-light-secondary text-sm">Carry-on only (no checked bags)</span>

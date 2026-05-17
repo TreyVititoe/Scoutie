@@ -10,7 +10,7 @@ export async function GET() {
       .select("id, title, destination, total_estimated_cost, cover_image_url, upvote_count, share_slug, tier")
       .eq("is_public", true)
       .order("upvote_count", { ascending: false })
-      .limit(6);
+      .limit(24);
 
     if (error) {
       console.error("[/api/trips/community]", error);

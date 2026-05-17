@@ -63,7 +63,7 @@ export default function OnboardingPage() {
             <span className="text-sm text-on-light-tertiary">{step} of {TOTAL_STEPS}</span>
           </div>
           {/* Progress bar */}
-          <div className="h-1 bg-[rgba(194,85,56,0.06)] rounded-full overflow-hidden">
+          <div className="h-1 bg-[rgba(37,99,235,0.06)] rounded-full overflow-hidden">
             <div
               className="h-full bg-accent rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}

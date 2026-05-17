@@ -24,7 +24,7 @@ const palettes: Palette[] = [
     light: "#F4A689",
     deep: "#A24A29",
     deepest: "#4A1E0C",
-    pop: "#FFE0A8",
+    pop: "#38BDF8",
     popText: "#4A1E0C",
   },
   {
@@ -53,12 +53,12 @@ const palettes: Palette[] = [
     name: "Terracotta",
     description:
       "Earthier and a touch desaturated. Reads more premium / editorial. Less 'sunset', more 'desert at golden hour'. Pairs naturally with travel imagery.",
-    primary: "#C25538",
-    light: "#D67A5C",
-    deep: "#6F2613",
-    deepest: "#321008",
+    primary: "#2563EB",
+    light: "#3B82F6",
+    deep: "#1E40AF",
+    deepest: "#0B1437",
     pop: "#E8B569",
-    popText: "#321008",
+    popText: "#0B1437",
   },
 ];
 

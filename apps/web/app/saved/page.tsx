@@ -186,32 +186,32 @@ export default function SavedTripsPage() {
                       {/* Stats row */}
                       <div className="flex flex-wrap gap-2 mb-3">
                         {flightCount > 0 && (
-                          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
+                          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
                             <span className="material-symbols-outlined text-[12px]">flight</span>
                             {flightCount}
                           </span>
                         )}
                         {hotelCount > 0 && (
-                          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
+                          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
                             <span className="material-symbols-outlined text-[12px]">hotel</span>
                             {hotelCount}
                           </span>
                         )}
                         {eventCount > 0 && (
-                          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
+                          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
                             <span className="material-symbols-outlined text-[12px]">confirmation_number</span>
                             {eventCount}
                           </span>
                         )}
                         {activityCount > 0 && (
-                          <span className="bg-[#FFF2D9] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
+                          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold flex items-center gap-1">
                             <span className="material-symbols-outlined text-[12px]">hiking</span>
                             {activityCount}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-[rgba(194,85,56,0.06)]">
+                      <div className="flex items-center justify-between pt-3 border-t border-[rgba(37,99,235,0.06)]">
                         <span className="font-semibold text-accent">
                           {trip.totalCost > 0 ? `$${trip.totalCost.toLocaleString()}` : "No pricing"}
                         </span>

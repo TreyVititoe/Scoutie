@@ -69,7 +69,7 @@ export default function QuizPage() {
       <header className="sticky top-0 z-20 nav-glass">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(255,224,168,0.3)]">
+            <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
               <span className="text-accent-deep text-[14px] font-black italic leading-none -mt-px">W</span>
             </span>
             <span className="text-white text-[16px] font-semibold tracking-tight">Walter</span>
@@ -123,7 +123,7 @@ export default function QuizPage() {
                 className="w-full text-[15px] text-gray-dark placeholder:text-on-light-tertiary bg-transparent focus:outline-none truncate"
               />
             </label>
-            <span aria-hidden="true" className="w-px bg-[rgba(194,85,56,0.1)] my-2.5" />
+            <span aria-hidden="true" className="w-px bg-[rgba(37,99,235,0.1)] my-2.5" />
             <label className="flex-1 px-5 py-2.5 text-left rounded-full hover:bg-page-bg/60 transition-colors cursor-text min-w-0">
               <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">Check in</p>
               <input
@@ -133,7 +133,7 @@ export default function QuizPage() {
                 className="w-full text-[15px] text-gray-dark bg-transparent focus:outline-none"
               />
             </label>
-            <span aria-hidden="true" className="w-px bg-[rgba(194,85,56,0.1)] my-2.5" />
+            <span aria-hidden="true" className="w-px bg-[rgba(37,99,235,0.1)] my-2.5" />
             <label className="flex-1 px-5 py-2.5 text-left rounded-full hover:bg-page-bg/60 transition-colors cursor-text min-w-0">
               <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">Check out</p>
               <input
@@ -143,7 +143,7 @@ export default function QuizPage() {
                 className="w-full text-[15px] text-gray-dark bg-transparent focus:outline-none"
               />
             </label>
-            <span aria-hidden="true" className="w-px bg-[rgba(194,85,56,0.1)] my-2.5" />
+            <span aria-hidden="true" className="w-px bg-[rgba(37,99,235,0.1)] my-2.5" />
             <label className="flex-1 px-5 py-2.5 text-left rounded-full hover:bg-page-bg/60 transition-colors cursor-pointer min-w-0">
               <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">Who</p>
               <select
@@ -172,7 +172,7 @@ export default function QuizPage() {
       {/* Suggestions */}
       <section className="bg-page-bg -mt-20 pb-20 relative z-10">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="bg-white rounded-[28px] p-6 sm:p-10 shadow-[0_8px_40px_rgba(194,85,56,0.1)] border border-[rgba(194,85,56,0.04)]">
+          <div className="bg-white rounded-[28px] p-6 sm:p-10 shadow-[0_8px_40px_rgba(37,99,235,0.1)] border border-[rgba(37,99,235,0.04)]">
             <div className="flex items-end justify-between mb-7 gap-4 flex-wrap">
               <div>
                 <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-2">
@@ -188,8 +188,8 @@ export default function QuizPage() {
             </div>
 
             {tripsLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {[0, 1, 2, 3].map((i) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {Array.from({ length: 12 }).map((_, i) => (
                   <div key={i} className="card-base overflow-hidden animate-pulse">
                     <div className="h-40 bg-page-bg" />
                     <div className="p-4 space-y-2">
@@ -205,10 +205,9 @@ export default function QuizPage() {
                 No community trips yet — check back soon.
               </p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {[...trips]
                   .sort((a, b) => b.upvote_count - a.upvote_count)
-                  .slice(0, 8)
                   .map((trip) => (
                     <Link
                       key={trip.id}
@@ -242,7 +241,7 @@ export default function QuizPage() {
                         <p className="text-on-light-secondary text-xs mt-1 line-clamp-2 min-h-[32px]">
                           {trip.title}
                         </p>
-                        <div className="flex items-center justify-between pt-2.5 mt-2.5 border-t border-[rgba(194,85,56,0.05)]">
+                        <div className="flex items-center justify-between pt-2.5 mt-2.5 border-t border-[rgba(37,99,235,0.05)]">
                           <span className="font-semibold text-accent text-sm">
                             ${trip.total_estimated_cost.toLocaleString()}
                           </span>

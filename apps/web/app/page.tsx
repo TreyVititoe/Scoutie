@@ -27,8 +27,8 @@ function useMagnetic(strength = 0.25) {
 const steps = [
   {
     num: "01",
-    icon: "quiz",
-    title: "Take the quiz",
+    icon: "tune",
+    title: "Tell Walter your vibe",
     desc: "Where, when, and what you love. Two minutes flat.",
   },
   {
@@ -76,7 +76,7 @@ export default function HomePage() {
         <div className="px-5 sm:px-7 h-[72px] flex items-center justify-between">
           {/* Brand */}
           <Link href="/" className="flex items-center gap-3 group" onClick={closeMenu}>
-            <span className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(255,224,168,0.3)] transition-transform group-hover:scale-105">
+            <span className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)] transition-transform group-hover:scale-105">
               <span className="text-accent-deep text-[18px] font-black italic leading-none -mt-px">W</span>
             </span>
             <span className="text-white text-[20px] font-semibold tracking-tight">Walter</span>
@@ -140,7 +140,7 @@ export default function HomePage() {
                 <Link
                   href="/quiz"
                   onClick={closeMenu}
-                  className="bg-cyan text-accent-deep rounded-[10px] px-4 py-3 text-[15px] font-bold flex items-center justify-center gap-2 mt-4 shadow-[0_4px_18px_rgba(255,224,168,0.35)]"
+                  className="bg-cyan text-accent-deep rounded-[10px] px-4 py-3 text-[15px] font-bold flex items-center justify-center gap-2 mt-4 shadow-[0_4px_18px_rgba(56,189,248,0.35)]"
                 >
                   Plan a trip
                   <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -162,9 +162,9 @@ export default function HomePage() {
           style={{ objectPosition: "center 55%" }}
         />
         {/* Light teal tint — image-forward */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[rgba(50,16,8,0.45)] via-[rgba(111,38,19,0.15)] to-[rgba(50,16,8,0.55)] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[rgba(11,20,55,0.45)] via-[rgba(30,64,175,0.15)] to-[rgba(11,20,55,0.55)] pointer-events-none" />
         {/* Top + bottom darkening for nav and trust bar legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(50,16,8,0.45)] via-transparent to-[rgba(50,16,8,0.7)] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(11,20,55,0.45)] via-transparent to-[rgba(11,20,55,0.7)] pointer-events-none" />
         {/* Cyan/teal radial glow */}
         <div className="absolute inset-0 hero-radial pointer-events-none" />
 
@@ -183,14 +183,14 @@ export default function HomePage() {
               </span>
             </div>
             <h1 className="text-white text-[44px] sm:text-[56px] lg:text-[68px] font-semibold leading-[1.02] tracking-display">
-              One quiz.{" "}
-              <span className="block lg:inline text-cyan">Your whole trip.</span>
+              Trip Planning{" "}
+              <span className="block lg:inline text-cyan">Revolutionized.</span>
             </h1>
             <p className="text-white/90 text-[17px] sm:text-[19px] mt-6 lg:mt-8 leading-relaxed max-w-lg mx-auto lg:mx-0 drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]">
               Flights, hotels, concerts, restaurants — Walter assembles the
               whole thing in 60 seconds. All real, all bookable.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 mt-10 items-center justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-3 mt-10 items-stretch sm:items-center justify-center lg:justify-start">
               <div
                 className="inline-flex"
                 onMouseMove={quickMag.onMouseMove}
@@ -199,12 +199,18 @@ export default function HomePage() {
               >
                 <Link
                   href="/quick"
-                  className="bg-cyan text-accent-deep rounded-[14px] px-10 py-5 text-[18px] font-bold hover:brightness-105 transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(255,224,168,0.4)]"
+                  className="bg-cyan text-accent-deep rounded-[14px] px-10 py-5 text-[18px] font-bold hover:brightness-105 transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(56,189,248,0.45)]"
                 >
                   <span className="material-symbols-outlined text-[22px]">bolt</span>
                   Quick Plan
                 </Link>
               </div>
+              <span
+                aria-hidden="true"
+                className="self-center text-white/65 text-[12px] font-bold uppercase tracking-[2.5px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:px-1"
+              >
+                or
+              </span>
               <div
                 className="inline-flex"
                 onMouseMove={designMag.onMouseMove}
@@ -213,7 +219,7 @@ export default function HomePage() {
               >
                 <Link
                   href="/quiz"
-                  className="bg-white/15 backdrop-blur-sm border border-white/25 text-white rounded-[14px] px-10 py-5 text-[18px] font-bold hover:bg-white/25 transition-all flex items-center justify-center gap-2.5"
+                  className="bg-accent text-white rounded-[14px] px-10 py-5 text-[18px] font-bold hover:bg-accent-light transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(37,99,235,0.5)]"
                 >
                   <span className="material-symbols-outlined text-[22px]">tune</span>
                   Design My Trip
@@ -256,7 +262,7 @@ export default function HomePage() {
                   <span className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
                     Flight
                   </span>
-                  <span className="bg-[#FFF2D9] text-accent text-[10px] font-semibold rounded-pill px-2 py-0.5">
+                  <span className="bg-[#DBEAFE] text-accent text-[10px] font-semibold rounded-pill px-2 py-0.5">
                     Cheapest
                   </span>
                 </div>
@@ -286,7 +292,7 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[rgba(194,85,56,0.06)]">
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[rgba(37,99,235,0.06)]">
                   <p className="text-on-light-secondary text-sm">TAP Air Portugal</p>
                   <p className="font-semibold text-accent text-lg">$612</p>
                 </div>
@@ -295,7 +301,7 @@ export default function HomePage() {
               {/* Card 2 — hotel */}
               <div className="absolute top-[34%] left-0 right-0 float-anim-1 z-20 rounded-[18px] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] overflow-hidden">
                 <div className="flex">
-                  <div className="w-[120px] bg-gradient-to-br from-[#FFF2D9] to-[#FBE4C2] flex items-center justify-center flex-shrink-0">
+                  <div className="w-[120px] bg-gradient-to-br from-[#DBEAFE] to-[#BFDBFE] flex items-center justify-center flex-shrink-0">
                     <span className="material-symbols-outlined text-accent text-[36px]">hotel</span>
                   </div>
                   <div className="flex-1 p-4">
@@ -373,13 +379,13 @@ export default function HomePage() {
             Where to next?
           </h2>
           <p className="text-on-light-secondary text-[17px] mt-4 max-w-xl mx-auto leading-relaxed">
-            Take the 2-minute quiz. Get a complete trip you can actually book.
+            Tell Walter the basics. Get a complete trip you can actually book.
           </p>
           <Link
             href="/quiz"
-            className="mt-9 inline-flex items-center gap-2 bg-accent text-white rounded-[12px] px-8 py-4 text-[16px] font-bold hover:bg-accent-light transition-all shadow-[0_8px_24px_rgba(194,85,56,0.25)]"
+            className="mt-9 inline-flex items-center gap-2 bg-accent text-white rounded-[12px] px-8 py-4 text-[16px] font-bold hover:bg-accent-light transition-all shadow-[0_8px_24px_rgba(37,99,235,0.3)]"
           >
-            Start the quiz
+            Design my trip
             <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
           </Link>
           <p className="text-on-light-tertiary text-[12px] mt-7 tracking-wide">
@@ -391,7 +397,7 @@ export default function HomePage() {
       {/* ========== HOW IT WORKS ========== */}
       <section className="bg-page-bg pt-8 sm:pt-10 pb-6">
         <div className="max-w-6xl mx-auto px-6">
-         <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(194,85,56,0.06)] border border-[rgba(194,85,56,0.04)]">
+         <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(37,99,235,0.06)] border border-[rgba(37,99,235,0.04)]">
           <div className="text-center mb-12 sm:mb-14">
             <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3">
               How it works
@@ -409,9 +415,9 @@ export default function HomePage() {
           >
             {steps.map((step) => (
               <div key={step.num} className="relative">
-                <div className="relative h-full bg-page-bg rounded-[20px] p-7 sm:p-8 border border-[rgba(194,85,56,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(194,85,56,0.08)] hover:-translate-y-0.5 transition-all duration-300">
+                <div className="relative h-full bg-page-bg rounded-[20px] p-7 sm:p-8 border border-[rgba(37,99,235,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(37,99,235,0.08)] hover:-translate-y-0.5 transition-all duration-300">
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(194,85,56,0.08)]">
+                    <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(37,99,235,0.08)]">
                       <span className="material-symbols-outlined text-accent text-[26px]">
                         {step.icon}
                       </span>
@@ -433,7 +439,7 @@ export default function HomePage() {
                 {/* Arrow to next card (lg only) */}
                 <span
                   aria-hidden="true"
-                  className="hidden lg:flex absolute top-1/2 -right-[14px] -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white border border-accent/20 items-center justify-center shadow-[0_3px_10px_rgba(194,85,56,0.1)]"
+                  className="hidden lg:flex absolute top-1/2 -right-[14px] -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white border border-accent/20 items-center justify-center shadow-[0_3px_10px_rgba(37,99,235,0.1)]"
                 >
                   <span className="material-symbols-outlined text-accent text-[16px]">
                     arrow_forward
@@ -443,7 +449,7 @@ export default function HomePage() {
             ))}
 
             {/* Step 4 — punchline card */}
-            <div className="relative h-full bg-gradient-to-br from-accent to-accent-deep rounded-[20px] p-7 sm:p-8 shadow-[0_10px_40px_rgba(194,85,56,0.2)] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+            <div className="relative h-full bg-gradient-to-br from-accent to-accent-deep rounded-[20px] p-7 sm:p-8 shadow-[0_10px_40px_rgba(37,99,235,0.2)] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
               <div className="absolute inset-0 hero-radial pointer-events-none opacity-50" />
               <div className="relative">
                 <div className="flex items-center justify-between mb-6">
@@ -498,7 +504,7 @@ export default function HomePage() {
               {moments.map((m) => (
                 <div
                   key={m.label}
-                  className="flex flex-col items-center justify-center p-4 rounded-[14px] bg-white/70 border border-[rgba(194,85,56,0.06)]"
+                  className="flex flex-col items-center justify-center p-4 rounded-[14px] bg-white/70 border border-[rgba(37,99,235,0.06)]"
                 >
                   <span className="material-symbols-outlined text-accent text-[24px] mb-2">
                     {m.icon}
