@@ -522,7 +522,7 @@ function TripPage() {
                     </div>
                   );
                 })}
-                <div className="border-t border-[rgba(37,99,235,0.08)] pt-2 mt-2 flex items-center justify-between">
+                <div className="border-t border-[rgba(91,141,239,0.08)] pt-2 mt-2 flex items-center justify-between">
                   <span className="font-semibold text-gray-dark">
                     Total
                   </span>
@@ -576,7 +576,7 @@ function TripPage() {
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
               placeholder={destination ? `My ${destination} trip` : "My trip"}
-              className="w-full px-4 py-3 rounded-[10px] border border-[rgba(37,99,235,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
+              className="w-full px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
               autoFocus
             />
 
@@ -596,7 +596,7 @@ function TripPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="flex-1 py-3 rounded-[10px] border border-[rgba(37,99,235,0.08)] text-on-light-secondary font-semibold hover:bg-page-bg transition-colors"
+                className="flex-1 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-on-light-secondary font-semibold hover:bg-page-bg transition-colors"
               >
                 Cancel
               </button>

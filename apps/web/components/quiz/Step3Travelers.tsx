@@ -36,7 +36,7 @@ export default function Step3Travelers() {
                 className={`flex flex-col items-center gap-2 p-4 rounded-[14px] border transition-colors cursor-pointer ${
                   isSelected
                     ? "border-accent bg-accent/5"
-                    : "border-[rgba(37,99,235,0.08)] bg-white hover:border-accent/30"
+                    : "border-[rgba(91,141,239,0.08)] bg-white hover:border-accent/30"
                 }`}
               >
                 <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
@@ -120,7 +120,7 @@ export default function Step3Travelers() {
                         newAges[i] = Number(e.target.value);
                         store.setChildrenAges(newAges);
                       }}
-                      className="w-16 bg-white border border-[rgba(37,99,235,0.08)] rounded-[10px] py-2 px-3 text-center text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                      className="w-16 bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-2 px-3 text-center text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                     />
                   </div>
                 ))}

@@ -53,12 +53,12 @@ const palettes: Palette[] = [
     name: "Terracotta",
     description:
       "Earthier and a touch desaturated. Reads more premium / editorial. Less 'sunset', more 'desert at golden hour'. Pairs naturally with travel imagery.",
-    primary: "#2563EB",
-    light: "#3B82F6",
-    deep: "#1E40AF",
-    deepest: "#0B1437",
+    primary: "#5B8DEF",
+    light: "#7BA3F4",
+    deep: "#3D63D6",
+    deepest: "#1E2D60",
     pop: "#E8B569",
-    popText: "#0B1437",
+    popText: "#1E2D60",
   },
 ];
 

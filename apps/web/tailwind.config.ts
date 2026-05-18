@@ -9,22 +9,22 @@ const config: Config = {
     extend: {
       colors: {
         "gray-light": "#f5f5f7",
-        "gray-dark": "#0B1437",
+        "gray-dark": "#1E2D60",
         "page-bg": "#EEF4FF",
         accent: {
-          DEFAULT: "#2563EB",
-          light: "#3B82F6",
+          DEFAULT: "#5B8DEF",
+          light: "#7BA3F4",
         },
-        "accent-dark": "#1E40AF",
-        "accent-deep": "#0B1437",
+        "accent-dark": "#3D63D6",
+        "accent-deep": "#1E2D60",
         cyan: "#38BDF8",
         "on-dark-secondary": "rgba(255,255,255,0.7)",
         "on-dark-tertiary": "rgba(255,255,255,0.4)",
         "on-light-secondary": "rgba(0,0,0,0.55)",
         "on-light-tertiary": "rgba(0,0,0,0.35)",
         "surface-dark": {
-          1: "#0E1B3D",
-          2: "#142046",
+          1: "#1F2D5A",
+          2: "#283566",
         },
       },
       fontFamily: {

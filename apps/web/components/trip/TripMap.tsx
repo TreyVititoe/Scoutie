@@ -120,12 +120,12 @@ export default function TripMap({ items, destination }: TripMapProps) {
     resolved.forEach((item) => {
       const popup = new mapboxgl.Popup({ offset: 25, closeButton: false }).setHTML(
         `<div style="font-family: system-ui, sans-serif; padding: 2px 4px;">
-          <p style="font-weight: 700; font-size: 13px; margin: 0; color: #2563EB;">${item.title}</p>
+          <p style="font-weight: 700; font-size: 13px; margin: 0; color: #5B8DEF;">${item.title}</p>
           <p style="font-size: 11px; margin: 2px 0 0; color: #595c5d;">${item.locationName}</p>
         </div>`
       );
 
-      new mapboxgl.Marker({ color: "#2563EB" })
+      new mapboxgl.Marker({ color: "#5B8DEF" })
         .setLngLat([item.lng, item.lat])
         .setPopup(popup)
         .addTo(map);

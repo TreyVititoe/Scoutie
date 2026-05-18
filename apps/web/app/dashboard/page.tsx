@@ -248,7 +248,7 @@ export default function DashboardPage() {
                         {trip.title && trip.destination && (
                           <p className="text-sm text-on-light-secondary mb-2">{trip.destination}</p>
                         )}
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[rgba(37,99,235,0.06)]">
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[rgba(91,141,239,0.06)]">
                           {trip.total_estimated_cost > 0 && (
                             <span className="font-semibold text-accent">
                               ${trip.total_estimated_cost.toLocaleString()}

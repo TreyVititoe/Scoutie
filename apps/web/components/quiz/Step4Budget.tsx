@@ -83,7 +83,7 @@ export default function Step4Budget() {
                   value={store.budgetAmount || ""}
                   onChange={(e) => store.setBudgetAmount(Number(e.target.value) || null)}
                   placeholder="0"
-                  className="w-full bg-white border border-[rgba(37,99,235,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-2xl font-semibold text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-2xl font-semibold text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
 
@@ -104,7 +104,7 @@ export default function Step4Budget() {
                   className={`px-4 py-2.5 rounded-pill text-sm font-semibold transition-all ${
                     store.budgetAmount === p
                       ? "bg-accent text-white shadow-md"
-                      : "bg-page-bg border border-[rgba(37,99,235,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
+                      : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
                   }`}
                 >
                   ${p.toLocaleString()}
@@ -146,7 +146,7 @@ export default function Step4Budget() {
                 type="checkbox"
                 checked={store.budgetFlexible}
                 onChange={(e) => store.setBudgetFlexible(e.target.checked)}
-                className="w-5 h-5 rounded border-[rgba(37,99,235,0.08)] text-accent focus:ring-accent/20"
+                className="w-5 h-5 rounded border-[rgba(91,141,239,0.08)] text-accent focus:ring-accent/20"
               />
               <span className="text-on-light-secondary text-sm">I&apos;m flexible -- show me options slightly above my budget too</span>
             </label>

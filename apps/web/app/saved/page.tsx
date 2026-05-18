@@ -211,7 +211,7 @@ export default function SavedTripsPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-[rgba(37,99,235,0.06)]">
+                      <div className="flex items-center justify-between pt-3 border-t border-[rgba(91,141,239,0.06)]">
                         <span className="font-semibold text-accent">
                           {trip.totalCost > 0 ? `$${trip.totalCost.toLocaleString()}` : "No pricing"}
                         </span>

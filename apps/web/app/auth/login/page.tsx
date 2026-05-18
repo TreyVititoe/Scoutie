@@ -66,7 +66,7 @@ export default function LoginPage() {
         {/* Google OAuth */}
         <button
           onClick={handleGoogle}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-[10px] border border-[rgba(37,99,235,0.08)] bg-white font-semibold text-gray-dark hover:bg-page-bg transition-colors mb-4"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] bg-white font-semibold text-gray-dark hover:bg-page-bg transition-colors mb-4"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -78,9 +78,9 @@ export default function LoginPage() {
         </button>
 
         <div className="flex items-center gap-4 my-6">
-          <div className="flex-1 h-px bg-[rgba(37,99,235,0.06)]" />
+          <div className="flex-1 h-px bg-[rgba(91,141,239,0.06)]" />
           <span className="text-on-light-tertiary text-sm">or</span>
-          <div className="flex-1 h-px bg-[rgba(37,99,235,0.06)]" />
+          <div className="flex-1 h-px bg-[rgba(91,141,239,0.06)]" />
         </div>
 
         {/* Magic link */}
@@ -94,7 +94,7 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@email.com"
             required
-            className="w-full px-4 py-3 rounded-[10px] border border-[rgba(37,99,235,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
+            className="w-full px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
           />
           {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
           <button

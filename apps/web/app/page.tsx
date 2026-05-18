@@ -162,9 +162,9 @@ export default function HomePage() {
           style={{ objectPosition: "center 55%" }}
         />
         {/* Light teal tint — image-forward */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[rgba(11,20,55,0.45)] via-[rgba(30,64,175,0.15)] to-[rgba(11,20,55,0.55)] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[rgba(30,45,96,0.45)] via-[rgba(61,99,214,0.15)] to-[rgba(30,45,96,0.55)] pointer-events-none" />
         {/* Top + bottom darkening for nav and trust bar legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(11,20,55,0.45)] via-transparent to-[rgba(11,20,55,0.7)] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(30,45,96,0.45)] via-transparent to-[rgba(30,45,96,0.7)] pointer-events-none" />
         {/* Cyan/teal radial glow */}
         <div className="absolute inset-0 hero-radial pointer-events-none" />
 
@@ -219,7 +219,7 @@ export default function HomePage() {
               >
                 <Link
                   href="/quiz"
-                  className="bg-accent text-white rounded-[14px] px-10 py-5 text-[18px] font-bold hover:bg-accent-light transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(37,99,235,0.5)]"
+                  className="bg-accent text-white rounded-[14px] px-10 py-5 text-[18px] font-bold hover:bg-accent-light transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(91,141,239,0.5)]"
                 >
                   <span className="material-symbols-outlined text-[22px]">tune</span>
                   Design My Trip
@@ -292,7 +292,7 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[rgba(37,99,235,0.06)]">
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[rgba(91,141,239,0.06)]">
                   <p className="text-on-light-secondary text-sm">TAP Air Portugal</p>
                   <p className="font-semibold text-accent text-lg">$612</p>
                 </div>
@@ -383,7 +383,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/quiz"
-            className="mt-9 inline-flex items-center gap-2 bg-accent text-white rounded-[12px] px-8 py-4 text-[16px] font-bold hover:bg-accent-light transition-all shadow-[0_8px_24px_rgba(37,99,235,0.3)]"
+            className="mt-9 inline-flex items-center gap-2 bg-accent text-white rounded-[12px] px-8 py-4 text-[16px] font-bold hover:bg-accent-light transition-all shadow-[0_8px_24px_rgba(91,141,239,0.3)]"
           >
             Design my trip
             <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
@@ -397,7 +397,7 @@ export default function HomePage() {
       {/* ========== HOW IT WORKS ========== */}
       <section className="bg-page-bg pt-8 sm:pt-10 pb-6">
         <div className="max-w-6xl mx-auto px-6">
-         <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(37,99,235,0.06)] border border-[rgba(37,99,235,0.04)]">
+         <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(91,141,239,0.06)] border border-[rgba(91,141,239,0.04)]">
           <div className="text-center mb-12 sm:mb-14">
             <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3">
               How it works
@@ -415,9 +415,9 @@ export default function HomePage() {
           >
             {steps.map((step) => (
               <div key={step.num} className="relative">
-                <div className="relative h-full bg-page-bg rounded-[20px] p-7 sm:p-8 border border-[rgba(37,99,235,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(37,99,235,0.08)] hover:-translate-y-0.5 transition-all duration-300">
+                <div className="relative h-full bg-page-bg rounded-[20px] p-7 sm:p-8 border border-[rgba(91,141,239,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(91,141,239,0.08)] hover:-translate-y-0.5 transition-all duration-300">
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(37,99,235,0.08)]">
+                    <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(91,141,239,0.08)]">
                       <span className="material-symbols-outlined text-accent text-[26px]">
                         {step.icon}
                       </span>
@@ -439,7 +439,7 @@ export default function HomePage() {
                 {/* Arrow to next card (lg only) */}
                 <span
                   aria-hidden="true"
-                  className="hidden lg:flex absolute top-1/2 -right-[14px] -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white border border-accent/20 items-center justify-center shadow-[0_3px_10px_rgba(37,99,235,0.1)]"
+                  className="hidden lg:flex absolute top-1/2 -right-[14px] -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white border border-accent/20 items-center justify-center shadow-[0_3px_10px_rgba(91,141,239,0.1)]"
                 >
                   <span className="material-symbols-outlined text-accent text-[16px]">
                     arrow_forward
@@ -449,7 +449,7 @@ export default function HomePage() {
             ))}
 
             {/* Step 4 — punchline card */}
-            <div className="relative h-full bg-gradient-to-br from-accent to-accent-deep rounded-[20px] p-7 sm:p-8 shadow-[0_10px_40px_rgba(37,99,235,0.2)] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+            <div className="relative h-full bg-gradient-to-br from-accent to-accent-deep rounded-[20px] p-7 sm:p-8 shadow-[0_10px_40px_rgba(91,141,239,0.2)] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
               <div className="absolute inset-0 hero-radial pointer-events-none opacity-50" />
               <div className="relative">
                 <div className="flex items-center justify-between mb-6">
@@ -504,7 +504,7 @@ export default function HomePage() {
               {moments.map((m) => (
                 <div
                   key={m.label}
-                  className="flex flex-col items-center justify-center p-4 rounded-[14px] bg-white/70 border border-[rgba(37,99,235,0.06)]"
+                  className="flex flex-col items-center justify-center p-4 rounded-[14px] bg-white/70 border border-[rgba(91,141,239,0.06)]"
                 >
                   <span className="material-symbols-outlined text-accent text-[24px] mb-2">
                     {m.icon}

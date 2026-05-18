@@ -360,7 +360,7 @@ export default function SharedTripPage() {
 
                 {/* Timeline */}
                 <div className="relative pl-8">
-                  <div className="absolute left-3 top-0 bottom-0 w-px bg-[rgba(37,99,235,0.08)]" />
+                  <div className="absolute left-3 top-0 bottom-0 w-px bg-[rgba(91,141,239,0.08)]" />
                   <div className="space-y-4">
                     {currentDay.trip_items.map((item, i) => (
                       <motion.div

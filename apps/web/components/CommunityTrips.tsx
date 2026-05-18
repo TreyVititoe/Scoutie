@@ -156,7 +156,7 @@ export default function CommunityTrips() {
                         <p className="text-on-light-secondary text-sm mt-1 line-clamp-2">
                           {trip.title}
                         </p>
-                        <div className="flex items-center justify-between pt-3 mt-3 border-t border-[rgba(37,99,235,0.06)]">
+                        <div className="flex items-center justify-between pt-3 mt-3 border-t border-[rgba(91,141,239,0.06)]">
                           <span className="font-semibold text-accent">
                             ${trip.total_estimated_cost.toLocaleString()}
                           </span>
