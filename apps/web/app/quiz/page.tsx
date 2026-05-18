@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useQuizStore } from "@/lib/stores/quizStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import { getDestinationImage } from "@/lib/destinationImages";
 
 type CommunityTrip = {
   id: string;
@@ -171,94 +172,85 @@ export default function QuizPage() {
 
       {/* Suggestions */}
       <section className="bg-page-bg -mt-20 pb-20 relative z-10">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="bg-white rounded-[28px] p-6 sm:p-10 shadow-[0_8px_40px_rgba(91,141,239,0.1)] border border-[rgba(91,141,239,0.04)]">
-            <div className="flex items-end justify-between mb-7 gap-4 flex-wrap">
-              <div>
-                <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-2">
-                  Fan-voted favorites
-                </p>
-                <h2 className="text-[26px] sm:text-[32px] font-semibold text-gray-dark tracking-display leading-[1.1]">
-                  Trips others love
-                </h2>
-              </div>
-              <p className="text-on-light-secondary text-sm max-w-md">
-                Pick one to use as a starting point — fork it into your cart, then make it yours.
+        <div className="px-4 sm:px-6 mb-7">
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-2">
+                Fan-voted favorites
               </p>
+              <h2 className="text-[26px] sm:text-[32px] font-semibold text-gray-dark tracking-display leading-[1.1]">
+                Trips others love
+              </h2>
             </div>
-
-            {tripsLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <div key={i} className="card-base overflow-hidden animate-pulse">
-                    <div className="h-40 bg-page-bg" />
-                    <div className="p-4 space-y-2">
-                      <div className="h-4 bg-page-bg rounded w-2/3" />
-                      <div className="h-3 bg-page-bg rounded w-full" />
-                      <div className="h-3 bg-page-bg rounded w-1/2" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : trips.length === 0 ? (
-              <p className="text-on-light-secondary text-center py-12">
-                No community trips yet — check back soon.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {[...trips]
-                  .sort((a, b) => b.upvote_count - a.upvote_count)
-                  .map((trip) => (
-                    <Link
-                      key={trip.id}
-                      href={`/shared/${trip.share_slug}`}
-                      className="card-base overflow-hidden block group"
-                    >
-                      <div className="relative h-40 overflow-hidden">
-                        {trip.cover_image_url ? (
-                          <img
-                            src={trip.cover_image_url}
-                            alt={trip.destination}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-accent-dark to-accent-deep flex items-center justify-center">
-                            <span className="material-symbols-outlined text-cyan/30 text-4xl">
-                              travel_explore
-                            </span>
-                          </div>
-                        )}
-                        {trip.tier && (
-                          <span className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-accent rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
-                            {trip.tier}
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <p className="font-semibold text-[15px] text-gray-dark truncate">
-                          {trip.destination}
-                        </p>
-                        <p className="text-on-light-secondary text-xs mt-1 line-clamp-2 min-h-[32px]">
-                          {trip.title}
-                        </p>
-                        <div className="flex items-center justify-between pt-2.5 mt-2.5 border-t border-[rgba(91,141,239,0.05)]">
-                          <span className="font-semibold text-accent text-sm">
-                            ${trip.total_estimated_cost.toLocaleString()}
-                          </span>
-                          <span className="flex items-center gap-1 text-on-light-tertiary text-xs">
-                            <span className="material-symbols-outlined text-[14px]">
-                              arrow_upward
-                            </span>
-                            {trip.upvote_count}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-              </div>
-            )}
+            <p className="text-on-light-secondary text-sm max-w-md">
+              Pick one to use as a starting point — fork it into your cart, then make it yours.
+            </p>
           </div>
         </div>
+
+        {tripsLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 px-3 sm:px-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="card-base overflow-hidden animate-pulse">
+                <div className="aspect-[4/5] bg-page-bg" />
+                <div className="p-3 space-y-2">
+                  <div className="h-4 bg-page-bg rounded w-2/3" />
+                  <div className="h-3 bg-page-bg rounded w-full" />
+                  <div className="h-3 bg-page-bg rounded w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : trips.length === 0 ? (
+          <p className="text-on-light-secondary text-center py-12">
+            No community trips yet — check back soon.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 px-3 sm:px-4">
+            {[...trips]
+              .sort((a, b) => b.upvote_count - a.upvote_count)
+              .map((trip) => (
+                <Link
+                  key={trip.id}
+                  href={`/shared/${trip.share_slug}`}
+                  className="card-base overflow-hidden block group"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden">
+                    <img
+                      src={trip.cover_image_url || getDestinationImage(trip.destination)}
+                      alt={trip.destination}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-transparent pointer-events-none" />
+                    {trip.tier && (
+                      <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-accent rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                        {trip.tier}
+                      </span>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                      <p className="font-semibold text-[14px] leading-tight truncate drop-shadow">
+                        {trip.destination}
+                      </p>
+                      <p className="text-white/85 text-[11px] mt-0.5 line-clamp-2 leading-snug">
+                        {trip.title}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3">
+                    <span className="font-semibold text-accent text-sm">
+                      ${trip.total_estimated_cost.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1 text-on-light-tertiary text-xs">
+                      <span className="material-symbols-outlined text-[14px]">
+                        arrow_upward
+                      </span>
+                      {trip.upvote_count}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        )}
       </section>
     </div>
   );
