@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useQuizStore } from "@/lib/stores/quizStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
+import { SearchBar, type SearchValue } from "@/components/quiz/SearchBar";
 
 type CommunityTrip = {
   id: string;
@@ -22,10 +23,18 @@ type CommunityTrip = {
 export default function QuizPage() {
   const router = useRouter();
   const store = useQuizStore();
-  const [destination, setDestination] = useState(store.destinations?.[0] || "");
-  const [startDate, setStartDate] = useState(store.startDate || "");
-  const [endDate, setEndDate] = useState(store.endDate || "");
-  const [travelers, setTravelers] = useState(store.travelersCount || 2);
+  const [search, setSearch] = useState<SearchValue>({
+    destination: store.destinations?.[0] || "",
+    startDate: store.startDate || "",
+    endDate: store.endDate || "",
+    exactDates: true,
+    flexDays: 0,
+    adults: store.travelersCount && store.travelersCount > 0 ? store.travelersCount : 0,
+    children: 0,
+    infants: 0,
+    pets: 0,
+    description: "",
+  });
   const [trips, setTrips] = useState<CommunityTrip[]>([]);
   const [tripsLoading, setTripsLoading] = useState(true);
 
@@ -42,16 +51,24 @@ export default function QuizPage() {
 
   const handleSearch = () => {
     useTripCartStore.getState().clearCart();
+    const travelers = Math.max(1, search.adults + search.children);
     localStorage.setItem(
       "walter_prefs",
       JSON.stringify({
-        destinations: destination ? [destination] : [],
-        destination: destination || "Surprise me",
-        surpriseMe: !destination,
-        startDate,
-        endDate,
+        destinations: search.destination ? [search.destination] : [],
+        destination: search.destination || "Surprise me",
+        surpriseMe: !search.destination,
+        startDate: search.startDate,
+        endDate: search.endDate,
+        exactDates: search.exactDates,
+        flexDays: search.flexDays,
         travelersCount: travelers,
         travelers,
+        adults: search.adults,
+        children: search.children,
+        infants: search.infants,
+        pets: search.pets,
+        description: search.description,
         budget: 2000,
         budgetAmount: 2000,
         activityInterests: [],
@@ -60,7 +77,7 @@ export default function QuizPage() {
       })
     );
 
-    const shouldCompare = !destination || !startDate || !endDate;
+    const shouldCompare = !search.destination || !search.startDate || !search.endDate;
     router.push(shouldCompare ? "/compare" : "/results");
   };
 
@@ -88,7 +105,7 @@ export default function QuizPage() {
       </header>
 
       {/* Hero search */}
-      <section className="bg-hero-gradient relative overflow-hidden pt-8 sm:pt-10 pb-20">
+      <section className="bg-hero-gradient relative pt-8 sm:pt-10 pb-20">
         <div className="absolute inset-0 hero-radial opacity-50 pointer-events-none" />
         <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
           <motion.h1
@@ -107,66 +124,7 @@ export default function QuizPage() {
             Tell Walter the basics, or fork a trip others have built.
           </motion.p>
 
-          {/* Airbnb-style search pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.16 }}
-            className="bg-white rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.22)] flex items-stretch max-w-3xl mx-auto p-1.5"
-          >
-            <label className="flex-1 px-5 py-2.5 text-left rounded-full hover:bg-page-bg/60 transition-colors cursor-text min-w-0">
-              <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">Where</p>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="Anywhere"
-                className="w-full text-[15px] text-gray-dark placeholder:text-on-light-tertiary bg-transparent focus:outline-none truncate"
-              />
-            </label>
-            <span aria-hidden="true" className="w-px bg-[rgba(91,141,239,0.1)] my-2.5" />
-            <label className="flex-1 px-5 py-2.5 text-left rounded-full hover:bg-page-bg/60 transition-colors cursor-text min-w-0">
-              <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">Check in</p>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full text-[15px] text-gray-dark bg-transparent focus:outline-none"
-              />
-            </label>
-            <span aria-hidden="true" className="w-px bg-[rgba(91,141,239,0.1)] my-2.5" />
-            <label className="flex-1 px-5 py-2.5 text-left rounded-full hover:bg-page-bg/60 transition-colors cursor-text min-w-0">
-              <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">Check out</p>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full text-[15px] text-gray-dark bg-transparent focus:outline-none"
-              />
-            </label>
-            <span aria-hidden="true" className="w-px bg-[rgba(91,141,239,0.1)] my-2.5" />
-            <label className="flex-1 px-5 py-2.5 text-left rounded-full hover:bg-page-bg/60 transition-colors cursor-pointer min-w-0">
-              <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">Who</p>
-              <select
-                value={travelers}
-                onChange={(e) => setTravelers(Number(e.target.value))}
-                className="w-full text-[15px] text-gray-dark bg-transparent focus:outline-none cursor-pointer"
-              >
-                <option value={1}>1 traveler</option>
-                <option value={2}>2 travelers</option>
-                <option value={3}>3 travelers</option>
-                <option value={4}>4 travelers</option>
-                <option value={5}>5+ travelers</option>
-              </select>
-            </label>
-            <button
-              onClick={handleSearch}
-              className="bg-accent text-white rounded-full px-6 py-3 text-[14px] font-semibold hover:bg-accent-light transition-colors flex items-center gap-2 ml-1"
-            >
-              <span className="material-symbols-outlined text-[20px]">search</span>
-              Search
-            </button>
-          </motion.div>
+          <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
         </div>
       </section>
 
