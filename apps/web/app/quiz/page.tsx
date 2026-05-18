@@ -130,7 +130,7 @@ export default function QuizPage() {
 
       {/* Suggestions */}
       <section className="bg-page-bg -mt-12 pb-16 relative z-10">
-        <div className="px-4 sm:px-6 mb-5">
+        <div className="px-5 sm:px-6 mb-5">
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
               <p className="text-accent text-[10px] uppercase tracking-[2.5px] font-semibold mb-1.5">
@@ -147,13 +147,13 @@ export default function QuizPage() {
         </div>
 
         {tripsLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-2.5 sm:gap-3 px-2.5 sm:px-3">
-            {Array.from({ length: 16 }).map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-5 sm:gap-6 px-5 sm:px-6">
+            {Array.from({ length: 14 }).map((_, i) => (
               <div key={i} className="card-base overflow-hidden animate-pulse">
-                <div className="h-24 bg-page-bg" />
-                <div className="p-2.5 space-y-1.5">
-                  <div className="h-3 bg-page-bg rounded w-2/3" />
-                  <div className="h-2.5 bg-page-bg rounded w-full" />
+                <div className="h-32 bg-page-bg" />
+                <div className="p-3 space-y-2">
+                  <div className="h-3.5 bg-page-bg rounded w-2/3" />
+                  <div className="h-3 bg-page-bg rounded w-full" />
                 </div>
               </div>
             ))}
@@ -163,7 +163,7 @@ export default function QuizPage() {
             No community trips yet — check back soon.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-2.5 sm:gap-3 px-2.5 sm:px-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-5 sm:gap-6 px-5 sm:px-6">
             {[...trips]
               .sort((a, b) => b.upvote_count - a.upvote_count)
               .map((trip) => (
@@ -172,31 +172,31 @@ export default function QuizPage() {
                   href={`/shared/${trip.share_slug}`}
                   className="card-base overflow-hidden block group"
                 >
-                  <div className="relative h-24 overflow-hidden">
+                  <div className="relative h-32 overflow-hidden">
                     <img
                       src={trip.cover_image_url || getDestinationImage(trip.destination)}
                       alt={trip.destination}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     {trip.tier && (
-                      <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-accent rounded-pill px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
+                      <span className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur-sm text-accent rounded-pill px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                         {trip.tier}
                       </span>
                     )}
                   </div>
-                  <div className="p-2.5">
-                    <p className="font-semibold text-[13px] text-gray-dark truncate leading-tight">
+                  <div className="p-3">
+                    <p className="font-semibold text-[14px] text-gray-dark truncate leading-tight">
                       {trip.destination}
                     </p>
-                    <p className="text-on-light-secondary text-[11px] mt-0.5 line-clamp-2 leading-snug min-h-[28px]">
+                    <p className="text-on-light-secondary text-[12px] mt-1 line-clamp-2 leading-snug min-h-[32px]">
                       {trip.title}
                     </p>
-                    <div className="flex items-center justify-between pt-2 mt-2 border-t border-[rgba(91,141,239,0.05)]">
-                      <span className="font-semibold text-accent text-[12px]">
+                    <div className="flex items-center justify-between pt-2.5 mt-2.5 border-t border-[rgba(91,141,239,0.05)]">
+                      <span className="font-semibold text-accent text-[13px]">
                         ${trip.total_estimated_cost.toLocaleString()}
                       </span>
                       <span className="flex items-center gap-0.5 text-on-light-tertiary text-[11px]">
-                        <span className="material-symbols-outlined text-[12px]">
+                        <span className="material-symbols-outlined text-[13px]">
                           arrow_upward
                         </span>
                         {trip.upvote_count}
