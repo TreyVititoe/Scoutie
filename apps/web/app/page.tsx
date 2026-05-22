@@ -52,12 +52,12 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-[13px] font-medium px-3.5 py-1.5 rounded-pill transition-colors flex items-center gap-1.5 ${
-        active ? "bg-white/10 text-white" : "text-white/75 hover:text-white hover:bg-white/10"
+      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
+        active ? "bg-white/15 text-snow-off-glacier" : "text-snow-off-glacier/80 hover:text-snow-off-glacier hover:bg-white/10"
       }`}
     >
       {icon && (
-        <span className="material-symbols-outlined text-[16px] text-accent-light">{icon}</span>
+        <span className="material-symbols-outlined text-[18px] text-accent-light">{icon}</span>
       )}
       {label}
     </Link>
@@ -123,49 +123,18 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-page-bg">
-      {/* Header */}
-      <header className="sticky top-0 z-50 nav-glass">
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-3.5 flex items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
-              <span className="text-[oklch(0.12_0.008_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
-            </span>
-            <span className="text-white text-[16px] font-semibold tracking-tight">Walter</span>
-          </Link>
+      {/* Floating liquid-glass header */}
+      <header className="sticky top-0 z-50 pointer-events-none">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
+          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-white/[0.06] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.10)]">
+            <Link href="/" className="flex items-center gap-2.5 shrink-0">
+              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
+                <span className="text-[oklch(0.12_0.008_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
+              </span>
+              <span className="text-snow-off-glacier text-[17px] font-semibold tracking-tight">Walter</span>
+            </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((l) => (
-              <NavLink
-                key={l.href}
-                href={l.href}
-                label={l.label}
-                icon={l.icon}
-                active={pathname === l.href}
-              />
-            ))}
-          </nav>
-
-          <button
-            type="button"
-            aria-label="Open menu"
-            onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-colors"
-          >
-            <span className="material-symbols-outlined text-[22px]">
-              {mobileOpen ? "close" : "menu"}
-            </span>
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.16, ease: "easeOut" }}
-              className="md:hidden border-t border-white/10 bg-[oklch(0.13_0.008_250)] px-5 py-3 flex flex-col gap-1"
-            >
+            <nav className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map((l) => (
                 <NavLink
                   key={l.href}
@@ -173,12 +142,45 @@ export default function LandingPage() {
                   label={l.label}
                   icon={l.icon}
                   active={pathname === l.href}
-                  onClick={() => setMobileOpen(false)}
                 />
               ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </nav>
+
+            <button
+              type="button"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen((v) => !v)}
+              className="md:hidden w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-snow-off-glacier transition-colors"
+            >
+              <span className="material-symbols-outlined text-[22px]">
+                {mobileOpen ? "close" : "menu"}
+              </span>
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {mobileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-white/[0.06] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.10)] px-4 py-3 flex flex-col gap-1"
+              >
+                {NAV_LINKS.map((l) => (
+                  <NavLink
+                    key={l.href}
+                    href={l.href}
+                    label={l.label}
+                    icon={l.icon}
+                    active={pathname === l.href}
+                    onClick={() => setMobileOpen(false)}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </header>
 
       {/* Hero with full-bleed photograph (The Field Cinematographer Rule) */}
@@ -195,7 +197,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-5 sm:px-6 pt-20 pb-8">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-10 sm:px-16 pt-20 pb-8">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -298,11 +300,13 @@ export default function LandingPage() {
                       <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
                         {trip.title}
                       </p>
-                      <div className="flex items-baseline gap-1.5 mt-2">
-                        <span className="font-semibold text-snow-off-glacier text-[13px]">
-                          ${trip.total_estimated_cost.toLocaleString()}
-                        </span>
-                        <span className="text-white/45 text-[10.5px]">all in</span>
+                      <div className="mt-2">
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-snow-off-glacier text-[13px]">
+                            ${trip.total_estimated_cost.toLocaleString()}
+                          </span>
+                          <span className="text-white/45 text-[10.5px]">per person</span>
+                        </div>
                       </div>
                     </div>
                   </Link>
@@ -379,13 +383,18 @@ function CuratedTripCard({
         <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
           {trip.title}
         </p>
-        <div className="flex items-baseline gap-1.5 mt-2">
-          <span className="font-semibold text-snow-off-glacier text-[13px]">
-            ${trip.totalCost.toLocaleString()}
-          </span>
-          <span className="text-white/45 text-[10.5px]">
-            {trip.durationDays}d, all in
-          </span>
+        <div className="mt-2">
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-semibold text-snow-off-glacier text-[13px]">
+              ${trip.totalCost.toLocaleString()}
+            </span>
+            <span className="text-white/45 text-[10.5px]">
+              per person
+            </span>
+          </div>
+          <p className="text-white/35 text-[10px] mt-0.5">
+            {trip.durationDays} days, all in
+          </p>
         </div>
       </div>
     </button>
