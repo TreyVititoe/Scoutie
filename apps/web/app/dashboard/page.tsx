@@ -73,7 +73,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-page-bg flex items-center justify-center">
+      <div className="min-h-screen bg-product-bg flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -82,7 +82,7 @@ export default function DashboardPage() {
   const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || "";
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">

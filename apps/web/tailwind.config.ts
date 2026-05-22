@@ -11,6 +11,7 @@ const config: Config = {
         "gray-light": "oklch(0.18 0.008 250)",
         "gray-dark": "oklch(0.985 0.006 250)",
         "page-bg": "oklch(0.12 0.008 250)",
+        "product-bg": "oklch(0.17 0.015 240)",
         accent: {
           DEFAULT: "oklch(0.65 0.135 263)",
           light: "oklch(0.72 0.11 261)",

@@ -107,7 +107,7 @@ export default function ExplorePage() {
     : destinations;
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       {/* Header */}
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">

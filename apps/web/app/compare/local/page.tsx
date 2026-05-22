@@ -50,14 +50,14 @@ export default function CompareLocalPage() {
 
   if (trips.length === 0) {
     return (
-      <div className="min-h-screen bg-page-bg flex items-center justify-center">
+      <div className="min-h-screen bg-product-bg flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>

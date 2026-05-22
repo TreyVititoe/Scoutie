@@ -205,7 +205,7 @@ export default function ResultsPage() {
 
   if (!pageReady) {
     return (
-      <div className="min-h-screen bg-page-bg flex items-center justify-center">
+      <div className="min-h-screen bg-product-bg flex items-center justify-center">
         <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -233,7 +233,7 @@ export default function ResultsPage() {
   const tripWindow = formatTripWindow(startDate, endDate);
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-30 nav-glass">
         <div className="max-w-content mx-auto px-5 lg:px-8 py-3.5 flex items-center justify-between">

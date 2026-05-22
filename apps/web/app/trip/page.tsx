@@ -43,7 +43,7 @@ export default function TripPageWrapper() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-page-bg flex items-center justify-center">
+        <div className="min-h-screen bg-product-bg flex items-center justify-center">
           <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
         </div>
       }
@@ -229,7 +229,7 @@ function TripPage() {
   /* ── Empty state ── */
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-page-bg">
+      <div className="min-h-screen bg-product-bg">
         <header className="nav-glass sticky top-0 z-20">
           <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
             <Link
@@ -277,7 +277,7 @@ function TripPage() {
 
   /* ── Main render ── */
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       {/* ── Dark Nav Header ── */}
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">

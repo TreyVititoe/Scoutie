@@ -52,7 +52,7 @@ export default function SavedTripsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>

@@ -18,7 +18,9 @@ const ACCOMMODATION_OPTIONS: { id: string; label: string; sub: string; icon: str
 interface MapboxFeature {
   id: string;
   place_name: string;
+  place_type?: string[];
   text: string;
+  properties?: { category?: string };
   context?: Array<{ id: string; text: string }>;
 }
 
@@ -57,10 +59,23 @@ export default function ClarifyPage() {
       try {
         const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
         const res = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?types=place&limit=5&access_token=${token}`
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?types=place,poi&limit=8&access_token=${token}`
         );
-        const data = await res.json();
-        setDepartureSuggestions(data.features || []);
+        const data: { features?: MapboxFeature[] } = await res.json();
+        const filtered = (data.features || []).filter((f) => {
+          // Keep cities, plus POIs that look like airports
+          if (!f.place_type?.includes("poi")) return true;
+          const category = (f.properties?.category || "").toLowerCase();
+          const text = (f.text || "").toLowerCase();
+          const placeName = (f.place_name || "").toLowerCase();
+          return (
+            category.includes("airport") ||
+            text.includes("airport") ||
+            placeName.includes("airport") ||
+            text.includes("intl")
+          );
+        });
+        setDepartureSuggestions(filtered);
         setShowDepartureSuggestions(true);
       } catch {
         setDepartureSuggestions([]);
@@ -69,6 +84,11 @@ export default function ClarifyPage() {
   }, []);
 
   useEffect(() => () => clearTimeout(debounceRef.current), []);
+
+  const isAirport = (f: MapboxFeature) =>
+    f.place_type?.includes("poi") &&
+    ((f.properties?.category || "").toLowerCase().includes("airport") ||
+      (f.text || "").toLowerCase().includes("airport"));
 
   const formatCity = (f: MapboxFeature) => {
     const country = f.context?.find((c) => c.id.startsWith("country"));
@@ -91,7 +111,7 @@ export default function ClarifyPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-page-bg flex items-center justify-center">
+      <div className="min-h-screen bg-product-bg flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -100,7 +120,7 @@ export default function ClarifyPage() {
   const canSubmit = departureCity.trim().length >= 2;
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       <header className="sticky top-0 z-50 nav-glass">
         <div className="max-w-content mx-auto px-5 lg:px-8 py-3.5 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 shrink-0">
@@ -240,7 +260,7 @@ export default function ClarifyPage() {
                     handleSubmit();
                   }
                 }}
-                placeholder="Chicago, Los Angeles, JFK..."
+                placeholder="A city or airport (Chicago, JFK, Heathrow...)"
                 className="w-full pl-11 pr-4 py-3.5 rounded-pill bg-raised-slate border border-white/10 text-snow-off-glacier text-[15px] placeholder:text-white/40 focus:outline-none focus:border-accent transition-colors"
               />
               {showDepartureSuggestions && departureSuggestions.length > 0 && (
@@ -254,9 +274,20 @@ export default function ClarifyPage() {
                         setDepartureCity(formatCity(f));
                         setShowDepartureSuggestions(false);
                       }}
-                      className="w-full text-left px-4 py-3 text-[14px] text-snow-off-glacier hover:bg-white/5 transition-colors"
+                      className="w-full text-left px-4 py-3 text-[14px] text-snow-off-glacier hover:bg-white/5 transition-colors flex items-center gap-2.5"
                     >
-                      {formatCity(f)}
+                      <span
+                        className="material-symbols-outlined text-[18px] text-white/55 shrink-0"
+                        style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+                      >
+                        {isAirport(f) ? "flight" : "location_on"}
+                      </span>
+                      <span className="truncate">{formatCity(f)}</span>
+                      {isAirport(f) && (
+                        <span className="ml-auto text-[10px] uppercase tracking-wide text-white/45 font-medium shrink-0">
+                          Airport
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>

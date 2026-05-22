@@ -144,7 +144,7 @@ export default function SharedTripPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-page-bg flex items-center justify-center">
+      <div className="min-h-screen bg-product-bg flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -152,7 +152,7 @@ export default function SharedTripPage() {
 
   if (error || !trip) {
     return (
-      <div className="min-h-screen bg-page-bg flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-product-bg flex flex-col items-center justify-center px-4">
         <p className="text-2xl font-semibold text-gray-dark mb-3">Trip not found</p>
         <p className="text-on-light-secondary mb-6">This link may have expired or the trip was removed.</p>
         <Link
@@ -186,7 +186,7 @@ export default function SharedTripPage() {
     .filter((g) => g.items.length > 0);
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen bg-product-bg">
       {/* Header */}
       <header className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">

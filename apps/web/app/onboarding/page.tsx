@@ -54,7 +54,7 @@ export default function OnboardingPage() {
   const progress = (step / TOTAL_STEPS) * 100;
 
   return (
-    <div className="min-h-screen bg-page-bg flex flex-col">
+    <div className="min-h-screen bg-product-bg flex flex-col">
       {/* Header */}
       <div className="px-6 pt-8 pb-4">
         <div className="max-w-lg mx-auto">
