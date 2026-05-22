@@ -8,6 +8,14 @@ import { useQuizStore } from "@/lib/stores/quizStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
 import { SearchBar, type SearchValue } from "@/components/quiz/SearchBar";
+import {
+  CURATED_TRIPS,
+  CATEGORY_LABELS,
+  CATEGORY_TAGLINES,
+  CATEGORY_ORDER,
+  type CuratedTrip,
+  type TripCategory,
+} from "@/lib/curatedTrips";
 
 type CommunityTrip = {
   id: string;
@@ -254,84 +262,162 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Curated steal-a-trip feature row (The Booking Spine Rule) */}
-      <section className="bg-page-bg pb-24 pt-12 relative z-0">
-        <div className="px-5 sm:px-8 mb-6">
-          <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
-            Steal a trip
-          </h2>
-        </div>
-
-        {tripsLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <div key={i} className="card-base overflow-hidden animate-pulse">
-                <div className="aspect-[4/3] bg-white/10" />
-                <div className="p-3 space-y-2">
-                  <div className="h-3.5 bg-white/10 rounded w-2/3" />
-                  <div className="h-3 bg-white/10 rounded w-full" />
+      {/* Curated trips grouped by category */}
+      <section className="bg-page-bg pb-16 pt-12 relative z-0">
+        {CATEGORY_ORDER.map((cat, idx) => {
+          const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat);
+          if (tripsInCat.length === 0) return null;
+          return (
+            <div key={cat} className={idx === 0 ? "" : "mt-14"}>
+              <div className="px-5 sm:px-8 mb-5 flex items-end justify-between gap-4 flex-wrap">
+                <div>
+                  <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
+                    {CATEGORY_LABELS[cat]}
+                  </h2>
+                  <p className="text-white/55 text-[13px] mt-1.5">
+                    {CATEGORY_TAGLINES[cat]}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : trips.length === 0 ? (
-          <p className="text-white/55 text-center py-12">
-            No community trips yet, check back soon.
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
-            {[...trips]
-              .sort((a, b) => b.upvote_count - a.upvote_count)
-              .slice(0, 21)
-              .map((trip) => (
-                <Link
-                  key={trip.id}
-                  href={`/shared/${trip.share_slug}`}
-                  className="card-base overflow-hidden block group"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={trip.cover_image_url || getDestinationImage(trip.destination)}
-                      alt={trip.destination}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {trip.tier && (
-                      <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
-                        {trip.tier}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <p className="font-semibold text-[14px] text-snow-off-glacier leading-tight truncate">
-                      {trip.destination}
-                    </p>
-                    <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
-                      {trip.title}
-                    </p>
-                    <div className="flex items-baseline gap-1.5 mt-2">
-                      <span className="font-semibold text-snow-off-glacier text-[13px]">
-                        ${trip.total_estimated_cost.toLocaleString()}
-                      </span>
-                      <span className="text-white/45 text-[10.5px]">all in</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-          </div>
-        )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+                {tripsInCat.map((trip) => (
+                  <CuratedTripCard key={trip.id} trip={trip} router={router} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
 
-        {trips.length > 21 && (
-          <div className="px-5 sm:px-8 mt-10">
-            <Link
-              href="/explore"
-              className="inline-flex items-center gap-1.5 text-snow-off-glacier text-[14px] font-medium border-b border-white/30 hover:border-white pb-0.5 transition-colors"
-            >
-              More trips
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
+        {/* Community trips, only if any */}
+        {!tripsLoading && trips.length > 0 && (
+          <div className="mt-14">
+            <div className="px-5 sm:px-8 mb-5">
+              <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
+                Trips from the community
+              </h2>
+              <p className="text-white/55 text-[13px] mt-1.5">
+                Built by other travelers, public for anyone to fork.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+              {[...trips]
+                .sort((a, b) => b.upvote_count - a.upvote_count)
+                .slice(0, 14)
+                .map((trip) => (
+                  <Link
+                    key={trip.id}
+                    href={`/shared/${trip.share_slug}`}
+                    className="card-base overflow-hidden block group"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        src={trip.cover_image_url || getDestinationImage(trip.destination)}
+                        alt={trip.destination}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      {trip.tier && (
+                        <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
+                          {trip.tier}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="font-semibold text-[14px] text-snow-off-glacier leading-tight truncate">
+                        {trip.destination}
+                      </p>
+                      <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
+                        {trip.title}
+                      </p>
+                      <div className="flex items-baseline gap-1.5 mt-2">
+                        <span className="font-semibold text-snow-off-glacier text-[13px]">
+                          ${trip.total_estimated_cost.toLocaleString()}
+                        </span>
+                        <span className="text-white/45 text-[10.5px]">all in</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+            </div>
           </div>
         )}
       </section>
     </div>
+  );
+}
+
+function CuratedTripCard({
+  trip,
+  router,
+}: {
+  trip: CuratedTrip;
+  router: ReturnType<typeof useRouter>;
+}) {
+  const handleClick = () => {
+    // Pre-fill walter_prefs with this curated trip's facts, then route the
+    // user through the clarify quiz (travelers + accommodation + departure).
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() + 21); // default: in 3 weeks
+    const end = new Date(start);
+    end.setDate(end.getDate() + trip.durationDays);
+    const fmt = (d: Date) => d.toISOString().split("T")[0];
+
+    useTripCartStore.getState().clearCart();
+    localStorage.setItem(
+      "walter_prefs",
+      JSON.stringify({
+        destinations: [trip.destination],
+        destination: trip.destination,
+        surpriseMe: false,
+        startDate: fmt(start),
+        endDate: fmt(end),
+        exactDates: false,
+        flexDays: 7,
+        description: trip.description,
+        tripDurationDays: trip.durationDays,
+        budget: trip.totalCost,
+        budgetAmount: trip.totalCost,
+        activityInterests: [],
+        vibes: [],
+      })
+    );
+    router.push("/clarify");
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="card-base overflow-hidden block group text-left"
+    >
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <img
+          src={trip.image}
+          alt={trip.destination}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        {trip.tier && (
+          <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
+            {trip.tier}
+          </span>
+        )}
+      </div>
+      <div className="p-3">
+        <p className="font-semibold text-[14px] text-snow-off-glacier leading-tight truncate">
+          {trip.destination}
+        </p>
+        <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
+          {trip.title}
+        </p>
+        <div className="flex items-baseline gap-1.5 mt-2">
+          <span className="font-semibold text-snow-off-glacier text-[13px]">
+            ${trip.totalCost.toLocaleString()}
+          </span>
+          <span className="text-white/45 text-[10.5px]">
+            {trip.durationDays}d, all in
+          </span>
+        </div>
+      </div>
+    </button>
   );
 }

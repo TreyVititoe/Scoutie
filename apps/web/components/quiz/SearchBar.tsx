@@ -124,7 +124,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
     return "Add dates";
   })();
 
-  const whatLabel = value.description || "What you love";
+  const whatLabel = value.description || "What you love to do";
   const whereLabel = value.destination || "Anywhere";
 
   const pillBaseClass = active
