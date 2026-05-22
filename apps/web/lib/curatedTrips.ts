@@ -113,6 +113,16 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     durationDays: 6,
     image: "https://images.unsplash.com/photo-1530538987395-032d1800fdd4?w=1200&q=85&auto=format&fit=crop",
   },
+  {
+    id: "curated-mallorca-6d",
+    category: "coastlines",
+    destination: "Mallorca, Spain",
+    title: "Limestone coves and quiet harbors.",
+    description: "Tramuntana drives, cala swims, dinner in Sóller.",
+    totalCost: 2200,
+    durationDays: 6,
+    image: "https://images.unsplash.com/photo-1542640244-7e672d6cef4e?w=1200&q=85&auto=format&fit=crop",
+  },
 
   // ── WILD AND REMOTE ──────────────────────────────────
   {
@@ -165,6 +175,26 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     totalCost: 1700,
     durationDays: 5,
     image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=1200&q=85&auto=format&fit=crop",
+  },
+  {
+    id: "curated-lauterbrunnen-6d",
+    category: "wild",
+    destination: "Lauterbrunnen, Switzerland",
+    title: "Seventy-two waterfalls in one valley.",
+    description: "Jungfrau views, Schilthorn cable car, fondue after.",
+    totalCost: 2900,
+    durationDays: 6,
+    image: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&q=85&auto=format&fit=crop",
+  },
+  {
+    id: "curated-aoraki-8d",
+    category: "wild",
+    destination: "South Island, New Zealand",
+    title: "Southern Alps, glacier lakes, dark sky.",
+    description: "Aoraki, Milford Sound, Te Anau under the southern stars.",
+    totalCost: 3400,
+    durationDays: 8,
+    image: "https://images.unsplash.com/photo-1554072675-66db59dba46f?w=1200&q=85&auto=format&fit=crop",
   },
 
   // ── CITIES ───────────────────────────────────────────
@@ -229,6 +259,16 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     durationDays: 5,
     image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200&q=85&auto=format&fit=crop",
   },
+  {
+    id: "curated-copenhagen-5d",
+    category: "cities",
+    destination: "Copenhagen, Denmark",
+    title: "Bicycles, harbors, design that earns the word.",
+    description: "Nyhavn, Refshaleøen swimming, dinner in Vesterbro.",
+    totalCost: 2400,
+    durationDays: 5,
+    image: "https://images.unsplash.com/photo-1559511260-66a654ae982a?w=1200&q=85&auto=format&fit=crop",
+  },
 
   // ── NORTHERN LIGHT ───────────────────────────────────
   {
@@ -282,6 +322,26 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     durationDays: 7,
     image: "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1200&q=85&auto=format&fit=crop",
   },
+  {
+    id: "curated-abisko-5d",
+    category: "northern",
+    destination: "Abisko, Sweden",
+    title: "Above the Arctic Circle, the lights are guaranteed.",
+    description: "Sky Station chairlift at night, ice hotel side trip, sami culture.",
+    totalCost: 2500,
+    durationDays: 5,
+    image: "https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=1200&q=85&auto=format&fit=crop",
+  },
+  {
+    id: "curated-denali-7d",
+    category: "northern",
+    destination: "Denali, Alaska",
+    title: "Sixty-mile views, brown bears, the highest peak.",
+    description: "Park Road bus, Wonder Lake camping, salmon at the lodge.",
+    totalCost: 2800,
+    durationDays: 7,
+    image: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=1200&q=85&auto=format&fit=crop",
+  },
 
   // ── WHERE THEY EAT WELL ──────────────────────────────
   {
@@ -334,5 +394,25 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     totalCost: 2900,
     durationDays: 5,
     image: "https://images.unsplash.com/photo-1590559899731-a382839e5549?w=1200&q=85&auto=format&fit=crop",
+  },
+  {
+    id: "curated-naples-5d",
+    category: "table",
+    destination: "Naples, Italy",
+    title: "Pizza in the place it was invented.",
+    description: "Da Michele, Sorbillo, sfogliatella for breakfast.",
+    totalCost: 1700,
+    durationDays: 5,
+    image: "https://images.unsplash.com/photo-1583416750470-965b2707b355?w=1200&q=85&auto=format&fit=crop",
+  },
+  {
+    id: "curated-penang-6d",
+    category: "table",
+    destination: "Penang, Malaysia",
+    title: "Hawker centers, kopitiams, char kway teow at dawn.",
+    description: "Gurney Drive, Chulia Street, Old Town breakfast crawl.",
+    totalCost: 1600,
+    durationDays: 6,
+    image: "https://images.unsplash.com/photo-1597211833712-5e41faa202ea?w=1200&q=85&auto=format&fit=crop",
   },
 ];

@@ -145,21 +145,6 @@ export default function LandingPage() {
             ))}
           </nav>
 
-          <div className="hidden sm:flex items-center gap-2">
-            <Link
-              href="/auth/login"
-              className="text-white/75 hover:text-white text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-white/10 transition-colors"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/auth/login"
-              className="border border-white/25 text-white rounded-pill px-4 py-1.5 text-[13px] font-semibold hover:bg-white/10 hover:border-white/40 transition-colors"
-            >
-              Get started
-            </Link>
-          </div>
-
           <button
             type="button"
             aria-label="Open menu"
@@ -191,21 +176,6 @@ export default function LandingPage() {
                   onClick={() => setMobileOpen(false)}
                 />
               ))}
-              <div className="h-px bg-white/10 my-2" />
-              <Link
-                href="/auth/login"
-                onClick={() => setMobileOpen(false)}
-                className="text-white/80 text-[14px] font-medium px-3.5 py-2 rounded-pill hover:bg-white/10"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/auth/login"
-                onClick={() => setMobileOpen(false)}
-                className="text-center border border-white/25 text-white rounded-pill px-4 py-2 text-[14px] font-semibold mt-1"
-              >
-                Get started
-              </Link>
             </motion.div>
           )}
         </AnimatePresence>
@@ -268,7 +238,7 @@ export default function LandingPage() {
           const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat);
           if (tripsInCat.length === 0) return null;
           return (
-            <div key={cat} className={idx === 0 ? "" : "mt-14"}>
+            <div key={cat} className={idx === 0 ? "" : "mt-9"}>
               <div className="px-5 sm:px-8 mb-5 flex items-end justify-between gap-4 flex-wrap">
                 <div>
                   <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
@@ -290,7 +260,7 @@ export default function LandingPage() {
 
         {/* Community trips, only if any */}
         {!tripsLoading && trips.length > 0 && (
-          <div className="mt-14">
+          <div className="mt-9">
             <div className="px-5 sm:px-8 mb-5">
               <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
                 Trips from the community
