@@ -223,24 +223,29 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] mb-7 max-w-[44ch]"
+            className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] mb-32 max-w-[44ch]"
           >
             Tell Walter the basics, or fork a trip others have built.
           </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="ml-0 mr-auto w-full"
-          >
-            <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
-          </motion.div>
         </div>
       </section>
 
+      {/* SearchBar: sticks just below the navbar as the user scrolls.
+          Negative top margin pulls it up to overlap the bottom of the hero
+          so on initial load it appears as part of the hero composition. */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+        className="sticky top-[80px] z-[45] -mt-[110px]"
+      >
+        <div className="max-w-6xl mx-auto px-5 sm:px-12">
+          <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+        </div>
+      </motion.div>
+
       {/* Curated trips grouped by category */}
-      <section className="bg-page-bg pb-16 pt-12 relative z-0">
+      <section className="bg-page-bg pb-16 pt-16 relative z-0">
         {CATEGORY_ORDER.map((cat, idx) => {
           const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat);
           if (tripsInCat.length === 0) return null;
