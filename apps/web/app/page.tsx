@@ -90,7 +90,8 @@ export default function LandingPage() {
 
   const handleSearch = () => {
     useTripCartStore.getState().clearCart();
-    const travelers = Math.max(1, search.adults + search.children);
+    // Landing only collects three facts: Destination, Duration, Aspiration.
+    // Travelers / accommodation / departure are collected on /clarify after trip pick.
     localStorage.setItem(
       "walter_prefs",
       JSON.stringify({
@@ -101,23 +102,15 @@ export default function LandingPage() {
         endDate: search.endDate,
         exactDates: search.exactDates,
         flexDays: search.flexDays,
-        travelersCount: travelers,
-        travelers,
-        adults: search.adults,
-        children: search.children,
-        infants: search.infants,
-        pets: search.pets,
         description: search.description,
         budget: 2000,
         budgetAmount: 2000,
         activityInterests: [],
         vibes: [],
-        accommodationTypes: ["hotel"],
       })
     );
 
-    const shouldCompare = !search.destination || !search.startDate || !search.endDate;
-    router.push(shouldCompare ? "/compare" : "/results");
+    router.push("/compare");
   };
 
   return (
@@ -220,8 +213,8 @@ export default function LandingPage() {
             className="absolute inset-0 w-full h-full object-cover"
             fetchPriority="high"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-tinted-pitch/40 via-tinted-pitch/10 to-tinted-pitch pointer-events-none" />
-          <div className="absolute inset-0 hero-radial opacity-30 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-tinted-pitch/55 via-tinted-pitch/35 to-tinted-pitch pointer-events-none" />
+          <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
         </div>
 
         <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-5 sm:px-6 pt-20 pb-8">
@@ -229,7 +222,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier/65 text-[11px] uppercase tracking-[2.5px] font-medium mb-3"
+            className="text-snow-off-glacier/90 text-[12px] uppercase tracking-[2.5px] font-semibold mb-3 [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]"
           >
             Reykjavík, Iceland
           </motion.p>
@@ -237,7 +230,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier text-[32px] sm:text-[44px] font-semibold tracking-display leading-[1.02] mb-2 max-w-[20ch]"
+            className="text-snow-off-glacier text-[40px] sm:text-[56px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch] [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]"
           >
             Where to next?
           </motion.h1>
@@ -245,7 +238,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier/75 text-[14px] sm:text-[15px] mb-6 max-w-[44ch]"
+            className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] mb-7 max-w-[44ch] [text-shadow:0_1px_4px_rgba(0,0,0,0.5)]"
           >
             Tell Walter the basics, or fork a trip others have built.
           </motion.p>

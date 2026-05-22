@@ -240,12 +240,14 @@ export default function ComparePage() {
       localStorage.setItem("walter_prefs", JSON.stringify(prefs));
     }
 
-    // Accepting a trip option signals "I like this destination + dates" —
-    // the user picks their own itinerary items on /results. Cart stays empty.
     void tripIdx;
     useTripCartStore.getState().clearCart();
 
-    router.push("/results");
+    // Clarification quiz collects travelers, accommodation, and departure city
+    // before building the real itinerary at /results.
+    const prefs = stored ? JSON.parse(stored) : {};
+    const needsClarification = !prefs.departureCity || !prefs.accommodationTypes?.[0] || !prefs.travelersCount;
+    router.push(needsClarification ? "/clarify" : "/results");
   };
 
   const handleSaveOption = (trip: CompareTrip, idx: number) => {
@@ -317,13 +319,12 @@ export default function ComparePage() {
             quizPrefs={quizPrefs}
             onSelect={(start, end) => {
               const stored = localStorage.getItem("walter_prefs");
-              if (stored) {
-                const p = JSON.parse(stored);
-                p.startDate = start;
-                p.endDate = end;
-                localStorage.setItem("walter_prefs", JSON.stringify(p));
-              }
-              router.push("/results");
+              const p = stored ? JSON.parse(stored) : {};
+              p.startDate = start;
+              p.endDate = end;
+              localStorage.setItem("walter_prefs", JSON.stringify(p));
+              const needsClarification = !p.departureCity || !p.accommodationTypes?.[0] || !p.travelersCount;
+              router.push(needsClarification ? "/clarify" : "/results");
             }}
           />
         )}

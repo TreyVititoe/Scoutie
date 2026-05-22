@@ -16,7 +16,7 @@ export type SearchValue = {
   description: string;
 };
 
-type Section = "where" | "when" | "who" | "what" | null;
+type Section = "where" | "when" | "what" | null;
 
 type Props = {
   value: SearchValue;
@@ -86,6 +86,13 @@ function shortDate(s: string): string {
   return d.toLocaleString("en-US", { month: "short", day: "numeric" });
 }
 
+function daysBetween(start: string, end: string): number {
+  const a = parseYMD(start);
+  const b = parseYMD(end);
+  if (!a || !b) return 0;
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
+
 export function SearchBar({ value, onChange, onSearch }: Props) {
   const [active, setActive] = useState<Section>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -108,22 +115,17 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
   }, []);
 
   const whenLabel = (() => {
-    if (value.startDate && value.endDate) return `${shortDate(value.startDate)} – ${shortDate(value.endDate)}`;
+    if (value.startDate && value.endDate) {
+      const days = daysBetween(value.startDate, value.endDate);
+      if (days > 0) return `${shortDate(value.startDate)}, ${days} ${days === 1 ? "day" : "days"}`;
+      return shortDate(value.startDate);
+    }
     if (value.startDate) return shortDate(value.startDate);
     return "Add dates";
   })();
 
-  const whoLabel = (() => {
-    const guests = value.adults + value.children;
-    const parts: string[] = [];
-    if (guests > 0) parts.push(`${guests} guest${guests > 1 ? "s" : ""}`);
-    if (value.infants > 0) parts.push(`${value.infants} infant${value.infants > 1 ? "s" : ""}`);
-    if (value.pets > 0) parts.push(`${value.pets} pet${value.pets > 1 ? "s" : ""}`);
-    return parts.join(", ") || "Add guests";
-  })();
-
-  const whatLabel = value.description || "Add description";
-  const whereLabel = value.destination || "Search destinations";
+  const whatLabel = value.description || "What kind of trip";
+  const whereLabel = value.destination || "Anywhere";
 
   const pillBaseClass = active
     ? "bg-quiet-slate ring-1 ring-white/10"
@@ -140,7 +142,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <SectionButton
           isActive={active === "where"}
           isAnyActive={active !== null}
-          label="Where"
+          label="Destination"
           value={whereLabel}
           placeholder={!value.destination}
           onClick={() => setActive(active === "where" ? null : "where")}
@@ -149,25 +151,16 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <SectionButton
           isActive={active === "when"}
           isAnyActive={active !== null}
-          label="When"
+          label="Duration"
           value={whenLabel}
           placeholder={!value.startDate}
           onClick={() => setActive(active === "when" ? null : "when")}
         />
-        <Divider show={active !== "when" && active !== "who"} />
-        <SectionButton
-          isActive={active === "who"}
-          isAnyActive={active !== null}
-          label="Who"
-          value={whoLabel}
-          placeholder={value.adults + value.children + value.infants + value.pets === 0}
-          onClick={() => setActive(active === "who" ? null : "who")}
-        />
-        <Divider show={active !== "who" && active !== "what"} />
+        <Divider show={active !== "when" && active !== "what"} />
         <SectionButton
           isActive={active === "what"}
           isAnyActive={active !== null}
-          label="What"
+          label="Aspiration"
           value={whatLabel}
           placeholder={!value.description}
           onClick={() => setActive(active === "what" ? null : "what")}
@@ -190,9 +183,6 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         )}
         {active === "when" && (
           <WhenPopover key="when" value={value} onChange={onChange} />
-        )}
-        {active === "who" && (
-          <WhoPopover key="who" value={value} onChange={onChange} />
         )}
         {active === "what" && (
           <WhatPopover key="what" value={value} onChange={onChange} />
@@ -491,59 +481,6 @@ function WhenPopover({
           ))}
         </div>
       )}
-    </PopoverShell>
-  );
-}
-
-function WhoPopover({
-  value,
-  onChange,
-}: {
-  value: SearchValue;
-  onChange: (n: SearchValue) => void;
-}) {
-  const rows: { key: keyof SearchValue; label: string; sub: string; min?: number }[] = [
-    { key: "adults", label: "Adults", sub: "Ages 13 or above" },
-    { key: "children", label: "Children", sub: "Ages 2 – 12" },
-    { key: "infants", label: "Infants", sub: "Under 2" },
-    { key: "pets", label: "Pets", sub: "Bringing a service animal?" },
-  ];
-
-  return (
-    <PopoverShell align="right" width="380px" className="p-2">
-      <div className="px-4 py-2 divide-y divide-white/10">
-        {rows.map((row) => {
-          const v = value[row.key] as number;
-          return (
-            <div key={row.key} className="py-4 flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <p className="text-[15px] font-semibold text-white">{row.label}</p>
-                <p className="text-[12px] text-white/55">{row.sub}</p>
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <button
-                  type="button"
-                  disabled={v <= 0}
-                  onClick={() => onChange({ ...value, [row.key]: Math.max(0, v - 1) })}
-                  className="w-8 h-8 rounded-full border border-white/25 text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
-                  aria-label={`Decrease ${row.label}`}
-                >
-                  <span className="material-symbols-outlined text-[16px]">remove</span>
-                </button>
-                <span className="text-[14px] text-white w-5 text-center tabular-nums">{v}</span>
-                <button
-                  type="button"
-                  onClick={() => onChange({ ...value, [row.key]: v + 1 })}
-                  className="w-8 h-8 rounded-full border border-white/25 text-white hover:border-white flex items-center justify-center transition-colors"
-                  aria-label={`Increase ${row.label}`}
-                >
-                  <span className="material-symbols-outlined text-[16px]">add</span>
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </PopoverShell>
   );
 }
