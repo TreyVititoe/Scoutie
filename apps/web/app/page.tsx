@@ -52,10 +52,10 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 [mix-blend-mode:difference] ${
+      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
         active
-          ? "bg-white/20 text-white"
-          : "text-white/95 hover:text-white hover:bg-white/15"
+          ? "bg-white/15 text-snow-off-glacier"
+          : "text-snow-off-glacier/90 hover:text-snow-off-glacier hover:bg-white/10"
       }`}
     >
       {icon && (
@@ -128,12 +128,12 @@ export default function LandingPage() {
       {/* Floating liquid-glass header */}
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
-          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill backdrop-blur-md border border-white/20">
+          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.12_0.008_250_/_0.75)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.10)]">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
-              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)] [mix-blend-mode:normal]">
+              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
                 <span className="text-[oklch(0.12_0.008_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
               </span>
-              <span className="text-white text-[17px] font-semibold tracking-tight [mix-blend-mode:difference]">Walter</span>
+              <span className="text-snow-off-glacier text-[17px] font-semibold tracking-tight">Walter</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -152,7 +152,7 @@ export default function LandingPage() {
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen((v) => !v)}
-              className="md:hidden w-9 h-9 rounded-full hover:bg-white/15 flex items-center justify-center text-white [mix-blend-mode:difference] transition-colors"
+              className="md:hidden w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-snow-off-glacier transition-colors"
             >
               <span className="material-symbols-outlined text-[22px]">
                 {mobileOpen ? "close" : "menu"}
