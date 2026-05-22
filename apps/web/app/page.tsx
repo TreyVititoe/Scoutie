@@ -203,14 +203,6 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-24 sm:px-32 pt-20 pb-8">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier/95 text-[14px] sm:text-[15px] uppercase tracking-[2.5px] font-semibold mb-3"
-          >
-            Reykjavík, Iceland
-          </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -219,14 +211,30 @@ export default function LandingPage() {
           >
             Where to next?
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] mb-32 max-w-[44ch]"
-          >
-            Tell Walter the basics, or fork a trip others have built.
-          </motion.p>
+          <div className="flex items-end justify-between gap-6 mb-32">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+              className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] max-w-[44ch]"
+            >
+              Tell Walter the basics, or fork a trip others have built.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+              className="shrink-0 text-snow-off-glacier/95 text-[13px] sm:text-[14px] uppercase tracking-[2.5px] font-semibold flex items-center gap-1.5"
+            >
+              <span
+                className="material-symbols-outlined text-[18px] sm:text-[19px] text-emerald-400"
+                style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+              >
+                location_on
+              </span>
+              Reykjavík, Iceland
+            </motion.p>
+          </div>
         </div>
       </section>
 
