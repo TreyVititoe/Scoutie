@@ -193,7 +193,10 @@ export default function LandingPage() {
             className="absolute inset-0 w-full h-full object-cover"
             fetchPriority="high"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-tinted-pitch/55 via-tinted-pitch/35 to-tinted-pitch pointer-events-none" />
+          {/* Top scrim: keeps nav legible over bright sky areas */}
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-tinted-pitch/70 to-transparent pointer-events-none" />
+          {/* Bottom scrim: keeps hero text legible regardless of photo content */}
+          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-tinted-pitch via-tinted-pitch/85 to-transparent pointer-events-none" />
           <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
         </div>
 
