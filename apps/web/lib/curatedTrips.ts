@@ -5,6 +5,12 @@
  *
  * Walter voice: cinematic, no hype, no "amazing" / "stunning" / "must-see".
  * Title lines are facts about the place, in the register of a filmmaker.
+ *
+ * Photo note: image URLs use hardcoded Unsplash photo IDs. To swap a photo,
+ * browse https://unsplash.com, pick a verified shot of the destination, and
+ * paste the URL as `image`. A more reliable long-term option is to drop
+ * locally-stored JPGs into `public/trips/` and reference `/trips/<slug>.jpg`,
+ * which removes the dependency on external IDs that can rot or be mislabeled.
  */
 
 export type TripCategory =
@@ -111,7 +117,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Boat days, pasta with lemon, late espresso on a balcony.",
     totalCost: 2700,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1530538987395-032d1800fdd4?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-mallorca-6d",
@@ -121,7 +127,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Tramuntana drives, cala swims, dinner in Sóller.",
     totalCost: 2200,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1542640244-7e672d6cef4e?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1565099824688-e93eb20fe622?w=1200&q=85&auto=format&fit=crop",
   },
 
   // ── WILD AND REMOTE ──────────────────────────────────
@@ -133,7 +139,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Torres del Paine W trek, lodges between hikes, big sky.",
     totalCost: 3800,
     durationDays: 10,
-    image: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=1200&q=85&auto=format&fit=crop",
     tier: "Walter's pick",
   },
   {
@@ -154,7 +160,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Via ferrata, rifugio dinners, glacier light at dawn.",
     totalCost: 2600,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1572025442646-866d16c84a54?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-scottish-highlands-6d",
@@ -184,7 +190,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Jungfrau views, Schilthorn cable car, fondue after.",
     totalCost: 2900,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-aoraki-8d",
@@ -194,7 +200,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Aoraki, Milford Sound, Te Anau under the southern stars.",
     totalCost: 3400,
     durationDays: 8,
-    image: "https://images.unsplash.com/photo-1554072675-66db59dba46f?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1530841377377-3ff06c0ca713?w=1200&q=85&auto=format&fit=crop",
   },
 
   // ── CITIES ───────────────────────────────────────────
@@ -300,7 +306,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Sheep on every cliff, tunnels under the sea, fish smoked yesterday.",
     totalCost: 3100,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-lofoten-6d",
@@ -352,7 +358,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Bar crawls in Parte Vieja, Michelin lunch, surf at Zurriola.",
     totalCost: 2100,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1481277542470-605612bd2d61?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1583077874340-79db6564672e?w=1200&q=85&auto=format&fit=crop",
     tier: "Walter's pick",
   },
   {
@@ -363,7 +369,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Tagliatelle al ragù, mortadella, balsamic in Modena.",
     totalCost: 1800,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1567521464027-f127ff144326?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1535914254981-b5012eebbd15?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-oaxaca-5d",
@@ -403,7 +409,7 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Da Michele, Sorbillo, sfogliatella for breakfast.",
     totalCost: 1700,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1583416750470-965b2707b355?w=1200&q=85&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1593871075120-982e042088d8?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-penang-6d",

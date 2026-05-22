@@ -52,7 +52,7 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)] ${
+      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
         active ? "bg-white/15 text-snow-off-glacier" : "text-snow-off-glacier/85 hover:text-snow-off-glacier hover:bg-white/10"
       }`}
     >
@@ -131,7 +131,7 @@ export default function LandingPage() {
               <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
                 <span className="text-[oklch(0.12_0.008_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
               </span>
-              <span className="text-snow-off-glacier text-[17px] font-semibold tracking-tight [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">Walter</span>
+              <span className="text-snow-off-glacier text-[17px] font-semibold tracking-tight">Walter</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -202,7 +202,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier/90 text-[12px] uppercase tracking-[2.5px] font-semibold mb-3 [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]"
+            className="text-snow-off-glacier/90 text-[12px] uppercase tracking-[2.5px] font-semibold mb-3"
           >
             Reykjavík, Iceland
           </motion.p>
@@ -210,7 +210,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier text-[40px] sm:text-[56px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch] [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]"
+            className="text-snow-off-glacier text-[40px] sm:text-[56px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
           >
             Where to next?
           </motion.h1>
@@ -218,7 +218,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] mb-7 max-w-[44ch] [text-shadow:0_1px_4px_rgba(0,0,0,0.5)]"
+            className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] mb-7 max-w-[44ch]"
           >
             Tell Walter the basics, or fork a trip others have built.
           </motion.p>
