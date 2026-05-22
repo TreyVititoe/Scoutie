@@ -6,11 +6,11 @@
  * Walter voice: cinematic, no hype, no "amazing" / "stunning" / "must-see".
  * Title lines are facts about the place, in the register of a filmmaker.
  *
- * Photo note: image URLs use hardcoded Unsplash photo IDs. To swap a photo,
- * browse https://unsplash.com, pick a verified shot of the destination, and
- * paste the URL as `image`. A more reliable long-term option is to drop
- * locally-stored JPGs into `public/trips/` and reference `/trips/<slug>.jpg`,
- * which removes the dependency on external IDs that can rot or be mislabeled.
+ * Photos: by default, each card fetches its photo from /api/photo?query=<destination>
+ * which does an Unsplash search server-side using UNSPLASH_ACCESS_KEY. If a
+ * specific photo is preferred, set the `image` field directly. If the
+ * destination string returns the wrong photos (rare), set `photoQuery` to
+ * override the search term.
  */
 
 export type TripCategory =
@@ -28,7 +28,12 @@ export type CuratedTrip = {
   description: string;
   totalCost: number;
   durationDays: number;
-  image: string;
+  /** Optional photo override. If unset, the card falls through to
+   *  /api/photo?query=<destination> which does an Unsplash search. */
+  image?: string;
+  /** Optional search query override when the default destination string
+   *  pulls the wrong photos (e.g. "Tokyo (food edition)"). */
+  photoQuery?: string;
   tier?: string;
 };
 
@@ -66,7 +71,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Long walks, fado in tiny rooms, grilled fish and white wine.",
     totalCost: 1800,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&q=85&auto=format&fit=crop",
     tier: "Walter's pick",
   },
   {
@@ -77,7 +81,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Trails between towns, focaccia, swimming off the rocks.",
     totalCost: 2400,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-santorini-7d",
@@ -87,7 +90,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Slow mornings, late dinners, sunset that earns the cliché.",
     totalCost: 2800,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-algarve-5d",
@@ -97,7 +99,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Cliff hikes, grilled sardines, sand still warm at nine.",
     totalCost: 1600,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-big-sur-4d",
@@ -107,7 +108,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Drive slow, hike short, eat at Nepenthe, watch the light go.",
     totalCost: 1400,
     durationDays: 4,
-    image: "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-amalfi-6d",
@@ -117,7 +117,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Boat days, pasta with lemon, late espresso on a balcony.",
     totalCost: 2700,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-mallorca-6d",
@@ -127,7 +126,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Tramuntana drives, cala swims, dinner in Sóller.",
     totalCost: 2200,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1565099824688-e93eb20fe622?w=1200&q=85&auto=format&fit=crop",
   },
 
   // ── WILD AND REMOTE ──────────────────────────────────
@@ -139,7 +137,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Torres del Paine W trek, lodges between hikes, big sky.",
     totalCost: 3800,
     durationDays: 10,
-    image: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=1200&q=85&auto=format&fit=crop",
     tier: "Walter's pick",
   },
   {
@@ -150,7 +147,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Lake Louise, Moraine, hot springs after a long hike.",
     totalCost: 2200,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1609825488888-3a766db05542?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-dolomites-7d",
@@ -160,7 +156,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Via ferrata, rifugio dinners, glacier light at dawn.",
     totalCost: 2600,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1572025442646-866d16c84a54?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-scottish-highlands-6d",
@@ -170,7 +165,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Isle of Skye, distilleries, B&Bs with peat fires.",
     totalCost: 1900,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-yosemite-5d",
@@ -180,7 +174,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Half Dome views, valley loops, dinner in Wawona.",
     totalCost: 1700,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-lauterbrunnen-6d",
@@ -190,7 +183,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Jungfrau views, Schilthorn cable car, fondue after.",
     totalCost: 2900,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-aoraki-8d",
@@ -200,7 +192,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Aoraki, Milford Sound, Te Anau under the southern stars.",
     totalCost: 3400,
     durationDays: 8,
-    image: "https://images.unsplash.com/photo-1530841377377-3ff06c0ca713?w=1200&q=85&auto=format&fit=crop",
   },
 
   // ── CITIES ───────────────────────────────────────────
@@ -212,7 +203,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Tsukiji breakfasts, Shimokitazawa nights, a Sunday in Shibuya.",
     totalCost: 2800,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&q=85&auto=format&fit=crop",
     tier: "Walter's pick",
   },
   {
@@ -223,7 +213,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Roma Norte cafés, Coyoacán markets, a Sunday at Chapultepec.",
     totalCost: 1500,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-new-york-5d",
@@ -233,7 +222,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Walk the Highline, an MFA dinner in Bushwick, jazz late.",
     totalCost: 2200,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-berlin-5d",
@@ -243,7 +231,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Tempelhof picnics, gallery hopping in Mitte, döner at 2am.",
     totalCost: 1700,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-barcelona-6d",
@@ -253,7 +240,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Boqueria mornings, Sagrada Família, beach naps, late tapas.",
     totalCost: 1900,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1583422409516-2895a77efded?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-paris-5d",
@@ -263,7 +249,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Marais walks, Musée d'Orsay, a Tuesday at the opera.",
     totalCost: 2300,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-copenhagen-5d",
@@ -273,7 +258,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Nyhavn, Refshaleøen swimming, dinner in Vesterbro.",
     totalCost: 2400,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1559511260-66a654ae982a?w=1200&q=85&auto=format&fit=crop",
   },
 
   // ── NORTHERN LIGHT ───────────────────────────────────
@@ -285,7 +269,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Golden Circle drive, hot springs, aurora chasing past midnight.",
     totalCost: 2140,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=1200&q=85&auto=format&fit=crop",
     tier: "Walter's pick",
   },
   {
@@ -296,7 +279,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Cable car at dusk, sami camp dinner, northern lights at 1am.",
     totalCost: 2700,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-faroe-7d",
@@ -306,7 +288,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Sheep on every cliff, tunnels under the sea, fish smoked yesterday.",
     totalCost: 3100,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-lofoten-6d",
@@ -316,7 +297,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Red rorbu cabins, cod racks at dusk, no one in sight.",
     totalCost: 2800,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1531168556467-80aace0d0144?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-hokkaido-7d",
@@ -326,7 +306,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Niseko slopes, onsens at night, sapporo izakaya crawl.",
     totalCost: 3200,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-abisko-5d",
@@ -336,7 +315,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Sky Station chairlift at night, ice hotel side trip, sami culture.",
     totalCost: 2500,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-denali-7d",
@@ -346,7 +324,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Park Road bus, Wonder Lake camping, salmon at the lodge.",
     totalCost: 2800,
     durationDays: 7,
-    image: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=1200&q=85&auto=format&fit=crop",
   },
 
   // ── WHERE THEY EAT WELL ──────────────────────────────
@@ -358,7 +335,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Bar crawls in Parte Vieja, Michelin lunch, surf at Zurriola.",
     totalCost: 2100,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1583077874340-79db6564672e?w=1200&q=85&auto=format&fit=crop",
     tier: "Walter's pick",
   },
   {
@@ -369,7 +345,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Tagliatelle al ragù, mortadella, balsamic in Modena.",
     totalCost: 1800,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1535914254981-b5012eebbd15?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-oaxaca-5d",
@@ -379,7 +354,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Seven moles, a tlayuda stand, mezcal tasting in Etla.",
     totalCost: 1400,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-lyon-6d",
@@ -389,17 +363,16 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Quenelles, Halles Paul Bocuse, Beaujolais a half hour away.",
     totalCost: 2200,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-tokyo-table-5d",
     category: "table",
-    destination: "Tokyo (food edition), Japan",
+    destination: "Tokyo, Japan (food edition)",
     title: "Eat your way through one city.",
     description: "Sushi at Tsukiji, ramen in Shinjuku, omakase in Nakameguro.",
     totalCost: 2900,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1590559899731-a382839e5549?w=1200&q=85&auto=format&fit=crop",
+    photoQuery: "Tokyo ramen sushi",
   },
   {
     id: "curated-naples-5d",
@@ -409,7 +382,6 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Da Michele, Sorbillo, sfogliatella for breakfast.",
     totalCost: 1700,
     durationDays: 5,
-    image: "https://images.unsplash.com/photo-1593871075120-982e042088d8?w=1200&q=85&auto=format&fit=crop",
   },
   {
     id: "curated-penang-6d",
@@ -419,6 +391,5 @@ export const CURATED_TRIPS: CuratedTrip[] = [
     description: "Gurney Drive, Chulia Street, Old Town breakfast crawl.",
     totalCost: 1600,
     durationDays: 6,
-    image: "https://images.unsplash.com/photo-1597211833712-5e41faa202ea?w=1200&q=85&auto=format&fit=crop",
   },
 ];

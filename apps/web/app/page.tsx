@@ -367,10 +367,11 @@ function CuratedTripCard({
       onClick={handleClick}
       className="card-base overflow-hidden block group text-left"
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden bg-raised-slate">
         <img
-          src={trip.image}
+          src={trip.image || `/api/photo?query=${encodeURIComponent(trip.photoQuery || trip.destination)}`}
           alt={trip.destination}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {trip.tier && (
