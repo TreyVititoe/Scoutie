@@ -209,7 +209,7 @@ export default function QuickPlanPage() {
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
-          <Link href="/quiz" className="text-on-dark-secondary text-sm hover:text-white transition-colors flex items-center gap-1.5">
+          <Link href="/" className="text-on-dark-secondary text-sm hover:text-white transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">tune</span>
             Full Trip Design
           </Link>

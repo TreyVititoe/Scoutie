@@ -37,82 +37,47 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
 
   return (
     <div className="card-base p-5">
-      {/* Type badge & context badges */}
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-2xl icon-gradient flex items-center justify-center">
-          <span className="material-symbols-outlined text-accent text-xl">{icon}</span>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-[10px] icon-gradient flex items-center justify-center">
+          <span className="material-symbols-outlined text-accent-light text-xl">{icon}</span>
         </div>
-        <span className="text-[12px] text-on-light-tertiary">
+        <span className="text-[11px] uppercase tracking-widest text-white/55 font-medium">
           {suggestion.type === "restaurant" ? "Dining" : suggestion.type === "site" ? "Landmark" : suggestion.type}
         </span>
       </div>
-      <div className="flex flex-wrap items-center gap-1.5 mb-4">
-        {suggestion.bestTime && (
-          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
-            {suggestion.bestTime.toLowerCase().includes("morning")
-              ? "Best in morning"
-              : suggestion.bestTime.toLowerCase().includes("evening")
-                ? "Best in evening"
-                : suggestion.bestTime.toLowerCase().includes("night")
-                  ? "Best at night"
-                  : suggestion.bestTime.toLowerCase().includes("afternoon")
-                    ? "Best in afternoon"
-                    : "Anytime"}
-          </span>
-        )}
-        {(suggestion.estimatedCost === null || suggestion.estimatedCost === 0) && (
-          <span className="text-[12px] font-semibold text-on-light-tertiary tracking-micro">
-            Free
-          </span>
-        )}
-      </div>
 
-      {/* Title */}
-      <h3 className="font-semibold text-gray-dark text-lg leading-tight mb-2 line-clamp-2">
+      <h3 className="font-semibold text-snow-off-glacier text-lg leading-tight mb-2 line-clamp-2">
         {suggestion.title}
       </h3>
 
-      {/* Description */}
-      <p className="text-sm text-on-light-secondary leading-relaxed mb-4 line-clamp-3">
+      <p className="text-sm text-white/70 leading-relaxed mb-4 line-clamp-3">
         {suggestion.description}
       </p>
 
-      {/* Location */}
-      <div className="flex items-center gap-1.5 mb-2">
-        <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">location_on</span>
-        <p className="text-xs text-on-light-tertiary truncate">{suggestion.locationName}</p>
+      <div className="flex items-center gap-1.5 mb-4">
+        <span className="material-symbols-outlined text-white/45 text-[14px]">location_on</span>
+        <p className="text-xs text-white/55 truncate">{suggestion.locationName}</p>
       </div>
 
-      {/* Best time (raw value, shown if not already captured by badge) */}
-      {suggestion.bestTime && !["morning", "evening", "night", "afternoon", "anytime"].some(
-        (t) => suggestion.bestTime.toLowerCase().includes(t)
-      ) && (
-        <div className="flex items-center gap-1.5 mb-4">
-          <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">schedule</span>
-          <p className="text-xs text-on-light-tertiary">{suggestion.bestTime}</p>
-        </div>
-      )}
-
-      {/* Cost & Add to Trip */}
-      <div className="flex items-center justify-between pt-4 border-t border-on-light-tertiary/15">
+      <div className="flex items-center justify-between pt-4 border-t border-white/10">
         <div>
-          {suggestion.estimatedCost != null ? (
+          {suggestion.estimatedCost != null && suggestion.estimatedCost > 0 ? (
             <>
-              <p className="font-semibold text-accent text-[21px]">
+              <p className="font-semibold text-snow-off-glacier text-[21px]">
                 ${suggestion.estimatedCost}
               </p>
-              <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">estimated</p>
+              <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold">estimated</p>
             </>
           ) : (
-            <p className="text-sm font-semibold text-on-light-tertiary">Free / varies</p>
+            <p className="text-sm font-semibold text-white/55">Free or varies</p>
           )}
         </div>
         <button
           onClick={handleToggle}
-          className={`rounded-[10px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
+          className={`rounded-pill px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
             added
-              ? "bg-accent text-white hover:bg-accent-light"
-              : "border border-accent text-accent hover:bg-accent/5"
+              ? "bg-accent text-snow-off-glacier hover:bg-accent-light"
+              : "border border-white/25 text-snow-off-glacier hover:bg-white/10 hover:border-white/40"
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">

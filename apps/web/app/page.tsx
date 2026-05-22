@@ -1,520 +1,342 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
-import CommunityTrips from "../components/CommunityTrips";
+import { motion, AnimatePresence } from "framer-motion";
+import { useQuizStore } from "@/lib/stores/quizStore";
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import { getDestinationImage } from "@/lib/destinationImages";
+import { SearchBar, type SearchValue } from "@/components/quiz/SearchBar";
 
-// Magnetic hover — element drifts toward cursor on mouseover, returns to rest on leave.
-function useMagnetic(strength = 0.25) {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  return {
-    onMouseMove: (e: React.MouseEvent<HTMLElement>) => {
-      const r = e.currentTarget.getBoundingClientRect();
-      setPos({
-        x: (e.clientX - r.left - r.width / 2) * strength,
-        y: (e.clientY - r.top - r.height / 2) * strength,
-      });
-    },
-    onMouseLeave: () => setPos({ x: 0, y: 0 }),
-    style: {
-      transform: `translate(${pos.x}px, ${pos.y}px)`,
-      transition: "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
-    },
-  };
+type CommunityTrip = {
+  id: string;
+  title: string;
+  destination: string;
+  total_estimated_cost: number;
+  cover_image_url: string | null;
+  upvote_count: number;
+  share_slug: string;
+  tier: string | null;
+};
+
+const NAV_LINKS: { href: string; label: string; icon?: string }[] = [
+  { href: "/quick", label: "Quick plan", icon: "bolt" },
+  { href: "/explore", label: "Explore" },
+  { href: "/saved", label: "Saved" },
+  { href: "/dashboard", label: "Trips" },
+];
+
+function NavLink({
+  href,
+  label,
+  icon,
+  active,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  icon?: string;
+  active: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`text-[13px] font-medium px-3.5 py-1.5 rounded-pill transition-colors flex items-center gap-1.5 ${
+        active ? "bg-white/10 text-white" : "text-white/75 hover:text-white hover:bg-white/10"
+      }`}
+    >
+      {icon && (
+        <span className="material-symbols-outlined text-[16px] text-accent-light">{icon}</span>
+      )}
+      {label}
+    </Link>
+  );
 }
 
-const steps = [
-  {
-    num: "01",
-    icon: "tune",
-    title: "Tell Walter your vibe",
-    desc: "Where, when, and what you love. Two minutes flat.",
-  },
-  {
-    num: "02",
-    icon: "auto_awesome",
-    title: "Walter plans it",
-    desc: "Real flights, real hotels, real events — assembled for you.",
-  },
-  {
-    num: "03",
-    icon: "flight_takeoff",
-    title: "You book it",
-    desc: "Compare options, tap to book. No fees, no subscriptions.",
-  },
-];
+export default function LandingPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const store = useQuizStore();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [search, setSearch] = useState<SearchValue>({
+    destination: "",
+    startDate: "",
+    endDate: "",
+    exactDates: true,
+    flexDays: 0,
+    adults: 0,
+    children: 0,
+    infants: 0,
+    pets: 0,
+    description: "",
+  });
+  const [trips, setTrips] = useState<CommunityTrip[]>([]);
+  const [tripsLoading, setTripsLoading] = useState(true);
 
-const moments = [
-  { icon: "music_note", label: "Concerts" },
-  { icon: "sports_score", label: "Sports" },
-  { icon: "theater_comedy", label: "Theater" },
-  { icon: "celebration", label: "Festivals" },
-  { icon: "restaurant", label: "Food" },
-  { icon: "hiking", label: "Outdoors" },
-];
+  useEffect(() => {
+    fetch("/api/trips/community")
+      .then((r) => r.json())
+      .then((d) => {
+        setTrips(d.trips || []);
+        setTripsLoading(false);
+      })
+      .catch(() => setTripsLoading(false));
+  }, []);
 
-const trustItems = [
-  { icon: "flight", label: "Real flights" },
-  { icon: "hotel", label: "Real hotels" },
-  { icon: "music_note", label: "Real events" },
-  { icon: "auto_awesome", label: "AI itineraries" },
-  { icon: "share", label: "One-link share" },
-];
+  void store;
 
-export default function HomePage() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const closeMenu = () => setMenuOpen(false);
-  const quickMag = useMagnetic(0.25);
-  const designMag = useMagnetic(0.25);
-  const [cardTilt, setCardTilt] = useState({ rY: -9, rX: 7 });
+  const handleSearch = () => {
+    useTripCartStore.getState().clearCart();
+    const travelers = Math.max(1, search.adults + search.children);
+    localStorage.setItem(
+      "walter_prefs",
+      JSON.stringify({
+        destinations: search.destination ? [search.destination] : [],
+        destination: search.destination || "Surprise me",
+        surpriseMe: !search.destination,
+        startDate: search.startDate,
+        endDate: search.endDate,
+        exactDates: search.exactDates,
+        flexDays: search.flexDays,
+        travelersCount: travelers,
+        travelers,
+        adults: search.adults,
+        children: search.children,
+        infants: search.infants,
+        pets: search.pets,
+        description: search.description,
+        budget: 2000,
+        budgetAmount: 2000,
+        activityInterests: [],
+        vibes: [],
+        accommodationTypes: ["hotel"],
+      })
+    );
+
+    const shouldCompare = !search.destination || !search.startDate || !search.endDate;
+    router.push(shouldCompare ? "/compare" : "/results");
+  };
 
   return (
-    <div className="min-h-screen">
-      {/* ========== NAV ========== */}
-      <nav className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-[1100px] rounded-[20px] nav-glass border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.22)] overflow-hidden">
-        <div className="px-5 sm:px-7 h-[72px] flex items-center justify-between">
-          {/* Brand */}
-          <Link href="/" className="flex items-center gap-3 group" onClick={closeMenu}>
-            <span className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)] transition-transform group-hover:scale-105">
-              <span className="text-accent-deep text-[18px] font-black italic leading-none -mt-px">W</span>
+    <div className="min-h-screen bg-page-bg">
+      {/* Header */}
+      <header className="sticky top-0 z-30 nav-glass">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-3.5 flex items-center justify-between gap-6">
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
+            <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
+              <span className="text-[oklch(0.12_0.008_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
             </span>
-            <span className="text-white text-[20px] font-semibold tracking-tight">Walter</span>
+            <span className="text-white text-[16px] font-semibold tracking-tight">Walter</span>
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-7">
-            <Link href="/explore" className="text-white/75 text-[15px] font-medium hover:text-white transition-colors">
-              Explore
-            </Link>
-            <Link href="/saved" className="text-white/75 text-[15px] font-medium hover:text-white transition-colors">
-              Saved trips
-            </Link>
-            <Link href="/auth/login" className="text-white/75 text-[15px] font-medium hover:text-white transition-colors">
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((l) => (
+              <NavLink
+                key={l.href}
+                href={l.href}
+                label={l.label}
+                icon={l.icon}
+                active={pathname === l.href}
+              />
+            ))}
+          </nav>
+
+          <div className="hidden sm:flex items-center gap-2">
+            <Link
+              href="/auth/login"
+              className="text-white/75 hover:text-white text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-white/10 transition-colors"
+            >
               Sign in
             </Link>
             <Link
-              href="/quiz"
-              className="bg-white/20 border border-white/25 text-white rounded-pill px-5 py-2.5 text-[15px] font-semibold hover:bg-white/30 transition-colors flex items-center gap-1.5"
+              href="/auth/login"
+              className="border border-white/25 text-white rounded-pill px-4 py-1.5 text-[13px] font-semibold hover:bg-white/10 hover:border-white/40 transition-colors"
             >
-              Plan a trip
-              <span className="material-symbols-outlined text-[19px]">arrow_forward</span>
+              Get started
             </Link>
           </div>
 
-          {/* Mobile menu trigger */}
           <button
             type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            className="md:hidden text-white p-2 -mr-1.5"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
+            aria-label="Open menu"
+            onClick={() => setMobileOpen((v) => !v)}
+            className="md:hidden w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-colors"
           >
-            <span className="material-symbols-outlined text-[28px]">
-              {menuOpen ? "close" : "menu"}
+            <span className="material-symbols-outlined text-[22px]">
+              {mobileOpen ? "close" : "menu"}
             </span>
           </button>
         </div>
 
-        {/* Mobile drawer */}
         <AnimatePresence>
-          {menuOpen && (
+          {mobileOpen && (
             <motion.div
-              key="mobile-drawer"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="md:hidden border-t border-white/10 bg-[rgba(20,22,26,0.94)] backdrop-blur-xl"
+              transition={{ duration: 0.16, ease: "easeOut" }}
+              className="md:hidden border-t border-white/10 bg-[oklch(0.13_0.008_250)] px-5 py-3 flex flex-col gap-1"
             >
-              <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col">
-                <Link href="/explore" onClick={closeMenu} className="text-white text-[15px] font-medium py-3 border-b border-white/10">
-                  Explore
-                </Link>
-                <Link href="/saved" onClick={closeMenu} className="text-white text-[15px] font-medium py-3 border-b border-white/10">
-                  Saved trips
-                </Link>
-                <Link href="/auth/login" onClick={closeMenu} className="text-white text-[15px] font-medium py-3 border-b border-white/10">
-                  Sign in
-                </Link>
-                <Link
-                  href="/quiz"
-                  onClick={closeMenu}
-                  className="bg-cyan text-accent-deep rounded-[10px] px-4 py-3 text-[15px] font-bold flex items-center justify-center gap-2 mt-4 shadow-[0_4px_18px_rgba(56,189,248,0.35)]"
-                >
-                  Plan a trip
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </Link>
-              </div>
+              {NAV_LINKS.map((l) => (
+                <NavLink
+                  key={l.href}
+                  href={l.href}
+                  label={l.label}
+                  icon={l.icon}
+                  active={pathname === l.href}
+                  onClick={() => setMobileOpen(false)}
+                />
+              ))}
+              <div className="h-px bg-white/10 my-2" />
+              <Link
+                href="/auth/login"
+                onClick={() => setMobileOpen(false)}
+                className="text-white/80 text-[14px] font-medium px-3.5 py-2 rounded-pill hover:bg-white/10"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/auth/login"
+                onClick={() => setMobileOpen(false)}
+                className="text-center border border-white/25 text-white rounded-pill px-4 py-2 text-[14px] font-semibold mt-1"
+              >
+                Get started
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
-      </nav>
+      </header>
 
-      {/* ========== HERO ========== */}
-      <section className="relative overflow-hidden bg-hero-gradient">
-        {/* Full-bleed atmospheric photo */}
+      {/* Hero with full-bleed photograph (The Field Cinematographer Rule) */}
+      <section className="relative z-20 min-h-[560px] sm:min-h-[680px] flex flex-col overflow-hidden">
         <img
-          src="/hero-bg.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-80"
-          style={{ objectPosition: "center 55%" }}
+          src="https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=2400&q=85&auto=format&fit=crop"
+          alt="Reykjavík at low light"
+          className="absolute inset-0 w-full h-full object-cover"
+          fetchPriority="high"
         />
-        {/* Light teal tint — image-forward */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[rgba(30,45,96,0.45)] via-[rgba(61,99,214,0.15)] to-[rgba(30,45,96,0.55)] pointer-events-none" />
-        {/* Top + bottom darkening for nav and trust bar legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(30,45,96,0.45)] via-transparent to-[rgba(30,45,96,0.7)] pointer-events-none" />
-        {/* Cyan/teal radial glow */}
-        <div className="absolute inset-0 hero-radial pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-tinted-pitch/40 via-tinted-pitch/10 to-tinted-pitch pointer-events-none" />
+        <div className="absolute inset-0 hero-radial opacity-30 pointer-events-none" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 lg:pt-40 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
-          {/* LEFT — text */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-5 sm:px-6 pt-28 pb-16">
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-6 text-center lg:text-left"
+            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+            className="text-snow-off-glacier/65 text-[11px] uppercase tracking-[2.5px] font-medium mb-4"
           >
-            <div className="inline-flex items-center gap-2 mb-7">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
-              <span className="text-cyan text-[14px] uppercase tracking-[2.8px] font-semibold drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-                Skip 47 tabs
-              </span>
-            </div>
-            <h1 className="text-white text-[44px] sm:text-[56px] lg:text-[68px] font-semibold leading-[1.02] tracking-display">
-              Trip Planning{" "}
-              <span className="block lg:inline text-cyan">Revolutionized.</span>
-            </h1>
-            <p className="text-white/90 text-[17px] sm:text-[19px] mt-6 lg:mt-8 leading-relaxed max-w-lg mx-auto lg:mx-0 drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]">
-              Flights, hotels, concerts, restaurants — Walter assembles the
-              whole thing in 60 seconds. All real, all bookable.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 mt-10 items-stretch sm:items-center justify-center lg:justify-start">
-              <div
-                className="inline-flex"
-                onMouseMove={quickMag.onMouseMove}
-                onMouseLeave={quickMag.onMouseLeave}
-                style={quickMag.style}
-              >
-                <Link
-                  href="/quick"
-                  className="bg-cyan text-accent-deep rounded-[14px] px-10 py-5 text-[18px] font-bold hover:brightness-105 transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(56,189,248,0.45)]"
-                >
-                  <span className="material-symbols-outlined text-[22px]">bolt</span>
-                  Quick Plan
-                </Link>
-              </div>
-              <span
-                aria-hidden="true"
-                className="self-center text-white/65 text-[12px] font-bold uppercase tracking-[2.5px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:px-1"
-              >
-                or
-              </span>
-              <div
-                className="inline-flex"
-                onMouseMove={designMag.onMouseMove}
-                onMouseLeave={designMag.onMouseLeave}
-                style={designMag.style}
-              >
-                <Link
-                  href="/quiz"
-                  className="bg-accent text-white rounded-[14px] px-10 py-5 text-[18px] font-bold hover:bg-accent-light transition-all flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(91,141,239,0.5)]"
-                >
-                  <span className="material-symbols-outlined text-[22px]">tune</span>
-                  Design My Trip
-                </Link>
-              </div>
-            </div>
-            <p className="text-white/80 text-[13px] font-medium mt-7 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-              Free forever · No sign-up required
-            </p>
-          </motion.div>
-
-          {/* RIGHT — floating itinerary mock */}
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
+            Reykjavík, Iceland
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-6 perspective-stack hidden lg:block lg:mt-12"
-            aria-hidden="true"
-            onMouseMove={(e: React.MouseEvent<HTMLDivElement>) => {
-              const r = e.currentTarget.getBoundingClientRect();
-              const dx = (e.clientX - r.left - r.width / 2) / r.width;
-              const dy = (e.clientY - r.top - r.height / 2) / r.height;
-              setCardTilt({ rY: -9 + dx * 10, rX: 7 - dy * 10 });
-            }}
-            onMouseLeave={() => setCardTilt({ rY: -9, rX: 7 })}
+            transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+            className="text-snow-off-glacier text-[40px] sm:text-[64px] font-semibold tracking-display leading-[1.02] mb-4 max-w-[20ch]"
           >
-            <div
-              className="relative mx-auto w-full max-w-[520px] aspect-[3/4] tilt-card"
-              style={{
-                transform: `rotateY(${cardTilt.rY}deg) rotateX(${cardTilt.rX}deg)`,
-                transition: "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
-              }}
-            >
-              {/* Soft glow halo behind the stack */}
-              <div className="absolute inset-0 -m-10 rounded-[48px] bg-cyan/15 blur-3xl pointer-events-none" />
-
-              {/* Card 1 — flight */}
-              <div className="absolute top-0 left-0 right-0 float-anim z-30 rounded-[18px] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
-                    Flight
-                  </span>
-                  <span className="bg-[#DBEAFE] text-accent text-[10px] font-semibold rounded-pill px-2 py-0.5">
-                    Cheapest
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-center">
-                    <p className="font-semibold text-gray-dark text-lg leading-none">8:14a</p>
-                    <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mt-1">
-                      LAX
-                    </p>
-                  </div>
-                  <div className="flex-1 flex flex-col items-center">
-                    <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mb-1">
-                      11h 25m
-                    </p>
-                    <div className="w-full h-px bg-on-light-tertiary/30 relative">
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-on-light-tertiary" />
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-on-light-tertiary" />
-                    </div>
-                    <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mt-1">
-                      Nonstop
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-semibold text-gray-dark text-lg leading-none">9:39p</p>
-                    <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mt-1">
-                      LIS
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[rgba(91,141,239,0.06)]">
-                  <p className="text-on-light-secondary text-sm">TAP Air Portugal</p>
-                  <p className="font-semibold text-accent text-lg">$612</p>
-                </div>
-              </div>
-
-              {/* Card 2 — hotel */}
-              <div className="absolute top-[34%] left-0 right-0 float-anim-1 z-20 rounded-[18px] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] overflow-hidden">
-                <div className="flex">
-                  <div className="w-[120px] bg-gradient-to-br from-[#DBEAFE] to-[#BFDBFE] flex items-center justify-center flex-shrink-0">
-                    <span className="material-symbols-outlined text-accent text-[36px]">hotel</span>
-                  </div>
-                  <div className="flex-1 p-4">
-                    <span className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
-                      Hotel · 4 nights
-                    </span>
-                    <p className="font-semibold text-gray-dark text-[15px] mt-1 leading-tight">
-                      Memmo Alfama
-                    </p>
-                    <p className="text-on-light-secondary text-xs mt-1 leading-snug">
-                      Lisbon · Boutique · Rooftop pool
-                    </p>
-                    <div className="flex items-center justify-between mt-2.5">
-                      <div className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-amber-500 text-[14px]">star</span>
-                        <span className="text-xs font-semibold text-gray-dark">4.7</span>
-                      </div>
-                      <p className="font-semibold text-accent">$480</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3 — event */}
-              <div className="absolute top-[62%] left-0 right-0 float-anim-2 z-10 rounded-[18px] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] p-4 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-[12px] bg-gradient-to-br from-accent to-accent-light flex items-center justify-center flex-shrink-0">
-                  <span className="material-symbols-outlined text-cyan text-[24px]">music_note</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
-                    Event · Sat night
-                  </span>
-                  <p className="font-semibold text-gray-dark text-[15px] mt-0.5 leading-tight truncate">
-                    Lisbon Jazz Festival
-                  </p>
-                  <p className="text-on-light-secondary text-xs mt-0.5 truncate">
-                    Castelo de São Jorge · 8pm
-                  </p>
-                </div>
-                <p className="font-semibold text-accent text-[15px] flex-shrink-0">$84</p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* TRUST BAR */}
-        <div className="relative z-10 border-t border-white/10 bg-black/15 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto px-6 py-6 flex flex-wrap items-center justify-center gap-x-9 gap-y-3 text-white/80 text-[13px] uppercase tracking-[1.6px] font-semibold">
-            {trustItems.map((t) => (
-              <span key={t.label} className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-cyan text-[20px]">{t.icon}</span>
-                {t.label}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== REAL TRIPS (community) ========== */}
-      <div id="trips">
-        <CommunityTrips />
-      </div>
-
-      {/* ========== FINAL CTA — single dark→light transition point ========== */}
-      <section className="bg-page-bg relative -mt-10 rounded-t-[60px] pt-24 sm:pt-28 pb-8 overflow-hidden z-10">
-        <div className="absolute top-0 right-0 w-[60%] h-[80%] hero-radial-light pointer-events-none opacity-70" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-          className="relative z-10 max-w-3xl mx-auto px-6 text-center"
-        >
-          <h2 className="text-gray-dark text-[36px] sm:text-[52px] font-semibold tracking-display leading-[1.04]">
             Where to next?
-          </h2>
-          <p className="text-on-light-secondary text-[17px] mt-4 max-w-xl mx-auto leading-relaxed">
-            Tell Walter the basics. Get a complete trip you can actually book.
-          </p>
-          <Link
-            href="/quiz"
-            className="mt-9 inline-flex items-center gap-2 bg-accent text-white rounded-[12px] px-8 py-4 text-[16px] font-bold hover:bg-accent-light transition-all shadow-[0_8px_24px_rgba(91,141,239,0.3)]"
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+            className="text-snow-off-glacier/75 text-[15px] sm:text-[17px] mb-10 max-w-[44ch]"
           >
-            Design my trip
-            <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-          </Link>
-          <p className="text-on-light-tertiary text-[12px] mt-7 tracking-wide">
-            Free forever · No sign-up required
-          </p>
-        </motion.div>
-      </section>
+            Tell Walter the basics, or fork a trip others have built.
+          </motion.p>
 
-      {/* ========== HOW IT WORKS ========== */}
-      <section className="bg-page-bg pt-8 sm:pt-10 pb-6">
-        <div className="max-w-6xl mx-auto px-6">
-         <div className="bg-white rounded-[28px] p-8 sm:p-12 lg:p-14 shadow-[0_4px_30px_rgba(91,141,239,0.06)] border border-[rgba(91,141,239,0.04)]">
-          <div className="text-center mb-12 sm:mb-14">
-            <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3">
-              How it works
-            </p>
-            <h2 className="text-[32px] sm:text-[44px] font-semibold text-gray-dark tracking-display leading-[1.05] max-w-2xl mx-auto">
-              From idea to itinerary, fast.
-            </h2>
-          </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6"
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            {steps.map((step) => (
-              <div key={step.num} className="relative">
-                <div className="relative h-full bg-page-bg rounded-[20px] p-7 sm:p-8 border border-[rgba(91,141,239,0.06)] hover:bg-white hover:shadow-[0_10px_40px_rgba(91,141,239,0.08)] hover:-translate-y-0.5 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-cyan/30 to-accent/20 border border-accent/15 flex items-center justify-center shadow-[0_4px_16px_rgba(91,141,239,0.08)]">
-                      <span className="material-symbols-outlined text-accent text-[26px]">
-                        {step.icon}
-                      </span>
-                    </div>
-                    <span
-                      aria-hidden="true"
-                      className="text-[40px] font-black text-accent/15 leading-none tracking-tight"
-                    >
-                      {step.num}
-                    </span>
-                  </div>
-                  <h3 className="font-semibold text-[20px] text-gray-dark mb-2 tracking-tight">
-                    {step.title}
-                  </h3>
-                  <p className="text-on-light-secondary text-[14.5px] leading-relaxed">
-                    {step.desc}
-                  </p>
+            <div className="ml-0 mr-auto">
+              <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Curated steal-a-trip feature row (The Booking Spine Rule) */}
+      <section className="bg-page-bg pb-24 pt-20 relative z-10">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 mb-8">
+          <h2 className="text-[26px] sm:text-[34px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
+            Steal a trip
+          </h2>
+        </div>
+
+        {tripsLoading ? (
+          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 px-5 sm:px-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="card-base overflow-hidden animate-pulse">
+                <div className="aspect-[4/3] bg-white/10" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-white/10 rounded w-2/3" />
+                  <div className="h-3 bg-white/10 rounded w-full" />
+                  <div className="h-3 bg-white/10 rounded w-3/4" />
                 </div>
-                {/* Arrow to next card (lg only) */}
-                <span
-                  aria-hidden="true"
-                  className="hidden lg:flex absolute top-1/2 -right-[14px] -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white border border-accent/20 items-center justify-center shadow-[0_3px_10px_rgba(91,141,239,0.1)]"
-                >
-                  <span className="material-symbols-outlined text-accent text-[16px]">
-                    arrow_forward
-                  </span>
-                </span>
               </div>
             ))}
-
-            {/* Step 4 — punchline card */}
-            <div className="relative h-full bg-gradient-to-br from-accent to-accent-deep rounded-[20px] p-7 sm:p-8 shadow-[0_10px_40px_rgba(91,141,239,0.2)] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
-              <div className="absolute inset-0 hero-radial pointer-events-none opacity-50" />
-              <div className="relative">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-14 h-14 rounded-[14px] bg-cyan/15 border border-cyan/30 flex items-center justify-center backdrop-blur-sm">
-                    <span className="material-symbols-outlined text-cyan text-[26px]">
-                      celebration
-                    </span>
-                  </div>
-                  <span
-                    aria-hidden="true"
-                    className="text-[40px] font-black text-white/15 leading-none tracking-tight line-through decoration-2 decoration-cyan/50"
-                  >
-                    04
-                  </span>
-                </div>
-                <h3 className="font-semibold text-[20px] text-white mb-2 tracking-tight">
-                  Wait — there&apos;s no step 4.
-                </h3>
-                <p className="text-white/75 text-[14.5px] leading-relaxed">
-                  That&apos;s the whole thing. Quiz to itinerary in two minutes.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-         </div>
-        </div>
-      </section>
-
-      {/* ========== MOMENTS CALLOUT ========== */}
-      <section className="bg-page-bg pt-6 pb-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="card-base p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
-          >
-            <div className="lg:col-span-5">
-              <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3">
-                Don&apos;t miss the moment
-              </p>
-              <h2 className="text-[28px] sm:text-[36px] font-semibold text-gray-dark tracking-display leading-[1.12]">
-                The concert, the game, the festival — added to your trip.
-              </h2>
-              <p className="text-on-light-secondary text-[15px] mt-4 leading-relaxed">
-                Walter checks Ticketmaster for what&apos;s happening during your
-                dates and adds it to your itinerary in one tap.
-              </p>
-            </div>
-            <div className="lg:col-span-7 grid grid-cols-3 sm:grid-cols-6 gap-3">
-              {moments.map((m) => (
-                <div
-                  key={m.label}
-                  className="flex flex-col items-center justify-center p-4 rounded-[14px] bg-white/70 border border-[rgba(91,141,239,0.06)]"
+          </div>
+        ) : trips.length === 0 ? (
+          <p className="text-white/55 text-center py-12 max-w-6xl mx-auto">
+            No community trips yet, check back soon.
+          </p>
+        ) : (
+          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 px-5 sm:px-6">
+            {[...trips]
+              .sort((a, b) => b.upvote_count - a.upvote_count)
+              .slice(0, 6)
+              .map((trip) => (
+                <Link
+                  key={trip.id}
+                  href={`/shared/${trip.share_slug}`}
+                  className="card-base overflow-hidden block group"
                 >
-                  <span className="material-symbols-outlined text-accent text-[24px] mb-2">
-                    {m.icon}
-                  </span>
-                  <span className="text-xs font-semibold text-gray-dark">{m.label}</span>
-                </div>
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={trip.cover_image_url || getDestinationImage(trip.destination)}
+                      alt={trip.destination}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    {trip.tier && (
+                      <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
+                        {trip.tier}
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-5">
+                    <p className="font-semibold text-[18px] text-snow-off-glacier leading-tight">
+                      {trip.destination}
+                    </p>
+                    <p className="text-white/65 text-[13.5px] mt-2 line-clamp-2 leading-snug">
+                      {trip.title}
+                    </p>
+                    <div className="flex items-baseline gap-1.5 mt-4">
+                      <span className="font-semibold text-reykjavik-sky text-[15px]">
+                        ${trip.total_estimated_cost.toLocaleString()}
+                      </span>
+                      <span className="text-white/45 text-[11px]">all in</span>
+                    </div>
+                  </div>
+                </Link>
               ))}
-            </div>
-          </motion.div>
-        </div>
+          </div>
+        )}
+
+        {trips.length > 6 && (
+          <div className="max-w-6xl mx-auto px-5 sm:px-6 mt-10">
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-1.5 text-snow-off-glacier text-[14px] font-medium border-b border-white/30 hover:border-white pb-0.5 transition-colors"
+            >
+              More trips
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </Link>
+          </div>
+        )}
       </section>
     </div>
   );

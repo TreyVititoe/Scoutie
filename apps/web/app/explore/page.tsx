@@ -115,7 +115,7 @@ export default function ExplorePage() {
             Walter
           </Link>
           <Link
-            href="/quiz"
+            href="/"
             className="px-4 py-2 rounded-[8px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors"
           >
             Plan a trip
@@ -165,7 +165,7 @@ export default function ExplorePage() {
           {filtered.map((dest) => (
             <Link
               key={dest.city}
-              href={`/quiz?destination=${encodeURIComponent(dest.city)}`}
+              href={`/?destination=${encodeURIComponent(dest.city)}`}
               className="block card-base overflow-hidden transition-all group"
             >
               <div className="relative h-48 overflow-hidden">
@@ -218,7 +218,7 @@ export default function ExplorePage() {
               Let Walter pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
             </p>
             <Link
-              href="/quiz"
+              href="/"
               className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
             >
               Surprise me

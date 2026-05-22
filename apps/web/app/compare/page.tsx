@@ -71,7 +71,7 @@ export default function ComparePage() {
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs");
     if (!stored) {
-      router.push("/quiz");
+      router.push("/");
       return;
     }
 
@@ -287,7 +287,7 @@ export default function ComparePage() {
           <p className="font-semibold text-gray-dark mb-2">Something went wrong</p>
           <p className="text-on-light-secondary text-sm mb-6">{error}</p>
           <button
-            onClick={() => router.push("/quiz")}
+            onClick={() => router.push("/")}
             className="bg-accent text-white rounded-[10px] px-6 py-3 font-semibold hover:bg-accent-light transition-colors"
           >
             Try again
@@ -303,7 +303,7 @@ export default function ComparePage() {
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
-          <Link href="/quiz" className="text-accent-light text-sm hover:underline flex items-center gap-1.5">
+          <Link href="/" className="text-accent-light text-sm hover:underline flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">edit</span>
             Edit preferences
           </Link>

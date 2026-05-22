@@ -4,9 +4,9 @@ import Footer from "../components/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Walter -- One Quiz. Your Whole Trip.",
+  title: "Walter. The world is wasted on people who stay home.",
   description:
-    "AI-powered trip planning. Take a quick quiz, get complete bookable itineraries with flights, hotels, activities, and more.",
+    "Tell Walter a few facts and he builds a real trip: flights, hotels, activities, all in one cart. Ready to book in one click.",
 };
 
 export default function RootLayout({

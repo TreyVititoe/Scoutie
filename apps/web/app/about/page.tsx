@@ -52,7 +52,7 @@ export default function AboutPage() {
             Walter
           </Link>
           <Link
-            href="/quiz"
+            href="/"
             className="bg-accent text-white rounded-[10px] px-5 py-2 text-sm font-semibold hover:bg-accent-light transition-colors"
           >
             Get started
@@ -202,7 +202,7 @@ export default function AboutPage() {
               you are ready.
             </p>
             <Link
-              href="/quiz"
+              href="/"
               className="inline-flex items-center justify-center bg-accent text-white rounded-[10px] px-10 py-5 text-[17px] font-semibold hover:bg-accent-light transition-colors"
             >
               Start planning

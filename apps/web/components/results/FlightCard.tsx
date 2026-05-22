@@ -28,47 +28,47 @@ function JourneyRow({ label, journey }: { label: string; journey: FlightJourney 
   const hint = layoverHint(journey);
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mb-2">
+      <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold mb-2">
         {label}
       </p>
       <div className="flex items-center gap-3">
         <div className="text-center">
-          <p className="font-semibold text-on-surface text-lg">{journey.departTime}</p>
-          <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
+          <p className="font-semibold text-snow-off-glacier text-lg">{journey.departTime}</p>
+          <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold">
             {journey.departure}
           </p>
         </div>
         <div className="flex-1 flex flex-col items-center">
-          <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mb-1">
+          <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold mb-1">
             {journey.duration}
           </p>
-          <div className="w-full h-px bg-on-light-tertiary/30 relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-on-light-tertiary" />
+          <div className="w-full h-px bg-white/30/30 relative">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white/30" />
             {journey.layovers.map((_, idx) => {
               const pct = ((idx + 1) / (journey.layovers.length + 1)) * 100;
               return (
                 <div
                   key={idx}
-                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-on-light-tertiary/60"
+                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/30/60"
                   style={{ left: `${pct}%` }}
                 />
               );
             })}
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-on-light-tertiary" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white/30" />
           </div>
-          <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold mt-1">
+          <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold mt-1">
             {stopsLabel(journey.stops)}
           </p>
         </div>
         <div className="text-center">
-          <p className="font-semibold text-on-surface text-lg">{journey.arriveTime}</p>
-          <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
+          <p className="font-semibold text-snow-off-glacier text-lg">{journey.arriveTime}</p>
+          <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold">
             {journey.arrival}
           </p>
         </div>
       </div>
       {hint && (
-        <p className="text-[11px] text-on-light-tertiary mt-1.5 pl-1">{hint}</p>
+        <p className="text-[11px] text-white/45 mt-1.5 pl-1">{hint}</p>
       )}
     </div>
   );
@@ -92,7 +92,7 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
       addItem({
         id: flight.id,
         type: "flight",
-        title: `${flight.airline} ${outbound.departure} -> ${outbound.arrival}`,
+        title: `${flight.airline} ${outbound.departure}, ${outbound.arrival}`,
         subtitle: ret
           ? `${outbound.duration} out | ${ret.duration} back | roundtrip`
           : `${outbound.departTime} | ${outbound.duration} | ${stopsLabel(outbound.stops)}`,
@@ -107,30 +107,12 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
   };
 
   return (
-    <div className="w-full card-base p-6">
-      {/* Tags */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        {cheapest && (
-          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
-            Best price
-          </span>
-        )}
-        {isDirect && (
-          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
-            Direct
-          </span>
-        )}
-        {!cheapest && isDirect && isQuickFlight && (
-          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
-            Quick flight
-          </span>
-        )}
-        {ret && (
-          <span className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
-            Roundtrip
-          </span>
-        )}
-      </div>
+    <div className="w-full card-base p-6 relative">
+      {cheapest && (
+        <span className="absolute top-4 right-4 bg-tinted-pitch/85 text-reykjavik-sky border border-white/10 rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+          Walter&apos;s pick
+        </span>
+      )}
 
       {/* Airline */}
       <div className="flex items-center gap-3 mb-4">
@@ -138,10 +120,13 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
           {flight.airlineLogo ? (
             <img src={flight.airlineLogo} alt="" className="w-5 h-5 rounded" />
           ) : (
-            <span className="material-symbols-outlined text-accent text-lg">airlines</span>
+            <span className="material-symbols-outlined text-accent-light text-lg">airlines</span>
           )}
         </div>
-        <p className="font-semibold text-on-surface text-sm">{flight.airline}</p>
+        <p className="font-semibold text-snow-off-glacier text-sm">{flight.airline}</p>
+        {isDirect && (
+          <span className="text-[11px] text-white/55 ml-auto">Nonstop</span>
+        )}
       </div>
 
       {/* Outbound + return */}
@@ -151,19 +136,19 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
       </div>
 
       {/* Price & Add to Trip */}
-      <div className="flex items-center justify-between pt-4 border-t border-on-light-tertiary/15">
+      <div className="flex items-center justify-between pt-4 border-t border-white/10">
         <div>
-          <p className="font-semibold text-accent text-[21px]">${flight.price}</p>
-          <p className="text-[10px] uppercase tracking-widest text-on-light-tertiary font-semibold">
+          <p className="font-semibold text-snow-off-glacier text-[21px]">${flight.price}</p>
+          <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold">
             {ret ? "Roundtrip total" : "One way"}
           </p>
         </div>
         <button
           onClick={handleToggle}
-          className={`rounded-[10px] px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
+          className={`rounded-pill px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
             added
-              ? "bg-accent text-white hover:bg-accent-light"
-              : "border border-accent text-accent hover:bg-accent/5"
+              ? "bg-accent text-snow-off-glacier hover:bg-accent-light"
+              : "border border-white/25 text-snow-off-glacier hover:bg-white/10 hover:border-white/40"
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">

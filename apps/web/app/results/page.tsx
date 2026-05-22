@@ -10,6 +10,7 @@ import EventCard from "@/components/results/EventCard";
 import SuggestionCard from "@/components/results/SuggestionCard";
 import TripTracker from "@/components/results/TripTracker";
 import { useTripCartStore, selectItemCount } from "@/lib/stores/tripCartStore";
+import { getDestinationImage } from "@/lib/destinationImages";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
 import type { ScoredEvent, Suggestion } from "@/lib/types";
@@ -18,10 +19,11 @@ const tabs = [
   { id: "flights", label: "Flights", icon: "flight" },
   { id: "stays", label: "Stays", icon: "hotel" },
   { id: "events", label: "Events", icon: "local_activity" },
-  { id: "picks", label: "Walter's Picks", icon: "auto_awesome" },
+  { id: "picks", label: "Picks", icon: "explore" },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
+const EASE = [0.2, 0.8, 0.2, 1] as const;
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -40,7 +42,6 @@ export default function ResultsPage() {
   const [pageReady, setPageReady] = useState(false);
   const [fetchKey, setFetchKey] = useState(0);
 
-  // Called when user adds departure city or dates inline
   const handleInlineUpdate = (updates: Record<string, unknown>) => {
     const stored = localStorage.getItem("walter_prefs");
     if (stored) {
@@ -49,7 +50,6 @@ export default function ResultsPage() {
       localStorage.setItem("walter_prefs", JSON.stringify(p));
       setPrefs(p);
     }
-    // Reset loading and re-fetch
     setFlights([]);
     setHotels([]);
     setEvents([]);
@@ -64,7 +64,7 @@ export default function ResultsPage() {
   useEffect(() => {
     const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
     if (!stored) {
-      router.push("/quiz");
+      router.push("/");
       return;
     }
     const quizData = JSON.parse(stored);
@@ -76,10 +76,8 @@ export default function ResultsPage() {
     const startDate = quizData.startDate || "";
     const endDate = quizData.endDate || "";
     const adults = quizData.travelersCount || quizData.travelers || 1;
-
     const cabinClass = quizData.flightClass || "economy";
 
-    // AbortControllers for timeouts
     const suggestionsController = new AbortController();
     const flightsController = new AbortController();
     const hotelsController = new AbortController();
@@ -89,7 +87,6 @@ export default function ResultsPage() {
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
     const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
 
-    // Fetch AI-curated suggestions
     if (destination) {
       fetch("/api/suggestions", {
         method: "POST",
@@ -113,14 +110,11 @@ export default function ResultsPage() {
           clearTimeout(suggestionsTimeout);
           console.warn("[suggestions]", err);
         })
-        .finally(() => {
-          setSuggestionsLoading(false);
-        });
+        .finally(() => setSuggestionsLoading(false));
     } else {
       setSuggestionsLoading(false);
     }
 
-    // Flights
     if (departureCity && destination && startDate && endDate) {
       fetch("/api/flights", {
         method: "POST",
@@ -137,14 +131,11 @@ export default function ResultsPage() {
           clearTimeout(flightsTimeout);
           console.warn("[flights]", err);
         })
-        .finally(() => {
-          setFlightsLoading(false);
-        });
+        .finally(() => setFlightsLoading(false));
     } else {
       setFlightsLoading(false);
     }
 
-    // Hotels
     if (destination && startDate && endDate && !quizData.noAccommodation) {
       fetch("/api/hotels", {
         method: "POST",
@@ -161,14 +152,11 @@ export default function ResultsPage() {
           clearTimeout(hotelsTimeout);
           console.warn("[hotels]", err);
         })
-        .finally(() => {
-          setHotelsLoading(false);
-        });
+        .finally(() => setHotelsLoading(false));
     } else {
       setHotelsLoading(false);
     }
 
-    // Events
     if (destination && startDate && endDate) {
       fetch("/api/search", {
         method: "POST",
@@ -193,9 +181,7 @@ export default function ResultsPage() {
           clearTimeout(eventsTimeout);
           console.warn("[events]", err);
         })
-        .finally(() => {
-          setEventsLoading(false);
-        });
+        .finally(() => setEventsLoading(false));
     } else {
       setEventsLoading(false);
     }
@@ -210,7 +196,6 @@ export default function ResultsPage() {
       hotelsController.abort();
       eventsController.abort();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, fetchKey]);
 
   const destination =
@@ -218,11 +203,10 @@ export default function ResultsPage() {
     (prefs as { destination?: string })?.destination ||
     "your destination";
 
-  /* --- Initial load --- */
   if (!pageReady) {
     return (
       <div className="min-h-screen bg-page-bg flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -240,373 +224,303 @@ export default function ResultsPage() {
     : null;
 
   const allEvents = [...events, ...(events.length < 3 ? similarEvents : []), ...topEvents];
+  const topEvent = allEvents[0] || null;
+
+  const heroImage = getDestinationImage(destination);
+
+  const startDate = (prefs as { startDate?: string })?.startDate || "";
+  const endDate = (prefs as { endDate?: string })?.endDate || "";
+  const tripWindow = formatTripWindow(startDate, endDate);
 
   return (
     <div className="min-h-screen bg-page-bg">
-      {/* --- Header --- */}
-      <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
-        <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">
-            Walter
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-30 nav-glass">
+        <div className="max-w-content mx-auto px-5 lg:px-8 py-3.5 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
+            <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
+              <span className="text-tinted-pitch text-[14px] font-black italic leading-none -mt-px">W</span>
+            </span>
+            <span className="text-snow-off-glacier text-[16px] font-semibold tracking-tight">Walter</span>
           </Link>
           <Link
-            href="/quiz"
-            className="text-accent text-sm hover:underline transition-colors flex items-center gap-1.5"
+            href="/"
+            className="text-white/75 hover:text-snow-off-glacier text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-white/10 transition-colors flex items-center gap-1.5"
           >
-            <span className="material-symbols-outlined text-[18px]">edit</span>
+            <span className="material-symbols-outlined text-[16px]">edit</span>
             Edit trip
           </Link>
         </div>
       </header>
 
-      <div className="max-w-content mx-auto px-4 lg:px-8 pt-28">
-        {/* --- Page Header --- */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
-            Build your trip to <span className="text-accent">{destination}</span>
-          </h1>
-          <p className="text-on-light-secondary text-[17px]">
-            Browse flights, stays, events, and curated picks. Add what you love to your trip.
-          </p>
-        </motion.div>
+      {/* Hero with destination photograph */}
+      <section className="relative pt-14 min-h-[420px] flex flex-col overflow-hidden">
+        <img
+          src={heroImage}
+          alt={`${destination} landscape`}
+          className="absolute inset-0 w-full h-full object-cover"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-tinted-pitch/55 via-tinted-pitch/30 to-tinted-pitch pointer-events-none" />
 
-        {/* AI Itinerary Banner -- show when items came from compare page */}
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-content w-full mx-auto px-5 lg:px-8 pt-24 pb-12">
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: EASE }}
+            className="text-snow-off-glacier/65 text-[11px] uppercase tracking-[2.5px] font-medium mb-3"
+          >
+            {tripWindow || "Your trip"}
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05, duration: 0.7, ease: EASE }}
+            className="text-snow-off-glacier text-[36px] sm:text-[48px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
+          >
+            {destination}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.6, ease: EASE }}
+            className="text-snow-off-glacier/70 text-[15px] max-w-[44ch]"
+          >
+            Walter has picked a spine. Swap anything you don&apos;t like.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Walter's trip so far — the spine */}
+      <section className="relative z-10 bg-page-bg pt-10 pb-2">
+        <div className="max-w-content mx-auto px-5 lg:px-8">
+          <h2 className="text-[11px] uppercase tracking-[2.5px] font-medium text-white/55 mb-4">
+            Walter&apos;s trip so far
+          </h2>
+          <SpineGrid
+            cheapestFlight={cheapestFlight}
+            flightsLoading={flightsLoading}
+            bestValueHotel={bestValueHotel}
+            hotelsLoading={hotelsLoading}
+            topEvent={topEvent}
+            eventsLoading={eventsLoading}
+            onPickFlight={() => setActiveTab("flights")}
+            onPickStay={() => setActiveTab("stays")}
+            onPickEvent={() => setActiveTab("events")}
+          />
+        </div>
+      </section>
+
+      {/* AI Itinerary Banner */}
+      <div className="max-w-content mx-auto px-5 lg:px-8 pt-10">
         <AiItineraryBanner />
       </div>
 
-      {/* --- Sticky Tab Bar (outside content container so sticky works) --- */}
-      <div className="sticky top-[56px] z-30 flex justify-center py-3 shadow-sm sm:shadow-none">
-            <div className="flex items-center gap-1.5 p-2 rounded-full bg-white/25 backdrop-blur-2xl backdrop-saturate-150 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(255,255,255,0.2)]">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.id;
-                const isLoading =
-                  (tab.id === "flights" && flightsLoading) ||
-                  (tab.id === "stays" && hotelsLoading) ||
-                  (tab.id === "events" && eventsLoading) ||
-                  (tab.id === "picks" && suggestionsLoading);
-                const count =
-                  tab.id === "flights" ? flights.length :
-                  tab.id === "stays" ? hotels.length :
-                  tab.id === "events" ? allEvents.length :
-                  suggestions.length;
+      {/* Flat tab bar */}
+      <div className="sticky top-[56px] z-20 bg-page-bg/85 backdrop-blur-md border-y border-white/8">
+        <div className="max-w-content mx-auto px-5 lg:px-8 py-3">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              const isLoading =
+                (tab.id === "flights" && flightsLoading) ||
+                (tab.id === "stays" && hotelsLoading) ||
+                (tab.id === "events" && eventsLoading) ||
+                (tab.id === "picks" && suggestionsLoading);
+              const count =
+                tab.id === "flights" ? flights.length :
+                tab.id === "stays" ? hotels.length :
+                tab.id === "events" ? allEvents.length :
+                suggestions.length;
 
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[14px] font-semibold transition-all duration-200 ${
-                      isActive
-                        ? "bg-accent/90 text-white shadow-[0_2px_16px_rgba(91,141,239,0.35)] backdrop-blur-sm"
-                        : "text-gray-dark/70 hover:text-gray-dark hover:bg-white/30"
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
-                    <span className="hidden sm:inline">{tab.label}</span>
-                    {!isLoading && count > 0 && (
-                      <span className={`text-[10px] font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${
-                        isActive ? "bg-white/20 text-white" : "bg-accent/10 text-accent"
-                      }`}>
-                        {count}
-                      </span>
-                    )}
-                    {isLoading && (
-                      <span className={`w-3 h-3 border-2 rounded-full animate-spin ${
-                        isActive ? "border-white/40 border-t-white" : "border-accent/30 border-t-accent"
-                      }`} />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-pill text-[13px] font-medium transition-colors ${
+                    isActive
+                      ? "bg-hover-slate text-snow-off-glacier"
+                      : "text-white/65 hover:text-snow-off-glacier hover:bg-white/8"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
+                  {tab.label}
+                  {!isLoading && count > 0 && (
+                    <span className="text-[11px] text-white/55 tabular-nums">
+                      {count}
+                    </span>
+                  )}
+                  {isLoading && (
+                    <span className="w-3 h-3 border-2 rounded-full animate-spin border-white/20 border-t-white/60" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      <div className="max-w-content mx-auto px-4 lg:px-8 pb-10">
-        <div>
-          {/* --- Tab Content --- */}
-          <main className="pb-24 lg:pb-0 pt-6">
-            {/* --- Flights Tab --- */}
-            {activeTab === "flights" && (
-              <motion.section
-                key="flights"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-accent text-[21px]">flight</span>
-                    <div>
-                      <h2 className="text-[21px] font-semibold text-gray-dark">Flights</h2>
-                      <p className="text-on-light-tertiary text-sm">
-                        {flightsLoading ? "Searching..." : "Live prices via Skyscanner"}
-                      </p>
-                    </div>
-                  </div>
-                  {!flightsLoading && flights.length > 0 && (
-                    <span className="text-xs text-on-light-tertiary">{flights.length} found</span>
-                  )}
+      <div className="max-w-content mx-auto px-5 lg:px-8 pb-10">
+        <main className="pb-24 lg:pb-0 pt-8">
+          {/* Flights */}
+          {activeTab === "flights" && (
+            <motion.section
+              key="flights"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18, ease: EASE }}
+            >
+              <SectionHeading
+                title={
+                  flightsLoading
+                    ? "Searching flights"
+                    : flights.length > 0
+                      ? `${flights.length} flights ${(prefs as { departureCity?: string })?.departureCity ? `from ${(prefs as { departureCity?: string }).departureCity}` : ""}`
+                      : "Flights"
+                }
+              />
+
+              {flightsLoading && <CardSkeletonGrid />}
+
+              {!flightsLoading && flights.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {flights.map((f) => (
+                    <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
+                  ))}
                 </div>
+              )}
 
-                {flightsLoading && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} className="card-base p-6 animate-pulse">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-8 h-8 rounded-lg bg-page-bg" />
-                          <div className="h-4 bg-page-bg rounded-lg w-24" />
-                        </div>
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <div className="h-5 bg-page-bg rounded-lg w-12 mb-1" />
-                            <div className="h-3 bg-page-bg rounded-lg w-16" />
-                          </div>
-                          <div className="h-3 bg-page-bg rounded-lg w-16" />
-                          <div>
-                            <div className="h-5 bg-page-bg rounded-lg w-12 mb-1" />
-                            <div className="h-3 bg-page-bg rounded-lg w-16" />
-                          </div>
-                        </div>
-                        <div className="h-6 bg-page-bg rounded-full w-20 mt-4" />
-                      </div>
-                    ))}
-                  </div>
-                )}
+              {!flightsLoading && flights.length === 0 && (() => {
+                const p = prefs as Record<string, unknown> | null;
+                const hasDeparture = !!(p?.departureCity || (p?.departureCities as string[])?.length);
+                const hasDates = !!(p?.startDate && p?.endDate);
+                if (!hasDeparture) {
+                  return <InlineDepartureCity onSubmit={(city) => handleInlineUpdate({ departureCity: city, departureCities: [city] })} />;
+                }
+                if (!hasDates) {
+                  return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
+                }
+                return <EmptyState icon="flight_off" message="No flights found. Try different dates or a different departure city." />;
+              })()}
+            </motion.section>
+          )}
 
-                {!flightsLoading && flights.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {flights.map((f) => (
-                      <div key={f.id}>
-                        <FlightCard flight={f} cheapest={cheapestFlight?.id === f.id} />
-                      </div>
-                    ))}
-                  </div>
-                )}
+          {/* Stays */}
+          {activeTab === "stays" && (
+            <motion.section
+              key="stays"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18, ease: EASE }}
+            >
+              <SectionHeading
+                title={
+                  hotelsLoading
+                    ? "Searching stays"
+                    : hotels.length > 0
+                      ? `${hotels.length} stays in ${destination}`
+                      : "Stays"
+                }
+              />
 
-                {!flightsLoading && flights.length === 0 && (() => {
-                  const p = prefs as Record<string, unknown> | null;
-                  const hasDeparture = !!(p?.departureCity || (p?.departureCities as string[])?.length);
-                  const hasDates = !!(p?.startDate && p?.endDate);
+              {hotelsLoading && <CardSkeletonGrid withImage />}
 
-                  if (!hasDeparture) {
-                    return <InlineDepartureCity onSubmit={(city) => handleInlineUpdate({ departureCity: city, departureCities: [city] })} />;
-                  }
-
-                  if (!hasDates) {
-                    return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
-                  }
-
-                  return (
-                    <div className="card-base p-8 text-center">
-                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">flight_off</span>
-                      <p className="font-semibold text-gray-dark mb-1">No flights found</p>
-                      <p className="text-on-light-secondary text-sm">Try adjusting your dates or departure city.</p>
-                    </div>
-                  );
-                })()}
-              </motion.section>
-            )}
-
-            {/* --- Stays Tab --- */}
-            {activeTab === "stays" && (
-              <motion.section
-                key="stays"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-accent text-[21px]">hotel</span>
-                    <div>
-                      <h2 className="text-[21px] font-semibold text-gray-dark">Stays</h2>
-                      <p className="text-on-light-tertiary text-sm">
-                        {hotelsLoading ? "Searching..." : "Availability from Booking.com"}
-                      </p>
-                    </div>
-                  </div>
-                  {!hotelsLoading && hotels.length > 0 && (
-                    <span className="text-xs text-on-light-tertiary">{hotels.length} found</span>
-                  )}
+              {!hotelsLoading && hotels.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {hotels.map((h) => (
+                    <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
+                  ))}
                 </div>
+              )}
 
-                {hotelsLoading && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} className="card-base overflow-hidden animate-pulse">
-                        <div className="w-full h-40 bg-page-bg" />
-                        <div className="p-5">
-                          <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
-                          <div className="h-4 bg-page-bg rounded-lg w-1/2 mb-3" />
-                          <div className="h-6 bg-page-bg rounded-full w-24 mt-3" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              {!hotelsLoading && hotels.length === 0 && (() => {
+                const p = prefs as Record<string, unknown> | null;
+                const hasDates = !!(p?.startDate && p?.endDate);
+                if (!hasDates) {
+                  return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
+                }
+                return <EmptyState icon="night_shelter" message="No stays found. Try different dates or destination." />;
+              })()}
+            </motion.section>
+          )}
 
-                {!hotelsLoading && hotels.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {hotels.map((h) => (
-                      <div key={h.id}>
-                        <HotelCard hotel={h} bestValue={bestValueHotel?.id === h.id} />
-                      </div>
-                    ))}
-                  </div>
-                )}
+          {/* Events */}
+          {activeTab === "events" && (
+            <motion.section
+              key="events"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18, ease: EASE }}
+            >
+              <SectionHeading
+                title={
+                  eventsLoading
+                    ? "Searching events"
+                    : allEvents.length > 0
+                      ? `${allEvents.length} events during your trip`
+                      : "Events"
+                }
+              />
 
-                {!hotelsLoading && hotels.length === 0 && (() => {
-                  const p = prefs as Record<string, unknown> | null;
-                  const hasDates = !!(p?.startDate && p?.endDate);
-                  if (!hasDates) {
-                    return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
-                  }
-                  return (
-                    <div className="card-base p-8 text-center">
-                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">night_shelter</span>
-                      <p className="font-semibold text-gray-dark mb-1">No stays found</p>
-                      <p className="text-on-light-secondary text-sm">Try adjusting your dates or destination.</p>
-                    </div>
-                  );
-                })()}
-              </motion.section>
-            )}
+              {eventsLoading && <CardSkeletonGrid withImage />}
 
-            {/* --- Events Tab --- */}
-            {activeTab === "events" && (
-              <motion.section
-                key="events"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-accent text-[21px]">local_activity</span>
-                    <div>
-                      <h2 className="text-[21px] font-semibold text-gray-dark">Live Events & Experiences</h2>
-                      <p className="text-on-light-tertiary text-sm">
-                        {eventsLoading ? "Searching..." : "Ticketmaster events during your trip"}
-                      </p>
-                    </div>
-                  </div>
-                  {!eventsLoading && allEvents.length > 0 && (
-                    <span className="text-xs text-on-light-tertiary">{allEvents.length} found</span>
-                  )}
+              {!eventsLoading && allEvents.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {allEvents.map((ev) => (
+                    <EventCard key={ev.id} event={ev} />
+                  ))}
                 </div>
+              )}
 
-                {eventsLoading && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} className="card-base overflow-hidden animate-pulse">
-                        <div className="w-full h-40 bg-page-bg" />
-                        <div className="p-5">
-                          <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
-                          <div className="h-4 bg-page-bg rounded-lg w-1/2 mb-2" />
-                          <div className="h-3 bg-page-bg rounded-lg w-2/3" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              {!eventsLoading && allEvents.length === 0 && (() => {
+                const p = prefs as Record<string, unknown> | null;
+                const hasDates = !!(p?.startDate && p?.endDate);
+                if (!hasDates) {
+                  return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
+                }
+                return <EmptyState icon="event_busy" message="No live events during your travel dates." />;
+              })()}
+            </motion.section>
+          )}
 
-                {!eventsLoading && allEvents.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {allEvents.map((ev) => (
-                      <div key={ev.id}>
-                        <EventCard event={ev} />
-                      </div>
-                    ))}
-                  </div>
-                )}
+          {/* Picks */}
+          {activeTab === "picks" && (
+            <motion.section
+              key="picks"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18, ease: EASE }}
+            >
+              <SectionHeading
+                title={
+                  suggestionsLoading
+                    ? "Walter is picking spots"
+                    : suggestions.length > 0
+                      ? `${suggestions.length} spots Walter likes`
+                      : "Walter's picks"
+                }
+              />
 
-                {!eventsLoading && allEvents.length === 0 && (() => {
-                  const p = prefs as Record<string, unknown> | null;
-                  const hasDates = !!(p?.startDate && p?.endDate);
-                  if (!hasDates) {
-                    return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
-                  }
-                  return (
-                    <div className="card-base p-8 text-center">
-                      <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">event_busy</span>
-                      <p className="font-semibold text-gray-dark mb-1">No events found</p>
-                      <p className="text-on-light-secondary text-sm">No live events during your travel dates.</p>
-                    </div>
-                  );
-                })()}
-              </motion.section>
-            )}
+              {suggestionsLoading && <CardSkeletonGrid />}
 
-            {/* --- Walter's Picks Tab --- */}
-            {activeTab === "picks" && (
-              <motion.section
-                key="picks"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-accent text-[21px]">auto_awesome</span>
-                    <div>
-                      <h2 className="text-[21px] font-semibold text-gray-dark">Walter&apos;s Picks</h2>
-                      <p className="text-on-light-tertiary text-sm">
-                        {suggestionsLoading ? "Finding the best spots for you..." : "AI-curated activities, restaurants & sites"}
-                      </p>
-                    </div>
-                  </div>
-                  {suggestions.length > 0 && (
-                    <span className="text-xs text-on-light-tertiary">{suggestions.length} picks</span>
-                  )}
+              {!suggestionsLoading && suggestions.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {suggestions.map((s) => (
+                    <SuggestionCard key={s.id} suggestion={s} />
+                  ))}
                 </div>
+              )}
 
-                {suggestionsLoading && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} className="card-base p-6 animate-pulse">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 rounded-2xl bg-page-bg" />
-                          <div className="h-4 bg-page-bg rounded-lg w-20" />
-                        </div>
-                        <div className="h-5 bg-page-bg rounded-lg w-3/4 mb-3" />
-                        <div className="h-4 bg-page-bg rounded-lg w-full mb-2" />
-                        <div className="h-4 bg-page-bg rounded-lg w-2/3 mb-4" />
-                        <div className="h-10 bg-page-bg rounded-full mt-4" />
-                      </div>
-                    ))}
-                  </div>
-                )}
+              {!suggestionsLoading && suggestions.length === 0 && (
+                <EmptyState icon="explore" message="No curated picks for this destination yet." />
+              )}
+            </motion.section>
+          )}
+        </main>
 
-                {!suggestionsLoading && suggestions.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {suggestions.map((s) => (
-                      <div key={s.id}>
-                        <SuggestionCard suggestion={s} />
-                      </div>
-                    ))}
-                  </div>
-                )}
+        <TripTracker />
 
-                {!suggestionsLoading && suggestions.length === 0 && (
-                  <div className="card-base p-8 text-center">
-                    <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">explore</span>
-                    <p className="font-semibold text-gray-dark mb-1">No suggestions yet</p>
-                    <p className="text-on-light-secondary text-sm">We could not find curated picks for this destination right now.</p>
-                  </div>
-                )}
-              </motion.section>
-            )}
-          </main>
-
-          {/* --- Trip Tracker (renders its own desktop sidebar + mobile bar) --- */}
-          <TripTracker />
-        </div>
-
-        {/* --- FTC Disclosure --- */}
-        <p className="text-xs text-on-light-tertiary text-center mt-10">
+        <p className="text-[11px] text-white/40 text-center mt-12">
           Walter earns a commission when you book through our links at no extra cost to you.
         </p>
       </div>
@@ -614,317 +528,191 @@ export default function ResultsPage() {
   );
 }
 
-/* ── Date Comparison Picker ── */
-function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => void }) {
-  const [data, setData] = useState<Record<number, {
-    flights: { min: number; max: number; count: number; loading: boolean };
-    hotels: { min: number; max: number; count: number; loading: boolean };
-    events: { count: number; categories: string[]; topEvents: { name: string; venue: string; date: string; image: string | null }[]; loading: boolean };
-  }>>({});
+/* ── Trip window formatter ── */
+function formatTripWindow(start: string, end: string): string {
+  if (!start || !end) return "";
+  try {
+    const s = new Date(start + "T12:00:00");
+    const e = new Date(end + "T12:00:00");
+    const fmt = (d: Date) =>
+      d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return `${fmt(s)} to ${fmt(e)}`;
+  } catch {
+    return "";
+  }
+}
 
-  const tripDays = (() => {
-    try {
-      const stored = localStorage.getItem("walter_prefs");
-      if (stored) {
-        const p = JSON.parse(stored);
-        return p.tripDurationDays || 5;
-      }
-    } catch {}
-    return 5;
-  })();
-
-  const prefs = (() => {
-    try {
-      const stored = localStorage.getItem("walter_prefs");
-      return stored ? JSON.parse(stored) : {};
-    } catch { return {}; }
-  })();
-
-  const destination = prefs.destinations?.[0] || prefs.destination || "";
-  const departureCity = prefs.departureCity || "";
-  const adults = prefs.travelersCount || prefs.travelers || 1;
-  const cabinClass = prefs.flightClass || "economy";
-  const vibes = prefs.activityInterests || prefs.vibes || [];
-
-  const formatDate = (d: Date) => d.toISOString().split("T")[0];
-  const formatDisplay = (d: Date) =>
-    d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-
-  const now = new Date();
-  const options = [
-    { label: "Next week", offset: 7 },
-    { label: "In 2 weeks", offset: 14 },
-    { label: "In 3 weeks", offset: 21 },
-  ];
-
-  const dateRanges = options.map((opt) => {
-    const start = new Date(now);
-    start.setDate(start.getDate() + opt.offset);
-    const end = new Date(start);
-    end.setDate(end.getDate() + tripDays);
-    return { ...opt, start, end, startStr: formatDate(start), endStr: formatDate(end) };
-  });
-
-  useEffect(() => {
-    if (!destination) return;
-
-    dateRanges.forEach((range, idx) => {
-      setData((prev) => ({
-        ...prev,
-        [idx]: {
-          flights: { min: 0, max: 0, count: 0, loading: true },
-          hotels: { min: 0, max: 0, count: 0, loading: true },
-          events: { count: 0, categories: [], topEvents: [], loading: true },
-        },
-      }));
-
-      // Flights
-      if (departureCity) {
-        fetch("/api/flights", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ origin: departureCity, destination, departDate: range.startStr, returnDate: range.endStr, adults, cabinClass }),
-        })
-          .then((r) => r.json())
-          .then((d) => {
-            const fl = d.flights || [];
-            const prices = fl.map((f: { price: number }) => f.price).filter((p: number) => p > 0);
-            setData((prev) => ({
-              ...prev,
-              [idx]: {
-                ...prev[idx],
-                flights: {
-                  min: prices.length ? Math.min(...prices) : 0,
-                  max: prices.length ? Math.max(...prices) : 0,
-                  count: fl.length,
-                  loading: false,
-                },
-              },
-            }));
-          })
-          .catch(() => setData((prev) => ({ ...prev, [idx]: { ...prev[idx], flights: { min: 0, max: 0, count: 0, loading: false } } })));
-      } else {
-        setData((prev) => ({ ...prev, [idx]: { ...prev[idx], flights: { min: 0, max: 0, count: 0, loading: false } } }));
-      }
-
-      // Hotels
-      fetch("/api/hotels", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ destination, checkIn: range.startStr, checkOut: range.endStr, adults }),
-      })
-        .then((r) => r.json())
-        .then((d) => {
-          const ht = d.hotels || [];
-          const prices = ht.map((h: { totalPrice: number }) => h.totalPrice).filter((p: number) => p > 0);
-          setData((prev) => ({
-            ...prev,
-            [idx]: {
-              ...prev[idx],
-              hotels: {
-                min: prices.length ? Math.min(...prices) : 0,
-                max: prices.length ? Math.max(...prices) : 0,
-                count: ht.length,
-                loading: false,
-              },
-            },
-          }));
-        })
-        .catch(() => setData((prev) => ({ ...prev, [idx]: { ...prev[idx], hotels: { min: 0, max: 0, count: 0, loading: false } } })));
-
-      // Events
-      fetch("/api/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ destination, startDate: range.startStr, endDate: range.endStr, vibes, travelers: adults }),
-      })
-        .then((r) => r.json())
-        .then((d) => {
-          const all = [...(d.exactMatches || []), ...(d.similarMatches || []), ...(d.topInArea || [])];
-          const cats = [...new Set(all.map((e: { category: string }) => e.category))].slice(0, 3) as string[];
-          const top = all.slice(0, 2).map((e: Record<string, unknown>) => ({
-            name: e.name as string,
-            venue: e.venueName as string,
-            date: e.date as string,
-            image: (e.image as string) || null,
-          }));
-          setData((prev) => ({
-            ...prev,
-            [idx]: { ...prev[idx], events: { count: all.length, categories: cats, topEvents: top, loading: false } },
-          }));
-        })
-        .catch(() => setData((prev) => ({ ...prev, [idx]: { ...prev[idx], events: { count: 0, categories: [], topEvents: [], loading: false } } })));
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+/* ── Section heading (single line, no eyebrow, no subtitle) ── */
+function SectionHeading({ title }: { title: string }) {
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="icon-gradient w-9 h-9 flex items-center justify-center">
-          <span className="material-symbols-outlined text-accent text-[18px]">calendar_month</span>
+    <h2 className="text-[22px] sm:text-[26px] font-semibold text-snow-off-glacier tracking-display leading-[1.1] mb-6">
+      {title}
+    </h2>
+  );
+}
+
+/* ── Empty state (single template, no decoration) ── */
+function EmptyState({ icon, message }: { icon: string; message: string }) {
+  return (
+    <div className="card-base p-10 text-center">
+      <span className="material-symbols-outlined text-white/35 text-3xl mb-3 block">{icon}</span>
+      <p className="text-white/65 text-sm max-w-[40ch] mx-auto">{message}</p>
+    </div>
+  );
+}
+
+/* ── Loading skeleton grid ── */
+function CardSkeletonGrid({ withImage = false }: { withImage?: boolean }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="card-base overflow-hidden animate-pulse">
+          {withImage && <div className="w-full h-40 bg-raised-slate" />}
+          <div className="p-5 space-y-3">
+            <div className="h-4 bg-raised-slate rounded w-2/3" />
+            <div className="h-3 bg-raised-slate rounded w-full" />
+            <div className="h-3 bg-raised-slate rounded w-1/2" />
+          </div>
         </div>
-        <div>
-          <p className="font-semibold text-gray-dark text-[17px]">When do you want to go?</p>
-          <p className="text-on-light-tertiary text-sm">Compare real prices and events across different dates</p>
-        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Spine: Walter's trip so far ── */
+function SpineGrid({
+  cheapestFlight,
+  flightsLoading,
+  bestValueHotel,
+  hotelsLoading,
+  topEvent,
+  eventsLoading,
+  onPickFlight,
+  onPickStay,
+  onPickEvent,
+}: {
+  cheapestFlight: FlightResult | null;
+  flightsLoading: boolean;
+  bestValueHotel: HotelResult | null;
+  hotelsLoading: boolean;
+  topEvent: ScoredEvent | null;
+  eventsLoading: boolean;
+  onPickFlight: () => void;
+  onPickStay: () => void;
+  onPickEvent: () => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <SpineSlot
+        label="Flight"
+        icon="flight"
+        loading={flightsLoading}
+        empty={!cheapestFlight}
+        title={cheapestFlight ? cheapestFlight.airline : null}
+        subtitle={cheapestFlight ? `${cheapestFlight.outbound.departure} to ${cheapestFlight.outbound.arrival}` : null}
+        price={cheapestFlight?.price ?? null}
+        emptyAction="Pick a flight"
+        onPickAlternative={onPickFlight}
+      />
+      <SpineSlot
+        label="Stay"
+        icon="hotel"
+        loading={hotelsLoading}
+        empty={!bestValueHotel}
+        title={bestValueHotel?.name ?? null}
+        subtitle={bestValueHotel?.neighborhood || null}
+        price={bestValueHotel?.pricePerNight ?? null}
+        priceSuffix="/night"
+        emptyAction="Pick a stay"
+        onPickAlternative={onPickStay}
+      />
+      <SpineSlot
+        label="One night out"
+        icon="local_activity"
+        loading={eventsLoading}
+        empty={!topEvent}
+        title={topEvent?.name ?? null}
+        subtitle={topEvent?.venueName || null}
+        price={topEvent?.priceMin ?? null}
+        emptyAction="Pick an event"
+        onPickAlternative={onPickEvent}
+      />
+    </div>
+  );
+}
+
+function SpineSlot({
+  label,
+  icon,
+  loading,
+  empty,
+  title,
+  subtitle,
+  price,
+  priceSuffix = "",
+  emptyAction,
+  onPickAlternative,
+}: {
+  label: string;
+  icon: string;
+  loading: boolean;
+  empty: boolean;
+  title: string | null;
+  subtitle: string | null;
+  price: number | null;
+  priceSuffix?: string;
+  emptyAction: string;
+  onPickAlternative: () => void;
+}) {
+  return (
+    <div className="card-base p-5 flex flex-col">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="material-symbols-outlined text-accent-light text-[18px]">{icon}</span>
+        <span className="text-[11px] uppercase tracking-widest text-white/55 font-medium">{label}</span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {dateRanges.map((range, idx) => {
-          const d = data[idx];
-          const allLoading = !d || d.flights.loading || d.hotels.loading || d.events.loading;
-          const someLoading = d && (d.flights.loading || d.hotels.loading || d.events.loading);
-
-          // Estimate total
-          const flightMin = d?.flights.min || 0;
-          const flightMax = d?.flights.max || 0;
-          const hotelMin = d?.hotels.min || 0;
-          const hotelMax = d?.hotels.max || 0;
-          const totalMin = flightMin + hotelMin;
-          const totalMax = flightMax + hotelMax;
-
-          return (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: idx * 0.1 }}
-              className="card-base overflow-hidden flex flex-col"
-            >
-              {/* Header */}
-              <div className="p-5 pb-4 border-b border-[rgba(91,141,239,0.06)]">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
-                    <h3 className="font-semibold text-gray-dark text-[17px]">{destination}</h3>
-                  </div>
-                  <span className="bg-accent text-white rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
-                    {tripDays} nights
-                  </span>
-                </div>
-                <p className="text-on-light-secondary text-sm flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[14px]">calendar_today</span>
-                  {formatDisplay(range.start)} - {formatDisplay(range.end)}
+      {loading ? (
+        <div className="space-y-2 animate-pulse">
+          <div className="h-4 bg-raised-slate rounded w-3/4" />
+          <div className="h-3 bg-raised-slate rounded w-1/2" />
+        </div>
+      ) : empty ? (
+        <>
+          <p className="text-white/55 text-sm mb-4 flex-1">Walter is still picking. Browse alternatives.</p>
+          <button
+            onClick={onPickAlternative}
+            className="self-start text-snow-off-glacier text-[13px] font-medium border-b border-white/30 hover:border-white pb-0.5 transition-colors"
+          >
+            {emptyAction}
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="font-semibold text-snow-off-glacier leading-tight mb-1 line-clamp-2">{title}</p>
+          {subtitle && <p className="text-white/55 text-[12px] mb-3 line-clamp-1">{subtitle}</p>}
+          <div className="flex items-end justify-between mt-auto pt-3">
+            <div>
+              {price != null && price > 0 ? (
+                <p className="font-semibold text-snow-off-glacier text-[20px]">
+                  ${price.toLocaleString()}
+                  {priceSuffix && (
+                    <span className="text-white/45 text-[12px] font-normal">{priceSuffix}</span>
+                  )}
                 </p>
-              </div>
-
-              <div className="p-5 flex-1 flex flex-col">
-                {/* Estimated Total */}
-                <div className="mb-5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-on-light-secondary text-sm">Estimated Total</span>
-                    <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
-                  </div>
-                  {allLoading ? (
-                    <div className="h-8 bg-page-bg rounded animate-pulse w-2/3" />
-                  ) : totalMin > 0 ? (
-                    <div>
-                      <p className="font-semibold text-gray-dark text-[24px]">
-                        ${totalMin.toLocaleString()} - ${totalMax.toLocaleString()}
-                      </p>
-                      <p className="text-on-light-tertiary text-xs">per person</p>
-                    </div>
-                  ) : (
-                    <p className="text-on-light-tertiary text-sm">No pricing available</p>
-                  )}
-                </div>
-
-                {/* Flights */}
-                <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
-                    <span className="text-gray-dark text-sm font-semibold">Flights</span>
-                  </div>
-                  {d?.flights.loading ? (
-                    <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-                  ) : d?.flights.count > 0 ? (
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-dark text-sm">
-                        ${d.flights.min.toLocaleString()} - ${d.flights.max.toLocaleString()}
-                      </p>
-                    </div>
-                  ) : (
-                    <span className="text-on-light-tertiary text-xs">No flights found</span>
-                  )}
-                </div>
-
-                {/* Hotels */}
-                <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
-                    <span className="text-gray-dark text-sm font-semibold">Hotels</span>
-                  </div>
-                  {d?.hotels.loading ? (
-                    <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-                  ) : d?.hotels.count > 0 ? (
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-dark text-sm">
-                        ${d.hotels.min.toLocaleString()} - ${d.hotels.max.toLocaleString()}
-                      </p>
-                    </div>
-                  ) : (
-                    <span className="text-on-light-tertiary text-xs">No hotels found</span>
-                  )}
-                </div>
-
-                {/* Events */}
-                <div className="py-3 border-t border-[rgba(91,141,239,0.06)]">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
-                      <span className="text-gray-dark text-sm font-semibold">Events Found</span>
-                    </div>
-                    {d?.events.loading ? (
-                      <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-                    ) : (
-                      <span className="font-semibold text-gray-dark text-[17px]">{d?.events.count || 0}</span>
-                    )}
-                  </div>
-
-                  {/* Category pills */}
-                  {d?.events.categories && d.events.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {d.events.categories.map((cat, j) => (
-                        <span key={j} className="bg-gray-dark text-white rounded-pill px-2.5 py-0.5 text-[10px] font-semibold">
-                          {cat}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Top events */}
-                  {d?.events.topEvents && d.events.topEvents.length > 0 && (
-                    <div className="space-y-2 mt-2">
-                      {d.events.topEvents.map((ev, j) => (
-                        <div key={j} className="flex items-center gap-2.5">
-                          {ev.image && (
-                            <img src={ev.image} alt="" className="w-10 h-10 rounded-[6px] object-cover flex-shrink-0" />
-                          )}
-                          <div className="min-w-0">
-                            <p className="text-sm text-gray-dark font-semibold truncate">{ev.name}</p>
-                            <p className="text-[11px] text-on-light-tertiary truncate">{ev.venue}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* CTA */}
-                <button
-                  onClick={() => onSelect(range.startStr, range.endStr)}
-                  disabled={someLoading}
-                  className="mt-auto w-full bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  View Full Details
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </button>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+              ) : (
+                <p className="text-white/55 text-[13px]">Free or varies</p>
+              )}
+            </div>
+            <button
+              onClick={onPickAlternative}
+              className="text-white/65 text-[12px] hover:text-snow-off-glacier transition-colors flex items-center gap-1"
+            >
+              Swap
+              <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -932,12 +720,13 @@ function DatePicker({ onSelect }: { onSelect: (start: string, end: string) => vo
 /* ── AI Itinerary Banner ── */
 function AiItineraryBanner() {
   const items = useTripCartStore((s) => s.items);
-  const itemCount = useTripCartStore(selectItemCount);
   const aiItems = items.filter((i) => i.provider === "walter-ai");
+  void useTripCartStore(selectItemCount);
+
+  const [expanded, setExpanded] = useState(false);
 
   if (aiItems.length === 0) return null;
 
-  // Group by day
   const byDay = new Map<number, typeof aiItems>();
   aiItems.forEach((item) => {
     const day = (item.meta?.dayNumber as number) || 1;
@@ -945,31 +734,29 @@ function AiItineraryBanner() {
     byDay.get(day)!.push(item);
   });
 
-  const [expanded, setExpanded] = useState(false);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="card-base p-5 mb-6"
+      className="card-base p-5"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="icon-gradient w-9 h-9 flex items-center justify-center">
-            <span className="material-symbols-outlined text-accent text-[18px]">auto_awesome</span>
+            <span className="material-symbols-outlined text-accent-light text-[18px]">auto_awesome</span>
           </div>
           <div>
-            <p className="font-semibold text-gray-dark text-sm">
-              Walter&apos;s itinerary loaded ({aiItems.length} items)
+            <p className="font-semibold text-snow-off-glacier text-sm">
+              Walter&apos;s draft itinerary ({aiItems.length} items)
             </p>
-            <p className="text-on-light-tertiary text-xs">
-              Your AI-planned trip is in the cart. Swap items with real bookings below.
+            <p className="text-white/55 text-xs">
+              Swap any item with a real booking below.
             </p>
           </div>
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-accent text-sm font-semibold hover:text-accent-light transition-colors flex items-center gap-1"
+          className="text-snow-off-glacier text-sm font-medium border-b border-white/30 hover:border-white pb-0.5 transition-colors flex items-center gap-1"
         >
           {expanded ? "Hide" : "View"}
           <span className="material-symbols-outlined text-[16px]">
@@ -982,32 +769,32 @@ function AiItineraryBanner() {
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          transition={{ duration: 0.2 }}
-          className="mt-4 pt-4 border-t border-[rgba(91,141,239,0.06)]"
+          transition={{ duration: 0.18, ease: EASE }}
+          className="mt-4 pt-4 border-t border-white/10"
         >
           <div className="space-y-3">
             {Array.from(byDay.entries())
               .sort(([a], [b]) => a - b)
               .map(([day, dayItems]) => (
                 <div key={day}>
-                  <p className="text-xs font-semibold text-on-light-tertiary uppercase tracking-wider mb-1.5">
+                  <p className="text-xs font-semibold text-white/45 uppercase tracking-wider mb-1.5">
                     Day {day}
                   </p>
                   <div className="space-y-1">
                     {dayItems.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center gap-2 text-sm bg-page-bg rounded-[8px] px-3 py-2"
+                        className="flex items-center gap-2 text-sm bg-raised-slate rounded-[8px] px-3 py-2"
                       >
-                        <span className="text-[10px] text-on-light-tertiary w-12">
+                        <span className="text-[10px] text-white/45 w-12">
                           {(item.meta?.startTime as string) || ""}
                         </span>
-                        <span className="bg-[#DBEAFE] text-accent rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
+                        <span className="bg-tinted-pitch/85 text-reykjavik-sky border border-white/10 rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
                           {item.type}
                         </span>
-                        <span className="flex-1 truncate text-gray-dark">{item.title}</span>
+                        <span className="flex-1 truncate text-snow-off-glacier">{item.title}</span>
                         {item.price != null && item.price > 0 && (
-                          <span className="text-accent font-semibold text-xs">${item.price}</span>
+                          <span className="text-snow-off-glacier font-semibold text-xs">${item.price}</span>
                         )}
                       </div>
                     ))}
@@ -1015,9 +802,6 @@ function AiItineraryBanner() {
                 </div>
               ))}
           </div>
-          <p className="text-xs text-on-light-tertiary mt-3">
-            These are AI estimates. Browse the tabs below to find real bookable options and swap them in.
-          </p>
         </motion.div>
       )}
     </motion.div>
@@ -1063,17 +847,17 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
     <div className="card-base p-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="icon-gradient w-10 h-10 flex items-center justify-center">
-          <span className="material-symbols-outlined text-accent text-[20px]">flight_takeoff</span>
+          <span className="material-symbols-outlined text-accent-light text-[20px]">flight_takeoff</span>
         </div>
         <div>
-          <p className="font-semibold text-gray-dark">Where are you flying from?</p>
-          <p className="text-on-light-tertiary text-xs">Add your departure city to search for flights</p>
+          <p className="font-semibold text-snow-off-glacier">Where are you flying from?</p>
+          <p className="text-white/55 text-xs">Add your departure city to search flights.</p>
         </div>
       </div>
       <div className="relative">
         <div className="flex gap-3">
           <div className="relative flex-1">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[18px]">search</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/45 text-[18px]">search</span>
             <input
               type="text"
               value={query}
@@ -1086,21 +870,21 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
                   onSubmit(query.trim());
                 }
               }}
-              placeholder="City or airport code (e.g. LAX, Chicago)"
-              className="w-full pl-10 pr-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+              placeholder="City or airport code"
+              className="w-full pl-10 pr-4 py-3 rounded-pill bg-raised-slate border border-white/10 text-snow-off-glacier placeholder:text-white/40 focus:outline-none focus:border-accent transition-colors"
             />
           </div>
           <button
             onClick={() => query.trim().length >= 2 && onSubmit(query.trim())}
             disabled={query.trim().length < 2}
-            className="bg-accent text-white rounded-[10px] px-5 py-3 font-semibold hover:bg-accent-light transition-colors disabled:opacity-40 flex items-center gap-1.5"
+            className="bg-accent text-snow-off-glacier rounded-pill px-5 py-3 font-semibold hover:bg-accent-light transition-colors disabled:opacity-40 flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[18px]">search</span>
-            Search flights
+            Search
           </button>
         </div>
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(91,141,239,0.08)] shadow-[0_2px_12px_rgba(91,141,239,0.06)] overflow-hidden">
+          <div className="absolute z-20 left-0 right-0 mt-2 bg-quiet-slate rounded-[14px] border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden">
             {suggestions.map((f) => (
               <button
                 key={f.id}
@@ -1109,7 +893,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
                   onSubmit(formatCity(f));
                   setShowSuggestions(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm text-gray-dark hover:bg-page-bg transition-colors"
+                className="w-full text-left px-4 py-3 text-sm text-snow-off-glacier hover:bg-white/5 transition-colors"
               >
                 {formatCity(f)}
               </button>
@@ -1138,11 +922,11 @@ function InlineDatePicker({ onSubmit, tripDays }: { onSubmit: (start: string, en
     <div className="card-base p-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="icon-gradient w-10 h-10 flex items-center justify-center">
-          <span className="material-symbols-outlined text-accent text-[20px]">calendar_month</span>
+          <span className="material-symbols-outlined text-accent-light text-[20px]">calendar_month</span>
         </div>
         <div>
-          <p className="font-semibold text-gray-dark">When do you want to go?</p>
-          <p className="text-on-light-tertiary text-xs">Pick your travel dates to search for availability</p>
+          <p className="font-semibold text-snow-off-glacier">When do you want to go?</p>
+          <p className="text-white/55 text-xs">Pick your travel dates.</p>
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -1155,11 +939,11 @@ function InlineDatePicker({ onSubmit, tripDays }: { onSubmit: (start: string, en
             <button
               key={opt.offset}
               onClick={() => onSubmit(fmt(start), fmt(end))}
-              className="card-base p-3 text-center hover:border-accent/30 transition-colors cursor-pointer"
+              className="card-base p-3 text-center hover:border-white/20 transition-colors cursor-pointer"
             >
-              <p className="font-semibold text-gray-dark text-sm mb-1">{opt.label}</p>
-              <p className="text-on-light-tertiary text-[11px]">{display(start)} - {display(end)}</p>
-              <p className="text-accent text-[11px] font-semibold mt-1">{tripDays} days</p>
+              <p className="font-semibold text-snow-off-glacier text-sm mb-1">{opt.label}</p>
+              <p className="text-white/55 text-[11px]">{display(start)} to {display(end)}</p>
+              <p className="text-accent-light text-[11px] font-semibold mt-1">{tripDays} days</p>
             </button>
           );
         })}

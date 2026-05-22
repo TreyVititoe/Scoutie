@@ -57,11 +57,11 @@ export default function SavedTripsPage() {
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
           <div className="flex items-center gap-4">
-            <Link href="/quiz" className="text-on-dark-secondary text-[11px] hidden sm:block hover:text-white transition-colors">
+            <Link href="/" className="text-on-dark-secondary text-[11px] hidden sm:block hover:text-white transition-colors">
               Plan a Trip
             </Link>
             <Link
-              href="/quiz"
+              href="/"
               className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
             >
               New Trip
@@ -126,7 +126,7 @@ export default function SavedTripsPage() {
               Take the quiz, build your trip, and save it here to compare with other options later.
             </p>
             <Link
-              href="/quiz"
+              href="/"
               className="inline-flex bg-accent text-white rounded-[10px] px-6 py-3 font-semibold hover:bg-accent-light transition-colors"
             >
               Plan your first trip

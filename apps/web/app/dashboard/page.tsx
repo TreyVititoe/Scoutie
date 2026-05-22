@@ -112,7 +112,7 @@ export default function DashboardPage() {
           {/* Quick Actions */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
             <Link
-              href="/quiz"
+              href="/"
               className="card-base p-6 transition-colors group"
             >
               <div className="flex items-center gap-3 mb-3">
@@ -198,7 +198,7 @@ export default function DashboardPage() {
                   Start planning to see your saved trips here.
                 </p>
                 <Link
-                  href="/quiz"
+                  href="/"
                   className="inline-flex bg-accent text-white rounded-[10px] px-6 py-3 font-semibold hover:bg-accent-light transition-colors"
                 >
                   Plan your first trip

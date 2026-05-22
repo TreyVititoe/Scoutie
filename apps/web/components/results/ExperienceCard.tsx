@@ -13,29 +13,29 @@ export default function ExperienceCard({ experience }: { experience: Experience 
       {/* Image */}
       <div className="relative h-40 bg-page-bg">
         <img src={experience.image} alt={experience.name} className="w-full h-full object-cover" />
-        <span className="absolute top-3 left-3 bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+        <span className="absolute top-3 left-3 bg-tinted-pitch/85 text-reykjavik-sky border border-white/10 rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
           {experience.category}
         </span>
       </div>
 
       <div className="p-4">
         {/* Name */}
-        <p className="font-semibold text-gray-dark mb-2 leading-tight">{experience.name}</p>
+        <p className="font-semibold text-snow-off-glacier mb-2 leading-tight">{experience.name}</p>
 
         {/* Rating & Duration */}
         <div className="flex items-center gap-3 mb-4">
           <div className="flex items-center gap-1">
             <span className="text-sm font-semibold text-accent">{experience.rating}/5</span>
-            <span className="text-xs text-on-light-tertiary">({experience.reviews.toLocaleString()})</span>
+            <span className="text-xs text-white/45">({experience.reviews.toLocaleString()})</span>
           </div>
-          <span className="text-xs text-on-light-tertiary">{experience.duration}</span>
+          <span className="text-xs text-white/45">{experience.duration}</span>
         </div>
 
         {/* Price */}
         <div className="flex items-end justify-between pt-3 border-t border-on-light-tertiary/10">
           <div>
-            <p className="font-semibold text-gray-dark text-[21px]">${experience.price}</p>
-            <p className="text-[11px] text-on-light-tertiary">per person</p>
+            <p className="font-semibold text-snow-off-glacier text-[21px]">${experience.price}</p>
+            <p className="text-[11px] text-white/45">per person</p>
           </div>
           <span className="text-xs text-accent font-semibold group-hover:underline">Book →</span>
         </div>

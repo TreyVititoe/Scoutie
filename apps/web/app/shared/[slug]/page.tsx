@@ -194,7 +194,7 @@ export default function SharedTripPage() {
             Walter
           </Link>
           <Link
-            href="/quiz"
+            href="/"
             className="px-4 py-2 rounded-[10px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors"
           >
             Plan your own trip
@@ -431,7 +431,7 @@ export default function SharedTripPage() {
               Quick Plan
             </Link>
             <Link
-              href="/quiz"
+              href="/"
               className="inline-flex px-8 py-4 rounded-[10px] bg-white/15 border border-white/20 text-white font-semibold hover:bg-white/25 transition-colors items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">tune</span>

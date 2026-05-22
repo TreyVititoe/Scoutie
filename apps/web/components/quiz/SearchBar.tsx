@@ -37,10 +37,10 @@ const SUGGESTED_DESTINATIONS: { name: string; tagline: string; icon: string }[] 
 ];
 
 const SUGGESTED_DESCRIPTIONS = [
-  "A walkable neighborhood with great coffee and slow mornings",
-  "Beach access, sunset dinners, and lazy afternoons",
-  "Hiking, scenic drives, and small mountain towns",
-  "Museums, architecture, and a great dinner reservation",
+  "Long walks, slow mornings, a great dinner reservation.",
+  "Hikes, hot springs, no cell service.",
+  "Museums, architecture, a Tuesday opera.",
+  "Beach, no schedule, one good book.",
 ];
 
 const FLEX_OPTIONS = [1, 2, 3, 7, 14] as const;
@@ -126,8 +126,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
   const whereLabel = value.destination || "Search destinations";
 
   const pillBaseClass = active
-    ? "bg-[#EBEBEB]"
-    : "bg-white shadow-[0_12px_40px_rgba(0,0,0,0.22)]";
+    ? "bg-quiet-slate ring-1 ring-white/10"
+    : "bg-quiet-slate ring-1 ring-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)]";
 
   return (
     <div ref={wrapRef} className="relative max-w-3xl mx-auto">
@@ -177,7 +177,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
             setActive(null);
             onSearch();
           }}
-          className="bg-accent text-white rounded-full px-5 py-3 text-[14px] font-semibold hover:bg-accent-light transition-colors flex items-center gap-2 ml-1 shrink-0"
+          className="bg-accent text-snow-off-glacier rounded-full px-5 py-3 text-[14px] font-semibold hover:bg-accent-light transition-colors flex items-center gap-2 ml-1 shrink-0"
         >
           <span className="material-symbols-outlined text-[20px]">search</span>
           Search
@@ -206,7 +206,7 @@ function Divider({ show }: { show: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className={`w-px my-2.5 transition-opacity ${show ? "bg-black/10 opacity-100" : "opacity-0"}`}
+      className={`w-px my-2.5 transition-opacity ${show ? "bg-white/10 opacity-100" : "opacity-0"}`}
     />
   );
 }
@@ -227,18 +227,18 @@ function SectionButton({ isActive, isAnyActive, label, value, placeholder, onCli
       onClick={onClick}
       className={`flex-1 px-5 py-2 text-left rounded-full transition-colors min-w-0 ${
         isActive
-          ? "bg-white shadow-[0_3px_10px_rgba(0,0,0,0.1)]"
+          ? "bg-hover-slate shadow-[0_3px_10px_rgba(0,0,0,0.4)]"
           : isAnyActive
-            ? "hover:bg-black/5"
-            : "hover:bg-page-bg/60"
+            ? "hover:bg-white/5"
+            : "hover:bg-white/5"
       }`}
     >
-      <p className="text-[10px] uppercase tracking-wide text-on-light-tertiary font-bold mb-0.5">
+      <p className="text-[10px] uppercase tracking-wide text-white/55 font-bold mb-0.5">
         {label}
       </p>
       <p
         className={`text-[14px] truncate ${
-          placeholder ? "text-on-light-tertiary" : "text-gray-dark font-medium"
+          placeholder ? "text-white/45" : "text-snow-off-glacier font-medium"
         }`}
       >
         {value}
@@ -267,7 +267,7 @@ function PopoverShell({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
-      className={`absolute top-[calc(100%+12px)] ${positionClass} bg-white rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.18)] border border-black/5 z-30 ${className}`}
+      className={`absolute top-[calc(100%+12px)] ${positionClass} bg-quiet-slate rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] border border-white/10 z-30 ${className}`}
       style={{ width }}
     >
       {children}
@@ -293,11 +293,11 @@ function WherePopover({
           value={value.destination}
           onChange={(e) => onChange({ ...value, destination: e.target.value })}
           placeholder="Search destinations"
-          className="w-full text-[15px] text-gray-dark placeholder:text-on-light-tertiary bg-transparent focus:outline-none"
+          className="w-full text-[15px] text-snow-off-glacier placeholder:text-white/45 bg-transparent focus:outline-none"
         />
       </div>
-      <div className="border-t border-black/5 pt-3 pb-2 px-2">
-        <p className="text-[11px] text-on-light-secondary px-3 mb-2 font-medium">
+      <div className="border-t border-white/10 pt-3 pb-2 px-2">
+        <p className="text-[11px] text-white/55 px-3 mb-2 font-medium">
           Suggested destinations
         </p>
         <div className="max-h-[320px] overflow-y-auto">
@@ -309,13 +309,13 @@ function WherePopover({
                 onChange({ ...value, destination: d.name === "Nearby" ? "" : d.name });
                 onClose();
               }}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-[12px] hover:bg-page-bg/60 transition-colors text-left"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-[12px] hover:bg-white/5 transition-colors text-left"
             >
-              <span className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#DBEAFE] to-[#BFDBFE] flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-accent text-[20px]">{d.icon}</span>
+              <span className="w-10 h-10 rounded-[10px] bg-accent/15 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-accent-light text-[20px]">{d.icon}</span>
               </span>
               <div className="min-w-0">
-                <p className="text-[14px] font-semibold text-gray-dark truncate">{d.name}</p>
+                <p className="text-[14px] font-semibold text-snow-off-glacier truncate">{d.name}</p>
                 <p className="text-[12px] text-on-light-secondary truncate">{d.tagline}</p>
               </div>
             </button>
@@ -368,12 +368,12 @@ function WhenPopover({
   return (
     <PopoverShell align="center" width="780px" className="p-6">
       <div className="flex items-center justify-center gap-2 mb-5">
-        <div className="inline-flex bg-[#EBEBEB] rounded-full p-1">
+        <div className="inline-flex bg-raised-slate rounded-full p-1">
           <button
             type="button"
             onClick={() => onChange({ ...value, exactDates: true })}
             className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
-              value.exactDates ? "bg-white shadow-sm text-gray-dark" : "text-on-light-secondary"
+              value.exactDates ? "bg-hover-slate text-snow-off-glacier shadow-sm" : "text-white/60"
             }`}
           >
             Dates
@@ -382,7 +382,7 @@ function WhenPopover({
             type="button"
             onClick={() => onChange({ ...value, exactDates: false })}
             className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
-              !value.exactDates ? "bg-white shadow-sm text-gray-dark" : "text-on-light-secondary"
+              !value.exactDates ? "bg-hover-slate text-snow-off-glacier shadow-sm" : "text-white/60"
             }`}
           >
             Flexible
@@ -401,7 +401,7 @@ function WhenPopover({
                   <button
                     type="button"
                     onClick={() => setViewMonth(addMonths(viewMonth, -1))}
-                    className="w-7 h-7 rounded-full hover:bg-page-bg/60 flex items-center justify-center text-gray-dark"
+                    className="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center text-white"
                     aria-label="Previous month"
                   >
                     <span className="material-symbols-outlined text-[18px]">chevron_left</span>
@@ -409,12 +409,12 @@ function WhenPopover({
                 ) : (
                   <span className="w-7 h-7" />
                 )}
-                <p className="text-[14px] font-semibold text-gray-dark">{monthLabel(month)}</p>
+                <p className="text-[14px] font-semibold text-snow-off-glacier">{monthLabel(month)}</p>
                 {offset === 1 ? (
                   <button
                     type="button"
                     onClick={() => setViewMonth(addMonths(viewMonth, 1))}
-                    className="w-7 h-7 rounded-full hover:bg-page-bg/60 flex items-center justify-center text-gray-dark"
+                    className="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center text-white"
                     aria-label="Next month"
                   >
                     <span className="material-symbols-outlined text-[18px]">chevron_right</span>
@@ -444,12 +444,12 @@ function WhenPopover({
                       onClick={() => selectDate(cell)}
                       className={`relative h-10 text-[13px] transition-colors ${
                         past
-                          ? "text-on-light-tertiary/40 cursor-not-allowed"
+                          ? "text-white/20 cursor-not-allowed"
                           : isEdge
                             ? "bg-accent text-white rounded-full font-semibold"
                             : inR
-                              ? "bg-[#EEF4FF] text-gray-dark"
-                              : "hover:bg-page-bg/80 rounded-full text-gray-dark"
+                              ? "bg-accent/20 text-white"
+                              : "hover:bg-white/10 rounded-full text-white"
                       }`}
                     >
                       {cell.getDate()}
@@ -469,8 +469,8 @@ function WhenPopover({
             onClick={() => onChange({ ...value, flexDays: 0 })}
             className={`px-4 py-1.5 rounded-full text-[12px] font-medium border transition-colors ${
               value.flexDays === 0
-                ? "border-gray-dark bg-gray-dark text-white"
-                : "border-black/15 text-gray-dark hover:border-gray-dark"
+                ? "border-snow-off-glacier bg-snow-off-glacier text-tinted-pitch"
+                : "border-white/20 text-white hover:border-white/60"
             }`}
           >
             Exact dates
@@ -482,8 +482,8 @@ function WhenPopover({
               onClick={() => onChange({ ...value, flexDays: n })}
               className={`px-4 py-1.5 rounded-full text-[12px] font-medium border transition-colors ${
                 value.flexDays === n
-                  ? "border-gray-dark bg-gray-dark text-white"
-                  : "border-black/15 text-gray-dark hover:border-gray-dark"
+                  ? "border-snow-off-glacier bg-snow-off-glacier text-tinted-pitch"
+                  : "border-white/20 text-white hover:border-white/60"
               }`}
             >
               ± {n} {n === 1 ? "day" : "days"}
@@ -511,30 +511,30 @@ function WhoPopover({
 
   return (
     <PopoverShell align="right" width="380px" className="p-2">
-      <div className="px-4 py-2 divide-y divide-black/5">
+      <div className="px-4 py-2 divide-y divide-white/10">
         {rows.map((row) => {
           const v = value[row.key] as number;
           return (
             <div key={row.key} className="py-4 flex items-center justify-between gap-4">
               <div className="min-w-0">
-                <p className="text-[15px] font-semibold text-gray-dark">{row.label}</p>
-                <p className="text-[12px] text-on-light-secondary">{row.sub}</p>
+                <p className="text-[15px] font-semibold text-white">{row.label}</p>
+                <p className="text-[12px] text-white/55">{row.sub}</p>
               </div>
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   type="button"
                   disabled={v <= 0}
                   onClick={() => onChange({ ...value, [row.key]: Math.max(0, v - 1) })}
-                  className="w-8 h-8 rounded-full border border-black/20 text-gray-dark hover:border-gray-dark disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-full border border-white/25 text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                   aria-label={`Decrease ${row.label}`}
                 >
                   <span className="material-symbols-outlined text-[16px]">remove</span>
                 </button>
-                <span className="text-[14px] text-gray-dark w-5 text-center tabular-nums">{v}</span>
+                <span className="text-[14px] text-white w-5 text-center tabular-nums">{v}</span>
                 <button
                   type="button"
                   onClick={() => onChange({ ...value, [row.key]: v + 1 })}
-                  className="w-8 h-8 rounded-full border border-black/20 text-gray-dark hover:border-gray-dark flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-full border border-white/25 text-white hover:border-white flex items-center justify-center transition-colors"
                   aria-label={`Increase ${row.label}`}
                 >
                   <span className="material-symbols-outlined text-[16px]">add</span>
@@ -561,11 +561,11 @@ function WhatPopover({
         autoFocus
         value={value.description}
         onChange={(e) => onChange({ ...value, description: e.target.value })}
-        placeholder="Ask for specific things like a bright, modern kitchen and a yard."
+        placeholder="Tell Walter what kind of trip. He'll handle the logistics."
         rows={4}
-        className="w-full text-[14px] text-gray-dark placeholder:text-on-light-tertiary bg-transparent border border-black/15 rounded-[14px] p-3 focus:outline-none focus:border-gray-dark resize-none"
+        className="w-full text-[14px] text-white placeholder:text-white/40 bg-transparent border border-white/15 rounded-[14px] p-3 focus:outline-none focus:border-white/50 resize-none"
       />
-      <p className="text-[11px] text-on-light-secondary mt-4 mb-2 px-1 font-medium">
+      <p className="text-[11px] text-white/55 mt-4 mb-2 px-1 font-medium">
         Suggested descriptions
       </p>
       <div className="space-y-1">
@@ -574,12 +574,12 @@ function WhatPopover({
             key={s}
             type="button"
             onClick={() => onChange({ ...value, description: s })}
-            className="w-full flex items-center gap-3 px-2 py-2 rounded-[12px] hover:bg-page-bg/60 transition-colors text-left"
+            className="w-full flex items-center gap-3 px-2 py-2 rounded-[12px] hover:bg-white/5 transition-colors text-left"
           >
-            <span className="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-gray-dark text-[18px]">search</span>
+            <span className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-white text-[18px]">search</span>
             </span>
-            <span className="text-[13px] text-gray-dark leading-snug">{s}</span>
+            <span className="text-[13px] text-white leading-snug">{s}</span>
           </button>
         ))}
       </div>

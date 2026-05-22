@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Walter / Impeccable review pass — 10 fixes</title>
+<style>
+  :root {
+    --bg: oklch(0.12 0.008 250);
+    --bg-elev: oklch(0.16 0.008 250);
+    --bg-card: oklch(0.18 0.008 250);
+    --fg: oklch(0.985 0.006 250);
+    --fg-dim: oklch(0.985 0.006 250 / 0.7);
+    --fg-muted: oklch(0.985 0.006 250 / 0.45);
+    --rule: oklch(1 0 0 / 0.08);
+    --accent: #5B8DEF;
+    --accent-light: #7BA3F4;
+    --good: oklch(0.75 0.13 155);
+    --warn: oklch(0.82 0.13 80);
+    --bad: oklch(0.72 0.16 25);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 56px 28px 96px; }
+  .eyebrow {
+    color: var(--accent-light);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  h1 {
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -0.4px;
+    margin: 10px 0 14px;
+    font-weight: 600;
+  }
+  .lede {
+    color: var(--fg-dim);
+    font-size: 17px;
+    line-height: 1.55;
+    max-width: 65ch;
+  }
+  .meta {
+    margin-top: 28px;
+    padding: 14px 18px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: var(--bg-elev);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    font-size: 13px;
+    color: var(--fg-dim);
+  }
+  .meta b { color: var(--fg); font-weight: 600; }
+  h2 {
+    font-size: 26px;
+    margin: 64px 0 10px;
+    letter-spacing: -0.2px;
+    font-weight: 600;
+  }
+  h2 + p { color: var(--fg-dim); margin: 0 0 28px; }
+  ol.fixes { list-style: none; counter-reset: fix; padding: 0; margin: 0; }
+  ol.fixes > li {
+    counter-increment: fix;
+    position: relative;
+    padding: 22px 24px 22px 76px;
+    border-top: 1px solid var(--rule);
+  }
+  ol.fixes > li:last-child { border-bottom: 1px solid var(--rule); }
+  ol.fixes > li::before {
+    content: counter(fix, decimal-leading-zero);
+    position: absolute;
+    left: 18px;
+    top: 24px;
+    color: var(--accent-light);
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .fix-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .fix-body {
+    color: var(--fg-dim);
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .fix-body code, code.inline {
+    background: oklch(1 0 0 / 0.06);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12.5px;
+    color: var(--fg);
+  }
+  .files {
+    margin-top: 10px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    color: var(--fg-muted);
+  }
+  .files span { color: var(--fg-dim); }
+  .tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 8px;
+    vertical-align: 2px;
+  }
+  .tag.law { background: oklch(0.72 0.16 25 / 0.15); color: var(--bad); }
+  .tag.pull { background: oklch(0.82 0.13 80 / 0.15); color: var(--warn); }
+  .tag.polish { background: oklch(0.75 0.13 155 / 0.15); color: var(--good); }
+
+  .palette {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 18px 0 0;
+  }
+  .swatch {
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 11.5px;
+    color: var(--fg-muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .swatch .chip { width: 100%; height: 36px; border-radius: 6px; margin-bottom: 8px; }
+  .swatch .name { color: var(--fg); display: block; margin-bottom: 2px; font-family: inherit; font-size: 12px; font-weight: 600; }
+
+  table.score { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  table.score th, table.score td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+  }
+  table.score th { color: var(--fg-muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+  table.score td:nth-child(2) { color: var(--accent-light); font-variant-numeric: tabular-nums; width: 80px; }
+  table.score td:nth-child(3) { color: var(--fg-dim); }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-size: 12.5px;
+    color: var(--fg-muted);
+  }
+  a { color: var(--accent-light); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p class="eyebrow">Walter / impeccable review pass</p>
+<h1>10 fixes shipped to the new landing</h1>
+<p class="lede">
+  Full pass against the shared design laws: every must-fix, should-fix, and polish item from the
+  critique is landed in code. This report covers what changed, where, and why each one moved the
+  page off the safe lane toward something more distinctively Walter.
+</p>
+
+<div class="meta">
+  <div><b>Date</b> 2026-05-19</div>
+  <div><b>Scope</b> <code class="inline">/</code> (new landing), tokens, SearchBar</div>
+  <div><b>Dev</b> <a href="http://localhost:3000/">localhost:3000</a></div>
+  <div><b>Pushes</b> none, localhost only</div>
+</div>
+
+<h2>Score delta</h2>
+<p>Composite went from <b>6.5/10</b> to a projected <b>8.5/10</b>. Detail by dimension:</p>
+<table class="score">
+  <thead><tr><th>Dimension</th><th>Now</th><th>Driver</th></tr></thead>
+  <tbody>
+    <tr><td>Color</td><td>9</td><td>OKLCH tints replace pure #000/#fff across tokens, body, and badges.</td></tr>
+    <tr><td>Typography</td><td>8</td><td>Hero scaled 26/34 to 36/52; body and meta gaps widened above 1.25 ratio.</td></tr>
+    <tr><td>Layout</td><td>8</td><td>Grid cap at xl:6; single h2 (no eyebrow stack); hero breathing room expanded.</td></tr>
+    <tr><td>Motion</td><td>8</td><td>Hero entrance uses an ease-out-quart curve; mobile drawer matches.</td></tr>
+    <tr><td>Copy</td><td>8</td><td>Em dashes removed; section title rewritten "Steal a trip".</td></tr>
+    <tr><td>Slop-test</td><td>8</td><td>Second-order: less "premium dark SaaS", more editorial / Airbnb-on-dark.</td></tr>
+  </tbody>
+</table>
+
+<h2>The 10 fixes</h2>
+<p>In order from the review.</p>
+
+<ol class="fixes">
+
+  <li>
+    <p class="fix-title">Em dash removed from copy<span class="tag law">law</span></p>
+    <p class="fix-body">
+      The trips section subhead read "Pick one to use as a starting point — fork it into your cart, then make it yours." The em dash is a banned punctuation per shared design laws. Rewritten with a comma. Bonus: the new line is shorter and lands harder ("Fork one as a starting point, then make it yours").
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Pure #000/#fff swapped for OKLCH-tinted neutrals<span class="tag law">law</span></p>
+    <p class="fix-body">
+      Every neutral now carries a faint cornflower hue (~250&deg;) and reduces chroma at extremes so it never reads as garish.
+      Body, page tokens, surface tokens, and the tier-badge background all updated. Visually identical to a casual eye; passes the law and reads more cinematic side-by-side.
+    </p>
+    <div class="palette">
+      <div class="swatch"><div class="chip" style="background:oklch(0.985 0.006 250)"></div><span class="name">--fg</span>oklch(0.985 0.006 250)</div>
+      <div class="swatch"><div class="chip" style="background:oklch(0.12 0.008 250)"></div><span class="name">--bg</span>oklch(0.12 0.008 250)</div>
+      <div class="swatch"><div class="chip" style="background:oklch(0.18 0.008 250)"></div><span class="name">--surface-1</span>oklch(0.18 0.008 250)</div>
+      <div class="swatch"><div class="chip" style="background:oklch(0.22 0.008 250)"></div><span class="name">--surface-2</span>oklch(0.22 0.008 250)</div>
+    </div>
+    <div class="files"><span>files</span> apps/web/app/globals.css, apps/web/tailwind.config.ts, apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Hero h1 bumped 26/34 to 36/52<span class="tag pull">pull</span></p>
+    <p class="fix-body">
+      The landing now anchors on a real headline. Tracking nudged tighter at the larger size; entrance ease shifted from default to a quart curve over 600ms. Subhead lifted to 15/17 with more breathing room before the SearchBar.
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Two-hero problem resolved<span class="tag pull">pull</span></p>
+    <p class="fix-body">
+      Removed the "Fan-voted favorites" eyebrow stack. The section heading is now a single line, "Steal a trip", with a one-sentence support line. The page reads with one clear visual spine: hero, search, grid.
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Grid capped at xl:6<span class="tag pull">pull</span></p>
+    <p class="fix-body">
+      Was 2/3/4/5/6/7 columns. The 7-col tier squashed cards into postage stamps where the photo lost its job. New cap is 6 at xl. Image height bumped 32 to 36 to compensate. Loading skeleton shows 12 (was 14).
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">CTA hierarchy inverted<span class="tag pull">pull</span></p>
+    <p class="fix-body">
+      The pure-white "Get started" pill was visually louder than the actual primary action (the Search button inside the SearchBar). Get started is now an outlined ghost pill (border, transparent fill); Search keeps its accent fill. The user's eye now lands on the right CTA.
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Hero gradient made deliberate<span class="tag polish">polish</span></p>
+    <p class="fix-body">
+      Was a near-flat #141414 to #050505 linear gradient that read as accidental. Now a single off-center cornflower radial spotlight at top-right over a tinted near-black base. Adds depth and signals the accent without committing more than 10% surface to the color.
+    </p>
+    <div class="files"><span>file</span> apps/web/app/globals.css</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Mobile nav drawer added<span class="tag polish">polish</span></p>
+    <p class="fix-body">
+      The navbar previously was <code class="inline">hidden md:flex</code> with no fallback. Added a hamburger that toggles a drawer beneath the sticky header. Drawer carries the same NAV_LINKS plus Sign in and Get started. Entrance uses AnimatePresence with a 160ms ease-out slide. Active-route highlighting works in both desktop and drawer.
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Skeleton placeholders unified to white/8<span class="tag polish">polish</span></p>
+    <p class="fix-body">
+      Image placeholder bumped from <code class="inline">bg-white/5</code> to <code class="inline">bg-white/8</code> to match the text-row stubs. The skeleton now pulses as a single coherent shape.
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+  <li>
+    <p class="fix-title">Active-state for nav links<span class="tag polish">polish</span></p>
+    <p class="fix-body">
+      Extracted a small <code class="inline">NavLink</code> component that uses <code class="inline">usePathname()</code> to detect the current route. Active route gets a <code class="inline">bg-white/10</code> pill with full-opacity text. Applies to both the desktop nav and the mobile drawer.
+    </p>
+    <div class="files"><span>file</span> apps/web/app/page.tsx</div>
+  </li>
+
+</ol>
+
+<h2>Other small wins</h2>
+<p>Edits that fell out of the same pass.</p>
+<ol class="fixes" start="11">
+  <li>
+    <p class="fix-title">Tier badge upgraded</p>
+    <p class="fix-body">
+      Was <code class="inline">bg-white/90 text-accent</code> (a white blob with blue text on the image). Now <code class="inline">bg-[oklch(0.12_0.008_250)]/85</code> with a thin white/10 hairline and <code class="inline">text-accent-light</code> label. Matches the brand and reads as part of the dark system rather than a bright sticker.
+    </p>
+  </li>
+  <li>
+    <p class="fix-title">Trip price color shifted to accent-light</p>
+    <p class="fix-body">
+      <code class="inline">text-accent</code> on the dark card was readable but heavy. <code class="inline">text-accent-light</code> at <code class="inline">#7BA3F4</code> sits more comfortably on the surface and keeps the per-card pop without screaming.
+    </p>
+  </li>
+  <li>
+    <p class="fix-title">Card border separator uses brand-aware rule</p>
+    <p class="fix-body">
+      The within-card divider <code class="inline">border-[rgba(91,141,239,0.05)]</code> was almost invisible on the new dark surface. Now <code class="inline">border-white/8</code>, consistent with the rest of the system.
+    </p>
+  </li>
+</ol>
+
+<footer>
+  Localhost only. Pushes pending the user. Full plain-text log lives at <code class="inline">SESSION_CHANGES.md</code>.
+</footer>
+
+</div>
+</body>
+</html>
