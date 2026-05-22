@@ -52,8 +52,8 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
-        active ? "bg-white/15 text-snow-off-glacier" : "text-snow-off-glacier/80 hover:text-snow-off-glacier hover:bg-white/10"
+      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)] ${
+        active ? "bg-white/15 text-snow-off-glacier" : "text-snow-off-glacier/85 hover:text-snow-off-glacier hover:bg-white/10"
       }`}
     >
       {icon && (
@@ -124,14 +124,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Floating liquid-glass header */}
-      <header className="sticky top-0 z-50 pointer-events-none">
+      <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
-          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-white/[0.06] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.10)]">
+          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-tinted-pitch/40 backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.10)]">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
                 <span className="text-[oklch(0.12_0.008_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
               </span>
-              <span className="text-snow-off-glacier text-[17px] font-semibold tracking-tight">Walter</span>
+              <span className="text-snow-off-glacier text-[17px] font-semibold tracking-tight [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">Walter</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -165,7 +165,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.16, ease: "easeOut" }}
-                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-white/[0.06] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.10)] px-4 py-3 flex flex-col gap-1"
+                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-tinted-pitch/40 backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.10)] px-4 py-3 flex flex-col gap-1"
               >
                 {NAV_LINKS.map((l) => (
                   <NavLink
@@ -197,7 +197,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-10 sm:px-16 pt-20 pb-8">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-16 sm:px-24 pt-20 pb-8">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
