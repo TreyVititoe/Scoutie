@@ -256,18 +256,18 @@ export default function LandingPage() {
 
       {/* Curated steal-a-trip feature row (The Booking Spine Rule) */}
       <section className="bg-page-bg pb-24 pt-12 relative z-0">
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 mb-6">
+        <div className="px-5 sm:px-8 mb-6">
           <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
             Steal a trip
           </h2>
         </div>
 
         {tripsLoading ? (
-          <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 px-5 sm:px-6">
-            {Array.from({ length: 8 }).map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+            {Array.from({ length: 14 }).map((_, i) => (
               <div key={i} className="card-base overflow-hidden animate-pulse">
                 <div className="aspect-[4/3] bg-white/10" />
-                <div className="p-4 space-y-2">
+                <div className="p-3 space-y-2">
                   <div className="h-3.5 bg-white/10 rounded w-2/3" />
                   <div className="h-3 bg-white/10 rounded w-full" />
                 </div>
@@ -275,14 +275,14 @@ export default function LandingPage() {
             ))}
           </div>
         ) : trips.length === 0 ? (
-          <p className="text-white/55 text-center py-12 max-w-6xl mx-auto">
+          <p className="text-white/55 text-center py-12">
             No community trips yet, check back soon.
           </p>
         ) : (
-          <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 px-5 sm:px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
             {[...trips]
               .sort((a, b) => b.upvote_count - a.upvote_count)
-              .slice(0, 12)
+              .slice(0, 21)
               .map((trip) => (
                 <Link
                   key={trip.id}
@@ -301,18 +301,18 @@ export default function LandingPage() {
                       </span>
                     )}
                   </div>
-                  <div className="p-4">
-                    <p className="font-semibold text-[15px] text-snow-off-glacier leading-tight truncate">
+                  <div className="p-3">
+                    <p className="font-semibold text-[14px] text-snow-off-glacier leading-tight truncate">
                       {trip.destination}
                     </p>
-                    <p className="text-white/65 text-[12.5px] mt-1.5 line-clamp-2 leading-snug min-h-[34px]">
+                    <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
                       {trip.title}
                     </p>
-                    <div className="flex items-baseline gap-1.5 mt-3">
-                      <span className="font-semibold text-snow-off-glacier text-[14px]">
+                    <div className="flex items-baseline gap-1.5 mt-2">
+                      <span className="font-semibold text-snow-off-glacier text-[13px]">
                         ${trip.total_estimated_cost.toLocaleString()}
                       </span>
-                      <span className="text-white/45 text-[11px]">all in</span>
+                      <span className="text-white/45 text-[10.5px]">all in</span>
                     </div>
                   </div>
                 </Link>
@@ -320,8 +320,8 @@ export default function LandingPage() {
           </div>
         )}
 
-        {trips.length > 12 && (
-          <div className="max-w-6xl mx-auto px-5 sm:px-6 mt-10">
+        {trips.length > 21 && (
+          <div className="px-5 sm:px-8 mt-10">
             <Link
               href="/explore"
               className="inline-flex items-center gap-1.5 text-snow-off-glacier text-[14px] font-medium border-b border-white/30 hover:border-white pb-0.5 transition-colors"

@@ -124,7 +124,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
     return "Add dates";
   })();
 
-  const whatLabel = value.description || "What kind of trip";
+  const whatLabel = value.description || "What you love";
   const whereLabel = value.destination || "Anywhere";
 
   const pillBaseClass = active
@@ -160,7 +160,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <SectionButton
           isActive={active === "what"}
           isAnyActive={active !== null}
-          label="Aspiration"
+          label="Devotion"
           value={whatLabel}
           placeholder={!value.description}
           onClick={() => setActive(active === "what" ? null : "what")}
@@ -223,12 +223,12 @@ function SectionButton({ isActive, isAnyActive, label, value, placeholder, onCli
             : "hover:bg-white/5"
       }`}
     >
-      <p className="text-[10px] uppercase tracking-wide text-white/55 font-bold mb-0.5">
+      <p className="text-[12px] uppercase tracking-[1.5px] text-snow-off-glacier font-bold mb-1">
         {label}
       </p>
       <p
         className={`text-[14px] truncate ${
-          placeholder ? "text-white/45" : "text-snow-off-glacier font-medium"
+          placeholder ? "text-white/55" : "text-snow-off-glacier font-medium"
         }`}
       >
         {value}
@@ -498,12 +498,12 @@ function WhatPopover({
         autoFocus
         value={value.description}
         onChange={(e) => onChange({ ...value, description: e.target.value })}
-        placeholder="Tell Walter what kind of trip. He'll handle the logistics."
+        placeholder="Hikes, museums, slow dinners. Tell Walter what you love doing."
         rows={4}
         className="w-full text-[14px] text-white placeholder:text-white/40 bg-transparent border border-white/15 rounded-[14px] p-3 focus:outline-none focus:border-white/50 resize-none"
       />
       <p className="text-[11px] text-white/55 mt-4 mb-2 px-1 font-medium">
-        Suggested descriptions
+        Or pick a starting point
       </p>
       <div className="space-y-1">
         {SUGGESTED_DESCRIPTIONS.map((s) => (
