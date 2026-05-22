@@ -52,10 +52,10 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
+      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 [mix-blend-mode:difference] ${
         active
-          ? "bg-tinted-pitch/15 text-tinted-pitch"
-          : "text-tinted-pitch/80 hover:text-tinted-pitch hover:bg-tinted-pitch/10"
+          ? "bg-white/20 text-white"
+          : "text-white/95 hover:text-white hover:bg-white/15"
       }`}
     >
       {icon && (
@@ -128,12 +128,12 @@ export default function LandingPage() {
       {/* Floating liquid-glass header */}
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
-          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-snow-off-glacier/65 backdrop-blur-2xl backdrop-saturate-150 border border-tinted-pitch/10 shadow-[0_8px_32px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.6)]">
+          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill backdrop-blur-md border border-white/20">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
-              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
+              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)] [mix-blend-mode:normal]">
                 <span className="text-[oklch(0.12_0.008_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
               </span>
-              <span className="text-tinted-pitch text-[17px] font-semibold tracking-tight">Walter</span>
+              <span className="text-white text-[17px] font-semibold tracking-tight [mix-blend-mode:difference]">Walter</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -152,7 +152,7 @@ export default function LandingPage() {
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen((v) => !v)}
-              className="md:hidden w-9 h-9 rounded-full hover:bg-tinted-pitch/10 flex items-center justify-center text-tinted-pitch transition-colors"
+              className="md:hidden w-9 h-9 rounded-full hover:bg-white/15 flex items-center justify-center text-white [mix-blend-mode:difference] transition-colors"
             >
               <span className="material-symbols-outlined text-[22px]">
                 {mobileOpen ? "close" : "menu"}
@@ -167,7 +167,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.16, ease: "easeOut" }}
-                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-snow-off-glacier/65 backdrop-blur-2xl backdrop-saturate-150 border border-tinted-pitch/10 shadow-[0_8px_32px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.6)] px-4 py-3 flex flex-col gap-1"
+                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-[oklch(0.12_0.008_250_/_0.92)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.45)] px-4 py-3 flex flex-col gap-1"
               >
                 {NAV_LINKS.map((l) => (
                   <NavLink
