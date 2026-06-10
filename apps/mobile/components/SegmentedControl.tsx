@@ -26,7 +26,15 @@ export function SegmentedControl<T extends string>({
             onPress={() => onChange(opt.value)}
             className="flex-1 py-2 rounded-full items-center"
             style={{
-              backgroundColor: active ? colors.surface3 : "transparent",
+              backgroundColor: active ? colors.surface1 : "transparent",
+              ...(active
+                ? {
+                    shadowColor: colors.shadow,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    shadowOffset: { width: 0, height: 2 },
+                  }
+                : null),
             }}
           >
             <Text

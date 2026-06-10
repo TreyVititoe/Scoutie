@@ -93,10 +93,10 @@ export default function LoginScreen() {
           >
             <Text className="text-white text-[24px] font-black italic">W</Text>
           </View>
-          <Text className="text-white text-[24px] font-bold tracking-tight">
+          <Text className="text-ink text-[24px] font-bold tracking-tight">
             Sign in to Walter
           </Text>
-          <Text className="text-white/60 text-[14px] mt-1 text-center">
+          <Text className="text-ink-soft text-[14px] mt-1 text-center">
             Save trips, sync across devices, share with the people you travel
             with.
           </Text>
@@ -117,11 +117,11 @@ export default function LoginScreen() {
                 size={20}
                 fallback={null}
               />
-              <Text className="text-white text-[16px] font-semibold">
+              <Text className="text-ink text-[16px] font-semibold">
                 Check your inbox
               </Text>
             </View>
-            <Text className="text-white/60 text-[13px] mt-2 leading-5">
+            <Text className="text-ink-soft text-[13px] mt-2 leading-5">
               We sent a magic link to {email}. Tap it on this device to sign in.
             </Text>
             <Pressable
@@ -129,7 +129,7 @@ export default function LoginScreen() {
               className="mt-4 py-3 rounded-full items-center"
               style={{ backgroundColor: colors.surface2 }}
             >
-              <Text className="text-white text-[14px] font-medium">Done</Text>
+              <Text className="text-ink text-[14px] font-medium">Done</Text>
             </Pressable>
           </View>
         ) : (
@@ -141,23 +141,23 @@ export default function LoginScreen() {
                     AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
                   }
                   buttonStyle={
-                    AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+                    AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
                   }
                   cornerRadius={999}
                   style={{ height: 52, width: "100%" }}
                   onPress={submitApple}
                 />
                 <View className="flex-row items-center my-5">
-                  <View className="flex-1 h-px bg-white/15" />
-                  <Text className="text-white/45 text-[12px] mx-3">
+                  <View className="flex-1 h-px bg-line-strong" />
+                  <Text className="text-ink-faint text-[12px] mx-3">
                     or with email
                   </Text>
-                  <View className="flex-1 h-px bg-white/15" />
+                  <View className="flex-1 h-px bg-line-strong" />
                 </View>
               </>
             ) : null}
 
-            <View className="bg-surface-1 rounded-2xl border border-white/10 flex-row items-center px-4 py-3.5">
+            <View className="bg-card rounded-2xl border border-line flex-row items-center px-4 py-3.5">
               <SymbolView
                 name="envelope"
                 tintColor={colors.textSecondary}
@@ -172,7 +172,7 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 placeholder="you@walter.travel"
                 placeholderTextColor={colors.textTertiary}
-                className="flex-1 ml-3 text-white text-[15px]"
+                className="flex-1 ml-3 text-ink text-[15px]"
               />
             </View>
             <Pressable
@@ -187,7 +187,10 @@ export default function LoginScreen() {
               {sending ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text className="text-white text-[15px] font-semibold">
+                <Text
+                  className="text-[15px] font-semibold"
+                  style={{ color: email ? "white" : colors.textTertiary }}
+                >
                   Send magic link
                 </Text>
               )}

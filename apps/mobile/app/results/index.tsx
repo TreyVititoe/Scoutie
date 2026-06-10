@@ -203,8 +203,8 @@ export default function ResultsScreen() {
         <View
           className="absolute left-4 right-4 bottom-28"
           style={{
-            shadowColor: "#000",
-            shadowOpacity: 0.4,
+            shadowColor: colors.shadow,
+            shadowOpacity: 0.12,
             shadowRadius: 20,
             shadowOffset: { width: 0, height: 8 },
           }}
@@ -233,7 +233,7 @@ export default function ResultsScreen() {
 function Loading({ label }: { label: string }) {
   return (
     <View>
-      <Text className="text-white/55 text-[12px] mb-3 mt-1">{label}</Text>
+      <Text className="text-ink-soft text-[12px] mb-3 mt-1">{label}</Text>
       <SkeletonListItem />
       <SkeletonListItem />
       <SkeletonListItem />
@@ -251,7 +251,7 @@ function Empty({ icon, label }: { icon: string; label: string }) {
         size={32}
         fallback={null}
       />
-      <Text className="text-white/55 text-[13px] mt-3">{label}</Text>
+      <Text className="text-ink-soft text-[13px] mt-3">{label}</Text>
     </View>
   );
 }
@@ -270,15 +270,15 @@ function ListItem({
   onAdd: () => void;
 }) {
   return (
-    <View className="bg-surface-1 rounded-2xl p-4 mb-3 border border-white/10">
-      <Text className="text-white text-[15px] font-semibold" numberOfLines={1}>
+    <View className="bg-card rounded-2xl p-4 mb-3 border border-line">
+      <Text className="text-ink text-[15px] font-semibold" numberOfLines={1}>
         {title}
       </Text>
-      <Text className="text-white/55 text-[12px] mt-1" numberOfLines={2}>
+      <Text className="text-ink-soft text-[12px] mt-1" numberOfLines={2}>
         {subtitle}
       </Text>
       <View className="flex-row items-center justify-between mt-3">
-        <Text className="text-white text-[16px] font-bold">
+        <Text className="text-ink text-[16px] font-bold">
           ${price.toLocaleString()}
         </Text>
         <Pressable
@@ -291,11 +291,14 @@ function ListItem({
         >
           <SymbolView
             name={inCart ? "checkmark" : "plus"}
-            tintColor="white"
+            tintColor={inCart ? colors.textSecondary : "white"}
             size={12}
             fallback={null}
           />
-          <Text className="text-white text-[13px] font-semibold">
+          <Text
+            className="text-[13px] font-semibold"
+            style={{ color: inCart ? colors.textSecondary : "white" }}
+          >
             {inCart ? "Added" : "Add"}
           </Text>
         </Pressable>

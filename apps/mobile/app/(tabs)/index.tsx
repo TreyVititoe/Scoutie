@@ -95,10 +95,10 @@ export default function HomeScreen() {
       {byCategory.map((rail) => (
         <View key={rail.key} className="mb-8">
           <View className="px-4 mb-3">
-            <Text className="text-white text-[22px] font-bold tracking-tight">
+            <Text className="text-ink text-[22px] font-bold tracking-tight">
               {rail.label}
             </Text>
-            <Text className="text-white/55 text-[13px] mt-0.5">
+            <Text className="text-ink-soft text-[13px] mt-0.5">
               {rail.tagline}
             </Text>
           </View>

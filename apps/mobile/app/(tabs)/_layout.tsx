@@ -37,7 +37,7 @@ export default function TabsLayout() {
           Platform.OS === "ios"
             ? () => (
                 <BlurView
-                  tint="dark"
+                  tint="light"
                   intensity={80}
                   style={StyleSheet.absoluteFill}
                 />

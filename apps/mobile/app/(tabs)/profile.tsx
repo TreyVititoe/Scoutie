@@ -22,10 +22,10 @@ export default function ProfileScreen() {
           size={56}
           fallback={null}
         />
-        <Text className="text-white text-[22px] font-bold mt-5 tracking-tight">
+        <Text className="text-ink text-[22px] font-bold mt-5 tracking-tight">
           Sign in to Walter
         </Text>
-        <Text className="text-white/55 text-[14px] text-center mt-2 leading-5">
+        <Text className="text-ink-soft text-[14px] text-center mt-2 leading-5">
           Save trips across devices and share them with the people you travel
           with.
         </Text>
@@ -48,11 +48,11 @@ export default function ProfileScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
     >
-      <View className="bg-surface-1 rounded-2xl p-5 border border-white/10">
-        <Text className="text-white/55 text-[12px] uppercase tracking-wider">
+      <View className="bg-card rounded-2xl p-5 border border-line">
+        <Text className="text-ink-faint text-[12px] uppercase tracking-wider">
           Signed in as
         </Text>
-        <Text className="text-white text-[18px] font-semibold mt-1">
+        <Text className="text-ink text-[18px] font-semibold mt-1">
           {session.user.email}
         </Text>
       </View>
@@ -62,9 +62,9 @@ export default function ProfileScreen() {
           await supabase.auth.signOut();
           Alert.alert("Signed out");
         }}
-        className="mt-4 bg-surface-1 rounded-2xl p-4 border border-white/10 flex-row items-center justify-between"
+        className="mt-4 bg-card rounded-2xl p-4 border border-line flex-row items-center justify-between"
       >
-        <Text className="text-white text-[15px] font-medium">Sign out</Text>
+        <Text className="text-ink text-[15px] font-medium">Sign out</Text>
         <SymbolView
           name="rectangle.portrait.and.arrow.right"
           tintColor={colors.textSecondary}

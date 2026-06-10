@@ -81,7 +81,7 @@ export default function SearchScreen() {
       style={{ flex: 1, backgroundColor: colors.pageBg }}
     >
       <View className="px-4 pt-4">
-        <View className="bg-surface-1 rounded-2xl border border-white/10 flex-row items-center px-4 py-3.5">
+        <View className="bg-card rounded-2xl border border-line flex-row items-center px-4 py-3.5">
           <SymbolView
             name="magnifyingglass"
             tintColor={colors.textSecondary}
@@ -93,7 +93,7 @@ export default function SearchScreen() {
             onChangeText={setQuery}
             placeholder="Search a city, country, or region"
             placeholderTextColor={colors.textTertiary}
-            className="flex-1 ml-3 text-white text-[15px]"
+            className="flex-1 ml-3 text-ink text-[15px]"
             autoCorrect={false}
             autoCapitalize="words"
             autoFocus
@@ -108,14 +108,14 @@ export default function SearchScreen() {
 
       {query.trim().length < 2 ? (
         <View className="px-4 mt-6">
-          <Text className="text-white/55 text-[12px] uppercase tracking-wider mb-3">
+          <Text className="text-ink-faint text-[12px] uppercase tracking-wider mb-3">
             Quick picks
           </Text>
           {QUICK_PICKS.map((q) => (
             <Pressable
               key={q.label}
               onPress={() => setQuery(q.query || q.label)}
-              className="bg-surface-1 rounded-2xl p-4 mb-2 border border-white/10 flex-row items-center"
+              className="bg-card rounded-2xl p-4 mb-2 border border-line flex-row items-center"
             >
               <View
                 className="w-10 h-10 rounded-xl items-center justify-center"
@@ -128,7 +128,7 @@ export default function SearchScreen() {
                   fallback={null}
                 />
               </View>
-              <Text className="text-white text-[15px] font-medium ml-3 flex-1">
+              <Text className="text-ink text-[15px] font-medium ml-3 flex-1">
                 {q.label}
               </Text>
               <SymbolView
@@ -149,7 +149,7 @@ export default function SearchScreen() {
           renderItem={({ item }) => (
             <Pressable
               onPress={() => pick(item.place_name)}
-              className="bg-surface-1 rounded-2xl p-4 mb-2 border border-white/10 flex-row items-center"
+              className="bg-card rounded-2xl p-4 mb-2 border border-line flex-row items-center"
             >
               <SymbolView
                 name="mappin.circle.fill"
@@ -158,11 +158,11 @@ export default function SearchScreen() {
                 fallback={null}
               />
               <View className="ml-3 flex-1">
-                <Text className="text-white text-[15px] font-semibold">
+                <Text className="text-ink text-[15px] font-semibold">
                   {item.text}
                 </Text>
                 <Text
-                  className="text-white/55 text-[12px] mt-0.5"
+                  className="text-ink-soft text-[12px] mt-0.5"
                   numberOfLines={1}
                 >
                   {item.place_name}
@@ -178,8 +178,8 @@ export default function SearchScreen() {
           )}
           ListEmptyComponent={
             !loading ? (
-              <Text className="text-white/45 text-[13px] text-center mt-12">
-                No matches — try another spelling.
+              <Text className="text-ink-faint text-[13px] text-center mt-12">
+                No matches. Try another spelling.
               </Text>
             ) : null
           }

@@ -68,7 +68,7 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
             Haptics.selectionAsync();
             setActiveField("start");
           }}
-          className="flex-1 bg-surface-1 rounded-2xl border border-white/10 p-4"
+          className="flex-1 bg-card rounded-2xl border border-line p-4"
           style={
             activeField === "start"
               ? { borderColor: colors.accent, borderWidth: 1.5 }
@@ -82,11 +82,11 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
               size={14}
               fallback={null}
             />
-            <Text className="text-white/55 text-[11px] uppercase tracking-wider">
+            <Text className="text-ink-faint text-[11px] uppercase tracking-wider">
               Start
             </Text>
           </View>
-          <Text className="text-white text-[15px] font-semibold">
+          <Text className="text-ink text-[15px] font-semibold">
             {fmtDate(startDate)}
           </Text>
         </Pressable>
@@ -95,7 +95,7 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
             Haptics.selectionAsync();
             setActiveField("end");
           }}
-          className="flex-1 bg-surface-1 rounded-2xl border border-white/10 p-4"
+          className="flex-1 bg-card rounded-2xl border border-line p-4"
           style={
             activeField === "end"
               ? { borderColor: colors.accent, borderWidth: 1.5 }
@@ -109,18 +109,18 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
               size={14}
               fallback={null}
             />
-            <Text className="text-white/55 text-[11px] uppercase tracking-wider">
+            <Text className="text-ink-faint text-[11px] uppercase tracking-wider">
               End
             </Text>
           </View>
-          <Text className="text-white text-[15px] font-semibold">
+          <Text className="text-ink text-[15px] font-semibold">
             {fmtDate(endDate)}
           </Text>
         </Pressable>
       </View>
 
       {nights > 0 ? (
-        <Text className="text-white/55 text-[12px] mt-2 text-center">
+        <Text className="text-ink-soft text-[12px] mt-2 text-center">
           {nights} {nights === 1 ? "night" : "nights"}
         </Text>
       ) : null}
@@ -133,22 +133,22 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
       >
         <Pressable
           className="flex-1 justify-end"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          style={{ backgroundColor: "rgba(20,30,60,0.35)" }}
           onPress={() => setActiveField(null)}
         >
           <Pressable
             onPress={(e) => e.stopPropagation()}
-            className="bg-surface-1 rounded-t-3xl pt-3 pb-8 px-4 border-t border-white/10"
+            className="bg-card rounded-t-3xl pt-3 pb-8 px-4 border-t border-line"
           >
-            <View className="w-10 h-1 bg-white/30 rounded-full self-center mb-4" />
-            <Text className="text-white text-[18px] font-bold tracking-tight mb-2">
+            <View className="w-10 h-1 bg-line-strong rounded-full self-center mb-4" />
+            <Text className="text-ink text-[18px] font-bold tracking-tight mb-2">
               {activeField === "start" ? "Start date" : "End date"}
             </Text>
             <DateTimePicker
               value={activeField === "start" ? startDateObj : endDateObj}
               mode="date"
               display="inline"
-              themeVariant="dark"
+              themeVariant="light"
               minimumDate={activeField === "end" ? minEnd : new Date()}
               accentColor={colors.accent}
               textColor={colors.text}

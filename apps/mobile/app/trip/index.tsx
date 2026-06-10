@@ -60,7 +60,7 @@ export default function TripScreen() {
               <Pressable
                 onPress={async () => {
                   await Share.share({
-                    message: `My ${prefs.destination} trip on Walter — $${total.toLocaleString()} for ${items.length} items.`,
+                    message: `My ${prefs.destination} trip on Walter: $${total.toLocaleString()} for ${items.length} items.`,
                   });
                 }}
               >
@@ -87,10 +87,10 @@ export default function TripScreen() {
               size={48}
               fallback={null}
             />
-            <Text className="text-white text-[18px] font-semibold mt-4 text-center">
+            <Text className="text-ink text-[18px] font-semibold mt-4 text-center">
               Nothing in this trip yet
             </Text>
-            <Text className="text-white/55 text-[13px] text-center mt-2 leading-5">
+            <Text className="text-ink-soft text-[13px] text-center mt-2 leading-5">
               Build a trip from the search above to see flights, hotels, and
               activities here.
             </Text>
@@ -98,14 +98,14 @@ export default function TripScreen() {
         ) : (
           <>
             {/* Summary */}
-            <View className="mx-4 mt-2 bg-surface-1 rounded-2xl p-5 border border-white/10">
-              <Text className="text-white/55 text-[12px] uppercase tracking-wider">
+            <View className="mx-4 mt-2 bg-card rounded-2xl p-5 border border-line">
+              <Text className="text-ink-faint text-[12px] uppercase tracking-wider">
                 {prefs.destination}
               </Text>
-              <Text className="text-white text-[32px] font-bold mt-1">
+              <Text className="text-ink text-[32px] font-bold mt-1">
                 ${total.toLocaleString()}
               </Text>
-              <Text className="text-white/55 text-[13px] mt-1">
+              <Text className="text-ink-soft text-[13px] mt-1">
                 {items.length} items across {Object.keys(grouped).length}{" "}
                 categories
               </Text>
@@ -114,11 +114,11 @@ export default function TripScreen() {
             {/* Map */}
             {MAPBOX_TOKEN ? (
               <View
-                className="mx-4 mt-4 rounded-2xl overflow-hidden border border-white/10"
+                className="mx-4 mt-4 rounded-2xl overflow-hidden border border-line"
                 style={{ height: 240 }}
               >
                 <Mapbox.MapView
-                  styleURL={Mapbox.StyleURL.Dark}
+                  styleURL={Mapbox.StyleURL.Light}
                   style={{ flex: 1 }}
                   scaleBarEnabled={false}
                   attributionEnabled={false}
@@ -132,26 +132,26 @@ export default function TripScreen() {
             {/* Items grouped by type */}
             {Object.entries(grouped).map(([type, list]) => (
               <View key={type} className="mt-6 px-4">
-                <Text className="text-white text-[18px] font-bold tracking-tight mb-3 capitalize">
+                <Text className="text-ink text-[18px] font-bold tracking-tight mb-3 capitalize">
                   {type === "site" ? "Sites" : `${type}s`}
                 </Text>
                 {list.map((i) => (
                   <View
                     key={i.id}
-                    className="bg-surface-1 rounded-2xl p-4 mb-2 border border-white/10"
+                    className="bg-card rounded-2xl p-4 mb-2 border border-line"
                   >
                     <View className="flex-row items-start justify-between">
                       <View className="flex-1 mr-3">
-                        <Text className="text-white text-[15px] font-semibold">
+                        <Text className="text-ink text-[15px] font-semibold">
                           {i.title}
                         </Text>
                         {i.subtitle ? (
-                          <Text className="text-white/55 text-[12px] mt-1">
+                          <Text className="text-ink-soft text-[12px] mt-1">
                             {i.subtitle}
                           </Text>
                         ) : null}
                       </View>
-                      <Text className="text-white text-[15px] font-bold">
+                      <Text className="text-ink text-[15px] font-bold">
                         ${i.price.toLocaleString()}
                       </Text>
                     </View>
@@ -163,15 +163,15 @@ export default function TripScreen() {
             {/* Packing list */}
             {packing.data ? (
               <View className="mt-6 px-4">
-                <Text className="text-white text-[18px] font-bold tracking-tight mb-3">
+                <Text className="text-ink text-[18px] font-bold tracking-tight mb-3">
                   Pack
                 </Text>
                 {packing.data.categories.map((cat) => (
                   <View
                     key={cat.name}
-                    className="bg-surface-1 rounded-2xl p-4 mb-2 border border-white/10"
+                    className="bg-card rounded-2xl p-4 mb-2 border border-line"
                   >
-                    <Text className="text-white text-[14px] font-semibold mb-2">
+                    <Text className="text-ink text-[14px] font-semibold mb-2">
                       {cat.name}
                     </Text>
                     {cat.items.map((it, idx) => (
@@ -179,13 +179,13 @@ export default function TripScreen() {
                         key={`${cat.name}-${idx}`}
                         className="flex-row justify-between py-1"
                       >
-                        <Text className="text-white/80 text-[13px]">
+                        <Text className="text-ink-soft text-[13px]">
                           {it.name}
                           {it.essential ? (
                             <Text className="text-accent"> · essential</Text>
                           ) : null}
                         </Text>
-                        <Text className="text-white/55 text-[13px]">
+                        <Text className="text-ink-faint text-[13px]">
                           {it.quantity}x
                         </Text>
                       </View>
@@ -217,9 +217,9 @@ export default function TripScreen() {
                   ]
                 )
               }
-              className="mx-4 mt-8 py-3.5 rounded-full items-center border border-white/15"
+              className="mx-4 mt-8 py-3.5 rounded-full items-center border border-line-strong"
             >
-              <Text className="text-white/80 text-[14px] font-medium">
+              <Text className="text-ink-soft text-[14px] font-medium">
                 Clear trip
               </Text>
             </Pressable>

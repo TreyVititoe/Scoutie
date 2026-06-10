@@ -8,27 +8,33 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "gray-light": "oklch(0.34 0.005 250)",
-        "gray-dark": "oklch(0.985 0.006 250)",
-        "page-bg": "oklch(0.28 0.005 250)",
-        "product-bg": "oklch(0.30 0.008 240)",
-        accent: {
-          DEFAULT: "oklch(0.65 0.135 263)",
-          light: "oklch(0.72 0.11 261)",
+        // Bright "daylight field" system, mirroring apps/web.
+        paper: "#F7F8FA",
+        card: "#FCFCFE",
+        ink: {
+          DEFAULT: "#232B3F",
+          soft: "rgba(35, 43, 63, 0.72)",
+          faint: "rgba(35, 43, 63, 0.48)",
         },
-        "accent-dark": "oklch(0.54 0.16 263)",
-        "accent-deep": "oklch(0.27 0.10 263)",
-        cyan: "oklch(0.78 0.13 230)",
-        "surface-1": "oklch(0.34 0.005 250)",
-        "surface-2": "oklch(0.39 0.005 250)",
-        "surface-3": "oklch(0.44 0.005 250)",
-        "tinted-pitch": "oklch(0.28 0.005 250)",
-        "quiet-slate": "oklch(0.34 0.005 250)",
-        "raised-slate": "oklch(0.39 0.005 250)",
-        "hover-slate": "oklch(0.44 0.005 250)",
-        "snow-off-glacier": "oklch(0.985 0.006 250)",
-        "cornflower-beacon": "oklch(0.65 0.135 263)",
-        "reykjavik-sky": "oklch(0.72 0.11 261)",
+        line: {
+          DEFAULT: "rgba(35, 43, 63, 0.10)",
+          strong: "rgba(35, 43, 63, 0.18)",
+        },
+        well: "#EFF1F5",
+        lift: "#E6E9F0",
+        accent: {
+          DEFAULT: "#5B8DEF",
+          light: "#7FA6F3",
+        },
+        "accent-dark": "#3D6FE0",
+        cyan: "#66D5F1",
+        // Legacy aliases (kept so existing class names resolve to the
+        // bright system).
+        "page-bg": "#F7F8FA",
+        "product-bg": "#FCFCFE",
+        "surface-1": "#FCFCFE",
+        "surface-2": "#EFF1F5",
+        "surface-3": "#E6E9F0",
       },
       borderRadius: {
         DEFAULT: 14,

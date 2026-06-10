@@ -37,7 +37,7 @@ export default function CompareScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
       >
-        <Text className="text-white/55 text-[13px] mb-5 leading-5">
+        <Text className="text-ink-soft text-[13px] mb-5 leading-5">
           Walter is scouting three angles on {prefs.destination ?? "your trip"}…
         </Text>
         <SkeletonCard />
@@ -56,10 +56,10 @@ export default function CompareScreen() {
           size={36}
           fallback={null}
         />
-        <Text className="text-white text-[16px] font-semibold mt-4 text-center">
+        <Text className="text-ink text-[16px] font-semibold mt-4 text-center">
           Couldn't reach Walter
         </Text>
-        <Text className="text-white/55 text-[13px] mt-2 text-center">
+        <Text className="text-ink-soft text-[13px] mt-2 text-center">
           {String((error as Error).message)}
         </Text>
         <Pressable
@@ -81,7 +81,7 @@ export default function CompareScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
     >
-      <Text className="text-white/55 text-[13px] mb-5 leading-5">
+      <Text className="text-ink-soft text-[13px] mb-5 leading-5">
         Three takes on {prefs.destination}. Pick one and Walter will lay out
         the rest.
       </Text>
@@ -101,7 +101,7 @@ export default function CompareScreen() {
             });
             router.push("/results");
           }}
-          className="bg-surface-1 rounded-3xl overflow-hidden border border-white/10 mb-4"
+          className="bg-card rounded-3xl overflow-hidden border border-line mb-4"
         >
           {tier.image ? (
             <Image
@@ -126,14 +126,14 @@ export default function CompareScreen() {
             <Text className="text-accent text-[11px] font-bold uppercase tracking-wider">
               {tier.tier}
             </Text>
-            <Text className="text-white text-[22px] font-bold tracking-tight mt-1">
+            <Text className="text-ink text-[22px] font-bold tracking-tight mt-1">
               {tier.title}
             </Text>
-            <Text className="text-white/65 text-[14px] mt-2 leading-5">
+            <Text className="text-ink-soft text-[14px] mt-2 leading-5">
               {tier.summary}
             </Text>
             <View className="mt-4 flex-row items-center justify-between">
-              <Text className="text-white text-[18px] font-bold">
+              <Text className="text-ink text-[18px] font-bold">
                 ${tier.totalCost.toLocaleString()}
               </Text>
               <View

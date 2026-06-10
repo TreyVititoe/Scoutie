@@ -106,7 +106,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.pageBg }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
           <Stack
             screenOptions={{
               headerStyle: { backgroundColor: colors.pageBg },

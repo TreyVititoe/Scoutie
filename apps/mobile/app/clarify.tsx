@@ -35,7 +35,7 @@ export default function ClarifyScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
     >
-      <Text className="text-white/55 text-[13px] mb-6 leading-5">
+      <Text className="text-ink-soft text-[13px] mb-6 leading-5">
         Three quick questions before Walter starts pulling itineraries.
         {prefs.destination ? ` Your pick: ${prefs.destination}.` : ""}
       </Text>
@@ -53,9 +53,9 @@ export default function ClarifyScreen() {
       </Section>
 
       {/* Travelers */}
-      <Section title="Who's going" hint="Adults only — kids can come later.">
-        <View className="bg-surface-1 rounded-2xl p-4 border border-white/10 flex-row items-center justify-between">
-          <Text className="text-white text-[16px] font-medium">Travelers</Text>
+      <Section title="Who's going" hint="Adults only. Kids can come later.">
+        <View className="bg-card rounded-2xl p-4 border border-line flex-row items-center justify-between">
+          <Text className="text-ink text-[16px] font-medium">Travelers</Text>
           <View className="flex-row items-center gap-4">
             <StepperBtn
               onPress={() => {
@@ -65,7 +65,7 @@ export default function ClarifyScreen() {
               icon="minus"
               disabled={travelers <= 1}
             />
-            <Text className="text-white text-[20px] font-bold min-w-[24px] text-center">
+            <Text className="text-ink text-[20px] font-bold min-w-[24px] text-center">
               {travelers}
             </Text>
             <StepperBtn
@@ -91,7 +91,7 @@ export default function ClarifyScreen() {
                 Haptics.selectionAsync();
                 setStay(a.id);
               }}
-              className="bg-surface-1 rounded-2xl p-4 mb-2 border flex-row items-center"
+              className="bg-card rounded-2xl p-4 mb-2 border flex-row items-center"
               style={{
                 borderColor: active ? colors.accent : colors.hairline,
                 borderWidth: active ? 1.5 : 1,
@@ -103,16 +103,16 @@ export default function ClarifyScreen() {
               >
                 <SymbolView
                   name={a.icon as never}
-                  tintColor="white"
+                  tintColor={active ? "white" : colors.text}
                   size={18}
                   fallback={null}
                 />
               </View>
               <View className="ml-3 flex-1">
-                <Text className="text-white text-[15px] font-semibold">
+                <Text className="text-ink text-[15px] font-semibold">
                   {a.label}
                 </Text>
-                <Text className="text-white/55 text-[12px] mt-0.5">{a.hint}</Text>
+                <Text className="text-ink-soft text-[12px] mt-0.5">{a.hint}</Text>
               </View>
               {active ? (
                 <SymbolView
@@ -128,7 +128,7 @@ export default function ClarifyScreen() {
       </Section>
 
       {/* Departure */}
-      <Section title="Leaving from" hint="City or airport — Walter will figure the rest.">
+      <Section title="Leaving from" hint="City or airport. Walter will figure the rest.">
         <AirportAutocomplete value={departure} onChange={setDeparture} />
       </Section>
 
@@ -151,7 +151,10 @@ export default function ClarifyScreen() {
             : colors.accent,
         }}
       >
-        <Text className="text-white text-[16px] font-semibold">
+        <Text
+          className="text-[16px] font-semibold"
+          style={{ color: continueDisabled ? colors.textTertiary : "white" }}
+        >
           Generate three options
         </Text>
       </Pressable>
@@ -170,11 +173,11 @@ function Section({
 }) {
   return (
     <View className="mb-8">
-      <Text className="text-white text-[18px] font-bold tracking-tight">
+      <Text className="text-ink text-[18px] font-bold tracking-tight">
         {title}
       </Text>
       {hint ? (
-        <Text className="text-white/55 text-[12px] mt-0.5 mb-3">{hint}</Text>
+        <Text className="text-ink-soft text-[12px] mt-0.5 mb-3">{hint}</Text>
       ) : (
         <View className="h-3" />
       )}
@@ -204,7 +207,7 @@ function StepperBtn({
     >
       <SymbolView
         name={icon as never}
-        tintColor="white"
+        tintColor={colors.text}
         size={14}
         fallback={null}
       />

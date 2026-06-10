@@ -69,7 +69,7 @@ export function AirportAutocomplete({ value, onChange, placeholder }: Props) {
 
   return (
     <View>
-      <View className="bg-surface-1 rounded-2xl border border-white/10 flex-row items-center px-4 py-3.5">
+      <View className="bg-card rounded-2xl border border-line flex-row items-center px-4 py-3.5">
         <SymbolView
           name="airplane"
           tintColor={colors.textSecondary}
@@ -85,7 +85,7 @@ export function AirportAutocomplete({ value, onChange, placeholder }: Props) {
           onFocus={() => setFocused(true)}
           placeholder={placeholder ?? "City or airport"}
           placeholderTextColor={colors.textTertiary}
-          className="flex-1 ml-3 text-white text-[15px]"
+          className="flex-1 ml-3 text-ink text-[15px]"
           autoCorrect={false}
           autoCapitalize="words"
         />
@@ -93,7 +93,7 @@ export function AirportAutocomplete({ value, onChange, placeholder }: Props) {
       </View>
 
       {focused && features.length > 0 ? (
-        <View className="bg-surface-1 mt-2 rounded-2xl border border-white/10 overflow-hidden">
+        <View className="bg-card mt-2 rounded-2xl border border-line overflow-hidden">
           <FlatList
             data={features}
             keyExtractor={(f) => f.id}
@@ -108,7 +108,7 @@ export function AirportAutocomplete({ value, onChange, placeholder }: Props) {
                     setFocused(false);
                     setFeatures([]);
                   }}
-                  className="px-4 py-3 flex-row items-center gap-3 border-b border-white/5"
+                  className="px-4 py-3 flex-row items-center gap-3 border-b border-line"
                 >
                   <SymbolView
                     name={isAirport ? "airplane" : "mappin"}
@@ -117,10 +117,10 @@ export function AirportAutocomplete({ value, onChange, placeholder }: Props) {
                     fallback={null}
                   />
                   <View className="flex-1">
-                    <Text className="text-white text-[14px] font-medium">
+                    <Text className="text-ink text-[14px] font-medium">
                       {item.text}
                     </Text>
-                    <Text className="text-white/45 text-[12px]" numberOfLines={1}>
+                    <Text className="text-ink-faint text-[12px]" numberOfLines={1}>
                       {item.place_name}
                     </Text>
                   </View>

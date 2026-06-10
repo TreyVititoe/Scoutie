@@ -15,10 +15,10 @@ export default function NotFound() {
           size={48}
           fallback={null}
         />
-        <Text className="text-white text-[22px] font-bold mt-4 tracking-tight text-center">
+        <Text className="text-ink text-[22px] font-bold mt-4 tracking-tight text-center">
           Walter hasn't scouted this route
         </Text>
-        <Text className="text-white/55 text-[14px] mt-2 text-center leading-5">
+        <Text className="text-ink-soft text-[14px] mt-2 text-center leading-5">
           The page you're looking for doesn't exist.
         </Text>
         <Link

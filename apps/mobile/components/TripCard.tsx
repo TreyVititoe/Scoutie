@@ -16,7 +16,7 @@ export function TripCard({ trip, onPress, width = 260 }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className="rounded-2xl overflow-hidden bg-surface-1 border border-white/10"
+      className="rounded-2xl overflow-hidden bg-well border border-line"
       style={{ width, height: 320 }}
     >
       <Image

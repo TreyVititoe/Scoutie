@@ -46,7 +46,7 @@ export function Skeleton({
           height,
           borderRadius: radius,
           overflow: "hidden",
-          backgroundColor: "rgba(255,255,255,0.06)",
+          backgroundColor: "rgba(35,43,63,0.07)",
         },
         style,
       ]}
@@ -55,7 +55,7 @@ export function Skeleton({
         <LinearGradient
           colors={[
             "rgba(255,255,255,0)",
-            "rgba(255,255,255,0.08)",
+            "rgba(255,255,255,0.55)",
             "rgba(255,255,255,0)",
           ]}
           start={{ x: 0, y: 0 }}
@@ -69,7 +69,7 @@ export function Skeleton({
 
 export function SkeletonCard() {
   return (
-    <View className="bg-surface-1 rounded-3xl overflow-hidden border border-white/10 mb-4">
+    <View className="bg-card rounded-3xl overflow-hidden border border-line mb-4">
       <Skeleton height={160} radius={0} />
       <View style={{ padding: 20 }}>
         <Skeleton width="40%" height={11} />
@@ -98,7 +98,7 @@ export function SkeletonCard() {
 
 export function SkeletonListItem() {
   return (
-    <View className="bg-surface-1 rounded-2xl p-4 mb-3 border border-white/10">
+    <View className="bg-card rounded-2xl p-4 mb-3 border border-line">
       <Skeleton width="70%" height={15} />
       <View style={{ height: 6 }} />
       <Skeleton width="50%" height={12} />
