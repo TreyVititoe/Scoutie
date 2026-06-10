@@ -52,78 +52,140 @@
           "oklch(0.94 0.05 230)"
         ]
       },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(0.975 0.004 250)"
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Card (legacy alias: quiet-slate)",
+        "canonical": "oklch(0.99 0.002 250)"
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Surface 2 (legacy alias: raised-slate)",
+        "canonical": "oklch(0.955 0.005 250)"
+      },
+      "surface-3": {
+        "role": "neutral",
+        "displayName": "Surface 3 (legacy alias: hover-slate)",
+        "canonical": "oklch(0.925 0.008 252)"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.25 0.02 258)"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "oklch(0.25 0.02 258 / 0.10)"
+      },
       "tinted-pitch": {
         "role": "neutral",
-        "displayName": "Tinted Pitch",
-        "canonical": "oklch(0.12 0.008 250)",
-        "tonalRamp": [
-          "oklch(0.06 0.006 250)",
-          "oklch(0.09 0.007 250)",
-          "oklch(0.12 0.008 250)",
-          "oklch(0.18 0.008 250)",
-          "oklch(0.24 0.008 250)",
-          "oklch(0.34 0.008 250)",
-          "oklch(0.50 0.007 250)",
-          "oklch(0.72 0.006 250)"
-        ]
-      },
-      "quiet-slate": {
-        "role": "neutral",
-        "displayName": "Quiet Slate",
-        "canonical": "oklch(0.18 0.008 250)"
-      },
-      "raised-slate": {
-        "role": "neutral",
-        "displayName": "Raised Slate",
-        "canonical": "oklch(0.22 0.008 250)"
-      },
-      "hover-slate": {
-        "role": "neutral",
-        "displayName": "Hover Slate",
-        "canonical": "oklch(0.28 0.008 250)"
+        "displayName": "Tinted Pitch (photo overlays and over-photo chrome only)",
+        "canonical": "oklch(0.28 0.005 250)"
       },
       "snow-off-glacier": {
         "role": "neutral",
-        "displayName": "Snow Off Glacier",
-        "canonical": "oklch(0.985 0.006 250)",
-        "tonalRamp": [
-          "oklch(0.30 0.006 250)",
-          "oklch(0.45 0.006 250)",
-          "oklch(0.60 0.006 250)",
-          "oklch(0.72 0.006 250)",
-          "oklch(0.84 0.006 250)",
-          "oklch(0.92 0.006 250)",
-          "oklch(0.96 0.006 250)",
-          "oklch(0.985 0.006 250)"
-        ]
+        "displayName": "Snow Off Glacier (text on photos and accent fills only)",
+        "canonical": "oklch(0.985 0.006 250)"
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero headlines only. One per page." },
-      "headline": { "displayName": "Headline", "purpose": "Section headers. Stand alone, never paired with an eyebrow above." },
-      "title": { "displayName": "Title", "purpose": "Subheads, card titles in dense layouts. Always supports a larger heading." },
-      "body": { "displayName": "Body", "purpose": "Long-form copy. Capped at 65 to 75 characters per line." },
-      "label": { "displayName": "Label", "purpose": "Navigation, buttons, chips, uppercase eyebrows (when used inside form sections at 10px / 2.5px tracking)." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines only. One per page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headers. Stand alone, never paired with an eyebrow above."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Subheads, card titles in dense layouts. Always supports a larger heading."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Long-form copy. Capped at 65 to 75 characters per line."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Navigation, buttons, chips, uppercase eyebrows (when used inside form sections at 10px / 2.5px tracking)."
+      }
     },
     "shadows": [
-      { "name": "search-shadow", "value": "0 12px 40px rgba(0,0,0,0.5)", "purpose": "The SearchBar pill at rest. The signature lifted element of the landing." },
-      { "name": "popover-shadow", "value": "0 12px 40px rgba(0,0,0,0.6)", "purpose": "Where / When / Who / What popovers. Slightly heavier than the pill they emerge from." },
-      { "name": "card-rest-shadow", "value": "0 2px 12px rgba(0,0,0,0.4)", "purpose": "Edge definition for cards on the canvas. Reads more as outline than as elevation." },
-      { "name": "card-hover-shadow", "value": "0 8px 24px rgba(0,0,0,0.6)", "purpose": "Card on hover, paired with -2px translateY." },
-      { "name": "logo-glow", "value": "0 2px 10px rgba(56,189,248,0.3)", "purpose": "The First Light wash under the Walter logo chip. The only blue glow in the system." }
+      {
+        "name": "search-shadow",
+        "value": "0 12px 40px rgba(20,30,60,0.10)",
+        "purpose": "The SearchBar pill at rest. The signature lifted element of the landing."
+      },
+      {
+        "name": "popover-shadow",
+        "value": "0 12px 40px rgba(20,30,60,0.12)",
+        "purpose": "Where / When / Who / What popovers. Slightly heavier than the pill they emerge from."
+      },
+      {
+        "name": "card-hover-shadow",
+        "value": "0 8px 24px rgba(20,30,60,0.10)",
+        "purpose": "Card on hover, paired with -2px translateY. Cards are flat at rest."
+      },
+      {
+        "name": "shadow-card",
+        "value": "0 1px 2px rgba(20,30,60,0.05), 0 8px 24px rgba(20,30,60,0.08)",
+        "purpose": "Ambient definition for floating mock cards in the hero."
+      },
+      {
+        "name": "logo-glow",
+        "value": "0 2px 10px rgba(56,189,248,0.3)",
+        "purpose": "The First Light wash under the Walter logo chip. The only blue glow in the system."
+      }
     ],
     "motion": [
-      { "name": "ease-cinematic", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "Default easing. Used for hero entrance (600ms), popover entry/exit (180ms), state changes (150ms)." },
-      { "name": "duration-state", "value": "150ms", "purpose": "Hover, focus, color transitions." },
-      { "name": "duration-popover", "value": "180ms", "purpose": "Popover open/close." },
-      { "name": "duration-hero", "value": "600ms", "purpose": "First-paint hero entrance." },
-      { "name": "duration-image-hover", "value": "500ms", "purpose": "group-hover image scale-up on cards." }
+      {
+        "name": "ease-cinematic",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Default easing. Used for hero entrance (600ms), popover entry/exit (180ms), state changes (150ms)."
+      },
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Hover, focus, color transitions."
+      },
+      {
+        "name": "duration-popover",
+        "value": "180ms",
+        "purpose": "Popover open/close."
+      },
+      {
+        "name": "duration-hero",
+        "value": "600ms",
+        "purpose": "First-paint hero entrance."
+      },
+      {
+        "name": "duration-image-hover",
+        "value": "500ms",
+        "purpose": "group-hover image scale-up on cards."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" },
-      { "name": "xl", "value": "1280px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
     ]
   },
   "components": [
@@ -141,7 +203,7 @@
       "refersTo": "button-ghost",
       "description": "Outlined pill used in the navbar. De-emphasized so the SearchBar action stays primary.",
       "html": "<a class=\"ds-btn-ghost\" href=\"#\">Get started</a>",
-      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; background: transparent; color: oklch(0.985 0.006 250); border: 1px solid rgba(255,255,255,0.25); border-radius: 980px; padding: 6px 16px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1), border-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-ghost:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.40); } .ds-btn-ghost:focus-visible { outline: 2px solid oklch(0.65 0.135 263); outline-offset: 2px; }"
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; background: transparent; color: oklch(0.25 0.02 258); border: 1px solid oklch(0.25 0.02 258 / 0.20); border-radius: 980px; padding: 6px 16px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1), border-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-ghost:hover { background: oklch(0.25 0.02 258 / 0.05); border-color: oklch(0.25 0.02 258 / 0.40); } .ds-btn-ghost:focus-visible { outline: 2px solid oklch(0.65 0.135 263); outline-offset: 2px; }"
     },
     {
       "name": "Nav Link (Active)",
@@ -149,7 +211,7 @@
       "refersTo": "nav-link-active",
       "description": "Pill-shaped nav link. Shows default and active states side by side.",
       "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link ds-nav-link-active\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"oklch(0.72 0.11 261)\"><path d=\"M13 2 4 14h7l-1 8 9-12h-7z\"/></svg>Quick plan</a><a class=\"ds-nav-link\" href=\"#\">Explore</a><a class=\"ds-nav-link\" href=\"#\">Saved</a><a class=\"ds-nav-link\" href=\"#\">Trips</a></nav>",
-      "css": ".ds-nav { display: inline-flex; gap: 4px; padding: 6px; background: rgba(10,10,10,0.82); backdrop-filter: blur(20px); border-radius: 980px; border: 1px solid rgba(255,255,255,0.06); } .ds-nav-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 980px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 500; font-size: 13px; color: rgba(255,255,255,0.75); text-decoration: none; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1), color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-nav-link:hover { background: rgba(255,255,255,0.08); color: oklch(0.985 0.006 250); } .ds-nav-link-active { background: rgba(255,255,255,0.10); color: oklch(0.985 0.006 250); }"
+      "css": ".ds-nav { display: inline-flex; gap: 4px; padding: 6px; background: rgba(252,253,255,0.85); backdrop-filter: blur(20px); border-radius: 980px; border: 1px solid oklch(0.25 0.02 258 / 0.08); } .ds-nav-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 980px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 500; font-size: 13px; color: oklch(0.25 0.02 258 / 0.72); text-decoration: none; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1), color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-nav-link:hover { background: oklch(0.25 0.02 258 / 0.05); color: oklch(0.25 0.02 258); } .ds-nav-link-active { background: oklch(0.25 0.02 258 / 0.08); color: oklch(0.25 0.02 258); }"
     },
     {
       "name": "Trip Card",
@@ -157,7 +219,7 @@
       "refersTo": "card-trip",
       "description": "Community trip card with photograph, destination, support copy, and a price/upvote footer.",
       "html": "<a class=\"ds-card\" href=\"#\"><div class=\"ds-card-image\"><span class=\"ds-card-tier\">Featured</span></div><div class=\"ds-card-body\"><p class=\"ds-card-title\">Reykjavík, Iceland</p><p class=\"ds-card-desc\">Five days chasing the light over the Westfjords.</p><div class=\"ds-card-foot\"><span class=\"ds-card-price\">$2,140</span><span class=\"ds-card-up\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 19V5\"/><path d=\"m5 12 7-7 7 7\"/></svg>248</span></div></div></a>",
-      "css": ".ds-card { display: block; background: oklch(0.18 0.008 250); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.4); transition: transform 200ms cubic-bezier(0.2,0.8,0.2,1), box-shadow 200ms cubic-bezier(0.2,0.8,0.2,1), border-color 200ms cubic-bezier(0.2,0.8,0.2,1); text-decoration: none; color: inherit; } .ds-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.12); } .ds-card-image { position: relative; height: 144px; background: linear-gradient(135deg, oklch(0.30 0.05 263), oklch(0.18 0.008 250)); } .ds-card-tier { position: absolute; top: 10px; left: 10px; background: oklch(0.12 0.008 250 / 0.85); color: oklch(0.72 0.11 261); border: 1px solid rgba(255,255,255,0.10); border-radius: 980px; padding: 2px 8px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; } .ds-card-body { padding: 12px; } .ds-card-title { margin: 0; font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 600; font-size: 14px; line-height: 1.2; color: oklch(0.985 0.006 250); } .ds-card-desc { margin: 4px 0 0; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 12px; line-height: 1.35; color: rgba(255,255,255,0.55); min-height: 32px; } .ds-card-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); } .ds-card-price { font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 600; font-size: 13px; color: oklch(0.72 0.11 261); } .ds-card-up { display: inline-flex; align-items: center; gap: 2px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 11px; color: rgba(255,255,255,0.45); }"
+      "css": ".ds-card { display: block; background: oklch(0.99 0.002 250); border: 1px solid oklch(0.25 0.02 258 / 0.08); border-radius: 14px; overflow: hidden; transition: transform 200ms cubic-bezier(0.2,0.8,0.2,1), box-shadow 200ms cubic-bezier(0.2,0.8,0.2,1), border-color 200ms cubic-bezier(0.2,0.8,0.2,1); text-decoration: none; color: inherit; } .ds-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(20,30,60,0.10); border-color: oklch(0.25 0.02 258 / 0.16); } .ds-card-image { position: relative; height: 144px; background: linear-gradient(135deg, oklch(0.55 0.08 263), oklch(0.34 0.03 255)); } .ds-card-tier { position: absolute; top: 10px; left: 10px; background: oklch(0.28 0.005 250 / 0.85); color: oklch(0.72 0.11 261); border: 1px solid rgba(255,255,255,0.10); border-radius: 980px; padding: 2px 8px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; } .ds-card-body { padding: 12px; } .ds-card-title { margin: 0; font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 600; font-size: 14px; line-height: 1.2; color: oklch(0.25 0.02 258); } .ds-card-desc { margin: 4px 0 0; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 12px; line-height: 1.35; color: oklch(0.25 0.02 258 / 0.72); min-height: 32px; } .ds-card-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 10px; border-top: 1px solid oklch(0.25 0.02 258 / 0.10); } .ds-card-price { font-family: var(--font-geist-sans), system-ui, sans-serif; font-weight: 600; font-size: 13px; color: oklch(0.25 0.02 258); } .ds-card-up { display: inline-flex; align-items: center; gap: 2px; font-family: var(--font-geist-sans), system-ui, sans-serif; font-size: 11px; color: oklch(0.25 0.02 258 / 0.48); }"
     },
     {
       "name": "SearchBar Pill",
@@ -165,15 +227,15 @@
       "refersTo": "search-pill",
       "description": "The signature airbnb-style 4-section search pill. Shown in idle state with one section active.",
       "html": "<div class=\"ds-search\"><button class=\"ds-search-section ds-search-section-active\"><p class=\"ds-search-label\">Where</p><p class=\"ds-search-value\">Reykjavík, Iceland</p></button><span class=\"ds-search-divider\"></span><button class=\"ds-search-section\"><p class=\"ds-search-label\">When</p><p class=\"ds-search-value ds-search-placeholder\">Add dates</p></button><span class=\"ds-search-divider\"></span><button class=\"ds-search-section\"><p class=\"ds-search-label\">Who</p><p class=\"ds-search-value ds-search-placeholder\">Add guests</p></button><span class=\"ds-search-divider\"></span><button class=\"ds-search-section\"><p class=\"ds-search-label\">What</p><p class=\"ds-search-value ds-search-placeholder\">Add description</p></button><button class=\"ds-search-btn\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg>Search</button></div>",
-      "css": ".ds-search { display: inline-flex; align-items: stretch; padding: 6px; background: oklch(0.18 0.008 250); border: 1px solid rgba(255,255,255,0.10); border-radius: 980px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); font-family: var(--font-geist-sans), system-ui, sans-serif; } .ds-search-section { flex: 1; min-width: 0; padding: 6px 20px; background: transparent; border: none; border-radius: 980px; text-align: left; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-search-section:hover { background: rgba(255,255,255,0.05); } .ds-search-section-active { background: oklch(0.28 0.008 250); box-shadow: 0 3px 10px rgba(0,0,0,0.4); } .ds-search-label { margin: 0 0 2px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.55); } .ds-search-value { margin: 0; font-size: 14px; font-weight: 500; color: oklch(0.985 0.006 250); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-search-placeholder { color: rgba(255,255,255,0.45); font-weight: 400; } .ds-search-divider { width: 1px; margin: 10px 0; background: rgba(255,255,255,0.10); } .ds-search-btn { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; padding: 12px 20px; background: oklch(0.65 0.135 263); color: oklch(0.985 0.006 250); border: none; border-radius: 980px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-search-btn:hover { background: oklch(0.72 0.11 261); }"
+      "css": ".ds-search { display: inline-flex; align-items: stretch; padding: 6px; background: oklch(0.99 0.002 250); border: 1px solid oklch(0.25 0.02 258 / 0.10); border-radius: 980px; box-shadow: 0 12px 40px rgba(20,30,60,0.10); font-family: var(--font-geist-sans), system-ui, sans-serif; } .ds-search-section { flex: 1; min-width: 0; padding: 6px 20px; background: transparent; border: none; border-radius: 980px; text-align: left; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-search-section:hover { background: oklch(0.25 0.02 258 / 0.05); } .ds-search-section-active { background: oklch(0.925 0.008 252); box-shadow: 0 3px 10px rgba(20,30,60,0.10); } .ds-search-label { margin: 0 0 2px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: oklch(0.25 0.02 258); } .ds-search-value { margin: 0; font-size: 14px; font-weight: 500; color: oklch(0.25 0.02 258); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-search-placeholder { color: oklch(0.25 0.02 258 / 0.48); font-weight: 400; } .ds-search-divider { width: 1px; margin: 10px 0; background: oklch(0.25 0.02 258 / 0.10); } .ds-search-btn { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; padding: 12px 20px; background: oklch(0.65 0.135 263); color: oklch(0.985 0.006 250); border: none; border-radius: 980px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-search-btn:hover { background: oklch(0.72 0.11 261); }"
     },
     {
       "name": "Popover Shell",
       "kind": "custom",
       "refersTo": "popover-shell",
       "description": "Anchored dropdown that emerges below an active SearchBar section. Quiet Slate surface, heavy popover shadow.",
-      "html": "<div class=\"ds-popover\"><p class=\"ds-popover-eyebrow\">Suggested destinations</p><button class=\"ds-popover-row\"><span class=\"ds-popover-icon\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"oklch(0.72 0.11 261)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg></span><div class=\"ds-popover-text\"><p class=\"ds-popover-title\">Reykjavík, Iceland</p><p class=\"ds-popover-sub\">Five hours of daylight, twenty hours of awe.</p></div></button><button class=\"ds-popover-row\"><span class=\"ds-popover-icon\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"oklch(0.72 0.11 261)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg></span><div class=\"ds-popover-text\"><p class=\"ds-popover-title\">Lisbon, Portugal</p><p class=\"ds-popover-sub\">Hills, tile, ocean light.</p></div></button></div>",
-      "css": ".ds-popover { width: 360px; padding: 16px; background: oklch(0.18 0.008 250); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); font-family: var(--font-geist-sans), system-ui, sans-serif; } .ds-popover-eyebrow { margin: 0 0 8px; padding: 0 4px; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.55); } .ds-popover-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px; background: transparent; border: none; border-radius: 12px; text-align: left; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-popover-row:hover { background: rgba(255,255,255,0.05); } .ds-popover-icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: rgba(91,141,239,0.15); border-radius: 10px; flex-shrink: 0; } .ds-popover-text { min-width: 0; } .ds-popover-title { margin: 0; font-size: 14px; font-weight: 600; color: oklch(0.985 0.006 250); } .ds-popover-sub { margin: 2px 0 0; font-size: 12px; color: rgba(255,255,255,0.55); }"
+      "html": "<div class=\"ds-popover\"><p class=\"ds-popover-eyebrow\">Suggested destinations</p><button class=\"ds-popover-row\"><span class=\"ds-popover-icon\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"oklch(0.65 0.135 263)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg></span><div class=\"ds-popover-text\"><p class=\"ds-popover-title\">Reykjavík, Iceland</p><p class=\"ds-popover-sub\">Five hours of daylight, twenty hours of awe.</p></div></button><button class=\"ds-popover-row\"><span class=\"ds-popover-icon\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"oklch(0.65 0.135 263)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg></span><div class=\"ds-popover-text\"><p class=\"ds-popover-title\">Lisbon, Portugal</p><p class=\"ds-popover-sub\">Hills, tile, ocean light.</p></div></button></div>",
+      "css": ".ds-popover { width: 360px; padding: 16px; background: oklch(0.99 0.002 250); border: 1px solid oklch(0.25 0.02 258 / 0.10); border-radius: 24px; box-shadow: 0 12px 40px rgba(20,30,60,0.12); font-family: var(--font-geist-sans), system-ui, sans-serif; } .ds-popover-eyebrow { margin: 0 0 8px; padding: 0 4px; font-size: 11px; font-weight: 500; color: oklch(0.25 0.02 258 / 0.48); } .ds-popover-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px; background: transparent; border: none; border-radius: 12px; text-align: left; cursor: pointer; transition: background-color 150ms cubic-bezier(0.2,0.8,0.2,1); } .ds-popover-row:hover { background: oklch(0.25 0.02 258 / 0.05); } .ds-popover-icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: rgba(91,141,239,0.10); border-radius: 10px; flex-shrink: 0; } .ds-popover-text { min-width: 0; } .ds-popover-title { margin: 0; font-size: 14px; font-weight: 600; color: oklch(0.25 0.02 258); } .ds-popover-sub { margin: 2px 0 0; font-size: 12px; color: oklch(0.25 0.02 258 / 0.72); }"
     },
     {
       "name": "Tier Badge Chip",
@@ -186,30 +248,70 @@
   ],
   "narrative": {
     "northStar": "The Field Cinematographer",
-    "overview": "Walter holds the frame the way a filmmaker holds it: still, considered, and trusting that the place will do the work. The system is dark not because dark is fashionable but because Walter is the moment in the Mitty film when the sky cracks open over a cold ocean. Restraint is in service of warmth, not corporate neutrality. Photography always beats decoration. Every screen exists to drive toward one moment: a real flight, a real hotel, and a real Tuesday dinner sitting in the same cart, ready to book.\n\nThe system rejects the lane of Kayak / Expedia / Booking.com (transactional grey portals where every screen looks like a 1099), the lane of Pinterest-pretty travel listicles, and the lane of generic AI startup landings. Walter does not list, it commits. Walter does not announce that it is intelligent.\n\nThe visual character borrows from Patagonia and Airbnb 2014 to 2017. It is warm in a dark room.",
+    "overview": "Walter holds the frame the way a filmmaker holds it: still, considered, and trusting that the place will do the work. The system is a daylight field: paper-bright canvas, ink for words, and photography carrying every drop of color, because Walter is the moment in the Mitty film when the road opens under a wide Icelandic sky. Restraint is in service of warmth, not corporate neutrality. Photography always beats decoration. Every screen exists to drive toward one moment: a real flight, a real hotel, and a real Tuesday dinner sitting in the same cart, ready to book.\n\nThe system rejects the lane of Kayak / Expedia / Booking.com (transactional grey portals where every screen looks like a 1099), the lane of Pinterest-pretty travel listicles, and the lane of generic AI startup landings. Walter does not list, it commits. Walter does not announce that it is intelligent.\n\nThe visual character borrows from Patagonia and Airbnb 2014 to 2017. It is warm in open daylight.",
     "keyCharacteristics": [
-      "Tinted-blue near-black canvas; cornflower as the only voice.",
-      "Real photography, never illustration, on any surface that has room for an image.",
-      "Tonal layering for depth; shadow only on the SearchBar and popovers as a structural cue.",
+      "Paper-bright, cool-tinted canvas; ink for words; cornflower as the only voice.",
+      "Real photography, never illustration, on any surface that has room for an image. Dark chrome (Tinted Pitch) exists only on top of photographs.",
+      "Tonal layering for depth; shadow only on the SearchBar and popovers as a structural cue, always soft slate-blue, never grey-black.",
       "Geist Sans throughout; one type family, sharp scale ratios.",
       "Confidence in motion: exponential ease, never bounce, never announce."
     ],
     "rules": [
-      { "name": "The Field Cinematographer Rule", "body": "If a screen would still make the user want to go after the copy was removed, it is working. If the copy is doing the lifting, the imagery is too weak or the layout is too busy.", "section": "overview" },
-      { "name": "The Booking Spine Rule", "body": "Every page must answer the question 'what gets the user closer to a real booking?' If the answer is 'more options,' the page is wrong.", "section": "overview" },
-      { "name": "The One Voice Rule", "body": "Cornflower Beacon appears on at most ten percent of any rendered screen. Its scarcity is the point. If two cornflower elements compete in a viewport, one of them is wrong.", "section": "colors" },
-      { "name": "The Anti-Gradient Rule", "body": "Linear gradients are prohibited on body surfaces. The only allowed gradient is the off-center cornflower radial in the hero, and the logo's first-light wash inside its 7x7 chip. No gradient text. Ever.", "section": "colors" },
-      { "name": "The No-Pure-Neutral Rule", "body": "Never #000, never #fff. Every neutral carries the 250-degree hue tint at chroma 0.006 to 0.008.", "section": "colors" },
-      { "name": "The Earned Superlative Rule", "body": "Walter never uses 'amazing,' 'stunning,' 'you have to see.' Type carries no exclamation marks. If a phrase needs an adjective to land, the typography is too small or the photograph above it is too weak.", "section": "typography" },
-      { "name": "The One-Headline Rule", "body": "A page has one Display. No double heroes, no eyebrow-plus-headline stacks.", "section": "typography" },
-      { "name": "The 65ch Rule", "body": "Any block of body copy that exceeds 75 characters per line is wrong.", "section": "typography" },
-      { "name": "The Tonal-First Rule", "body": "When in doubt about depth, step the surface tone, do not add shadow. Canvas, Quiet Slate, Raised Slate, Hover Slate. If a fourth is needed, the design is wrong.", "section": "elevation" },
-      { "name": "The Float-Earns-Shadow Rule", "body": "Shadow is reserved for elements that genuinely overhang the page (the SearchBar pill, the popovers). It is never decorative.", "section": "elevation" }
+      {
+        "name": "The Field Cinematographer Rule",
+        "body": "If a screen would still make the user want to go after the copy was removed, it is working. If the copy is doing the lifting, the imagery is too weak or the layout is too busy.",
+        "section": "overview"
+      },
+      {
+        "name": "The Booking Spine Rule",
+        "body": "Every page must answer the question 'what gets the user closer to a real booking?' If the answer is 'more options,' the page is wrong.",
+        "section": "overview"
+      },
+      {
+        "name": "The One Voice Rule",
+        "body": "Cornflower Beacon appears on at most ten percent of any rendered screen. Its scarcity is the point. If two cornflower elements compete in a viewport, one of them is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Anti-Gradient Rule",
+        "body": "Linear gradients are prohibited on body surfaces. The only allowed gradient is the off-center cornflower radial in the hero, and the logo's first-light wash inside its 7x7 chip. No gradient text. Ever.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Pure-Neutral Rule",
+        "body": "Never #000, never #fff. Every neutral carries a cool hue tint (250 to 258 degrees, chroma 0.002 to 0.02).",
+        "section": "colors"
+      },
+      {
+        "name": "The Earned Superlative Rule",
+        "body": "Walter never uses 'amazing,' 'stunning,' 'you have to see.' Type carries no exclamation marks. If a phrase needs an adjective to land, the typography is too small or the photograph above it is too weak.",
+        "section": "typography"
+      },
+      {
+        "name": "The One-Headline Rule",
+        "body": "A page has one Display. No double heroes, no eyebrow-plus-headline stacks.",
+        "section": "typography"
+      },
+      {
+        "name": "The 65ch Rule",
+        "body": "Any block of body copy that exceeds 75 characters per line is wrong.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tonal-First Rule",
+        "body": "When in doubt about depth, step the surface tone, do not add shadow. Paper, Card, Surface 2, Surface 3. If a fourth is needed, the design is wrong.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Float-Earns-Shadow Rule",
+        "body": "Shadow is reserved for elements that genuinely overhang the page (the SearchBar pill, the popovers). It is never decorative.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do use real photography on any surface that has room for an image.",
       "Do keep Cornflower Beacon under ten percent of any rendered screen.",
-      "Do step surface tones (Tinted Pitch, Quiet Slate, Raised Slate, Hover Slate) when more depth is needed. Tonal layering before shadow, always.",
+      "Do step surface tones (Paper, Card, Surface 2, Surface 3) when more depth is needed. Tonal layering before shadow, always.",
       "Do use exponential ease (cubic-bezier(0.2, 0.8, 0.2, 1)) on every transition. 150ms for state, 180ms for popovers, 600ms for hero entrances.",
       "Do cap body line length at 65 to 75 characters.",
       "Do name colors by what they evoke (Cornflower Beacon, Reykjavík Sky) in code comments and prose.",
@@ -220,7 +322,7 @@
       "Don't look like Kayak, Expedia, or Booking.com. If a screen reads as a 1099, it is failing.",
       "Don't look like a Pinterest-pretty travel listicle. No grids of decontextualized photos with captions like 'Tropical Paradise.'",
       "Don't look like a generic AI startup landing. No three-icon feature row. No 'powered by AI' copy.",
-      "Don't use #fff or #000. Ever.",
+      "Don't use #fff or #000. Ever. Use Paper, Card, and Ink; Snow Off Glacier only on photos and accent fills.",
       "Don't use side-stripe borders (border-left greater than 1px as a colored accent).",
       "Don't use gradient text.",
       "Don't use glassmorphism decoratively. The only allowed blur is nav-glass on the sticky header.",

@@ -1,3 +1,41 @@
+# Session changes - 2026-06-10
+
+## Theme: dark to bright "daylight field"
+
+- `tailwind.config.ts`: new tokens `ink` / `ink-soft` / `ink-faint`, `paper`, `card`, `line`; `surface-1/2/3` now bright; legacy `quiet-slate` / `raised-slate` / `hover-slate` / `page-bg` / `gray-dark` re-pointed bright so unswept files flip with the theme. `tinted-pitch` stays dark, reserved for photo overlays; `snow-off-glacier` stays near-white for text on photos and accent fills.
+- `globals.css`: nav-glass light, card-base white with line hairline, bright hero radials, soft shadows in `rgba(20,30,60,...)`.
+- `CLAUDE.md`, `DESIGN.md`, and `.impeccable/design.json` updated to the bright system (canvas Paper, text Ink, cards Card with Line hairlines; cornflower accent unchanged).
+
+## Canonical journey built
+
+- `/`: search pill, validation + keyboard fixes; routes to `/trips`
+- `/trips` (NEW): three AI-matched trip cards via `POST /api/generate`, curated-trips fallback, writes `walter_trip`
+- `/results`: manual add only, `walter_trip` hero, sticky cart bar
+- `/trip`: share-by-email via share link + mailto, "Book everything" CTA
+- `/checkout` (NEW): traveler form, one-button "Book it all", `POST /api/checkout` simulated booking agent
+- `/checkout/confirmation` (NEW): end page, reads `walter_booking`, confirmation codes, demo-checkout footnote
+
+## localStorage contracts
+
+- `walter_prefs` (search prefs), `walter_trip` (chosen trip `{id, title, destination, days, estTotal, summary, tier}`), `walter_cart` (cart store), `walter_booking` (checkout result)
+
+## Deletions
+
+- `app/old/home`, `app/preview`, `app/onboarding` + `components/onboarding/*`
+- Root `app/compare/page.tsx` (`compare/local` and `compare/saved` kept)
+- `components/quiz/Step*.tsx` + `StepWrapper` + `StepAboutYou` + `DestinationAutocomplete`, `components/trip/RefinementChat`, `components/results/ExperienceCard`, `components/CommunityTrips`
+- `lib/stores/quizStore.ts`: the 7-step quiz no longer exists; the SearchBar pill on `/` plus `/clarify` and `/quick` are the entry flows
+
+## New files
+
+- `PURCHASE_AGENT.md` at repo root: feasibility verdict on real auto-booking
+
+## Route audit
+
+- Fixed 13 dead links / stale-state bugs: explore `?destination=` prefill now works, stale `walter_trip` cleared at 7 entry points, legacy `scoutie_prefs` fallback removed
+
+---
+
 # Session changes — 2026-05-19 to 2026-05-22
 
 Multi-session work. Localhost first, push pending on user request.
