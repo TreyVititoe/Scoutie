@@ -1,2 +1,131 @@
-// Typed API client — wired up once backend is extracted from Next.js API routes
-export {};
+/**
+ * Typed wrappers around the Walter Next.js API routes.
+ *
+ * Mobile (or any non-Next consumer) calls `configureApiClient({ baseUrl })`
+ * once at boot, then uses `api.flights.search(...)` etc.
+ *
+ * Web can call the same wrappers with `baseUrl: ""` (default) — fetch will
+ * resolve relative paths against the current origin.
+ */
+
+import type {
+  Flight,
+  Hotel,
+  ScoredEvent,
+  Suggestion,
+  TripPrefs,
+} from "@walter/shared";
+
+let baseUrl = "";
+
+export function configureApiClient(opts: { baseUrl: string }) {
+  baseUrl = opts.baseUrl.replace(/\/$/, "");
+}
+
+export function getApiBaseUrl() {
+  return baseUrl;
+}
+
+async function post<T>(path: string, body: unknown): Promise<T> {
+  const resp = await fetch(`${baseUrl}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`POST ${path} failed: ${resp.status} ${text}`);
+  }
+  return resp.json() as Promise<T>;
+}
+
+export type FlightSearchInput = {
+  origin: string;
+  destination: string;
+  departDate: string;
+  returnDate: string;
+  adults?: number;
+  cabinClass?: "economy" | "premium_economy" | "business" | "first";
+};
+
+export type HotelSearchInput = {
+  destination: string;
+  checkIn: string;
+  checkOut: string;
+  adults?: number;
+  rooms?: number;
+};
+
+export type EventSearchInput = {
+  destination: string;
+  startDate: string;
+  endDate: string;
+  vibes?: string[];
+};
+
+export type SuggestionInput = {
+  destination: string;
+  startDate: string;
+  endDate: string;
+  interests?: string[];
+  travelers?: number;
+  travelerType?: string;
+};
+
+export type CompareInput = TripPrefs;
+
+export type CompareTripTier = {
+  tier: "comfortable" | "balanced" | "ambitious";
+  title: string;
+  summary: string;
+  totalCost: number;
+  highlights: string[];
+  image?: string;
+};
+
+export type PackingItem = { name: string; quantity: number; essential: boolean };
+export type PackingCategory = { name: string; items: PackingItem[] };
+
+export const api = {
+  flights: {
+    search: (input: FlightSearchInput) =>
+      post<{ flights: Flight[] }>("/api/flights", input),
+  },
+  hotels: {
+    search: (input: HotelSearchInput) =>
+      post<{ hotels: Hotel[] }>("/api/hotels", input),
+  },
+  events: {
+    search: (input: EventSearchInput) =>
+      post<{
+        exactMatches: ScoredEvent[];
+        similarMatches: ScoredEvent[];
+        topInArea: ScoredEvent[];
+      }>("/api/search", input),
+  },
+  suggestions: {
+    generate: (input: SuggestionInput) =>
+      post<{ suggestions: Suggestion[] }>("/api/suggestions", input),
+  },
+  compare: {
+    generate: (input: CompareInput) =>
+      post<{ trips: CompareTripTier[] }>("/api/compare", input),
+  },
+  packingList: {
+    generate: (input: {
+      destination: string;
+      startDate: string;
+      endDate: string;
+      activities: string[];
+      pace: string;
+      travelers: number;
+    }) => post<{ categories: PackingCategory[] }>("/api/packing-list", input),
+  },
+  photo: {
+    /** Returns the proxied photo URL (Next route handles redirect + cache). */
+    url: (query: string) =>
+      `${baseUrl}/api/photo?query=${encodeURIComponent(query)}`,
+  },
+};
+
+export type WalterApi = typeof api;

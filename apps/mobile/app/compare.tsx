@@ -1,0 +1,159 @@
+import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { Image } from "expo-image";
+import { SymbolView } from "expo-symbols";
+import { Pressable, ScrollView, Text, View } from "react-native";
+
+import { SkeletonCard } from "../components/Skeleton";
+import { api } from "../lib/apiClient";
+import { usePrefs } from "../lib/stores/walterPrefsStore";
+import { colors } from "../theme/colors";
+
+export default function CompareScreen() {
+  const prefs = usePrefs((s) => s.prefs);
+
+  const { data, isLoading, error, refetch, isRefetching } = useQuery({
+    queryKey: ["compare", prefs],
+    queryFn: () =>
+      api.compare.generate({
+        destination: prefs.destination ?? "",
+        startDate: prefs.startDate ?? "",
+        endDate: prefs.endDate ?? "",
+        travelers: prefs.travelers ?? 2,
+        travelersType: prefs.travelersType ?? "couple",
+        budget: prefs.budget ?? 0,
+        budgetType: prefs.budgetType ?? "total",
+        vibes: prefs.vibes ?? [],
+        stay: prefs.stay ?? [],
+      }),
+    enabled: !!prefs.destination,
+    staleTime: 5 * 60_000,
+  });
+
+  if (isLoading) {
+    return (
+      <ScrollView
+        className="flex-1 bg-page-bg"
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
+      >
+        <Text className="text-white/55 text-[13px] mb-5 leading-5">
+          Walter is scouting three angles on {prefs.destination ?? "your trip"}…
+        </Text>
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </ScrollView>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 bg-page-bg items-center justify-center px-8">
+        <SymbolView
+          name="exclamationmark.triangle.fill"
+          tintColor={colors.textTertiary}
+          size={36}
+          fallback={null}
+        />
+        <Text className="text-white text-[16px] font-semibold mt-4 text-center">
+          Couldn't reach Walter
+        </Text>
+        <Text className="text-white/55 text-[13px] mt-2 text-center">
+          {String((error as Error).message)}
+        </Text>
+        <Pressable
+          onPress={() => refetch()}
+          className="mt-5 px-6 py-3 rounded-full"
+          style={{ backgroundColor: colors.accent }}
+        >
+          <Text className="text-white text-[14px] font-semibold">
+            {isRefetching ? "Retrying…" : "Try again"}
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView
+      className="flex-1 bg-page-bg"
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
+    >
+      <Text className="text-white/55 text-[13px] mb-5 leading-5">
+        Three takes on {prefs.destination}. Pick one and Walter will lay out
+        the rest.
+      </Text>
+
+      {data?.trips.map((tier) => (
+        <Pressable
+          key={tier.tier}
+          onPress={() => {
+            usePrefs.getState().patch({
+              devotion:
+                tier.tier === "ambitious"
+                  ? "ambitious"
+                  : tier.tier === "comfortable"
+                  ? "casual"
+                  : "balanced",
+              budget: tier.totalCost,
+            });
+            router.push("/results");
+          }}
+          className="bg-surface-1 rounded-3xl overflow-hidden border border-white/10 mb-4"
+        >
+          {tier.image ? (
+            <Image
+              source={{ uri: tier.image }}
+              contentFit="cover"
+              style={{ width: "100%", height: 160 }}
+            />
+          ) : (
+            <View
+              style={{ height: 160, backgroundColor: colors.surface2 }}
+              className="items-center justify-center"
+            >
+              <SymbolView
+                name="photo"
+                tintColor={colors.textTertiary}
+                size={32}
+                fallback={null}
+              />
+            </View>
+          )}
+          <View className="p-5">
+            <Text className="text-accent text-[11px] font-bold uppercase tracking-wider">
+              {tier.tier}
+            </Text>
+            <Text className="text-white text-[22px] font-bold tracking-tight mt-1">
+              {tier.title}
+            </Text>
+            <Text className="text-white/65 text-[14px] mt-2 leading-5">
+              {tier.summary}
+            </Text>
+            <View className="mt-4 flex-row items-center justify-between">
+              <Text className="text-white text-[18px] font-bold">
+                ${tier.totalCost.toLocaleString()}
+              </Text>
+              <View
+                className="px-3.5 py-2 rounded-full flex-row items-center gap-1.5"
+                style={{ backgroundColor: colors.accent }}
+              >
+                <Text className="text-white text-[13px] font-semibold">
+                  Build this
+                </Text>
+                <SymbolView
+                  name="arrow.right"
+                  tintColor="white"
+                  size={12}
+                  fallback={null}
+                />
+              </View>
+            </View>
+          </View>
+        </Pressable>
+      ))}
+    </ScrollView>
+  );
+}
