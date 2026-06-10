@@ -91,10 +91,10 @@ export default function CommunityTrips() {
           transition={{ duration: 0.3 }}
           className="text-center mb-12"
         >
-          <h2 className="text-[32px] font-semibold text-white">
+          <h2 className="text-[32px] font-semibold text-ink">
             Trips the community loves
           </h2>
-          <p className="text-white/70 text-lg mt-3 max-w-2xl mx-auto">
+          <p className="text-ink-soft text-lg mt-3 max-w-2xl mx-auto">
             Real trips built by real travelers. Upvote your favorites or fork
             one to make it your own.
           </p>
@@ -104,11 +104,11 @@ export default function CommunityTrips() {
           {loading
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="card-base overflow-hidden animate-pulse">
-                  <div className="h-40 bg-page-bg" />
+                  <div className="h-40 bg-raised-slate" />
                   <div className="p-5 space-y-3">
-                    <div className="h-4 bg-page-bg rounded w-2/3" />
-                    <div className="h-3 bg-page-bg rounded w-full" />
-                    <div className="h-3 bg-page-bg rounded w-1/2" />
+                    <div className="h-4 bg-raised-slate rounded w-2/3" />
+                    <div className="h-3 bg-raised-slate rounded w-full" />
+                    <div className="h-3 bg-raised-slate rounded w-1/2" />
                   </div>
                 </div>
               ))
@@ -150,13 +150,13 @@ export default function CommunityTrips() {
                         )}
                       </div>
                       <div className="p-5">
-                        <p className="font-semibold text-[17px] text-gray-dark">
+                        <p className="font-semibold text-[17px] text-ink">
                           {trip.destination}
                         </p>
-                        <p className="text-on-light-secondary text-sm mt-1 line-clamp-2">
+                        <p className="text-ink-soft text-sm mt-1 line-clamp-2">
                           {trip.title}
                         </p>
-                        <div className="flex items-center justify-between pt-3 mt-3 border-t border-[rgba(91,141,239,0.06)]">
+                        <div className="flex items-center justify-between pt-3 mt-3 border-t border-line">
                           <span className="font-semibold text-accent">
                             ${trip.total_estimated_cost.toLocaleString()}
                           </span>

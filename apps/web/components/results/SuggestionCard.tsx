@@ -39,37 +39,37 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
     <div className="card-base p-5">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-[10px] icon-gradient flex items-center justify-center">
-          <span className="material-symbols-outlined text-accent-light text-xl">{icon}</span>
+          <span className="material-symbols-outlined text-accent text-xl">{icon}</span>
         </div>
-        <span className="text-[11px] uppercase tracking-widest text-white/55 font-medium">
+        <span className="text-[11px] uppercase tracking-widest text-ink-faint font-medium">
           {suggestion.type === "restaurant" ? "Dining" : suggestion.type === "site" ? "Landmark" : suggestion.type}
         </span>
       </div>
 
-      <h3 className="font-semibold text-snow-off-glacier text-lg leading-tight mb-2 line-clamp-2">
+      <h3 className="font-semibold text-ink text-lg leading-tight mb-2 line-clamp-2">
         {suggestion.title}
       </h3>
 
-      <p className="text-sm text-white/70 leading-relaxed mb-4 line-clamp-3">
+      <p className="text-sm text-ink-soft leading-relaxed mb-4 line-clamp-3">
         {suggestion.description}
       </p>
 
       <div className="flex items-center gap-1.5 mb-4">
-        <span className="material-symbols-outlined text-white/45 text-[14px]">location_on</span>
-        <p className="text-xs text-white/55 truncate">{suggestion.locationName}</p>
+        <span className="material-symbols-outlined text-ink-faint text-[14px]">location_on</span>
+        <p className="text-xs text-ink-faint truncate">{suggestion.locationName}</p>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-white/10">
+      <div className="flex items-center justify-between pt-4 border-t border-line">
         <div>
           {suggestion.estimatedCost != null && suggestion.estimatedCost > 0 ? (
             <>
-              <p className="font-semibold text-snow-off-glacier text-[21px]">
+              <p className="font-semibold text-ink text-[21px]">
                 ${suggestion.estimatedCost}
               </p>
-              <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold">estimated</p>
+              <p className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold">estimated</p>
             </>
           ) : (
-            <p className="text-sm font-semibold text-white/55">Free or varies</p>
+            <p className="text-sm font-semibold text-ink-soft">Free or varies</p>
           )}
         </div>
         <button
@@ -77,7 +77,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
           className={`rounded-pill px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
             added
               ? "bg-accent text-snow-off-glacier hover:bg-accent-light"
-              : "border border-white/25 text-snow-off-glacier hover:bg-white/10 hover:border-white/40"
+              : "border border-ink/20 text-ink hover:bg-ink/5 hover:border-ink/40"
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">

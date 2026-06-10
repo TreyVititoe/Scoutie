@@ -15,8 +15,8 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
   return (
     <div className="flex flex-col flex-1">
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-gray-dark mb-2">What&apos;s your budget?</h1>
-        <p className="text-on-light-secondary">We&apos;ll find options that fit.</p>
+        <h1 className="text-3xl font-semibold text-ink mb-2">What&apos;s your budget?</h1>
+        <p className="text-ink-soft">We&apos;ll find options that fit.</p>
       </div>
 
       {/* Toggle */}
@@ -27,8 +27,8 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
             onClick={() => update({ budgetType: type })}
             className={`flex-1 py-2 rounded-pill text-sm font-semibold transition-all ${
               prefs.budgetType === type
-                ? "bg-white text-gray-dark shadow-sm"
-                : "text-on-light-secondary"
+                ? "bg-white text-ink shadow-sm"
+                : "text-ink-soft"
             }`}
           >
             {type === "total" ? "Total trip" : "Per day"}
@@ -38,10 +38,10 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
 
       {/* Amount display */}
       <div className="text-center mb-6">
-        <span className="text-5xl font-semibold text-gray-dark">
+        <span className="text-5xl font-semibold text-ink">
           ${prefs.budget.toLocaleString()}
         </span>
-        <span className="text-on-light-tertiary text-lg ml-2">
+        <span className="text-ink-faint text-lg ml-2">
           {prefs.budgetType === "per_day" ? "/ day" : "total"}
         </span>
       </div>
@@ -68,7 +68,7 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
               className={`px-4 py-2 rounded-pill border text-sm font-medium transition-colors ${
                 prefs.budget === p
                   ? "bg-accent border-accent text-white"
-                  : "border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent/30"
+                  : "border-[rgba(91,141,239,0.08)] text-ink-soft hover:border-accent/30"
               }`}
             >
               ${p.toLocaleString()}
@@ -77,7 +77,7 @@ export default function StepBudget({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-[rgba(91,141,239,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
+        <button onClick={onBack} className="flex-1 border border-[rgba(91,141,239,0.08)] text-ink-soft font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
           Back
         </button>
         <button onClick={onNext} className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light text-white font-semibold py-4 rounded-[10px] text-lg transition-colors">

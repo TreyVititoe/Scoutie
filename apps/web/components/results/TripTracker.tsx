@@ -83,7 +83,7 @@ function DesktopSidebar() {
       <div className="card-base p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-[21px] font-semibold text-snow-off-glacier">
+          <h2 className="text-[21px] font-semibold text-ink">
             Your Trip
           </h2>
           {itemCount > 0 && (
@@ -96,10 +96,10 @@ function DesktopSidebar() {
         {/* Item list */}
         {itemCount === 0 ? (
           <div className="py-8 text-center">
-            <span className="material-symbols-outlined text-white/45 text-4xl mb-3 block">
+            <span className="material-symbols-outlined text-ink-faint text-4xl mb-3 block">
               add_shopping_cart
             </span>
-            <p className="text-white/45 text-sm font-sans leading-relaxed">
+            <p className="text-ink-faint text-sm font-sans leading-relaxed">
               Add flights, stays, and events to build your trip
             </p>
           </div>
@@ -110,7 +110,7 @@ function DesktopSidebar() {
               if (!items || items.length === 0) return null;
               return (
                 <div key={type} className="mb-4 last:mb-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-white/45 mb-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-faint mb-2">
                     {typeLabels[type]}
                   </p>
                   <AnimatePresence mode="popLayout">
@@ -124,23 +124,23 @@ function DesktopSidebar() {
                         transition={{ duration: 0.25, ease: "easeOut" }}
                         className="bg-raised-slate rounded-[14px] p-3 flex items-center gap-3 mb-2 group"
                       >
-                        <span className="material-symbols-outlined text-white/70 text-lg flex-shrink-0">
+                        <span className="material-symbols-outlined text-ink-soft text-lg flex-shrink-0">
                           {typeIcons[item.type]}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-snow-off-glacier truncate">
+                          <p className="text-sm font-medium text-ink truncate">
                             {item.title}
                           </p>
                         </div>
-                        <span className="text-sm font-semibold text-snow-off-glacier flex-shrink-0">
+                        <span className="text-sm font-semibold text-ink flex-shrink-0">
                           {formatPrice(item.price)}
                         </span>
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-[8px] hover:bg-white/10"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-[8px] hover:bg-ink/10"
                           aria-label={`Remove ${item.title}`}
                         >
-                          <span className="material-symbols-outlined text-white/45 text-base">
+                          <span className="material-symbols-outlined text-ink-faint text-base">
                             close
                           </span>
                         </button>
@@ -154,12 +154,12 @@ function DesktopSidebar() {
         )}
 
         {/* Footer */}
-        <div className="border-t border-white/10 mt-4 pt-4">
+        <div className="border-t border-line mt-4 pt-4">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm text-white/70">
+            <span className="text-sm text-ink-soft">
               Estimated total
             </span>
-            <span className="font-semibold text-snow-off-glacier text-2xl">
+            <span className="font-semibold text-ink text-2xl">
               {totalPrice > 0 ? `$${totalPrice.toLocaleString()}` : "--"}
             </span>
           </div>
@@ -169,17 +169,17 @@ function DesktopSidebar() {
               className={`flex-1 block text-center text-sm font-semibold transition-colors ${
                 itemCount > 0
                   ? "bg-accent text-snow-off-glacier rounded-pill px-4 py-2 hover:bg-accent-light transition-colors"
-                  : "bg-raised-slate text-white/45 rounded-pill px-4 py-2 pointer-events-none"
+                  : "bg-raised-slate text-ink-faint rounded-pill px-4 py-2 pointer-events-none"
               }`}
               aria-disabled={itemCount === 0}
               tabIndex={itemCount === 0 ? -1 : undefined}
             >
-              View My Trip
+              View my trip
             </Link>
             {itemCount > 0 && (
               <button
                 onClick={share}
-                className="relative flex-shrink-0 border border-white/25 text-snow-off-glacier rounded-pill px-4 py-2 text-sm flex items-center justify-center hover:bg-white/10 hover:border-white/40 transition-colors"
+                className="relative flex-shrink-0 border border-ink/20 text-ink rounded-pill px-4 py-2 text-sm flex items-center justify-center hover:bg-ink/5 hover:border-ink/40 transition-colors"
                 aria-label="Share trip"
                 title="Share trip"
               >
@@ -242,23 +242,23 @@ function MobileBar() {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-quiet-slate rounded-t-[14px] max-h-[70vh] flex flex-col shadow-elevated border-t border-white/10"
+            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-card rounded-t-[14px] max-h-[70vh] flex flex-col shadow-elevated border-t border-line"
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full bg-white/30" />
+              <div className="w-10 h-1 rounded-full bg-ink/20" />
             </div>
 
             {/* Sheet header */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-white/10">
-              <h2 className="text-[21px] font-semibold text-snow-off-glacier">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-line">
+              <h2 className="text-[21px] font-semibold text-ink">
                 Your Trip
               </h2>
               <button
                 onClick={() => setExpanded(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-[8px] hover:bg-raised-slate"
               >
-                <span className="material-symbols-outlined text-white/70 text-xl">
+                <span className="material-symbols-outlined text-ink-soft text-xl">
                   close
                 </span>
               </button>
@@ -271,7 +271,7 @@ function MobileBar() {
                 if (!items || items.length === 0) return null;
                 return (
                   <div key={type} className="mb-4 last:mb-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/45 mb-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-faint mb-2">
                       {typeLabels[type]}
                     </p>
                     <AnimatePresence mode="popLayout">
@@ -290,23 +290,23 @@ function MobileBar() {
                           transition={{ duration: 0.25, ease: "easeOut" }}
                           className="bg-raised-slate rounded-[14px] p-3 flex items-center gap-3 mb-2"
                         >
-                          <span className="material-symbols-outlined text-white/70 text-lg flex-shrink-0">
+                          <span className="material-symbols-outlined text-ink-soft text-lg flex-shrink-0">
                             {typeIcons[item.type]}
                           </span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-snow-off-glacier truncate">
+                            <p className="text-sm font-medium text-ink truncate">
                               {item.title}
                             </p>
                           </div>
-                          <span className="text-sm font-semibold text-snow-off-glacier flex-shrink-0">
+                          <span className="text-sm font-semibold text-ink flex-shrink-0">
                             {formatPrice(item.price)}
                           </span>
                           <button
                             onClick={() => removeItem(item.id)}
-                            className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-[8px] hover:bg-white/10"
+                            className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-[8px] hover:bg-ink/10"
                             aria-label={`Remove ${item.title}`}
                           >
-                            <span className="material-symbols-outlined text-white/45 text-base">
+                            <span className="material-symbols-outlined text-ink-faint text-base">
                               close
                             </span>
                           </button>
@@ -319,12 +319,12 @@ function MobileBar() {
             </div>
 
             {/* Sheet footer */}
-            <div className="border-t border-white/10 px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="border-t border-line px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-white/70">
+                <span className="text-sm text-ink-soft">
                   Estimated total
                 </span>
-                <span className="font-semibold text-snow-off-glacier text-2xl">
+                <span className="font-semibold text-ink text-2xl">
                   ${totalPrice.toLocaleString()}
                 </span>
               </div>
@@ -333,11 +333,11 @@ function MobileBar() {
                   href="/trip"
                   className="flex-1 block bg-accent text-snow-off-glacier rounded-pill px-4 py-2 text-center text-sm font-semibold hover:bg-accent-light transition-colors"
                 >
-                  View My Trip
+                  View my trip
                 </Link>
                 <button
                   onClick={share}
-                  className="relative flex-shrink-0 border border-white/25 text-snow-off-glacier rounded-pill px-4 py-2 text-sm flex items-center justify-center hover:bg-white/10 hover:border-white/40 transition-colors"
+                  className="relative flex-shrink-0 border border-ink/20 text-ink rounded-pill px-4 py-2 text-sm flex items-center justify-center hover:bg-ink/5 hover:border-ink/40 transition-colors"
                   aria-label="Share trip"
                   title="Share trip"
                 >
@@ -365,7 +365,7 @@ function MobileBar() {
 
       {/* Collapsed bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden pb-[env(safe-area-inset-bottom)]">
-        <div className="bg-quiet-slate border-t border-white/10 px-5 py-3 flex items-center justify-between">
+        <div className="bg-card border-t border-line px-5 py-3 flex items-center justify-between">
           <button
             onClick={() => setExpanded(true)}
             className="flex items-center gap-3"
@@ -373,14 +373,14 @@ function MobileBar() {
             <span className="bg-accent text-snow-off-glacier text-[12px] font-semibold rounded-pill px-2 h-5 flex items-center justify-center">
               {itemCount}
             </span>
-            <span className="font-semibold text-snow-off-glacier text-lg">
+            <span className="font-semibold text-ink text-lg">
               ${totalPrice.toLocaleString()}
             </span>
           </button>
           <div className="flex items-center gap-2">
             <button
               onClick={share}
-              className="relative border border-white/25 text-snow-off-glacier rounded-pill px-3 py-1.5 flex items-center justify-center hover:bg-white/10 hover:border-white/40 transition-colors"
+              className="relative border border-ink/20 text-ink rounded-pill px-3 py-1.5 flex items-center justify-center hover:bg-ink/5 hover:border-ink/40 transition-colors"
               aria-label="Share trip"
             >
               <span className="material-symbols-outlined text-lg">
@@ -403,7 +403,7 @@ function MobileBar() {
               href="/trip"
               className="bg-accent text-snow-off-glacier rounded-pill px-4 py-2 text-sm font-semibold hover:bg-accent-light transition-colors"
             >
-              View Trip
+              View my trip
             </Link>
           </div>
         </div>

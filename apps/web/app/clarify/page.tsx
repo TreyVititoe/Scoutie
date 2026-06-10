@@ -127,14 +127,14 @@ export default function ClarifyPage() {
             <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
               <span className="text-tinted-pitch text-[14px] font-black italic leading-none -mt-px">W</span>
             </span>
-            <span className="text-snow-off-glacier text-[16px] font-semibold tracking-tight">Walter</span>
+            <span className="text-ink text-[16px] font-semibold tracking-tight">Walter</span>
           </Link>
           <Link
-            href="/compare"
-            className="text-white/75 hover:text-snow-off-glacier text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-white/10 transition-colors flex items-center gap-1.5"
+            href="/"
+            className="text-ink-soft hover:text-ink text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-            Back to trips
+            Back
           </Link>
         </div>
       </header>
@@ -144,7 +144,7 @@ export default function ClarifyPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: EASE }}
-          className="text-accent-light text-[11px] uppercase tracking-[2.5px] font-semibold mb-3"
+          className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3"
         >
           Three last things
         </motion.p>
@@ -152,7 +152,7 @@ export default function ClarifyPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, duration: 0.6, ease: EASE }}
-          className="text-snow-off-glacier text-[32px] sm:text-[40px] font-semibold tracking-display leading-[1.05] mb-3"
+          className="text-ink text-[32px] sm:text-[40px] font-semibold tracking-display leading-[1.05] mb-3"
         >
           {destination}, locked in.
         </motion.h1>
@@ -160,7 +160,7 @@ export default function ClarifyPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6, ease: EASE }}
-          className="text-white/65 text-[15px] sm:text-[16px] mb-12 max-w-[55ch]"
+          className="text-ink-soft text-[15px] sm:text-[16px] mb-12 max-w-[55ch]"
         >
           Walter needs three more facts before he books your spine.
         </motion.p>
@@ -173,30 +173,30 @@ export default function ClarifyPage() {
         >
           {/* Travelers */}
           <section>
-            <h2 className="text-snow-off-glacier text-[18px] font-semibold mb-1">How many of you?</h2>
-            <p className="text-white/55 text-[13px] mb-5">Adults only. We will ask about kids on the booking page if you need it.</p>
+            <h2 className="text-ink text-[18px] font-semibold mb-1">How many of you?</h2>
+            <p className="text-ink-faint text-[13px] mb-5">Adults only. We will ask about kids on the booking page if you need it.</p>
             <div className="flex items-center gap-5">
               <button
                 type="button"
                 disabled={travelers <= 1}
                 onClick={() => setTravelers(Math.max(1, travelers - 1))}
-                className="w-11 h-11 rounded-full border border-white/25 text-snow-off-glacier hover:border-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                className="w-11 h-11 rounded-full border border-ink/20 text-ink hover:border-ink disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                 aria-label="Decrease travelers"
               >
                 <span className="material-symbols-outlined text-[20px]">remove</span>
               </button>
-              <span className="text-snow-off-glacier text-[28px] font-semibold tabular-nums w-12 text-center">
+              <span className="text-ink text-[28px] font-semibold tabular-nums w-12 text-center">
                 {travelers}
               </span>
               <button
                 type="button"
                 onClick={() => setTravelers(travelers + 1)}
-                className="w-11 h-11 rounded-full border border-white/25 text-snow-off-glacier hover:border-white flex items-center justify-center transition-colors"
+                className="w-11 h-11 rounded-full border border-ink/20 text-ink hover:border-ink flex items-center justify-center transition-colors"
                 aria-label="Increase travelers"
               >
                 <span className="material-symbols-outlined text-[20px]">add</span>
               </button>
-              <span className="text-white/55 text-[13px] ml-2">
+              <span className="text-ink-faint text-[13px] ml-2">
                 {travelers === 1 ? "Solo trip" : travelers === 2 ? "Two of you" : `${travelers} travelers`}
               </span>
             </div>
@@ -204,8 +204,8 @@ export default function ClarifyPage() {
 
           {/* Accommodation */}
           <section>
-            <h2 className="text-snow-off-glacier text-[18px] font-semibold mb-1">Where do you want to stay?</h2>
-            <p className="text-white/55 text-[13px] mb-5">Pick one. You can always swap on the results page.</p>
+            <h2 className="text-ink text-[18px] font-semibold mb-1">Where do you want to stay?</h2>
+            <p className="text-ink-faint text-[13px] mb-5">Pick one. You can always swap on the results page.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {ACCOMMODATION_OPTIONS.map((opt) => {
                 const selected = accommodation === opt.id;
@@ -215,21 +215,21 @@ export default function ClarifyPage() {
                     type="button"
                     onClick={() => setAccommodation(opt.id)}
                     className={`text-left card-base p-4 flex items-center gap-4 transition-colors ${
-                      selected ? "border-accent ring-1 ring-accent" : "hover:border-white/20"
+                      selected ? "border-accent ring-1 ring-accent" : "hover:border-ink/20"
                     }`}
                   >
                     <span
                       className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 ${
-                        selected ? "bg-accent/20" : "bg-raised-slate"
+                        selected ? "bg-accent/15" : "bg-raised-slate"
                       }`}
                     >
-                      <span className={`material-symbols-outlined text-[20px] ${selected ? "text-accent-light" : "text-white/70"}`}>
+                      <span className={`material-symbols-outlined text-[20px] ${selected ? "text-accent" : "text-ink-soft"}`}>
                         {opt.icon}
                       </span>
                     </span>
                     <div className="min-w-0">
-                      <p className="text-snow-off-glacier text-[14px] font-semibold">{opt.label}</p>
-                      <p className="text-white/55 text-[12px] truncate">{opt.sub}</p>
+                      <p className="text-ink text-[14px] font-semibold">{opt.label}</p>
+                      <p className="text-ink-faint text-[12px] truncate">{opt.sub}</p>
                     </div>
                   </button>
                 );
@@ -239,10 +239,10 @@ export default function ClarifyPage() {
 
           {/* Departure */}
           <section>
-            <h2 className="text-snow-off-glacier text-[18px] font-semibold mb-1">Where are you flying from?</h2>
-            <p className="text-white/55 text-[13px] mb-5">A city or an airport code, whichever you know.</p>
+            <h2 className="text-ink text-[18px] font-semibold mb-1">Where are you flying from?</h2>
+            <p className="text-ink-faint text-[13px] mb-5">A city or an airport code, whichever you know.</p>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/45 text-[18px] pointer-events-none">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[18px] pointer-events-none">
                 flight_takeoff
               </span>
               <input
@@ -261,10 +261,10 @@ export default function ClarifyPage() {
                   }
                 }}
                 placeholder="A city or airport (Chicago, JFK, Heathrow...)"
-                className="w-full pl-11 pr-4 py-3.5 rounded-pill bg-raised-slate border border-white/10 text-snow-off-glacier text-[15px] placeholder:text-white/40 focus:outline-none focus:border-accent transition-colors"
+                className="w-full pl-11 pr-4 py-3.5 rounded-pill bg-raised-slate border border-line text-ink text-[15px] placeholder:text-ink-faint focus:outline-none focus:border-accent transition-colors"
               />
               {showDepartureSuggestions && departureSuggestions.length > 0 && (
-                <div className="absolute z-20 left-0 right-0 mt-2 bg-quiet-slate rounded-[14px] border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden">
+                <div className="absolute z-20 left-0 right-0 mt-2 bg-card rounded-[14px] border border-line shadow-[0_12px_40px_rgba(20,30,60,0.12)] overflow-hidden">
                   {departureSuggestions.map((f) => (
                     <button
                       key={f.id}
@@ -274,17 +274,17 @@ export default function ClarifyPage() {
                         setDepartureCity(formatCity(f));
                         setShowDepartureSuggestions(false);
                       }}
-                      className="w-full text-left px-4 py-3 text-[14px] text-snow-off-glacier hover:bg-white/5 transition-colors flex items-center gap-2.5"
+                      className="w-full text-left px-4 py-3 text-[14px] text-ink hover:bg-ink/5 transition-colors flex items-center gap-2.5"
                     >
                       <span
-                        className="material-symbols-outlined text-[18px] text-white/55 shrink-0"
+                        className="material-symbols-outlined text-[18px] text-ink-faint shrink-0"
                         style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}
                       >
                         {isAirport(f) ? "flight" : "location_on"}
                       </span>
                       <span className="truncate">{formatCity(f)}</span>
                       {isAirport(f) && (
-                        <span className="ml-auto text-[10px] uppercase tracking-wide text-white/45 font-medium shrink-0">
+                        <span className="ml-auto text-[10px] uppercase tracking-wide text-ink-faint font-medium shrink-0">
                           Airport
                         </span>
                       )}
@@ -307,7 +307,7 @@ export default function ClarifyPage() {
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
             </button>
             {!canSubmit && (
-              <p className="text-white/45 text-[12px] mt-3">Add a departure city to continue.</p>
+              <p className="text-ink-faint text-[12px] mt-3">Add a departure city to continue.</p>
             )}
           </div>
         </motion.div>

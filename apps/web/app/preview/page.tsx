@@ -1,7 +1,7 @@
 "use client";
 
-// Color palette comparison — open /preview to compare brand color directions
-// before applying any to the live site. Pure visual sample — does not write
+// Color palette comparison: open /preview to compare brand color directions
+// before applying any to the live site. Pure visual sample, does not write
 // to walter_prefs / cart / store.
 
 type Palette = {
@@ -9,8 +9,8 @@ type Palette = {
   description: string;
   primary: string; // main accent (replaces #006571)
   light: string; // accent-light
-  deep: string; // accent-dark — used at top of hero gradient
-  deepest: string; // accent-deep — used at bottom of hero gradient
+  deep: string; // accent-dark, used at top of hero gradient
+  deepest: string; // accent-deep, used at bottom of hero gradient
   pop: string; // bright accent (replaces #79e7f8 cyan)
   popText: string; // text color for use on pop bg
 };
@@ -19,7 +19,7 @@ const palettes: Palette[] = [
   {
     name: "Soft Peach",
     description:
-      "Softer, more refined. Pastel-leaning. Less shouty — feels boutique, magazine-y. Best if you want the warmth but without the 'energy drink' loudness.",
+      "Softer, more refined. Pastel-leaning. Less shouty: feels boutique, magazine-y. Best if you want the warmth but without the 'energy drink' loudness.",
     primary: "#EE8362",
     light: "#F4A689",
     deep: "#A24A29",
@@ -30,7 +30,7 @@ const palettes: Palette[] = [
   {
     name: "Sunset Coral (original)",
     description:
-      "The version you picked. Mid-saturation — warm and optimistic without tipping into either pastel or fire. Reference point for the others.",
+      "The version you picked. Mid-saturation: warm and optimistic without tipping into either pastel or fire. Reference point for the others.",
     primary: "#E25A37",
     light: "#F08362",
     deep: "#8B2914",
@@ -41,7 +41,7 @@ const palettes: Palette[] = [
   {
     name: "Sunset Punch",
     description:
-      "Most saturated of the four. Vibrant, high-energy, wakes the page up — but the brightness can feel aggressive on long form.",
+      "Most saturated of the four. Vibrant, high-energy, wakes the page up, but the brightness can feel aggressive on long form.",
     primary: "#F44726",
     light: "#F76647",
     deep: "#7A1A0A",
@@ -70,8 +70,8 @@ function Swatch({ color, label, hex, dark }: { color: string; label: string; hex
         style={{ background: color }}
       />
       <div>
-        <p className={`font-semibold ${dark ? "text-white" : "text-gray-dark"}`}>{label}</p>
-        <p className={`font-mono ${dark ? "text-white/60" : "text-on-light-tertiary"}`}>{hex}</p>
+        <p className={`font-semibold ${dark ? "text-white" : "text-ink"}`}>{label}</p>
+        <p className={`font-mono ${dark ? "text-white/60" : "text-ink-faint"}`}>{hex}</p>
       </div>
     </div>
   );
@@ -86,8 +86,8 @@ function PalettePreview({ p }: { p: Palette }) {
       {/* Header strip */}
       <header className="px-7 py-5 border-b border-black/5 flex items-start justify-between gap-6 flex-wrap">
         <div>
-          <h3 className="text-2xl font-bold text-gray-dark tracking-tight mb-1">{p.name}</h3>
-          <p className="text-on-light-secondary text-sm max-w-xl">{p.description}</p>
+          <h3 className="text-2xl font-bold text-ink tracking-tight mb-1">{p.name}</h3>
+          <p className="text-ink-soft text-sm max-w-xl">{p.description}</p>
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-3">
           <Swatch color={p.primary} label="Primary" hex={p.primary} />
@@ -112,7 +112,7 @@ function PalettePreview({ p }: { p: Palette }) {
             <span style={{ color: p.pop }}>Your whole trip.</span>
           </h2>
           <p className="text-white/75 text-[16px] mb-8 max-w-md mx-auto">
-            Flights, hotels, concerts, restaurants — Walter assembles the whole thing in 60 seconds.
+            Flights, hotels, concerts, restaurants: Walter assembles the whole thing in 60 seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <button
@@ -138,7 +138,7 @@ function PalettePreview({ p }: { p: Palette }) {
         >
           On a light surface
         </p>
-        <h4 className="text-[24px] font-semibold text-gray-dark tracking-tight leading-tight mb-6">
+        <h4 className="text-[24px] font-semibold text-ink tracking-tight leading-tight mb-6">
           Where to next?
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -158,8 +158,8 @@ function PalettePreview({ p }: { p: Palette }) {
                 Cheapest
               </span>
             </div>
-            <p className="font-semibold text-gray-dark text-base">LAX → LIS</p>
-            <p className="text-on-light-secondary text-xs mt-1">11h 25m · Nonstop</p>
+            <p className="font-semibold text-ink text-base">LAX → LIS</p>
+            <p className="text-ink-soft text-xs mt-1">11h 25m · Nonstop</p>
             <p className="font-semibold text-lg mt-3" style={{ color: p.primary }}>
               $612
             </p>
@@ -190,8 +190,8 @@ function PalettePreview({ p }: { p: Palette }) {
                 music_note
               </span>
             </div>
-            <p className="font-semibold text-gray-dark text-base">Lisbon Jazz Festival</p>
-            <p className="text-on-light-secondary text-xs mt-1">Castelo de São Jorge · 8pm</p>
+            <p className="font-semibold text-ink text-base">Lisbon Jazz Festival</p>
+            <p className="text-ink-soft text-xs mt-1">Castelo de São Jorge · 8pm</p>
             <p className="font-semibold text-lg mt-3" style={{ color: p.primary }}>
               $84
             </p>
@@ -212,7 +212,7 @@ function PalettePreview({ p }: { p: Palette }) {
           >
             See trips others love
           </button>
-          <span className="text-on-light-tertiary text-xs ml-2">
+          <span className="text-ink-faint text-xs ml-2">
             Free forever · No sign-up
           </span>
         </div>
@@ -227,13 +227,13 @@ export default function PreviewPage() {
       <div className="max-w-5xl mx-auto px-6">
         <div className="mb-10">
           <p className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-2">
-            Walter · Sunset Coral — shade variations
+            Walter · Sunset Coral: shade variations
           </p>
-          <h1 className="text-[36px] sm:text-[44px] font-semibold text-gray-dark tracking-display leading-[1.05] mb-3">
+          <h1 className="text-[36px] sm:text-[44px] font-semibold text-ink tracking-display leading-[1.05] mb-3">
             Hone in on the warmth.
           </h1>
-          <p className="text-on-light-secondary text-[17px] max-w-2xl">
-            Four shades of the sunset/coral direction — softer pastel, the
+          <p className="text-ink-soft text-[17px] max-w-2xl">
+            Four shades of the sunset/coral direction: softer pastel, the
             original mid-tone, a bolder punch, and a more earthy terracotta.
             Same hero band + CTA pair + flight/hotel/event row in each so
             you can compare apples-to-apples.
@@ -244,7 +244,7 @@ export default function PreviewPage() {
           <PalettePreview key={p.name} p={p} />
         ))}
 
-        <div className="text-center text-on-light-tertiary text-sm mt-12">
+        <div className="text-center text-ink-faint text-sm mt-12">
           When you pick one, tell me the name and I&apos;ll thread it through
           tailwind.config + globals.css + all the existing color references.
         </div>

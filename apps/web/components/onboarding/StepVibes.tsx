@@ -32,8 +32,8 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
   return (
     <div className="flex flex-col flex-1">
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-gray-dark mb-2">What&apos;s your vibe?</h1>
-        <p className="text-on-light-secondary">Pick everything that fits. We&apos;ll match your style.</p>
+        <h1 className="text-3xl font-semibold text-ink mb-2">What&apos;s your vibe?</h1>
+        <p className="text-ink-soft">Pick everything that fits. We&apos;ll match your style.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-10">
@@ -49,7 +49,7 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
                   : "bg-white border-[rgba(91,141,239,0.08)] hover:border-accent/30"
               }`}
             >
-              <span className={`font-semibold text-sm ${selected ? "text-accent" : "text-gray-dark"}`}>
+              <span className={`font-semibold text-sm ${selected ? "text-accent" : "text-ink"}`}>
                 {v.label}
               </span>
             </button>
@@ -58,13 +58,13 @@ export default function StepVibes({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-[rgba(91,141,239,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
+        <button onClick={onBack} className="flex-1 border border-[rgba(91,141,239,0.08)] text-ink-soft font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
           Back
         </button>
         <button
           onClick={onNext}
           disabled={prefs.vibes.length === 0}
-          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light disabled:bg-gray-light disabled:text-on-light-tertiary text-white font-semibold py-4 rounded-[10px] text-lg transition-colors"
+          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light disabled:bg-hover-slate disabled:text-ink-faint text-white font-semibold py-4 rounded-[10px] text-lg transition-colors"
         >
           Continue
         </button>

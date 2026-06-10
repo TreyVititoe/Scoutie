@@ -45,6 +45,7 @@ export default function OnboardingPage() {
     if (step < TOTAL_STEPS) setStep((s) => s + 1);
     else {
       localStorage.setItem("walter_prefs", JSON.stringify(prefs));
+      localStorage.removeItem("walter_trip"); // fresh journey, no stale chosen trip
       router.push("/results");
     }
   };
@@ -59,8 +60,8 @@ export default function OnboardingPage() {
       <div className="px-6 pt-8 pb-4">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-[17px] font-semibold text-gray-dark">Walter</span>
-            <span className="text-sm text-on-light-tertiary">{step} of {TOTAL_STEPS}</span>
+            <span className="text-[17px] font-semibold text-ink">Walter</span>
+            <span className="text-sm text-ink-faint">{step} of {TOTAL_STEPS}</span>
           </div>
           {/* Progress bar */}
           <div className="h-1 bg-[rgba(91,141,239,0.06)] rounded-full overflow-hidden">

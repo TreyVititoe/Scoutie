@@ -26,12 +26,12 @@ type PackingListProps = {
 function SkeletonCategory() {
   return (
     <div className="space-y-3">
-      <div className="h-5 w-32 bg-gray-light rounded-[8px] animate-pulse" />
+      <div className="h-5 w-32 bg-raised-slate rounded-[8px] animate-pulse" />
       <div className="space-y-2">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex items-center gap-3">
-            <div className="h-4 w-4 bg-gray-light rounded-[8px] animate-pulse" />
-            <div className="h-4 w-40 bg-gray-light rounded-[8px] animate-pulse" />
+            <div className="h-4 w-4 bg-raised-slate rounded-[8px] animate-pulse" />
+            <div className="h-4 w-40 bg-raised-slate rounded-[8px] animate-pulse" />
           </div>
         ))}
       </div>
@@ -124,13 +124,13 @@ export default function PackingList({
   return (
     <div className="card-base p-6 overflow-hidden">
       {/* Header */}
-      <div className="pb-5 mb-5 border-b border-black/10 flex items-center justify-between">
+      <div className="pb-5 mb-5 border-b border-line flex items-center justify-between">
         <div>
-          <h3 className="font-sans font-semibold text-lg text-gray-dark">
+          <h3 className="font-sans font-semibold text-lg text-ink">
             Packing List
           </h3>
           {generated && totalItems > 0 && (
-            <p className="text-xs text-on-light-tertiary mt-0.5">
+            <p className="text-xs text-ink-faint mt-0.5">
               {checkedCount} of {totalItems} items packed
             </p>
           )}
@@ -164,7 +164,7 @@ export default function PackingList({
       <div>
         {/* Not yet generated */}
         {!generated && !loading && (
-          <p className="text-sm text-on-light-tertiary text-center py-4">
+          <p className="text-sm text-ink-faint text-center py-4">
             Generate an AI-powered packing list tailored to your trip.
           </p>
         )}
@@ -188,7 +188,7 @@ export default function PackingList({
           <>
             {/* Progress bar */}
             <div className="mb-6">
-              <div className="h-1.5 w-full bg-page-bg rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-raised-slate rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-accent rounded-full"
                   initial={{ width: "0%" }}
@@ -206,7 +206,7 @@ export default function PackingList({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {categories.map((cat) => (
                 <div key={cat.name}>
-                  <h4 className="font-sans font-semibold text-sm text-gray-dark mb-3 uppercase tracking-wider">
+                  <h4 className="font-sans font-semibold text-sm text-ink mb-3 uppercase tracking-wider">
                     {cat.name}
                   </h4>
                   <ul className="space-y-1.5">
@@ -224,18 +224,18 @@ export default function PackingList({
                               type="checkbox"
                               checked={checked}
                               onChange={() => toggleItem(key)}
-                              className="w-4 h-4 rounded border-black/10 text-accent focus:ring-accent focus:ring-offset-0 cursor-pointer"
+                              className="w-4 h-4 rounded border-line text-accent focus:ring-accent focus:ring-offset-0 cursor-pointer"
                             />
                             <span
                               className={`text-sm transition-colors ${
                                 checked
-                                  ? "line-through text-on-light-tertiary"
-                                  : "text-gray-dark group-hover:text-accent"
+                                  ? "line-through text-ink-faint"
+                                  : "text-ink group-hover:text-accent"
                               }`}
                             >
                               {item.name}
                               {item.quantity > 1 && (
-                                <span className="text-on-light-tertiary ml-1">
+                                <span className="text-ink-faint ml-1">
                                   x{item.quantity}
                                 </span>
                               )}

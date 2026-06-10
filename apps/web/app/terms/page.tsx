@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Walter",
+  title: "Terms of Service | Walter",
   description: "Terms and conditions for using Walter travel planning services.",
 };
 
@@ -10,11 +10,11 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Nav */}
-      <nav className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
+      <nav className="nav-glass sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-white text-[17px] font-semibold"
+            className="text-ink text-[17px] font-semibold"
           >
             Walter
           </Link>
@@ -23,16 +23,16 @@ export default function TermsPage() {
 
       <main className="max-w-3xl mx-auto px-6 py-16">
         <div className="card-base p-8">
-          <h1 className="font-semibold text-[28px] text-gray-dark mb-4">
+          <h1 className="font-semibold text-[28px] text-ink mb-4">
             Terms of Service
           </h1>
-          <p className="text-on-light-tertiary text-sm mb-12">
+          <p className="text-ink-faint text-sm mb-12">
             Last updated: April 2, 2026
           </p>
 
-          <div className="space-y-10 text-on-light-secondary leading-relaxed">
+          <div className="space-y-10 text-ink-soft leading-relaxed">
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 1. Acceptance of Terms
               </h2>
               <p>
@@ -45,7 +45,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 2. Service Description
               </h2>
               <p>
@@ -60,7 +60,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 3. Affiliate Disclosure
               </h2>
               <p>
@@ -76,7 +76,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 4. User Responsibilities
               </h2>
               <ul className="list-disc pl-6 space-y-2">
@@ -105,7 +105,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 5. Accuracy of Information
               </h2>
               <p>
@@ -120,7 +120,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 6. Intellectual Property
               </h2>
               <p>
@@ -136,7 +136,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 7. User Content
               </h2>
               <p>
@@ -150,7 +150,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 8. Third-Party Services
               </h2>
               <p>
@@ -164,7 +164,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 9. Limitation of Liability
               </h2>
               <p>
@@ -181,7 +181,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 10. Disclaimer of Warranties
               </h2>
               <p>
@@ -196,7 +196,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 11. Indemnification
               </h2>
               <p>
@@ -209,7 +209,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 12. Termination
               </h2>
               <p>
@@ -222,7 +222,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 13. Governing Law
               </h2>
               <p>
@@ -235,7 +235,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 14. Contact Us
               </h2>
               <p>
@@ -243,7 +243,7 @@ export default function TermsPage() {
                 us at{" "}
                 <a
                   href="mailto:legal@scoutie.com"
-                  className="text-accent hover:text-accent-light"
+                  className="text-accent hover:text-accent-dark"
                 >
                   legal@scoutie.com
                 </a>

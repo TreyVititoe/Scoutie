@@ -19,7 +19,7 @@ import type { MapItem } from "@/components/trip/TripMap";
 const TripMap = dynamic(() => import("@/components/trip/TripMap"), {
   ssr: false,
   loading: () => (
-    <div className="rounded-[14px] bg-page-bg flex items-center justify-center h-80 lg:min-h-[400px] text-on-light-tertiary text-sm">
+    <div className="rounded-[14px] bg-page-bg flex items-center justify-center h-80 lg:min-h-[400px] text-ink-faint text-sm">
       Loading map...
     </div>
   ),
@@ -60,7 +60,6 @@ function TripPage() {
   const totalPrice = useTripCartStore(selectTotalPrice);
 
   const [prefs, setPrefs] = useState<Record<string, unknown>>({});
-  const [shareLink, setShareLink] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [savePublic, setSavePublic] = useState(false);
@@ -141,61 +140,6 @@ function TripPage() {
       }));
   }, [items]);
 
-  /* Share handler -- saves to Supabase and copies shareable link */
-  const [sharing, setSharing] = useState(false);
-  const handleShare = async () => {
-    if (sharing) return;
-    setSharing(true);
-
-    try {
-      const res = await fetch("/api/trips/share", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: destination ? `Trip to ${destination}` : "My Trip",
-          destination: destination || "Custom Trip",
-          totalCost: totalPrice,
-          items,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const url = `${window.location.origin}/shared/${data.shareSlug}`;
-        await navigator.clipboard.writeText(url);
-        setShareLink(url);
-        setTimeout(() => setShareLink(null), 3000);
-      }
-    } catch {
-      // Fallback to copying current URL
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        setShareLink(window.location.href);
-        setTimeout(() => setShareLink(null), 2000);
-      } catch { /* noop */ }
-    } finally {
-      setSharing(false);
-    }
-  };
-
-  /* Save handler -- uses localStorage, no login required */
-  const handleSave = () => {
-    if (!saveName.trim()) return;
-    setSaving(true);
-
-    useSavedTripsStore.getState().saveTrip(
-      saveName.trim(),
-      destination || "Custom Trip",
-      items
-    );
-
-    setSaved(true);
-    setShowSaveModal(false);
-    setSaving(false);
-    setSaveName("");
-    setTimeout(() => setSaved(false), 3000);
-  };
-
   /* Date formatting */
   const formatDate = (d: string) => {
     if (!d) return "";
@@ -226,6 +170,103 @@ function TripPage() {
     return Math.max(1, Math.round(ms / 86400000) + 1);
   })();
 
+  /* Share handler -- creates a share link via /api/trips/share, then opens an
+     email draft. If the link service fails, falls back to copy-only mode with
+     a local text serialization of the trip. The button is never dead. */
+  const [sharing, setSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareFallback, setShareFallback] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const serializeTrip = () => {
+    const lines: string[] = [
+      destination ? `Trip to ${destination}` : "A trip, built with Walter",
+    ];
+    if (dateRange) lines.push(dateRange);
+    lines.push("");
+    for (const sec of sections) {
+      lines.push(sec.label.toUpperCase());
+      for (const i of sec.items) {
+        const price =
+          i.price != null && i.price > 0
+            ? ` - $${i.price.toLocaleString()}`
+            : "";
+        lines.push(`  ${i.title}${price}`);
+      }
+      lines.push("");
+    }
+    lines.push(`Total: $${totalPrice.toLocaleString()}`);
+    return lines.join("\n");
+  };
+
+  const openShareEmail = (link: string | null) => {
+    const subject = `Your trip to ${destination || "somewhere good"}`;
+    const intro = `Walter built this trip. ${items.length} ${items.length === 1 ? "item" : "items"}, $${totalPrice.toLocaleString()} all in.`;
+    const body = link
+      ? `${intro}\n\nSee everything here:\n${link}\n\nBook it when you're ready.`
+      : `${intro}\n\n${serializeTrip()}\n\nBook it when you're ready.`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const handleShare = async () => {
+    if (sharing) return;
+    setSharing(true);
+    setCopied(false);
+
+    let link: string | null = null;
+    try {
+      const res = await fetch("/api/trips/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: destination ? `Trip to ${destination}` : "My Trip",
+          destination: destination || "Custom Trip",
+          totalCost: totalPrice,
+          items,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        link = `${window.location.origin}/shared/${data.shareSlug}`;
+      }
+    } catch {
+      /* fall through to copy-only mode */
+    }
+
+    setShareUrl(link);
+    setShareFallback(!link);
+    setSharing(false);
+    openShareEmail(link);
+  };
+
+  const handleCopyShare = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl ?? serializeTrip());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* noop */
+    }
+  };
+
+  /* Save handler -- uses localStorage, no login required */
+  const handleSave = () => {
+    if (!saveName.trim()) return;
+    setSaving(true);
+
+    useSavedTripsStore.getState().saveTrip(
+      saveName.trim(),
+      destination || "Custom Trip",
+      items
+    );
+
+    setSaved(true);
+    setShowSaveModal(false);
+    setSaving(false);
+    setSaveName("");
+    setTimeout(() => setSaved(false), 3000);
+  };
+
   /* ── Empty state ── */
   if (items.length === 0) {
     return (
@@ -234,13 +275,13 @@ function TripPage() {
           <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
             <Link
               href="/"
-              className="text-[17px] font-semibold text-white"
+              className="text-[17px] font-semibold text-ink"
             >
               Walter
             </Link>
             <Link
               href="/results"
-              className="flex items-center gap-1.5 text-sm font-semibold text-on-dark-secondary hover:text-white transition-colors"
+              className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink transition-colors"
             >
               <span className="material-symbols-outlined text-[18px]">
                 arrow_back
@@ -251,13 +292,13 @@ function TripPage() {
         </header>
 
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
-          <span className="material-symbols-outlined text-[64px] text-on-light-tertiary mb-4">
+          <span className="material-symbols-outlined text-[64px] text-ink-faint mb-4">
             luggage
           </span>
-          <h1 className="font-semibold text-[28px] text-gray-dark mb-3">
+          <h1 className="font-semibold text-[28px] text-ink mb-3">
             Your trip is empty
           </h1>
-          <p className="text-on-light-secondary text-lg max-w-md mb-8">
+          <p className="text-ink-soft text-lg max-w-md mb-8">
             Start building your trip by adding flights, hotels, events, and
             activities from the results page.
           </p>
@@ -270,6 +311,18 @@ function TripPage() {
             </span>
             Browse results
           </Link>
+          <button
+            disabled
+            className="mt-4 rounded-[10px] border border-line text-ink-faint px-8 py-3 text-sm font-semibold flex items-center gap-2 cursor-not-allowed"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              credit_card
+            </span>
+            Book everything
+          </button>
+          <p className="text-ink-faint text-xs mt-2">
+            Nothing to book yet. Walter only books what you add.
+          </p>
         </div>
       </div>
     );
@@ -283,14 +336,14 @@ function TripPage() {
         <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-[17px] font-semibold text-white"
+            className="text-[17px] font-semibold text-ink"
           >
             Walter
           </Link>
           <div className="flex items-center gap-3">
             <Link
               href="/results"
-              className="flex items-center gap-1.5 text-sm font-semibold text-on-dark-secondary hover:text-white transition-colors"
+              className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink transition-colors"
             >
               <span className="material-symbols-outlined text-[18px]">
                 arrow_back
@@ -299,7 +352,7 @@ function TripPage() {
             </Link>
             <button
               onClick={() => setShowSaveModal(true)}
-              className="px-3 sm:px-5 py-2.5 rounded-[8px] border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors flex items-center gap-2"
+              className="px-3 sm:px-5 py-2.5 rounded-[8px] border border-ink/20 text-ink text-sm font-semibold hover:bg-ink/5 transition-colors flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">
                 {saved ? "check" : "bookmark"}
@@ -309,13 +362,22 @@ function TripPage() {
             <motion.button
               onClick={handleShare}
               whileTap={{ scale: 0.95 }}
-              className="px-3 sm:px-5 py-2.5 rounded-[8px] bg-accent text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+              className="px-3 sm:px-5 py-2.5 rounded-[8px] border border-ink/20 text-ink text-sm font-semibold hover:bg-ink/5 transition-colors flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">
-                {shareLink ? "check" : "share"}
+                {shareUrl ? "check" : "mail"}
               </span>
-              <span className="hidden sm:inline">{shareLink ? "Link copied!" : sharing ? "Creating link..." : "Share trip"}</span>
+              <span className="hidden sm:inline">{sharing ? "Creating link..." : "Share this trip"}</span>
             </motion.button>
+            <Link
+              href="/checkout"
+              className="px-3 sm:px-5 py-2.5 rounded-[8px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                credit_card
+              </span>
+              <span className="hidden sm:inline">Book everything</span>
+            </Link>
           </div>
         </div>
       </header>
@@ -324,12 +386,12 @@ function TripPage() {
       <section className="bg-hero-gradient relative overflow-hidden">
         <div className="hero-glow absolute inset-0 pointer-events-none" />
         <div className="relative z-10 max-w-[1280px] mx-auto px-6 pt-12 pb-10">
-          <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-2">
+          <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-2">
             Your Trip
           </p>
-          <h1 className="text-[40px] font-semibold text-white leading-section mb-4">
+          <h1 className="text-[40px] font-semibold text-ink leading-section mb-4">
             {destination ? (
-              <span className="text-white">{destination}</span>
+              <span className="text-ink">{destination}</span>
             ) : (
               "Your Custom Trip"
             )}
@@ -339,85 +401,85 @@ function TripPage() {
             {destination && (
               <>
                 <div>
-                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+                  <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                     Destination
                   </p>
-                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-cyan text-[20px]">
+                  <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-accent text-[20px]">
                       location_on
                     </span>
                     {destination}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
+                <div className="w-px h-10 bg-line hidden sm:block" />
               </>
             )}
 
             {dateRange && (
               <>
                 <div>
-                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+                  <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                     Dates
                   </p>
-                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-cyan text-[20px]">
+                  <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-accent text-[20px]">
                       calendar_today
                     </span>
                     {dateRange}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
+                <div className="w-px h-10 bg-line hidden sm:block" />
               </>
             )}
 
             {tripDays !== null && (
               <>
                 <div>
-                  <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+                  <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                     Length
                   </p>
-                  <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-cyan text-[20px]">
+                  <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-accent text-[20px]">
                       schedule
                     </span>
                     {tripDays} {tripDays === 1 ? "day" : "days"}
                   </p>
                 </div>
-                <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
+                <div className="w-px h-10 bg-line hidden sm:block" />
               </>
             )}
 
             <div>
-              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                 Travelers
               </p>
-              <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-cyan text-[20px]">
+              <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-accent text-[20px]">
                   group
                 </span>
                 {travelers}
               </p>
             </div>
-            <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
+            <div className="w-px h-10 bg-line hidden sm:block" />
 
             <div>
-              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                 Items
               </p>
-              <p className="font-semibold text-[17px] text-white flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-cyan text-[20px]">
+              <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-accent text-[20px]">
                   shopping_bag
                 </span>
                 {items.length}
               </p>
             </div>
-            <div className="w-px h-10 bg-cyan/10 hidden sm:block" />
+            <div className="w-px h-10 bg-line hidden sm:block" />
 
             <div>
-              <p className="text-on-dark-tertiary text-[12px] tracking-wider uppercase mb-1">
+              <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                 Est. Total
               </p>
-              <p className="text-cyan font-semibold text-[28px]">
+              <p className="text-accent font-semibold text-[28px]">
                 ${totalPrice.toLocaleString()}
               </p>
             </div>
@@ -442,10 +504,10 @@ function TripPage() {
                   <span className="material-symbols-outlined text-accent text-[24px]">
                     {section.icon}
                   </span>
-                  <h2 className="font-semibold text-[21px] text-gray-dark">
+                  <h2 className="font-semibold text-[21px] text-ink">
                     {section.label}
                   </h2>
-                  <span className="text-[12px] font-semibold text-on-light-tertiary px-2.5 py-1 rounded-full ml-1">
+                  <span className="text-[12px] font-semibold text-ink-faint px-2.5 py-1 rounded-full ml-1">
                     {section.items.length}
                   </span>
                 </div>
@@ -479,7 +541,7 @@ function TripPage() {
                 <span className="material-symbols-outlined text-accent text-[22px]">
                   near_me
                 </span>
-                <h3 className="font-semibold text-[17px] text-gray-dark">
+                <h3 className="font-semibold text-[17px] text-ink">
                   Trip Map
                 </h3>
               </div>
@@ -498,7 +560,7 @@ function TripPage() {
                 <span className="material-symbols-outlined text-accent text-[22px]">
                   payments
                 </span>
-                <h3 className="font-semibold text-[17px] text-gray-dark">
+                <h3 className="font-semibold text-[17px] text-ink">
                   Cost Breakdown
                 </h3>
               </div>
@@ -513,23 +575,74 @@ function TripPage() {
                       key={sec.key}
                       className="flex items-center justify-between text-sm"
                     >
-                      <span className="text-on-light-secondary">
+                      <span className="text-ink-soft">
                         {sec.label}
                       </span>
-                      <span className="font-semibold text-gray-dark">
+                      <span className="font-semibold text-ink">
                         ${sectionTotal.toLocaleString()}
                       </span>
                     </div>
                   );
                 })}
-                <div className="border-t border-[rgba(91,141,239,0.08)] pt-2 mt-2 flex items-center justify-between">
-                  <span className="font-semibold text-gray-dark">
+                <div className="border-t border-line pt-2 mt-2 flex items-center justify-between">
+                  <span className="font-semibold text-ink">
                     Total
                   </span>
                   <span className="font-semibold text-accent text-[21px]">
                     ${totalPrice.toLocaleString()}
                   </span>
                 </div>
+              </div>
+
+              {/* Primary actions */}
+              <div className="mt-5 pt-5 border-t border-line space-y-2.5">
+                <Link
+                  href="/checkout"
+                  className="w-full bg-accent text-white rounded-[10px] py-3 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent-light transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    credit_card
+                  </span>
+                  Book everything
+                </Link>
+                <button
+                  onClick={handleShare}
+                  disabled={sharing}
+                  className="w-full rounded-[10px] border border-ink/20 text-ink py-3 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-ink/5 transition-colors disabled:opacity-60"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    mail
+                  </span>
+                  {sharing ? "Creating link..." : "Share this trip"}
+                </button>
+                <p className="text-xs text-ink-faint text-center">
+                  One click. Walter books all {items.length}{" "}
+                  {items.length === 1 ? "item" : "items"}.
+                </p>
+
+                {(shareUrl || shareFallback) && (
+                  <div className="bg-raised-slate border border-line rounded-[10px] p-3">
+                    <p className="text-xs text-ink-soft mb-2">
+                      {shareUrl
+                        ? "Anyone with this link can see the trip."
+                        : "Link service is unavailable. Copy the itinerary instead."}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="flex-1 text-xs text-ink font-mono truncate">
+                        {shareUrl ?? "Full itinerary as text"}
+                      </p>
+                      <button
+                        onClick={handleCopyShare}
+                        className="flex-shrink-0 text-xs font-semibold text-accent hover:text-accent-dark transition-colors flex items-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">
+                          {copied ? "check" : "content_copy"}
+                        </span>
+                        {copied ? "Copied" : "Copy"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>
@@ -563,12 +676,12 @@ function TripPage() {
             transition={{ duration: 0.2 }}
             className="relative card-base p-6 w-full max-w-md"
           >
-            <h3 className="font-semibold text-[21px] text-gray-dark mb-1">Save this trip</h3>
-            <p className="text-on-light-secondary text-sm mb-6">
+            <h3 className="font-semibold text-[21px] text-ink mb-1">Save this trip</h3>
+            <p className="text-ink-soft text-sm mb-6">
               Give your trip a name so you can find it later.
             </p>
 
-            <label className="block text-sm font-semibold text-gray-dark mb-1.5">
+            <label className="block text-sm font-semibold text-ink mb-1.5">
               Trip name
             </label>
             <input
@@ -576,7 +689,7 @@ function TripPage() {
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
               placeholder={destination ? `My ${destination} trip` : "My trip"}
-              className="w-full px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
+              className="w-full px-4 py-3 rounded-[10px] border border-line text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20 mb-4"
               autoFocus
             />
 
@@ -588,15 +701,15 @@ function TripPage() {
                 className="w-4 h-4 rounded text-accent focus:ring-accent/20"
               />
               <div>
-                <p className="text-sm font-semibold text-gray-dark">Share with community</p>
-                <p className="text-xs text-on-light-tertiary">Let others discover and fork your trip</p>
+                <p className="text-sm font-semibold text-ink">Share with community</p>
+                <p className="text-xs text-ink-faint">Let others discover and fork your trip</p>
               </div>
             </label>
 
             <div className="flex gap-3">
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="flex-1 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-on-light-secondary font-semibold hover:bg-page-bg transition-colors"
+                className="flex-1 py-3 rounded-[10px] border border-ink/20 text-ink-soft font-semibold hover:bg-ink/5 transition-colors"
               >
                 Cancel
               </button>
@@ -665,24 +778,24 @@ function ItemCard({
                 AI suggestion
               </span>
             ) : item.provider ? (
-              <span className="text-[10px] text-on-light-tertiary">
+              <span className="text-[10px] text-ink-faint">
                 via {item.provider}
               </span>
             ) : null}
           </div>
 
-          <h3 className="font-semibold text-[17px] text-gray-dark truncate">
+          <h3 className="font-semibold text-[17px] text-ink truncate">
             {item.title}
           </h3>
 
           {item.subtitle && (
-            <p className="text-on-light-secondary text-sm mt-0.5 truncate">
+            <p className="text-ink-soft text-sm mt-0.5 truncate">
               {item.subtitle}
             </p>
           )}
 
           {item.date && (
-            <p className="text-on-light-tertiary text-xs mt-1 flex items-center gap-1">
+            <p className="text-ink-faint text-xs mt-1 flex items-center gap-1">
               <span className="material-symbols-outlined text-[14px]">
                 schedule
               </span>
@@ -692,7 +805,7 @@ function ItemCard({
 
           {/* Meta details for specific types */}
           {item.type === "hotel" && item.meta?.rating != null && (
-            <p className="text-xs text-on-light-secondary mt-1 flex items-center gap-0.5">
+            <p className="text-xs text-ink-soft mt-1 flex items-center gap-0.5">
               <span className="material-symbols-outlined text-amber-400 text-[14px]">
                 star
               </span>
@@ -706,7 +819,7 @@ function ItemCard({
           {/* Remove button */}
           <button
             onClick={() => onRemove(item.id)}
-            className="w-7 h-7 rounded-full flex items-center justify-center text-on-light-tertiary hover:text-gray-dark transition-colors"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-ink-faint hover:text-ink transition-colors"
             aria-label={`Remove ${item.title}`}
           >
             <span className="material-symbols-outlined text-[18px]">close</span>
@@ -714,7 +827,7 @@ function ItemCard({
 
           {/* Price */}
           {item.price != null && item.price > 0 && (
-            <p className={`font-semibold text-[17px] ${isAi ? "text-on-light-tertiary" : "text-accent"}`}>
+            <p className={`font-semibold text-[17px] ${isAi ? "text-ink-faint" : "text-accent"}`}>
               ${item.price.toLocaleString()}
               {isAi && <span className="text-[10px] ml-0.5">est.</span>}
             </p>

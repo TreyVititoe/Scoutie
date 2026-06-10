@@ -111,7 +111,7 @@ export default function ExplorePage() {
       {/* Header */}
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">
+          <Link href="/" className="text-ink text-[17px] font-semibold">
             Walter
           </Link>
           <Link
@@ -125,10 +125,10 @@ export default function ExplorePage() {
 
       <main className="max-w-content mx-auto px-6 py-10">
         <div className="mb-10">
-          <h1 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
+          <h1 className="font-semibold text-[28px] text-ink leading-page mb-2">
             Explore destinations
           </h1>
-          <p className="text-on-light-secondary text-lg">
+          <p className="text-ink-soft text-lg">
             Not sure where to go? Browse popular destinations and start planning.
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function ExplorePage() {
             className={`px-4 py-2 rounded-pill text-sm transition-all ${
               activeTag === null
                 ? "bg-accent text-white"
-                : "bg-white border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent/30"
+                : "bg-white border border-[rgba(91,141,239,0.08)] text-ink-soft hover:border-accent/30"
             }`}
           >
             All
@@ -152,7 +152,7 @@ export default function ExplorePage() {
               className={`px-4 py-2 rounded-pill text-sm transition-all ${
                 activeTag === tag
                   ? "bg-accent text-white"
-                  : "bg-white border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent/30"
+                  : "bg-white border border-[rgba(91,141,239,0.08)] text-ink-soft hover:border-accent/30"
               }`}
             >
               {tag}
@@ -181,22 +181,22 @@ export default function ExplorePage() {
                 </div>
               </div>
               <div className="p-5">
-                <p className="text-sm text-on-light-secondary mb-3">{dest.tagline}</p>
+                <p className="text-sm text-ink-soft mb-3">{dest.tagline}</p>
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-[12px] text-on-light-tertiary uppercase tracking-wider">Avg. cost</p>
-                    <p className="font-semibold text-gray-dark text-sm">{dest.avgCost}</p>
+                    <p className="text-[12px] text-ink-faint uppercase tracking-wider">Avg. cost</p>
+                    <p className="font-semibold text-ink text-sm">{dest.avgCost}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[12px] text-on-light-tertiary uppercase tracking-wider">Best time</p>
-                    <p className="text-sm font-semibold text-gray-dark">{dest.bestMonths}</p>
+                    <p className="text-[12px] text-ink-faint uppercase tracking-wider">Best time</p>
+                    <p className="text-sm font-semibold text-ink">{dest.bestMonths}</p>
                   </div>
                 </div>
                 <div className="flex gap-1.5 flex-wrap">
                   {dest.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[12px] font-semibold text-on-light-tertiary bg-page-bg rounded-pill px-2 py-0.5"
+                      className="text-[12px] font-semibold text-ink-faint bg-page-bg rounded-pill px-2 py-0.5"
                     >
                       {tag}
                     </span>
@@ -211,11 +211,11 @@ export default function ExplorePage() {
         <div className="mt-16 bg-hero-gradient relative rounded-[14px] p-10 text-center overflow-hidden">
           <div className="hero-glow absolute inset-0 pointer-events-none" />
           <div className="relative z-10">
-            <h2 className="text-white font-semibold text-[40px] mb-3">
+            <h2 className="text-ink font-semibold text-[40px] mb-3">
               Can&apos;t decide?
             </h2>
-            <p className="text-on-dark-secondary mb-6">
-              Let Walter pick for you. Select &quot;Surprise me&quot; in the quiz and we&apos;ll find your perfect match.
+            <p className="text-ink-soft mb-6">
+              Let Walter pick for you. Tell him the basics on the home page and he will find your match.
             </p>
             <Link
               href="/"

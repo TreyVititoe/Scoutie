@@ -159,6 +159,7 @@ export default function QuickPlanPage() {
     // the user picks their own itinerary items on /results. Cart stays empty.
     void idx;
     useTripCartStore.getState().clearCart();
+    localStorage.removeItem("walter_trip"); // fresh journey, no stale chosen trip
 
     // Set prefs for results page
     localStorage.setItem("walter_prefs", JSON.stringify({
@@ -201,15 +202,15 @@ export default function QuickPlanPage() {
     setSavedIds((prev) => new Set([...prev, idx]));
   };
 
-  const pillColors = ["bg-accent text-white", "bg-cyan text-gray-dark", "bg-accent-dark text-white"];
+  const pillColors = ["bg-accent text-white", "bg-cyan text-ink", "bg-accent-dark text-white"];
 
   return (
     <div className="min-h-screen bg-product-bg">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
-          <Link href="/" className="text-on-dark-secondary text-sm hover:text-white transition-colors flex items-center gap-1.5">
+          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/" className="text-ink-soft text-sm hover:text-ink transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">tune</span>
             Full Trip Design
           </Link>
@@ -224,10 +225,10 @@ export default function QuickPlanPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10"
         >
-          <h1 className="text-[28px] md:text-[36px] font-semibold text-gray-dark leading-tight mb-3">
+          <h1 className="text-[28px] md:text-[36px] font-semibold text-ink leading-tight mb-3">
             What sounds fun?
           </h1>
-          <p className="text-on-light-secondary text-[17px] mb-8">
+          <p className="text-ink-soft text-[17px] mb-8">
             Add anything -- places, artists, foods, activities, vibes, dates. Walter will build trip options around everything you love.
           </p>
 
@@ -276,7 +277,7 @@ export default function QuickPlanPage() {
                       : "Add more..."
                 }
                 disabled={tags.length >= 15}
-                className="flex-1 px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark text-[15px] placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-ink text-[15px] placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
               />
               <button
                 onClick={() => addTag(input)}
@@ -289,7 +290,7 @@ export default function QuickPlanPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4">
-              <p className="text-xs text-on-light-tertiary">
+              <p className="text-xs text-ink-faint">
                 {tags.length}/15 tags -- press Enter or click Add
               </p>
               {tags.length > 0 && (
@@ -317,22 +318,22 @@ export default function QuickPlanPage() {
           >
             <button
               onClick={() => setStep("tags")}
-              className="text-on-light-secondary hover:text-accent text-sm font-medium flex items-center gap-1.5 mb-6 transition-colors"
+              className="text-ink-soft hover:text-accent text-sm font-medium flex items-center gap-1.5 mb-6 transition-colors"
             >
               <span className="material-symbols-outlined text-[18px]">arrow_back</span>
               Back
             </button>
-            <h1 className="text-[28px] md:text-[36px] font-semibold text-gray-dark leading-tight mb-3">
+            <h1 className="text-[28px] md:text-[36px] font-semibold text-ink leading-tight mb-3">
               A few quick details
             </h1>
-            <p className="text-on-light-secondary text-[17px] mb-8">
+            <p className="text-ink-soft text-[17px] mb-8">
               Walter needs two more things before planning your trip.
             </p>
 
             <div className="card-base p-6 sm:p-8 space-y-7">
               {/* Tag review */}
               <div>
-                <p className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold mb-3">
+                <p className="text-[11px] uppercase tracking-wide text-ink-faint font-semibold mb-3">
                   Trip ideas
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -349,7 +350,7 @@ export default function QuickPlanPage() {
 
               {/* Who */}
               <div>
-                <p className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold mb-3">
+                <p className="text-[11px] uppercase tracking-wide text-ink-faint font-semibold mb-3">
                   Who&apos;s going?
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -364,7 +365,7 @@ export default function QuickPlanPage() {
                       className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
                         travelers === opt.count
                           ? "bg-accent text-white border-accent"
-                          : "bg-white text-on-light-secondary border-[rgba(91,141,239,0.1)] hover:border-accent/40 hover:text-accent"
+                          : "bg-white text-ink-soft border-[rgba(91,141,239,0.1)] hover:border-accent/40 hover:text-accent"
                       }`}
                     >
                       <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
@@ -376,7 +377,7 @@ export default function QuickPlanPage() {
 
               {/* Stay */}
               <div>
-                <p className="text-[11px] uppercase tracking-wide text-on-light-tertiary font-semibold mb-3">
+                <p className="text-[11px] uppercase tracking-wide text-ink-faint font-semibold mb-3">
                   Where will you stay?
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -400,7 +401,7 @@ export default function QuickPlanPage() {
                         className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
                           active
                             ? "bg-accent text-white border-accent"
-                            : "bg-white text-on-light-secondary border-[rgba(91,141,239,0.1)] hover:border-accent/40 hover:text-accent"
+                            : "bg-white text-ink-soft border-[rgba(91,141,239,0.1)] hover:border-accent/40 hover:text-accent"
                         }`}
                       >
                         <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
@@ -413,7 +414,7 @@ export default function QuickPlanPage() {
                     className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 border ${
                       noAccommodation
                         ? "bg-accent text-white border-accent"
-                        : "bg-white text-on-light-secondary border-[rgba(91,141,239,0.1)] hover:border-accent/40 hover:text-accent"
+                        : "bg-white text-ink-soft border-[rgba(91,141,239,0.1)] hover:border-accent/40 hover:text-accent"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[18px]">no_accounts</span>
@@ -451,13 +452,13 @@ export default function QuickPlanPage() {
               transition={{ delay: 0.2 }}
               className="mb-10"
             >
-              <p className="text-sm font-semibold text-on-light-tertiary mb-3">Try these for inspiration:</p>
+              <p className="text-sm font-semibold text-ink-faint mb-3">Try these for inspiration:</p>
               <div className="flex flex-wrap gap-2">
                 {remaining.map((s) => (
                   <button
                     key={s}
                     onClick={() => addTag(s)}
-                    className="bg-white border border-[rgba(91,141,239,0.08)] text-on-light-secondary rounded-pill px-3.5 py-1.5 text-sm hover:border-accent/30 hover:text-accent transition-colors"
+                    className="bg-white border border-[rgba(91,141,239,0.08)] text-ink-soft rounded-pill px-3.5 py-1.5 text-sm hover:border-accent/30 hover:text-accent transition-colors"
                   >
                     {s}
                   </button>
@@ -471,7 +472,7 @@ export default function QuickPlanPage() {
         {step === "results" && (
           <button
             onClick={() => setStep("details")}
-            className="text-on-light-secondary hover:text-accent text-sm font-medium flex items-center gap-1.5 mb-6 transition-colors"
+            className="text-ink-soft hover:text-accent text-sm font-medium flex items-center gap-1.5 mb-6 transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Refine details
@@ -503,9 +504,9 @@ export default function QuickPlanPage() {
         {/* Error */}
         {error && (
           <div className="card-base p-6 text-center">
-            <span className="material-symbols-outlined text-on-light-tertiary text-3xl mb-3 block">error_outline</span>
-            <p className="font-semibold text-gray-dark mb-1">Something went wrong</p>
-            <p className="text-on-light-secondary text-sm mb-4">{error}</p>
+            <span className="material-symbols-outlined text-ink-faint text-3xl mb-3 block">error_outline</span>
+            <p className="font-semibold text-ink mb-1">Something went wrong</p>
+            <p className="text-ink-soft text-sm mb-4">{error}</p>
             <button onClick={handleGenerate} className="bg-accent text-white rounded-[10px] px-5 py-2.5 font-semibold hover:bg-accent-light transition-colors">
               Try again
             </button>
@@ -516,10 +517,10 @@ export default function QuickPlanPage() {
         {!loading && trips.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[21px] font-semibold text-gray-dark">Your options</h2>
+              <h2 className="text-[21px] font-semibold text-ink">Your options</h2>
               <button
                 onClick={handleGenerate}
-                className="text-sm font-semibold text-accent hover:text-accent-light transition-colors flex items-center gap-1"
+                className="text-sm font-semibold text-accent hover:text-accent-dark transition-colors flex items-center gap-1"
               >
                 <span className="material-symbols-outlined text-[16px]">refresh</span>
                 Regenerate
@@ -545,9 +546,9 @@ export default function QuickPlanPage() {
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
-                            <h3 className="font-semibold text-gray-dark text-[17px]">{trip.destination}</h3>
+                            <h3 className="font-semibold text-ink text-[17px]">{trip.destination}</h3>
                           </div>
-                          <p className="text-on-light-secondary text-sm">{trip.summary}</p>
+                          <p className="text-ink-soft text-sm">{trip.summary}</p>
                         </div>
                         {trip.days && (
                           <span className="bg-accent text-white rounded-pill px-2.5 py-0.5 text-[11px] font-semibold flex-shrink-0 ml-3">
@@ -559,27 +560,27 @@ export default function QuickPlanPage() {
                       {/* Estimated Total */}
                       <div className="bg-[#DBEAFE]/30 rounded-[10px] p-4 my-4">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-on-light-secondary text-sm">Estimated Total</span>
+                          <span className="text-ink-soft text-sm">Estimated Total</span>
                           <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
                         </div>
                         <p className="font-semibold text-accent text-[24px]">
                           ${trip.totalEstimatedCost?.toLocaleString() || "N/A"}
                         </p>
-                        <p className="text-on-light-tertiary text-xs">per person</p>
+                        <p className="text-ink-faint text-xs">per person</p>
                       </div>
 
                       {/* Flights row */}
                       <div className="flex items-center justify-between py-2 mb-1">
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
-                          <span className="text-sm text-gray-dark">Flights</span>
+                          <span className="text-sm text-ink">Flights</span>
                         </div>
                         {flightData[i]?.loading ? (
                           <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
                         ) : flightData[i]?.count > 0 ? (
                           <p className="font-semibold text-accent text-sm">${flightData[i].min.toLocaleString()} - ${flightData[i].max.toLocaleString()}</p>
                         ) : (
-                          <p className="text-accent text-sm font-semibold">~${trip.flightEstimate?.toLocaleString() || "N/A"} <span className="text-on-light-tertiary font-normal text-xs">est.</span></p>
+                          <p className="text-accent text-sm font-semibold">~${trip.flightEstimate?.toLocaleString() || "N/A"} <span className="text-ink-faint font-normal text-xs">est.</span></p>
                         )}
                       </div>
 
@@ -587,9 +588,9 @@ export default function QuickPlanPage() {
                       <div className="flex items-center justify-between py-2 mb-4">
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-accent text-[16px]">hotel</span>
-                          <span className="text-sm text-gray-dark">Hotels/night</span>
+                          <span className="text-sm text-ink">Hotels/night</span>
                         </div>
-                        <p className="text-accent text-sm font-semibold">~${trip.hotelEstimatePerNight?.toLocaleString() || "N/A"} <span className="text-on-light-tertiary font-normal text-xs">est.</span></p>
+                        <p className="text-accent text-sm font-semibold">~${trip.hotelEstimatePerNight?.toLocaleString() || "N/A"} <span className="text-ink-faint font-normal text-xs">est.</span></p>
                       </div>
 
                       {/* Events section */}
@@ -597,12 +598,12 @@ export default function QuickPlanPage() {
                         {eventData[i]?.loading ? (
                           <div className="flex items-center gap-2 py-2">
                             <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-                            <span className="text-on-light-tertiary text-xs">Searching events...</span>
+                            <span className="text-ink-faint text-xs">Searching events...</span>
                           </div>
                         ) : eventData[i]?.count > 0 ? (
                           <>
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-gray-dark text-sm font-semibold">Events Found</span>
+                              <span className="text-ink text-sm font-semibold">Events Found</span>
                               <span className="font-semibold text-accent text-[24px]">{eventData[i].count}</span>
                             </div>
                             {eventData[i].categories.length > 0 && (
@@ -616,8 +617,8 @@ export default function QuickPlanPage() {
                               <div key={j} className="flex items-center gap-2.5 mb-2">
                                 {ev.image && <img src={ev.image} alt="" className="w-10 h-10 rounded-[6px] object-cover flex-shrink-0" />}
                                 <div className="min-w-0">
-                                  <p className="text-sm text-gray-dark font-semibold truncate">{ev.name}</p>
-                                  <p className="text-[11px] text-on-light-tertiary truncate">{ev.venue}</p>
+                                  <p className="text-sm text-ink font-semibold truncate">{ev.name}</p>
+                                  <p className="text-[11px] text-ink-faint truncate">{ev.venue}</p>
                                 </div>
                               </div>
                             ))}
@@ -625,9 +626,9 @@ export default function QuickPlanPage() {
                         ) : (
                           trip.topEvents && trip.topEvents.length > 0 && (
                             <div>
-                              <p className="text-gray-dark text-sm font-semibold mb-2">Top Events</p>
+                              <p className="text-ink text-sm font-semibold mb-2">Top Events</p>
                               {trip.topEvents.slice(0, 3).map((ev, j) => (
-                                <p key={j} className="text-sm text-on-light-secondary mb-1 flex items-center gap-1.5">
+                                <p key={j} className="text-sm text-ink-soft mb-1 flex items-center gap-1.5">
                                   <span className="material-symbols-outlined text-accent text-[14px]">local_activity</span>
                                   {ev}
                                 </p>
@@ -659,13 +660,13 @@ export default function QuickPlanPage() {
                           <div className="space-y-3">
                             {trip.days.map((day) => (
                               <div key={day.dayNumber} className="bg-page-bg rounded-[10px] p-3">
-                                <p className="text-sm font-semibold text-gray-dark mb-1">
+                                <p className="text-sm font-semibold text-ink mb-1">
                                   Day {day.dayNumber}: {day.title}
                                 </p>
                                 <div className="space-y-1">
                                   {day.items?.slice(0, 3).map((item, k) => (
-                                    <p key={k} className="text-xs text-on-light-secondary flex items-center gap-1.5">
-                                      <span className="text-on-light-tertiary w-10">{item.startTime}</span>
+                                    <p key={k} className="text-xs text-ink-soft flex items-center gap-1.5">
+                                      <span className="text-ink-faint w-10">{item.startTime}</span>
                                       {item.title}
                                       {item.estimatedCost > 0 && (
                                         <span className="text-accent ml-auto">${item.estimatedCost}</span>
@@ -683,7 +684,7 @@ export default function QuickPlanPage() {
                       <div className="flex items-center gap-2 pt-3 border-t border-[rgba(91,141,239,0.06)]">
                         <button
                           onClick={() => setExpandedTrip(isExpanded ? null : i)}
-                          className="text-accent text-sm font-semibold hover:text-accent-light transition-colors"
+                          className="text-accent text-sm font-semibold hover:text-accent-dark transition-colors"
                         >
                           {isExpanded ? "Show less" : "View itinerary"}
                         </button>
@@ -694,7 +695,7 @@ export default function QuickPlanPage() {
                             className={`rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                               savedIds.has(i)
                                 ? "bg-page-bg text-accent"
-                                : "border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent hover:text-accent"
+                                : "border border-[rgba(91,141,239,0.08)] text-ink-soft hover:border-accent hover:text-accent"
                             }`}
                           >
                             <span className="material-symbols-outlined text-[16px]">{savedIds.has(i) ? "check" : "bookmark"}</span>

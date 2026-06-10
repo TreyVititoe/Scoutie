@@ -154,7 +154,7 @@ export default function RefinementChat({
                 <p className="text-white font-sans font-semibold text-sm">
                   Walter
                 </p>
-                <p className="text-white/60 text-xs font-sans">
+                <p className="text-white/70 text-xs font-sans">
                   Refine your itinerary
                 </p>
               </div>
@@ -191,7 +191,7 @@ export default function RefinementChat({
                     className={`max-w-[85%] px-3.5 py-2.5 rounded-[14px] text-sm font-sans leading-relaxed ${
                       msg.role === "user"
                         ? "bg-accent text-white"
-                        : "bg-page-bg text-gray-dark"
+                        : "bg-raised-slate text-ink"
                     }`}
                   >
                     {msg.content}
@@ -201,7 +201,7 @@ export default function RefinementChat({
 
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-page-bg rounded-[14px] px-4 py-3">
+                  <div className="bg-raised-slate rounded-[14px] px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:0ms]" />
                       <span className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:150ms]" />
@@ -223,7 +223,7 @@ export default function RefinementChat({
                     onClick={() => sendMessage(suggestion)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-3 py-1.5 text-xs font-sans font-medium rounded-pill border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent/30 hover:bg-accent/5 transition-colors"
+                    className="px-3 py-1.5 text-xs font-sans font-medium rounded-pill border border-line text-ink-soft hover:border-accent/30 hover:bg-accent/5 transition-colors"
                   >
                     {suggestion}
                   </motion.button>
@@ -232,7 +232,7 @@ export default function RefinementChat({
             )}
 
             {/* Input */}
-            <div className="border-t border-black/10 px-4 py-3 flex-shrink-0">
+            <div className="border-t border-line px-4 py-3 flex-shrink-0">
               <div className="flex gap-2">
                 <input
                   ref={inputRef}
@@ -242,7 +242,7 @@ export default function RefinementChat({
                   onKeyDown={handleKeyDown}
                   placeholder="e.g. swap the museum for a food tour"
                   disabled={loading}
-                  className="flex-1 px-3.5 py-2.5 rounded-[10px] border border-[rgba(91,141,239,0.08)] bg-white text-sm font-sans text-gray-dark placeholder:text-on-light-tertiary focus:outline-none focus:ring-accent/20 focus:ring-accent focus:ring-1 disabled:opacity-50 transition-colors"
+                  className="flex-1 px-3.5 py-2.5 rounded-[10px] border border-line bg-raised-slate text-sm font-sans text-ink placeholder:text-ink-faint focus:outline-none focus:ring-accent/20 focus:ring-accent focus:ring-1 disabled:opacity-50 transition-colors"
                 />
                 <motion.button
                   onClick={() => sendMessage(input)}

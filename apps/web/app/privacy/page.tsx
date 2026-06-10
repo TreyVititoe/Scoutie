@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Walter",
+  title: "Privacy Policy | Walter",
   description:
     "Learn how Walter collects, uses, and protects your personal data.",
 };
@@ -11,11 +11,11 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Nav */}
-      <nav className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
+      <nav className="nav-glass sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-white text-[17px] font-semibold"
+            className="text-ink text-[17px] font-semibold"
           >
             Walter
           </Link>
@@ -24,16 +24,16 @@ export default function PrivacyPage() {
 
       <main className="max-w-3xl mx-auto px-6 py-16">
         <div className="card-base p-8">
-          <h1 className="font-semibold text-[28px] text-gray-dark mb-4">
+          <h1 className="font-semibold text-[28px] text-ink mb-4">
             Privacy Policy
           </h1>
-          <p className="text-on-light-tertiary text-sm mb-12">
+          <p className="text-ink-faint text-sm mb-12">
             Last updated: April 2, 2026
           </p>
 
-          <div className="space-y-10 text-on-light-secondary leading-relaxed">
+          <div className="space-y-10 text-ink-soft leading-relaxed">
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 1. Introduction
               </h2>
               <p>
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 2. Information We Collect
               </h2>
               <p className="mb-3">
@@ -54,28 +54,28 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  <strong className="text-gray-dark">Quiz responses</strong> --
+                  <strong className="text-ink">Quiz responses</strong> --
                   Travel preferences, budget ranges, dates, destination
                   interests, and activity preferences you submit through our trip
                   planning quiz.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Trip data</strong> -- Itinerary
+                  <strong className="text-ink">Trip data</strong> -- Itinerary
                   details, saved trips, and booking selections generated through
                   our platform.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Account information</strong> --
+                  <strong className="text-ink">Account information</strong> --
                   Email address and authentication data when you create an
                   account to save your trips.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Affiliate click data</strong> --
+                  <strong className="text-ink">Affiliate click data</strong> --
                   When you click through to booking partners, we record the click
                   for commission tracking purposes.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Usage data</strong> -- Browser
+                  <strong className="text-ink">Usage data</strong> -- Browser
                   type, device information, IP address, pages visited, and
                   interaction patterns collected automatically.
                 </li>
@@ -83,7 +83,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 3. How We Use Your Information
               </h2>
               <ul className="list-disc pl-6 space-y-2">
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 4. Third-Party Services
               </h2>
               <p className="mb-3">
@@ -117,21 +117,21 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  <strong className="text-gray-dark">Supabase</strong> -- Database
+                  <strong className="text-ink">Supabase</strong> -- Database
                   and authentication infrastructure. Your account data and trip
                   information are stored securely on Supabase servers.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Anthropic (Claude)</strong> -- AI
+                  <strong className="text-ink">Anthropic (Claude)</strong> -- AI
                   model provider used to generate travel itineraries. Quiz
                   responses are sent to Anthropic for processing.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Mapbox</strong> -- Mapping and
+                  <strong className="text-ink">Mapbox</strong> -- Mapping and
                   geolocation services for displaying trip locations and routes.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Booking partners</strong> --
+                  <strong className="text-ink">Booking partners</strong> --
                   Including Skyscanner, Booking.com, and other travel affiliates.
                   When you click through to book, you are subject to their
                   respective privacy policies.
@@ -144,7 +144,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 5. Cookies and Tracking
               </h2>
               <p>
@@ -158,7 +158,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 6. Data Retention
               </h2>
               <p>
@@ -171,7 +171,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 7. Data Security
               </h2>
               <p>
@@ -184,7 +184,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 8. Your Rights
               </h2>
               <p className="mb-3">
@@ -193,23 +193,23 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  <strong className="text-gray-dark">Access</strong> -- Request a copy
+                  <strong className="text-ink">Access</strong> -- Request a copy
                   of the personal data we hold about you.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Correction</strong> -- Request
+                  <strong className="text-ink">Correction</strong> -- Request
                   correction of inaccurate or incomplete data.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Deletion</strong> -- Request
+                  <strong className="text-ink">Deletion</strong> -- Request
                   deletion of your personal data.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Portability</strong> -- Request
+                  <strong className="text-ink">Portability</strong> -- Request
                   your data in a portable, machine-readable format.
                 </li>
                 <li>
-                  <strong className="text-gray-dark">Opt-out</strong> -- Opt out of
+                  <strong className="text-ink">Opt-out</strong> -- Opt out of
                   certain data processing activities, including the sale or
                   sharing of personal information.
                 </li>
@@ -217,7 +217,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 9. GDPR (European Users)
               </h2>
               <p>
@@ -232,7 +232,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 10. CCPA (California Residents)
               </h2>
               <p>
@@ -245,7 +245,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 11. Children&apos;s Privacy
               </h2>
               <p>
@@ -257,7 +257,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 12. Changes to This Policy
               </h2>
               <p>
@@ -268,7 +268,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-[21px] text-gray-dark mb-3">
+              <h2 className="font-semibold text-[21px] text-ink mb-3">
                 13. Contact Us
               </h2>
               <p>
@@ -276,7 +276,7 @@ export default function PrivacyPage() {
                 exercise your data rights, please contact us at{" "}
                 <a
                   href="mailto:privacy@scoutie.com"
-                  className="text-accent hover:text-accent-light"
+                  className="text-accent hover:text-accent-dark"
                 >
                   privacy@scoutie.com
                 </a>

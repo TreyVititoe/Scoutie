@@ -48,12 +48,12 @@ export default function Step1WhereWhen() {
   return (
     <StepWrapper
       title="Tell us about your trip"
-      subtitle="Fill in what you know — leave the rest to Walter."
+      subtitle="Fill in what you know, leave the rest to Walter."
     >
       <div className="space-y-6">
         {/* Destination */}
         <div>
-          <label className="block text-sm font-semibold text-gray-dark mb-1.5">
+          <label className="block text-sm font-semibold text-ink mb-1.5">
             Where to?
           </label>
           {store.surpriseMe ? (
@@ -66,7 +66,7 @@ export default function Step1WhereWhen() {
               </div>
               <button
                 onClick={() => store.setSurpriseMe(false)}
-                className="text-on-light-tertiary hover:text-gray-dark transition-colors"
+                className="text-ink-faint hover:text-ink transition-colors"
                 aria-label="Clear surprise me"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
@@ -92,39 +92,39 @@ export default function Step1WhereWhen() {
 
         {/* Dates */}
         <div className="space-y-4">
-          <label className="block text-sm font-semibold text-gray-dark">
+          <label className="block text-sm font-semibold text-ink">
             When?
           </label>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-dark mb-1.5">
+              <label className="block text-xs font-semibold text-ink mb-1.5">
                 Start date
               </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[20px]">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[20px]">
                   calendar_today
                 </span>
                 <input
                   type="date"
                   value={store.startDate || ""}
                   onChange={(e) => store.setStartDate(e.target.value)}
-                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-ink focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-dark mb-1.5">
+              <label className="block text-xs font-semibold text-ink mb-1.5">
                 End date
               </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[20px]">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[20px]">
                   event
                 </span>
                 <input
                   type="date"
                   value={store.endDate || ""}
                   onChange={(e) => store.setEndDate(e.target.value)}
-                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-ink focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
             </div>
@@ -137,24 +137,24 @@ export default function Step1WhereWhen() {
               onChange={(e) => store.setFlexibleDates(e.target.checked)}
               className="w-5 h-5 rounded border-[rgba(91,141,239,0.08)] text-accent focus:ring-accent/20"
             />
-            <span className="text-on-light-secondary text-sm">
+            <span className="text-ink-soft text-sm">
               My dates are flexible
             </span>
           </label>
 
           {store.flexibleDates && (
             <div>
-              <label className="block text-sm font-semibold text-gray-dark mb-1.5">
+              <label className="block text-sm font-semibold text-ink mb-1.5">
                 Roughly how many days?
               </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[20px]">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[20px]">
                   date_range
                 </span>
                 <select
                   value={store.tripDurationDays || ""}
                   onChange={(e) => store.setTripDurationDays(Number(e.target.value) || null)}
-                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent appearance-none"
+                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-ink focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent appearance-none"
                 >
                   <option value="">Select...</option>
                   <option value="3">Long weekend (3 days)</option>
@@ -171,7 +171,7 @@ export default function Step1WhereWhen() {
 
         {/* Where are you staying? */}
         <div className="space-y-3">
-          <label className="block text-sm font-semibold text-gray-dark">
+          <label className="block text-sm font-semibold text-ink">
             Where are you staying?
           </label>
           <div className={`grid grid-cols-3 sm:grid-cols-5 gap-2 transition-opacity ${store.noAccommodation ? "opacity-30 pointer-events-none" : ""}`}>
@@ -187,10 +187,10 @@ export default function Step1WhereWhen() {
                       : "border-[rgba(91,141,239,0.08)] bg-white hover:border-accent/30"
                   }`}
                 >
-                  <span className={`material-symbols-outlined text-[22px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
+                  <span className={`material-symbols-outlined text-[22px] ${isSelected ? "text-accent" : "text-ink-faint"}`}>
                     {opt.icon}
                   </span>
-                  <span className={`text-xs font-semibold ${isSelected ? "text-accent" : "text-gray-dark"}`}>
+                  <span className={`text-xs font-semibold ${isSelected ? "text-accent" : "text-ink"}`}>
                     {opt.label}
                   </span>
                 </button>
@@ -202,7 +202,7 @@ export default function Step1WhereWhen() {
             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-[10px] border text-sm transition-colors ${
               store.noAccommodation
                 ? "border-accent bg-accent text-white"
-                : "border-[rgba(91,141,239,0.08)] bg-white text-on-light-secondary hover:border-accent/30"
+                : "border-[rgba(91,141,239,0.08)] bg-white text-ink-soft hover:border-accent/30"
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">group</span>

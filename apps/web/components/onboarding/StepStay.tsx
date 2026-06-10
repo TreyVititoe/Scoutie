@@ -30,8 +30,8 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
   return (
     <div className="flex flex-col flex-1">
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-gray-dark mb-2">Where do you like to stay?</h1>
-        <p className="text-on-light-secondary">Pick one or more types.</p>
+        <h1 className="text-3xl font-semibold text-ink mb-2">Where do you like to stay?</h1>
+        <p className="text-ink-soft">Pick one or more types.</p>
       </div>
 
       <div className="space-y-3 mb-10">
@@ -48,10 +48,10 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
               }`}
             >
               <div>
-                <div className={`font-semibold ${selected ? "text-accent" : "text-gray-dark"}`}>
+                <div className={`font-semibold ${selected ? "text-accent" : "text-ink"}`}>
                   {o.label}
                 </div>
-                <div className="text-xs text-on-light-tertiary mt-0.5">{o.desc}</div>
+                <div className="text-xs text-ink-faint mt-0.5">{o.desc}</div>
               </div>
               {selected && (
                 <div className="ml-auto w-5 h-5 rounded-full bg-accent flex items-center justify-center">
@@ -66,13 +66,13 @@ export default function StepStay({ prefs, update, onNext, onBack }: Props) {
       </div>
 
       <div className="mt-auto flex gap-3">
-        <button onClick={onBack} className="flex-1 border border-[rgba(91,141,239,0.08)] text-on-light-secondary font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
+        <button onClick={onBack} className="flex-1 border border-[rgba(91,141,239,0.08)] text-ink-soft font-semibold py-4 rounded-[10px] text-lg hover:bg-page-bg transition-colors">
           Back
         </button>
         <button
           onClick={onNext}
           disabled={prefs.stay.length === 0}
-          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light disabled:bg-gray-light disabled:text-on-light-tertiary text-white font-semibold py-4 rounded-[10px] text-lg transition-colors"
+          className="flex-grow-[2] flex-1 bg-accent hover:bg-accent-light disabled:bg-hover-slate disabled:text-ink-faint text-white font-semibold py-4 rounded-[10px] text-lg transition-colors"
         >
           Find my trip
         </button>

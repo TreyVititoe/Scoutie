@@ -114,12 +114,12 @@ export default function StepAboutYou() {
   return (
     <StepWrapper
       title="Tell us about your trip"
-      subtitle="The basics -- who's going, what's the budget, and where are you flying from?"
+      subtitle="The basics: who's going, what's the budget, and where are you flying from?"
     >
       <div className="space-y-8">
         {/* Traveler Type */}
         <div>
-          <label className="block text-sm font-semibold text-gray-dark mb-3">
+          <label className="block text-sm font-semibold text-ink mb-3">
             Who's traveling?
           </label>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
@@ -132,13 +132,13 @@ export default function StepAboutYou() {
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-[14px] border transition-colors cursor-pointer ${
                     isSelected
                       ? "border-accent bg-accent/5"
-                      : "border-[rgba(91,141,239,0.08)] bg-white hover:border-accent/30"
+                      : "border-line bg-card hover:border-accent/30"
                   }`}
                 >
-                  <span className={`material-symbols-outlined text-[24px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
+                  <span className={`material-symbols-outlined text-[24px] ${isSelected ? "text-accent" : "text-ink-faint"}`}>
                     {t.icon}
                   </span>
-                  <span className={`text-xs font-semibold ${isSelected ? "text-accent" : "text-gray-dark"}`}>
+                  <span className={`text-xs font-semibold ${isSelected ? "text-accent" : "text-ink"}`}>
                     {t.label}
                   </span>
                 </button>
@@ -149,31 +149,31 @@ export default function StepAboutYou() {
 
         {/* Traveler Count */}
         <div>
-          <label className="block text-sm font-semibold text-gray-dark mb-3">
+          <label className="block text-sm font-semibold text-ink mb-3">
             How many travelers?
           </label>
           <div className="flex items-center gap-5">
             <button
               onClick={() => store.setTravelersCount(Math.max(1, store.travelersCount - 1))}
-              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-hover-slate transition-colors"
             >
-              <span className="material-symbols-outlined text-on-light-tertiary text-[20px]">remove</span>
+              <span className="material-symbols-outlined text-ink-faint text-[20px]">remove</span>
             </button>
-            <span className="text-2xl font-semibold text-gray-dark w-8 text-center">
+            <span className="text-2xl font-semibold text-ink w-8 text-center">
               {store.travelersCount}
             </span>
             <button
               onClick={() => store.setTravelersCount(store.travelersCount + 1)}
-              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+              className="w-10 h-10 rounded-full bg-page-bg flex items-center justify-center hover:bg-hover-slate transition-colors"
             >
-              <span className="material-symbols-outlined text-on-light-tertiary text-[20px]">add</span>
+              <span className="material-symbols-outlined text-ink-faint text-[20px]">add</span>
             </button>
           </div>
         </div>
 
         {/* Budget */}
         <div>
-          <label className="block text-sm font-semibold text-gray-dark mb-3">
+          <label className="block text-sm font-semibold text-ink mb-3">
             Total budget (USD)
           </label>
           <div className="flex flex-wrap gap-2 mb-3">
@@ -187,7 +187,7 @@ export default function StepAboutYou() {
                 className={`px-4 py-2 rounded-pill text-sm font-semibold transition-colors ${
                   store.budgetAmount === amount && !store.budgetSkipped
                     ? "bg-accent text-white"
-                    : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent/30"
+                    : "bg-page-bg border border-line text-ink-soft hover:border-accent/30"
                 }`}
               >
                 ${amount.toLocaleString()}
@@ -201,7 +201,7 @@ export default function StepAboutYou() {
               className={`px-4 py-2 rounded-pill text-sm font-semibold transition-colors ${
                 store.budgetSkipped
                   ? "bg-accent text-white"
-                  : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent/30"
+                  : "bg-page-bg border border-line text-ink-soft hover:border-accent/30"
               }`}
             >
               Flexible
@@ -209,7 +209,7 @@ export default function StepAboutYou() {
           </div>
           {!store.budgetSkipped && (
             <div className="flex items-center gap-3">
-              <span className="text-on-light-tertiary text-sm">$</span>
+              <span className="text-ink-faint text-sm">$</span>
               <input
                 type="number"
                 value={store.budgetAmount || ""}
@@ -218,7 +218,7 @@ export default function StepAboutYou() {
                   store.setBudgetSkipped(false);
                 }}
                 placeholder="Or enter a custom amount"
-                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                className="flex-1 px-4 py-2.5 rounded-[10px] border border-line text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20"
               />
             </div>
           )}
@@ -226,7 +226,7 @@ export default function StepAboutYou() {
 
         {/* Departure Cities */}
         <div className="relative">
-          <label className="block text-sm font-semibold text-gray-dark mb-3">
+          <label className="block text-sm font-semibold text-ink mb-3">
             Where are you flying from?
           </label>
 
@@ -236,12 +236,12 @@ export default function StepAboutYou() {
               {store.departureCities.map((city) => (
                 <span
                   key={city}
-                  className="bg-[#DBEAFE] text-accent rounded-pill px-3 py-1 text-sm font-semibold flex items-center gap-1.5"
+                  className="bg-accent/10 text-accent rounded-pill px-3 py-1 text-sm font-semibold flex items-center gap-1.5"
                 >
                   {city}
                   <button
                     onClick={() => store.removeDepartureCity(city)}
-                    className="text-on-light-tertiary hover:text-accent transition-colors"
+                    className="text-ink-faint hover:text-accent transition-colors"
                   >
                     <span className="material-symbols-outlined text-[14px]">close</span>
                   </button>
@@ -251,7 +251,7 @@ export default function StepAboutYou() {
           )}
 
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[20px]">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-[20px]">
               flight_takeoff
             </span>
             <input
@@ -279,11 +279,11 @@ export default function StepAboutYou() {
                 }
               }}
               placeholder={store.departureCities.length > 0 ? "Add another city or airport code" : "City or airport code (e.g. LAX, Chicago)"}
-              className="w-full pl-10 pr-4 py-2.5 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+              className="w-full pl-10 pr-4 py-2.5 rounded-[10px] border border-line text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
           </div>
           {showSuggestions && (iataMatches.length > 0 || citySuggestions.length > 0) && (
-            <div className="absolute z-20 left-0 right-0 mt-1 bg-white rounded-[14px] border border-[rgba(91,141,239,0.08)] shadow-[0_2px_12px_rgba(91,141,239,0.06)] overflow-hidden">
+            <div className="absolute z-20 left-0 right-0 mt-1 bg-card rounded-[14px] border border-line shadow-card overflow-hidden">
               {iataMatches.map((match) => (
                 <button
                   key={match.code}
@@ -295,7 +295,7 @@ export default function StepAboutYou() {
                     setIataMatches([]);
                     setShowSuggestions(false);
                   }}
-                  className="w-full text-left px-4 py-3 text-sm text-gray-dark hover:bg-page-bg transition-colors flex items-center gap-2"
+                  className="w-full text-left px-4 py-3 text-sm text-ink hover:bg-page-bg transition-colors flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
                   <span className="text-accent font-semibold">{match.code}</span> - {match.city}
@@ -313,14 +313,14 @@ export default function StepAboutYou() {
                     setIataMatches([]);
                     setShowSuggestions(false);
                   }}
-                  className="w-full text-left px-4 py-3 text-sm text-gray-dark hover:bg-page-bg transition-colors"
+                  className="w-full text-left px-4 py-3 text-sm text-ink hover:bg-page-bg transition-colors"
                 >
                   {formatCity(feat)}
                 </button>
               ))}
             </div>
           )}
-          <p className="text-xs text-on-light-tertiary mt-1.5">Optional -- add multiple cities or airport codes. Press Enter or select from suggestions.</p>
+          <p className="text-xs text-ink-faint mt-1.5">Optional: add multiple cities or airport codes. Press Enter or select from suggestions.</p>
         </div>
       </div>
     </StepWrapper>

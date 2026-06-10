@@ -8,10 +8,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "gray-light": "oklch(0.34 0.005 250)",
-        "gray-dark": "oklch(0.985 0.006 250)",
-        "page-bg": "oklch(0.28 0.005 250)",
-        "product-bg": "oklch(0.30 0.008 240)",
+        // Daylight field — bright canvas, ink text, photography carries the color
+        ink: {
+          DEFAULT: "oklch(0.25 0.02 258)",
+          soft: "oklch(0.25 0.02 258 / 0.72)",
+          faint: "oklch(0.25 0.02 258 / 0.48)",
+        },
+        paper: "oklch(0.975 0.004 250)",
+        card: "oklch(0.99 0.002 250)",
+        line: "oklch(0.25 0.02 258 / 0.10)",
+        // Legacy names, re-pointed bright so unswept files flip with the theme
+        "gray-light": "oklch(0.99 0.002 250)",
+        "gray-dark": "oklch(0.25 0.02 258)",
+        "page-bg": "oklch(0.975 0.004 250)",
+        "product-bg": "oklch(0.962 0.006 245)",
         accent: {
           DEFAULT: "oklch(0.65 0.135 263)",
           light: "oklch(0.72 0.11 261)",
@@ -21,19 +31,20 @@ const config: Config = {
         cyan: "oklch(0.78 0.13 230)",
         "on-dark-secondary": "rgba(255,255,255,0.7)",
         "on-dark-tertiary": "rgba(255,255,255,0.4)",
-        "on-light-secondary": "rgba(255,255,255,0.7)",
-        "on-light-tertiary": "rgba(255,255,255,0.45)",
+        "on-light-secondary": "oklch(0.25 0.02 258 / 0.72)",
+        "on-light-tertiary": "oklch(0.25 0.02 258 / 0.48)",
         "surface-dark": {
           1: "oklch(0.34 0.005 250)",
           2: "oklch(0.39 0.005 250)",
         },
-        "surface-1": "oklch(0.34 0.005 250)",
-        "surface-2": "oklch(0.39 0.005 250)",
-        "surface-3": "oklch(0.44 0.005 250)",
+        "surface-1": "oklch(0.99 0.002 250)",
+        "surface-2": "oklch(0.955 0.005 250)",
+        "surface-3": "oklch(0.925 0.008 252)",
+        // Tinted Pitch stays dark: it is the over-photo overlay and chip color
         "tinted-pitch": "oklch(0.28 0.005 250)",
-        "quiet-slate": "oklch(0.34 0.005 250)",
-        "raised-slate": "oklch(0.39 0.005 250)",
-        "hover-slate": "oklch(0.44 0.005 250)",
+        "quiet-slate": "oklch(0.99 0.002 250)",
+        "raised-slate": "oklch(0.955 0.005 250)",
+        "hover-slate": "oklch(0.925 0.008 252)",
         "snow-off-glacier": "oklch(0.985 0.006 250)",
         "cornflower-beacon": "oklch(0.65 0.135 263)",
         "reykjavik-sky": "oklch(0.72 0.11 261)",
@@ -46,7 +57,7 @@ const config: Config = {
         pill: "980px",
       },
       boxShadow: {
-        card: "3px 5px 30px 0px rgba(0, 0, 0, 0.22)",
+        card: "0 1px 2px rgba(20, 30, 60, 0.05), 0 8px 24px rgba(20, 30, 60, 0.08)",
       },
       letterSpacing: {
         "display": "-0.3px",

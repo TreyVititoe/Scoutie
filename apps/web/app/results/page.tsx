@@ -25,6 +25,16 @@ const tabs = [
 type TabId = (typeof tabs)[number]["id"];
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 
+type ChosenTrip = {
+  id: string;
+  title: string;
+  destination: string;
+  days: number;
+  estTotal: number;
+  summary: string;
+  tier: string;
+};
+
 export default function ResultsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("flights");
@@ -39,6 +49,7 @@ export default function ResultsPage() {
   const [hotelsLoading, setHotelsLoading] = useState(true);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [prefs, setPrefs] = useState<Record<string, unknown> | null>(null);
+  const [trip, setTrip] = useState<ChosenTrip | null>(null);
   const [pageReady, setPageReady] = useState(false);
   const [fetchKey, setFetchKey] = useState(0);
 
@@ -62,16 +73,23 @@ export default function ResultsPage() {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("walter_prefs") || localStorage.getItem("scoutie_prefs");
-    if (!stored) {
+    let chosenTrip: ChosenTrip | null = null;
+    try {
+      const storedTrip = localStorage.getItem("walter_trip");
+      if (storedTrip) chosenTrip = JSON.parse(storedTrip);
+    } catch {}
+    setTrip(chosenTrip);
+
+    const stored = localStorage.getItem("walter_prefs");
+    if (!stored && !chosenTrip) {
       router.push("/");
       return;
     }
-    const quizData = JSON.parse(stored);
+    const quizData = stored ? JSON.parse(stored) : {};
     setPrefs(quizData);
     setPageReady(true);
 
-    const destination = quizData.destinations?.[0] || quizData.destination || "";
+    const destination = chosenTrip?.destination || quizData.destinations?.[0] || quizData.destination || "";
     const departureCity = quizData.departureCity || "";
     const startDate = quizData.startDate || "";
     const endDate = quizData.endDate || "";
@@ -199,6 +217,7 @@ export default function ResultsPage() {
   }, [router, fetchKey]);
 
   const destination =
+    trip?.destination ||
     (prefs as { destinations?: string[] })?.destinations?.[0] ||
     (prefs as { destination?: string })?.destination ||
     "your destination";
@@ -241,11 +260,11 @@ export default function ResultsPage() {
             <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
               <span className="text-tinted-pitch text-[14px] font-black italic leading-none -mt-px">W</span>
             </span>
-            <span className="text-snow-off-glacier text-[16px] font-semibold tracking-tight">Walter</span>
+            <span className="text-ink text-[16px] font-semibold tracking-tight">Walter</span>
           </Link>
           <Link
             href="/"
-            className="text-white/75 hover:text-snow-off-glacier text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-white/10 transition-colors flex items-center gap-1.5"
+            className="text-ink-soft hover:text-ink text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">edit</span>
             Edit trip
@@ -270,7 +289,9 @@ export default function ResultsPage() {
             transition={{ duration: 0.5, ease: EASE }}
             className="text-snow-off-glacier/65 text-[11px] uppercase tracking-[2.5px] font-medium mb-3"
           >
-            {tripWindow || "Your trip"}
+            {trip
+              ? [trip.destination, tripWindow || `${trip.days} days`].join("  |  ")
+              : tripWindow || "Your trip"}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -278,7 +299,7 @@ export default function ResultsPage() {
             transition={{ delay: 0.05, duration: 0.7, ease: EASE }}
             className="text-snow-off-glacier text-[36px] sm:text-[48px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
           >
-            {destination}
+            {trip?.title || destination}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -286,17 +307,20 @@ export default function ResultsPage() {
             transition={{ delay: 0.12, duration: 0.6, ease: EASE }}
             className="text-snow-off-glacier/70 text-[15px] max-w-[44ch]"
           >
-            Walter has picked a spine. Swap anything you don&apos;t like.
+            {trip?.summary || "Nothing is booked yet. Add the pieces you want."}
           </motion.p>
         </div>
       </section>
 
-      {/* Walter's trip so far — the spine */}
+      {/* Walter's recommendations: the spine */}
       <section className="relative z-10 bg-page-bg pt-10 pb-2">
         <div className="max-w-content mx-auto px-5 lg:px-8">
-          <h2 className="text-[11px] uppercase tracking-[2.5px] font-medium text-white/55 mb-4">
-            Walter&apos;s trip so far
+          <h2 className="text-[11px] uppercase tracking-[2.5px] font-medium text-ink-faint mb-1">
+            Walter&apos;s recommendations
           </h2>
+          <p className="text-ink-soft text-sm mb-4">
+            Walter would pick these. Add what you like.
+          </p>
           <SpineGrid
             cheapestFlight={cheapestFlight}
             flightsLoading={flightsLoading}
@@ -317,7 +341,7 @@ export default function ResultsPage() {
       </div>
 
       {/* Flat tab bar */}
-      <div className="sticky top-[56px] z-20 bg-page-bg/85 backdrop-blur-md border-y border-white/8">
+      <div className="sticky top-[56px] z-20 bg-page-bg/85 backdrop-blur-md border-y border-line">
         <div className="max-w-content mx-auto px-5 lg:px-8 py-3">
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => {
@@ -339,19 +363,19 @@ export default function ResultsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`relative flex items-center gap-2 px-4 py-2 rounded-pill text-[13px] font-medium transition-colors ${
                     isActive
-                      ? "bg-hover-slate text-snow-off-glacier"
-                      : "text-white/65 hover:text-snow-off-glacier hover:bg-white/8"
+                      ? "bg-hover-slate text-ink"
+                      : "text-ink-soft hover:text-ink hover:bg-ink/5"
                   }`}
                 >
                   <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
                   {tab.label}
                   {!isLoading && count > 0 && (
-                    <span className="text-[11px] text-white/55 tabular-nums">
+                    <span className="text-[11px] text-ink-faint tabular-nums">
                       {count}
                     </span>
                   )}
                   {isLoading && (
-                    <span className="w-3 h-3 border-2 rounded-full animate-spin border-white/20 border-t-white/60" />
+                    <span className="w-3 h-3 border-2 rounded-full animate-spin border-ink/20 border-t-ink/60" />
                   )}
                 </button>
               );
@@ -520,7 +544,7 @@ export default function ResultsPage() {
 
         <TripTracker />
 
-        <p className="text-[11px] text-white/40 text-center mt-12">
+        <p className="text-[11px] text-ink-faint text-center mt-12">
           Walter earns a commission when you book through our links at no extra cost to you.
         </p>
       </div>
@@ -545,7 +569,7 @@ function formatTripWindow(start: string, end: string): string {
 /* ── Section heading (single line, no eyebrow, no subtitle) ── */
 function SectionHeading({ title }: { title: string }) {
   return (
-    <h2 className="text-[22px] sm:text-[26px] font-semibold text-snow-off-glacier tracking-display leading-[1.1] mb-6">
+    <h2 className="text-[22px] sm:text-[26px] font-semibold text-ink tracking-display leading-[1.1] mb-6">
       {title}
     </h2>
   );
@@ -555,8 +579,8 @@ function SectionHeading({ title }: { title: string }) {
 function EmptyState({ icon, message }: { icon: string; message: string }) {
   return (
     <div className="card-base p-10 text-center">
-      <span className="material-symbols-outlined text-white/35 text-3xl mb-3 block">{icon}</span>
-      <p className="text-white/65 text-sm max-w-[40ch] mx-auto">{message}</p>
+      <span className="material-symbols-outlined text-ink-faint text-3xl mb-3 block">{icon}</span>
+      <p className="text-ink-soft text-sm max-w-[40ch] mx-auto">{message}</p>
     </div>
   );
 }
@@ -579,7 +603,7 @@ function CardSkeletonGrid({ withImage = false }: { withImage?: boolean }) {
   );
 }
 
-/* ── Spine: Walter's trip so far ── */
+/* ── Spine: Walter's recommendations. Suggestions only; nothing enters the cart without an explicit Add click. ── */
 function SpineGrid({
   cheapestFlight,
   flightsLoading,
@@ -601,6 +625,71 @@ function SpineGrid({
   onPickStay: () => void;
   onPickEvent: () => void;
 }) {
+  const addItem = useTripCartStore((s) => s.addItem);
+  const removeItem = useTripCartStore((s) => s.removeItem);
+  const items = useTripCartStore((s) => s.items);
+  const inCart = (id?: string) => !!id && items.some((i) => i.id === id);
+
+  const toggleFlight = () => {
+    if (!cheapestFlight) return;
+    if (inCart(cheapestFlight.id)) {
+      removeItem(cheapestFlight.id);
+      return;
+    }
+    addItem({
+      id: cheapestFlight.id,
+      type: "flight",
+      title: `${cheapestFlight.airline} ${cheapestFlight.outbound.departure}, ${cheapestFlight.outbound.arrival}`,
+      subtitle: `${cheapestFlight.outbound.departure} to ${cheapestFlight.outbound.arrival}`,
+      price: cheapestFlight.price,
+      image: cheapestFlight.airlineLogo,
+      bookingUrl: cheapestFlight.bookingUrl,
+      provider: "google_flights",
+      date: null,
+      meta: cheapestFlight as unknown as Record<string, unknown>,
+    });
+  };
+
+  const toggleStay = () => {
+    if (!bestValueHotel) return;
+    if (inCart(bestValueHotel.id)) {
+      removeItem(bestValueHotel.id);
+      return;
+    }
+    addItem({
+      id: bestValueHotel.id,
+      type: "hotel",
+      title: bestValueHotel.name,
+      subtitle: bestValueHotel.neighborhood || "",
+      price: bestValueHotel.totalPrice,
+      image: bestValueHotel.image,
+      bookingUrl: bestValueHotel.bookingUrl,
+      provider: "booking",
+      date: null,
+      meta: bestValueHotel as unknown as Record<string, unknown>,
+    });
+  };
+
+  const toggleEvent = () => {
+    if (!topEvent) return;
+    if (inCart(topEvent.id)) {
+      removeItem(topEvent.id);
+      return;
+    }
+    addItem({
+      id: topEvent.id,
+      type: "event",
+      title: topEvent.name,
+      subtitle: topEvent.venueName,
+      price: topEvent.priceMin,
+      image: topEvent.image,
+      bookingUrl: topEvent.url,
+      provider: "ticketmaster",
+      date: topEvent.date,
+      meta: topEvent as unknown as Record<string, unknown>,
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <SpineSlot
@@ -613,6 +702,8 @@ function SpineGrid({
         price={cheapestFlight?.price ?? null}
         emptyAction="Pick a flight"
         onPickAlternative={onPickFlight}
+        added={inCart(cheapestFlight?.id)}
+        onToggle={toggleFlight}
       />
       <SpineSlot
         label="Stay"
@@ -625,6 +716,8 @@ function SpineGrid({
         priceSuffix="/night"
         emptyAction="Pick a stay"
         onPickAlternative={onPickStay}
+        added={inCart(bestValueHotel?.id)}
+        onToggle={toggleStay}
       />
       <SpineSlot
         label="One night out"
@@ -636,6 +729,8 @@ function SpineGrid({
         price={topEvent?.priceMin ?? null}
         emptyAction="Pick an event"
         onPickAlternative={onPickEvent}
+        added={inCart(topEvent?.id)}
+        onToggle={toggleEvent}
       />
     </div>
   );
@@ -652,6 +747,8 @@ function SpineSlot({
   priceSuffix = "",
   emptyAction,
   onPickAlternative,
+  added,
+  onToggle,
 }: {
   label: string;
   icon: string;
@@ -663,12 +760,14 @@ function SpineSlot({
   priceSuffix?: string;
   emptyAction: string;
   onPickAlternative: () => void;
+  added: boolean;
+  onToggle: () => void;
 }) {
   return (
     <div className="card-base p-5 flex flex-col">
       <div className="flex items-center gap-2 mb-4">
-        <span className="material-symbols-outlined text-accent-light text-[18px]">{icon}</span>
-        <span className="text-[11px] uppercase tracking-widest text-white/55 font-medium">{label}</span>
+        <span className="material-symbols-outlined text-accent text-[18px]">{icon}</span>
+        <span className="text-[11px] uppercase tracking-widest text-ink-faint font-medium">{label}</span>
       </div>
 
       {loading ? (
@@ -678,38 +777,52 @@ function SpineSlot({
         </div>
       ) : empty ? (
         <>
-          <p className="text-white/55 text-sm mb-4 flex-1">Walter is still picking. Browse alternatives.</p>
+          <p className="text-ink-soft text-sm mb-4 flex-1">No recommendation yet. Browse the options.</p>
           <button
             onClick={onPickAlternative}
-            className="self-start text-snow-off-glacier text-[13px] font-medium border-b border-white/30 hover:border-white pb-0.5 transition-colors"
+            className="self-start text-ink text-[13px] font-medium border-b border-ink/30 hover:border-ink pb-0.5 transition-colors"
           >
             {emptyAction}
           </button>
         </>
       ) : (
         <>
-          <p className="font-semibold text-snow-off-glacier leading-tight mb-1 line-clamp-2">{title}</p>
-          {subtitle && <p className="text-white/55 text-[12px] mb-3 line-clamp-1">{subtitle}</p>}
-          <div className="flex items-end justify-between mt-auto pt-3">
+          <p className="font-semibold text-ink leading-tight mb-1 line-clamp-2">{title}</p>
+          {subtitle && <p className="text-ink-faint text-[12px] mb-3 line-clamp-1">{subtitle}</p>}
+          <div className="flex items-end justify-between mt-auto pt-3 gap-3">
             <div>
               {price != null && price > 0 ? (
-                <p className="font-semibold text-snow-off-glacier text-[20px]">
+                <p className="font-semibold text-ink text-[20px]">
                   ${price.toLocaleString()}
                   {priceSuffix && (
-                    <span className="text-white/45 text-[12px] font-normal">{priceSuffix}</span>
+                    <span className="text-ink-faint text-[12px] font-normal">{priceSuffix}</span>
                   )}
                 </p>
               ) : (
-                <p className="text-white/55 text-[13px]">Free or varies</p>
+                <p className="text-ink-soft text-[13px]">Free or varies</p>
               )}
             </div>
-            <button
-              onClick={onPickAlternative}
-              className="text-white/65 text-[12px] hover:text-snow-off-glacier transition-colors flex items-center gap-1"
-            >
-              Swap
-              <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onPickAlternative}
+                className="text-ink-soft text-[12px] hover:text-ink transition-colors"
+              >
+                See all
+              </button>
+              <button
+                onClick={onToggle}
+                className={`rounded-pill px-3.5 py-1.5 text-[13px] font-semibold flex items-center gap-1 transition-colors ${
+                  added
+                    ? "bg-accent text-snow-off-glacier hover:bg-accent-light"
+                    : "border border-ink/20 text-ink hover:bg-ink/5 hover:border-ink/40"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[15px]">
+                  {added ? "check" : "add"}
+                </span>
+                {added ? "Added" : "Add"}
+              </button>
+            </div>
           </div>
         </>
       )}
@@ -743,20 +856,20 @@ function AiItineraryBanner() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="icon-gradient w-9 h-9 flex items-center justify-center">
-            <span className="material-symbols-outlined text-accent-light text-[18px]">auto_awesome</span>
+            <span className="material-symbols-outlined text-accent text-[18px]">auto_awesome</span>
           </div>
           <div>
-            <p className="font-semibold text-snow-off-glacier text-sm">
+            <p className="font-semibold text-ink text-sm">
               Walter&apos;s draft itinerary ({aiItems.length} items)
             </p>
-            <p className="text-white/55 text-xs">
+            <p className="text-ink-soft text-xs">
               Swap any item with a real booking below.
             </p>
           </div>
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-snow-off-glacier text-sm font-medium border-b border-white/30 hover:border-white pb-0.5 transition-colors flex items-center gap-1"
+          className="text-ink text-sm font-medium border-b border-ink/30 hover:border-ink pb-0.5 transition-colors flex items-center gap-1"
         >
           {expanded ? "Hide" : "View"}
           <span className="material-symbols-outlined text-[16px]">
@@ -770,14 +883,14 @@ function AiItineraryBanner() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           transition={{ duration: 0.18, ease: EASE }}
-          className="mt-4 pt-4 border-t border-white/10"
+          className="mt-4 pt-4 border-t border-line"
         >
           <div className="space-y-3">
             {Array.from(byDay.entries())
               .sort(([a], [b]) => a - b)
               .map(([day, dayItems]) => (
                 <div key={day}>
-                  <p className="text-xs font-semibold text-white/45 uppercase tracking-wider mb-1.5">
+                  <p className="text-xs font-semibold text-ink-faint uppercase tracking-wider mb-1.5">
                     Day {day}
                   </p>
                   <div className="space-y-1">
@@ -786,15 +899,15 @@ function AiItineraryBanner() {
                         key={item.id}
                         className="flex items-center gap-2 text-sm bg-raised-slate rounded-[8px] px-3 py-2"
                       >
-                        <span className="text-[10px] text-white/45 w-12">
+                        <span className="text-[10px] text-ink-faint w-12">
                           {(item.meta?.startTime as string) || ""}
                         </span>
-                        <span className="bg-tinted-pitch/85 text-reykjavik-sky border border-white/10 rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
+                        <span className="bg-card text-ink border border-line rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase">
                           {item.type}
                         </span>
-                        <span className="flex-1 truncate text-snow-off-glacier">{item.title}</span>
+                        <span className="flex-1 truncate text-ink">{item.title}</span>
                         {item.price != null && item.price > 0 && (
-                          <span className="text-snow-off-glacier font-semibold text-xs">${item.price}</span>
+                          <span className="text-ink font-semibold text-xs">${item.price}</span>
                         )}
                       </div>
                     ))}
@@ -847,17 +960,17 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
     <div className="card-base p-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="icon-gradient w-10 h-10 flex items-center justify-center">
-          <span className="material-symbols-outlined text-accent-light text-[20px]">flight_takeoff</span>
+          <span className="material-symbols-outlined text-accent text-[20px]">flight_takeoff</span>
         </div>
         <div>
-          <p className="font-semibold text-snow-off-glacier">Where are you flying from?</p>
-          <p className="text-white/55 text-xs">Add your departure city to search flights.</p>
+          <p className="font-semibold text-ink">Where are you flying from?</p>
+          <p className="text-ink-soft text-xs">Add your departure city to search flights.</p>
         </div>
       </div>
       <div className="relative">
         <div className="flex gap-3">
           <div className="relative flex-1">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/45 text-[18px]">search</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-[18px]">search</span>
             <input
               type="text"
               value={query}
@@ -871,7 +984,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
                 }
               }}
               placeholder="City or airport code"
-              className="w-full pl-10 pr-4 py-3 rounded-pill bg-raised-slate border border-white/10 text-snow-off-glacier placeholder:text-white/40 focus:outline-none focus:border-accent transition-colors"
+              className="w-full pl-10 pr-4 py-3 rounded-pill bg-raised-slate border border-line text-ink placeholder:text-ink-faint focus:outline-none focus:border-accent transition-colors"
             />
           </div>
           <button
@@ -884,7 +997,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
           </button>
         </div>
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-20 left-0 right-0 mt-2 bg-quiet-slate rounded-[14px] border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden">
+          <div className="absolute z-20 left-0 right-0 mt-2 bg-card rounded-[14px] border border-line shadow-[0_12px_40px_rgba(20,30,60,0.12)] overflow-hidden">
             {suggestions.map((f) => (
               <button
                 key={f.id}
@@ -893,7 +1006,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
                   onSubmit(formatCity(f));
                   setShowSuggestions(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm text-snow-off-glacier hover:bg-white/5 transition-colors"
+                className="w-full text-left px-4 py-3 text-sm text-ink hover:bg-ink/5 transition-colors"
               >
                 {formatCity(f)}
               </button>
@@ -922,11 +1035,11 @@ function InlineDatePicker({ onSubmit, tripDays }: { onSubmit: (start: string, en
     <div className="card-base p-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="icon-gradient w-10 h-10 flex items-center justify-center">
-          <span className="material-symbols-outlined text-accent-light text-[20px]">calendar_month</span>
+          <span className="material-symbols-outlined text-accent text-[20px]">calendar_month</span>
         </div>
         <div>
-          <p className="font-semibold text-snow-off-glacier">When do you want to go?</p>
-          <p className="text-white/55 text-xs">Pick your travel dates.</p>
+          <p className="font-semibold text-ink">When do you want to go?</p>
+          <p className="text-ink-soft text-xs">Pick your travel dates.</p>
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -939,11 +1052,11 @@ function InlineDatePicker({ onSubmit, tripDays }: { onSubmit: (start: string, en
             <button
               key={opt.offset}
               onClick={() => onSubmit(fmt(start), fmt(end))}
-              className="card-base p-3 text-center hover:border-white/20 transition-colors cursor-pointer"
+              className="card-base p-3 text-center hover:border-ink/20 transition-colors cursor-pointer"
             >
-              <p className="font-semibold text-snow-off-glacier text-sm mb-1">{opt.label}</p>
-              <p className="text-white/55 text-[11px]">{display(start)} to {display(end)}</p>
-              <p className="text-accent-light text-[11px] font-semibold mt-1">{tripDays} days</p>
+              <p className="font-semibold text-ink text-sm mb-1">{opt.label}</p>
+              <p className="text-ink-faint text-[11px]">{display(start)} to {display(end)}</p>
+              <p className="text-accent-dark text-[11px] font-semibold mt-1">{tripDays} days</p>
             </button>
           );
         })}

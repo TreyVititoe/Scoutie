@@ -66,7 +66,7 @@ export default function Step5Accommodation() {
   return (
     <StepWrapper
       title="Where do you want to stay?"
-      subtitle="Pick one or more -- we'll search them all."
+      subtitle="Pick one or more. We'll search them all."
     >
       <div className="space-y-6">
         {/* No accommodation toggle */}
@@ -75,17 +75,17 @@ export default function Step5Accommodation() {
           className={`w-full flex items-center gap-3 p-4 rounded-[14px] border transition-colors ${
             store.noAccommodation
               ? "border-accent bg-accent text-white"
-              : "border-[rgba(91,141,239,0.08)] bg-white hover:border-accent/30"
+              : "border-line bg-card hover:border-accent/30"
           }`}
         >
-          <span className={`material-symbols-outlined text-[24px] ${store.noAccommodation ? "text-white" : "text-on-light-tertiary"}`}>
+          <span className={`material-symbols-outlined text-[24px] ${store.noAccommodation ? "text-white" : "text-ink-faint"}`}>
             group
           </span>
           <div className="text-left flex-1">
-            <p className={`font-semibold text-sm ${store.noAccommodation ? "text-white" : "text-gray-dark"}`}>
+            <p className={`font-semibold text-sm ${store.noAccommodation ? "text-white" : "text-ink"}`}>
               Don't need a place
             </p>
-            <p className={`text-xs mt-0.5 ${store.noAccommodation ? "text-white/80" : "text-on-light-secondary"}`}>
+            <p className={`text-xs mt-0.5 ${store.noAccommodation ? "text-white/80" : "text-ink-soft"}`}>
               Staying with friends or family
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function Step5Accommodation() {
         {store.noAccommodation && (
           <div className="flex items-center gap-2 px-4 py-3 rounded-[10px] bg-accent/5 border border-accent/10">
             <span className="material-symbols-outlined text-accent text-[18px]">info</span>
-            <p className="text-sm text-on-light-secondary">
+            <p className="text-sm text-ink-soft">
               We'll skip accommodation and focus on everything else.
             </p>
           </div>
@@ -115,13 +115,13 @@ export default function Step5Accommodation() {
                   className={`flex flex-col items-center gap-2 p-4 rounded-[14px] border transition-colors ${
                     isSelected
                       ? "border-accent bg-accent/5"
-                      : "border-[rgba(91,141,239,0.08)] bg-white hover:border-accent/30"
+                      : "border-line bg-card hover:border-accent/30"
                   }`}
                 >
-                  <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
+                  <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-ink-faint"}`}>
                     {t.icon}
                   </span>
-                  <span className={`text-sm font-semibold ${isSelected ? "text-accent" : "text-gray-dark"}`}>
+                  <span className={`text-sm font-semibold ${isSelected ? "text-accent" : "text-ink"}`}>
                     {t.label}
                   </span>
                   {isSelected && (
@@ -134,7 +134,7 @@ export default function Step5Accommodation() {
 
           {/* Must-haves */}
           <div className="mt-6">
-            <label className="block text-sm font-semibold text-gray-dark mb-2">
+            <label className="block text-sm font-semibold text-ink mb-2">
               Must-haves
             </label>
             <div className="flex flex-wrap gap-2">
@@ -147,7 +147,7 @@ export default function Step5Accommodation() {
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
                         ? "bg-accent text-white shadow-md"
-                        : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
+                        : "bg-page-bg border border-line text-ink-soft hover:bg-hover-slate"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
@@ -160,7 +160,7 @@ export default function Step5Accommodation() {
 
           {/* Location preference */}
           <div className="mt-6">
-            <label className="block text-sm font-semibold text-gray-dark mb-2">
+            <label className="block text-sm font-semibold text-ink mb-2">
               Location preference
             </label>
             <div className="flex flex-wrap gap-2">
@@ -173,7 +173,7 @@ export default function Step5Accommodation() {
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                       isSelected
                         ? "bg-accent text-white shadow-md"
-                        : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
+                        : "bg-page-bg border border-line text-ink-soft hover:bg-hover-slate"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[16px]">{loc.icon}</span>

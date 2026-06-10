@@ -133,6 +133,7 @@ export default function SharedTripPage() {
         endDate: trip.end_date || existing.endDate || null,
       };
       localStorage.setItem("walter_prefs", JSON.stringify(next));
+      localStorage.removeItem("walter_trip"); // no stale chosen trip downstream
 
       // 3. Off to the trip builder so they can edit it
       router.push("/trip");
@@ -153,8 +154,8 @@ export default function SharedTripPage() {
   if (error || !trip) {
     return (
       <div className="min-h-screen bg-product-bg flex flex-col items-center justify-center px-4">
-        <p className="text-2xl font-semibold text-gray-dark mb-3">Trip not found</p>
-        <p className="text-on-light-secondary mb-6">This link may have expired or the trip was removed.</p>
+        <p className="text-2xl font-semibold text-ink mb-3">Trip not found</p>
+        <p className="text-ink-soft mb-6">This link may have expired or the trip was removed.</p>
         <Link
           href="/"
           className="px-6 py-3 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors"
@@ -188,9 +189,9 @@ export default function SharedTripPage() {
   return (
     <div className="min-h-screen bg-product-bg">
       {/* Header */}
-      <header className="nav-glass bg-black/80 backdrop-blur-xl sticky top-0 z-20">
+      <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">
+          <Link href="/" className="text-ink text-[17px] font-semibold">
             Walter
           </Link>
           <Link
@@ -208,41 +209,41 @@ export default function SharedTripPage() {
         <div className="relative z-10 max-w-5xl mx-auto px-6 pt-6 pb-10">
           {/* Badges */}
           <div className="flex items-center gap-2 mb-4">
-            <span className="bg-cyan/20 text-cyan rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
+            <span className="bg-accent/10 text-accent-dark rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
               Shared trip
             </span>
             {trip.tier && (
-              <span className="bg-white/10 text-on-dark-secondary rounded-pill px-2.5 py-0.5 text-[11px] font-semibold capitalize">
+              <span className="bg-raised-slate text-ink-soft border border-line rounded-pill px-2.5 py-0.5 text-[11px] font-semibold capitalize">
                 {trip.tier}
               </span>
             )}
           </div>
 
-          <h1 className="font-semibold text-[28px] sm:text-[36px] text-white leading-tight mb-2">
+          <h1 className="font-semibold text-[28px] sm:text-[36px] text-ink leading-tight mb-2">
             {trip.title}
           </h1>
-          <p className="text-on-dark-secondary max-w-2xl text-[15px] leading-relaxed">{trip.summary}</p>
+          <p className="text-ink-soft max-w-2xl text-[15px] leading-relaxed">{trip.summary}</p>
 
           {/* Stats row */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-6">
             <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-cyan text-[18px]">location_on</span>
-              <span className="font-semibold text-white text-sm">{trip.destination}</span>
+              <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
+              <span className="font-semibold text-ink text-sm">{trip.destination}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-cyan text-[18px]">schedule</span>
-              <span className="font-semibold text-white text-sm">
+              <span className="material-symbols-outlined text-accent text-[18px]">schedule</span>
+              <span className="font-semibold text-ink text-sm">
                 {isSingleDay ? `${allItems.length} items` : `${trip.trip_days.length} days`}
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-cyan text-[18px]">payments</span>
-              <span className="font-semibold text-cyan text-[17px]">${trip.total_estimated_cost.toLocaleString()}</span>
+              <span className="material-symbols-outlined text-accent text-[18px]">payments</span>
+              <span className="font-semibold text-accent text-[17px]">${trip.total_estimated_cost.toLocaleString()}</span>
             </div>
             {trip.start_date && trip.end_date && (
               <div className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-cyan text-[18px]">calendar_today</span>
-                <span className="font-semibold text-white text-sm">
+                <span className="material-symbols-outlined text-accent text-[18px]">calendar_today</span>
+                <span className="font-semibold text-ink text-sm">
                   {new Date(trip.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(trip.end_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </span>
               </div>
@@ -253,7 +254,7 @@ export default function SharedTripPage() {
           <button
             onClick={handleFork}
             disabled={forking}
-            className="mt-6 bg-white/15 border border-white/20 text-white rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-white/25 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            className="mt-6 border border-ink/20 text-ink rounded-[10px] px-5 py-2.5 text-sm font-semibold hover:bg-ink/5 transition-colors disabled:opacity-50 flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">edit</span>
             {forking ? "Loading..." : "Make this trip mine"}
@@ -276,8 +277,8 @@ export default function SharedTripPage() {
                   <div className="icon-gradient w-10 h-10 flex items-center justify-center">
                     <span className="material-symbols-outlined text-accent text-[20px]">{group.icon}</span>
                   </div>
-                  <h2 className="font-semibold text-xl text-gray-dark">{group.label}</h2>
-                  <span className="text-on-light-tertiary text-sm">
+                  <h2 className="font-semibold text-xl text-ink">{group.label}</h2>
+                  <span className="text-ink-faint text-sm">
                     {group.items.length}
                   </span>
                 </div>
@@ -294,12 +295,12 @@ export default function SharedTripPage() {
                       <div className="p-4">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm text-gray-dark">{item.title}</p>
+                            <p className="font-semibold text-sm text-ink">{item.title}</p>
                             {item.description && (
-                              <p className="text-xs mt-1 text-on-light-secondary line-clamp-2">{item.description}</p>
+                              <p className="text-xs mt-1 text-ink-soft line-clamp-2">{item.description}</p>
                             )}
                             {item.location_name && (
-                              <p className="text-xs mt-1 text-on-light-tertiary truncate">{item.location_name}</p>
+                              <p className="text-xs mt-1 text-ink-faint truncate">{item.location_name}</p>
                             )}
                           </div>
                           <div className="text-right flex-shrink-0">
@@ -307,7 +308,7 @@ export default function SharedTripPage() {
                               <p className="text-accent font-semibold text-sm">${item.estimated_cost}</p>
                             )}
                             {item.rating && (
-                              <p className="text-on-light-tertiary text-xs mt-0.5">{item.rating}/5</p>
+                              <p className="text-ink-faint text-xs mt-0.5">{item.rating}/5</p>
                             )}
                           </div>
                         </div>
@@ -329,7 +330,7 @@ export default function SharedTripPage() {
                   className={`flex-shrink-0 px-5 py-3 rounded-[10px] font-medium transition-all ${
                     activeDay === day.day_number
                       ? "bg-accent text-white shadow-elevated"
-                      : "card-base text-on-light-secondary hover:bg-white/80"
+                      : "card-base text-ink-soft hover:bg-hover-slate"
                   }`}
                 >
                   <span className="block text-xs opacity-70">Day {day.day_number}</span>
@@ -348,10 +349,10 @@ export default function SharedTripPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="font-semibold text-2xl text-gray-dark">
+                    <h2 className="font-semibold text-2xl text-ink">
                       Day {currentDay.day_number}: {currentDay.title}
                     </h2>
-                    <p className="text-on-light-secondary mt-1">{currentDay.summary}</p>
+                    <p className="text-ink-soft mt-1">{currentDay.summary}</p>
                   </div>
                   <span className="text-accent font-semibold">
                     ~${currentDay.estimated_cost.toLocaleString()}
@@ -380,16 +381,16 @@ export default function SharedTripPage() {
                                 {item.item_type}
                               </span>
                               {item.start_time && (
-                                <span className="text-on-light-tertiary text-[12px]">
+                                <span className="text-ink-faint text-[12px]">
                                   {item.start_time}
                                   {item.end_time && ` - ${item.end_time}`}
                                 </span>
                               )}
                             </div>
-                            <p className="font-semibold text-sm text-gray-dark">{item.title}</p>
-                            <p className="text-xs mt-1 text-on-light-secondary">{item.description}</p>
+                            <p className="font-semibold text-sm text-ink">{item.title}</p>
+                            <p className="text-xs mt-1 text-ink-soft">{item.description}</p>
                             {item.location_name && (
-                              <p className="text-xs mt-1 text-on-light-tertiary">{item.location_name}</p>
+                              <p className="text-xs mt-1 text-ink-faint">{item.location_name}</p>
                             )}
                           </div>
                           <div className="text-right flex-shrink-0">
@@ -397,7 +398,7 @@ export default function SharedTripPage() {
                               <p className="text-accent font-semibold text-sm">${item.estimated_cost}</p>
                             )}
                             {item.rating && (
-                              <p className="text-on-light-tertiary text-xs mt-0.5">{item.rating}/5</p>
+                              <p className="text-ink-faint text-xs mt-0.5">{item.rating}/5</p>
                             )}
                           </div>
                         </div>
@@ -416,11 +417,11 @@ export default function SharedTripPage() {
       <div className="bg-hero-gradient relative mt-10">
         <div className="hero-glow absolute inset-0 pointer-events-none" />
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-16 text-center">
-          <h2 className="font-semibold text-[28px] text-white mb-3">
+          <h2 className="font-semibold text-[28px] text-ink mb-3">
             Want a trip like this?
           </h2>
-          <p className="text-on-dark-secondary mb-8 max-w-md mx-auto">
-            Take a 2-minute quiz and get a personalized itinerary built for you. Or fork this one and make it your own.
+          <p className="text-ink-soft mb-8 max-w-md mx-auto">
+            Tell Walter what you like and get a personalized itinerary built for you. Or fork this one and make it your own.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link
@@ -432,7 +433,7 @@ export default function SharedTripPage() {
             </Link>
             <Link
               href="/"
-              className="inline-flex px-8 py-4 rounded-[10px] bg-white/15 border border-white/20 text-white font-semibold hover:bg-white/25 transition-colors items-center gap-2"
+              className="inline-flex px-8 py-4 rounded-[10px] border border-ink/20 text-ink font-semibold hover:bg-ink/5 transition-colors items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">tune</span>
               Design My Trip

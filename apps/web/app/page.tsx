@@ -86,6 +86,12 @@ export default function LandingPage() {
   const [trips, setTrips] = useState<CommunityTrip[]>([]);
   const [tripsLoading, setTripsLoading] = useState(true);
 
+  // Prefill from /explore cards: /?destination=Tokyo
+  useEffect(() => {
+    const dest = new URLSearchParams(window.location.search).get("destination");
+    if (dest) setSearch((s) => ({ ...s, destination: dest }));
+  }, []);
+
   useEffect(() => {
     fetch("/api/trips/community")
       .then((r) => r.json())
@@ -98,21 +104,39 @@ export default function LandingPage() {
 
   void store;
 
-  const handleSearch = () => {
+  const handleSearch = (v: SearchValue) => {
+    // SearchBar only calls this with a valid, normalized value: destination
+    // present, half-picked date ranges completed, guests defaulted to 2 adults.
     useTripCartStore.getState().clearCart();
-    // Landing only collects three facts: Destination, Duration, Aspiration.
-    // Travelers / accommodation / departure are collected on /clarify after trip pick.
+    localStorage.removeItem("walter_trip"); // fresh journey, no stale chosen trip
+
+    const tripDurationDays =
+      v.startDate && v.endDate
+        ? Math.max(
+            1,
+            Math.round(
+              (new Date(v.endDate).getTime() - new Date(v.startDate).getTime()) / 86400000
+            )
+          )
+        : undefined;
+
     localStorage.setItem(
       "walter_prefs",
       JSON.stringify({
-        destinations: search.destination ? [search.destination] : [],
-        destination: search.destination || "Surprise me",
-        surpriseMe: !search.destination,
-        startDate: search.startDate,
-        endDate: search.endDate,
-        exactDates: search.exactDates,
-        flexDays: search.flexDays,
-        description: search.description,
+        destinations: [v.destination],
+        destination: v.destination,
+        surpriseMe: false,
+        startDate: v.startDate,
+        endDate: v.endDate,
+        exactDates: v.exactDates,
+        flexDays: v.flexDays,
+        ...(tripDurationDays ? { tripDurationDays } : {}),
+        description: v.description,
+        adults: v.adults,
+        children: v.children,
+        infants: v.infants,
+        pets: v.pets,
+        travelers: v.adults + v.children,
         budget: 2000,
         budgetAmount: 2000,
         activityInterests: [],
@@ -120,7 +144,7 @@ export default function LandingPage() {
       })
     );
 
-    router.push("/compare");
+    router.push("/trips");
   };
 
   return (
@@ -128,7 +152,7 @@ export default function LandingPage() {
       {/* Floating liquid-glass header */}
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
-          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.28_0.005_250_/_0.75)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.10)]">
+          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.28_0.005_250_/_0.75)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(20,30,60,0.14),inset_0_1px_0_rgba(255,255,255,0.10)]">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
                 <span className="text-[oklch(0.28_0.005_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
@@ -167,7 +191,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.16, ease: "easeOut" }}
-                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-[oklch(0.28_0.005_250_/_0.92)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.45)] px-4 py-3 flex flex-col gap-1"
+                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-[oklch(0.28_0.005_250_/_0.92)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(20,30,60,0.14)] px-4 py-3 flex flex-col gap-1"
               >
                 {NAV_LINKS.map((l) => (
                   <NavLink
@@ -261,10 +285,10 @@ export default function LandingPage() {
             <div key={cat} className={idx === 0 ? "" : "mt-9"}>
               <div className="px-5 sm:px-8 mb-5 flex items-end justify-between gap-4 flex-wrap">
                 <div>
-                  <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
+                  <h2 className="text-[22px] sm:text-[28px] font-semibold text-ink tracking-display leading-[1.05]">
                     {CATEGORY_LABELS[cat]}
                   </h2>
-                  <p className="text-white/55 text-[13px] mt-1.5">
+                  <p className="text-ink-faint text-[13px] mt-1.5">
                     {CATEGORY_TAGLINES[cat]}
                   </p>
                 </div>
@@ -282,10 +306,10 @@ export default function LandingPage() {
         {!tripsLoading && trips.length > 0 && (
           <div className="mt-9">
             <div className="px-5 sm:px-8 mb-5">
-              <h2 className="text-[22px] sm:text-[28px] font-semibold text-snow-off-glacier tracking-display leading-[1.05]">
+              <h2 className="text-[22px] sm:text-[28px] font-semibold text-ink tracking-display leading-[1.05]">
                 Trips from the community
               </h2>
-              <p className="text-white/55 text-[13px] mt-1.5">
+              <p className="text-ink-faint text-[13px] mt-1.5">
                 Built by other travelers, public for anyone to fork.
               </p>
             </div>
@@ -312,18 +336,18 @@ export default function LandingPage() {
                       )}
                     </div>
                     <div className="p-3">
-                      <p className="font-semibold text-[14px] text-snow-off-glacier leading-tight truncate">
+                      <p className="font-semibold text-[14px] text-ink leading-tight truncate">
                         {trip.destination}
                       </p>
-                      <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
+                      <p className="text-ink-soft text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
                         {trip.title}
                       </p>
                       <div className="mt-2">
                         <div className="flex items-baseline gap-1.5">
-                          <span className="font-semibold text-snow-off-glacier text-[13px]">
+                          <span className="font-semibold text-ink text-[13px]">
                             ${trip.total_estimated_cost.toLocaleString()}
                           </span>
-                          <span className="text-white/45 text-[10.5px]">per person</span>
+                          <span className="text-ink-faint text-[10.5px]">per person</span>
                         </div>
                       </div>
                     </div>
@@ -355,6 +379,7 @@ function CuratedTripCard({
     const fmt = (d: Date) => d.toISOString().split("T")[0];
 
     useTripCartStore.getState().clearCart();
+    localStorage.removeItem("walter_trip"); // fresh journey, no stale chosen trip
     localStorage.setItem(
       "walter_prefs",
       JSON.stringify({
@@ -396,22 +421,22 @@ function CuratedTripCard({
         )}
       </div>
       <div className="p-3">
-        <p className="font-semibold text-[14px] text-snow-off-glacier leading-tight truncate">
+        <p className="font-semibold text-[14px] text-ink leading-tight truncate">
           {trip.destination}
         </p>
-        <p className="text-white/65 text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
+        <p className="text-ink-soft text-[12px] mt-1 line-clamp-2 leading-snug min-h-[30px]">
           {trip.title}
         </p>
         <div className="mt-2">
           <div className="flex items-baseline gap-1.5">
-            <span className="font-semibold text-snow-off-glacier text-[13px]">
+            <span className="font-semibold text-ink text-[13px]">
               ${trip.totalCost.toLocaleString()}
             </span>
-            <span className="text-white/45 text-[10.5px]">
+            <span className="text-ink-faint text-[10.5px]">
               per person
             </span>
           </div>
-          <p className="text-white/35 text-[10px] mt-0.5">
+          <p className="text-ink-faint text-[10px] mt-0.5">
             {trip.durationDays} days, all in
           </p>
         </div>

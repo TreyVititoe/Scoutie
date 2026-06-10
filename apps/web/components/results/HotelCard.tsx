@@ -35,11 +35,11 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
           <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-raised-slate">
-            <span className="material-symbols-outlined text-white/45 text-4xl">hotel</span>
+            <span className="material-symbols-outlined text-ink-faint text-4xl">hotel</span>
           </div>
         )}
         {bestValue && (
-          <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky border border-white/10 rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+          <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-snow-off-glacier border border-white/10 rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
             Walter&apos;s pick
           </span>
         )}
@@ -47,34 +47,34 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
 
       <div className="p-6">
         {/* Name & Location */}
-        <p className="font-semibold text-snow-off-glacier mb-1 leading-tight line-clamp-2">{hotel.name}</p>
+        <p className="font-semibold text-ink mb-1 leading-tight line-clamp-2">{hotel.name}</p>
         {hotel.neighborhood && (
-          <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold mb-3">{hotel.neighborhood}</p>
+          <p className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold mb-3">{hotel.neighborhood}</p>
         )}
 
         {/* Rating */}
         <div className="flex items-center gap-1.5 mb-4">
           {hotel.rating > 0 && (
             <>
-              <span className="material-symbols-outlined text-accent-light text-base">star</span>
-              <span className="text-sm font-semibold text-snow-off-glacier">{hotel.rating}/10</span>
+              <span className="material-symbols-outlined text-accent text-base">star</span>
+              <span className="text-sm font-semibold text-ink">{hotel.rating}/10</span>
               {hotel.reviewWord && (
-                <span className="text-xs text-white/55">{hotel.reviewWord}</span>
+                <span className="text-xs text-ink-soft">{hotel.reviewWord}</span>
               )}
               {hotel.reviewCount > 0 && (
-                <span className="text-xs text-white/45">({hotel.reviewCount.toLocaleString()})</span>
+                <span className="text-xs text-ink-faint">({hotel.reviewCount.toLocaleString()})</span>
               )}
             </>
           )}
         </div>
 
         {/* Price & Add to Trip */}
-        <div className="flex items-end justify-between pt-4 border-t border-white/10">
+        <div className="flex items-end justify-between pt-4 border-t border-line">
           <div>
-            <p className="font-semibold text-snow-off-glacier text-[21px]">
+            <p className="font-semibold text-ink text-[21px]">
               ${hotel.pricePerNight}
             </p>
-            <p className="text-[10px] uppercase tracking-widest text-white/45 font-semibold">
+            <p className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold">
               per night. ${hotel.totalPrice.toLocaleString()} total
             </p>
           </div>
@@ -83,7 +83,7 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
             className={`rounded-pill px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
               added
                 ? "bg-accent text-snow-off-glacier hover:bg-accent-light"
-                : "border border-white/25 text-snow-off-glacier hover:bg-white/10 hover:border-white/40"
+                : "border border-ink/20 text-ink hover:bg-ink/5 hover:border-ink/40"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">

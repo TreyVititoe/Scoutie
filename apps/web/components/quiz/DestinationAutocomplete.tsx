@@ -207,13 +207,13 @@ export default function DestinationAutocomplete() {
           {store.destinations.map((d) => (
             <span
               key={d}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-[#DBEAFE] text-accent text-sm font-semibold"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-accent/10 text-accent text-sm font-semibold"
             >
               <span className="material-symbols-outlined text-[16px]">location_on</span>
               {d}
               <button
                 onClick={() => removeDestination(d)}
-                className="text-on-light-tertiary hover:text-accent ml-0.5"
+                className="text-ink-faint hover:text-accent ml-0.5"
                 aria-label={`Remove ${d}`}
               >
                 <span className="material-symbols-outlined text-[16px]">close</span>
@@ -225,7 +225,7 @@ export default function DestinationAutocomplete() {
 
       <div ref={containerRef} className="relative">
         <div className="relative">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[22px]">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[22px]">
             location_on
           </span>
           <input
@@ -238,7 +238,7 @@ export default function DestinationAutocomplete() {
               if (results.length > 0) setIsOpen(true);
             }}
             placeholder="Search for a city, country, or airport code..."
-            className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-gray-dark placeholder:text-on-light-tertiary/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+            className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
             role="combobox"
             aria-expanded={isOpen}
             aria-autocomplete="list"
@@ -246,7 +246,7 @@ export default function DestinationAutocomplete() {
           />
           {isLoading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="w-5 h-5 border-2 border-black/10 border-t-accent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-ink/10 border-t-accent rounded-full animate-spin" />
             </div>
           )}
         </div>
@@ -264,15 +264,15 @@ export default function DestinationAutocomplete() {
                   key={match.code}
                   role="option"
                   aria-selected={false}
-                  className={`px-4 py-3 cursor-pointer text-sm transition-colors flex items-center gap-3 text-gray-dark hover:bg-page-bg ${isAlreadyAdded ? "opacity-50" : ""} border-b border-black/5`}
+                  className={`px-4 py-3 cursor-pointer text-sm transition-colors flex items-center gap-3 text-ink hover:bg-page-bg ${isAlreadyAdded ? "opacity-50" : ""} border-b border-ink/5`}
                   onClick={() => { if (!isAlreadyAdded) selectIata(match); }}
                 >
                   <span className="material-symbols-outlined text-[18px] text-accent">flight</span>
                   <div>
                     <span className="font-semibold text-accent">{match.code}</span>
-                    <span className="text-on-light-secondary ml-1">- {match.city}</span>
+                    <span className="text-ink-soft ml-1">- {match.city}</span>
                     {isAlreadyAdded && (
-                      <span className="text-on-light-tertiary ml-2 text-xs">(already added)</span>
+                      <span className="text-ink-faint ml-2 text-xs">(already added)</span>
                     )}
                   </div>
                 </li>
@@ -291,27 +291,27 @@ export default function DestinationAutocomplete() {
                   className={`px-4 py-3 cursor-pointer text-sm transition-colors flex items-center gap-3 ${
                     isHighlighted
                       ? "bg-accent/10 text-accent"
-                      : "text-gray-dark hover:bg-page-bg"
+                      : "text-ink hover:bg-page-bg"
                   } ${isAlreadyAdded ? "opacity-50" : ""} ${
-                    index < results.length - 1 ? "border-b border-black/5" : ""
+                    index < results.length - 1 ? "border-b border-ink/5" : ""
                   }`}
                   onClick={() => {
                     if (!isAlreadyAdded) selectPlace(feature);
                   }}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
-                  <span className="material-symbols-outlined text-[18px] text-on-light-tertiary">
+                  <span className="material-symbols-outlined text-[18px] text-ink-faint">
                     location_on
                   </span>
                   <div>
                     <span className="font-semibold">{feature.text}</span>
                     {feature.place_name !== feature.text && (
-                      <span className="text-on-light-secondary ml-1">
+                      <span className="text-ink-soft ml-1">
                         {feature.place_name.replace(feature.text + ", ", "")}
                       </span>
                     )}
                     {isAlreadyAdded && (
-                      <span className="text-on-light-tertiary ml-2 text-xs">(already added)</span>
+                      <span className="text-ink-faint ml-2 text-xs">(already added)</span>
                     )}
                   </div>
                 </li>

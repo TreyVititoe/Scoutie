@@ -242,6 +242,7 @@ export default function ComparePage() {
 
     void tripIdx;
     useTripCartStore.getState().clearCart();
+    localStorage.removeItem("walter_trip"); // fresh journey, no stale chosen trip
 
     // Clarification quiz collects travelers, accommodation, and departure city
     // before building the real itinerary at /results.
@@ -280,14 +281,14 @@ export default function ComparePage() {
       <div className="min-h-screen bg-product-bg">
         <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
           <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-            <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
+            <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
           </div>
         </header>
 
         <div className="flex flex-col items-center justify-center min-h-screen px-6 pt-[48px]">
-          <span className="material-symbols-outlined text-on-light-tertiary text-4xl mb-4">error_outline</span>
-          <p className="font-semibold text-gray-dark mb-2">Something went wrong</p>
-          <p className="text-on-light-secondary text-sm mb-6">{error}</p>
+          <span className="material-symbols-outlined text-ink-faint text-4xl mb-4">error_outline</span>
+          <p className="font-semibold text-ink mb-2">Something went wrong</p>
+          <p className="text-ink-soft text-sm mb-6">{error}</p>
           <button
             onClick={() => router.push("/")}
             className="bg-accent text-white rounded-[10px] px-6 py-3 font-semibold hover:bg-accent-light transition-colors"
@@ -304,8 +305,8 @@ export default function ComparePage() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
-          <Link href="/" className="text-accent-light text-sm hover:underline flex items-center gap-1.5">
+          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/" className="text-accent text-sm hover:underline flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">edit</span>
             Edit preferences
           </Link>
@@ -338,10 +339,10 @@ export default function ComparePage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10"
         >
-          <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
+          <h1 className="text-[28px] font-semibold text-ink leading-page mb-3">
             Compare your options
           </h1>
-          <p className="text-on-light-secondary text-[17px] mb-5">
+          <p className="text-ink-soft text-[17px] mb-5">
             {loading
               ? "Walter is finding the best options for you..."
               : `Walter found ${trips.length} trip options for you. Compare them and pick your favorite.`}
@@ -355,9 +356,9 @@ export default function ComparePage() {
             >
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-accent text-[18px]">refresh</span>
-                <span className="text-sm font-semibold text-gray-dark">Not what you had in mind? Regenerate</span>
+                <span className="text-sm font-semibold text-ink">Not what you had in mind? Regenerate</span>
               </div>
-              <span className="material-symbols-outlined text-on-light-tertiary text-[18px]">
+              <span className="material-symbols-outlined text-ink-faint text-[18px]">
                 {regenOpen ? "expand_less" : "expand_more"}
               </span>
             </div>
@@ -369,7 +370,7 @@ export default function ComparePage() {
                 transition={{ duration: 0.2 }}
                 className="mt-4 pt-4 border-t border-[rgba(91,141,239,0.06)]"
               >
-                <p className="text-on-light-secondary text-sm mb-3">
+                <p className="text-ink-soft text-sm mb-3">
                   Tell Walter what you are looking for -- a city, country, region, or vibe.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -378,7 +379,7 @@ export default function ComparePage() {
                     value={regenHint}
                     onChange={(e) => setRegenHint(e.target.value)}
                     placeholder='e.g. "tropical", "Japan", "Malibu", "European cities"'
-                    className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -542,13 +543,13 @@ export default function ComparePage() {
                 <div className="bg-hero-gradient relative p-6 pb-8">
                   <div className="hero-glow absolute inset-0 pointer-events-none" />
                   <div className="relative z-10">
-                    <p className="text-cyan text-[11px] font-semibold uppercase tracking-wider mb-2">
+                    <p className="text-accent text-[11px] font-semibold uppercase tracking-wider mb-2">
                       Option {i + 1}
                     </p>
-                    <h2 className="text-white text-[21px] font-semibold leading-card-title mb-2">
+                    <h2 className="text-ink text-[21px] font-semibold leading-card-title mb-2">
                       {trip.destination}
                     </h2>
-                    <p className="text-on-dark-secondary text-sm leading-relaxed">
+                    <p className="text-ink-soft text-sm leading-relaxed">
                       {trip.summary}
                     </p>
                   </div>
@@ -558,7 +559,7 @@ export default function ComparePage() {
                 <div className="p-6 flex-1 flex flex-col">
                   {/* Price */}
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]">
-                    <span className="text-on-light-secondary text-sm">Total estimated cost</span>
+                    <span className="text-ink-soft text-sm">Total estimated cost</span>
                     <span className="text-accent text-[21px] font-semibold">
                       ${trip.totalEstimatedCost.toLocaleString()}
                     </span>
@@ -570,45 +571,45 @@ export default function ComparePage() {
                       <div>
                         <div className="flex items-center gap-1.5 mb-1">
                           <span className="material-symbols-outlined text-accent text-[16px]">flight</span>
-                          <span className="text-on-light-tertiary text-xs">Flights</span>
+                          <span className="text-ink-faint text-xs">Flights</span>
                         </div>
                         {flightData[i]?.loading ? (
                           <div className="flex items-center gap-2">
                             <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-                            <span className="text-on-light-tertiary text-xs">Searching...</span>
+                            <span className="text-ink-faint text-xs">Searching...</span>
                           </div>
                         ) : flightData[i]?.cheapest != null ? (
                           <div>
                             <p className="font-semibold text-accent text-[17px]">
                               ${flightData[i].cheapest!.toLocaleString()}
                             </p>
-                            <p className="text-[10px] text-on-light-tertiary">
+                            <p className="text-[10px] text-ink-faint">
                               cheapest of {flightData[i].count} flights
                             </p>
                           </div>
                         ) : (
-                          <p className="font-semibold text-gray-dark">
+                          <p className="font-semibold text-ink">
                             ~${trip.flightEstimate?.toLocaleString() || "N/A"}
-                            <span className="text-[10px] text-on-light-tertiary ml-1">est.</span>
+                            <span className="text-[10px] text-ink-faint ml-1">est.</span>
                           </p>
                         )}
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5 mb-1">
                           <span className="material-symbols-outlined text-accent text-[16px]">hotel</span>
-                          <span className="text-on-light-tertiary text-xs">Per night</span>
+                          <span className="text-ink-faint text-xs">Per night</span>
                         </div>
-                        <p className="font-semibold text-gray-dark">
+                        <p className="font-semibold text-ink">
                           ~${trip.hotelEstimatePerNight?.toLocaleString() || "N/A"}
-                          <span className="text-[10px] text-on-light-tertiary ml-1">est.</span>
+                          <span className="text-[10px] text-ink-faint ml-1">est.</span>
                         </p>
                       </div>
                     </div>
                     {/* Flight duration */}
                     {flightData[i]?.fastest && (
                       <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[rgba(91,141,239,0.04)]">
-                        <span className="material-symbols-outlined text-on-light-tertiary text-[14px]">schedule</span>
-                        <span className="text-xs text-on-light-secondary">
+                        <span className="material-symbols-outlined text-ink-faint text-[14px]">schedule</span>
+                        <span className="text-xs text-ink-soft">
                           Fastest flight: {flightData[i].fastest!.duration} (${flightData[i].fastest!.price})
                         </span>
                       </div>
@@ -617,7 +618,7 @@ export default function ComparePage() {
 
                   {/* Highlights */}
                   <div className="mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]">
-                    <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Highlights</p>
+                    <p className="text-ink-faint text-xs uppercase tracking-wider mb-2">Highlights</p>
                     <div className="flex flex-wrap gap-1.5">
                       {trip.highlights?.slice(0, 3).map((h, j) => (
                         <span key={j} className="bg-[#DBEAFE] text-accent rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
@@ -630,9 +631,9 @@ export default function ComparePage() {
                   {/* Live Events */}
                   <div className="mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider">Live Events</p>
+                      <p className="text-ink-faint text-xs uppercase tracking-wider">Live Events</p>
                       {eventData[i] && !eventData[i].loading && (
-                        <span className="text-[10px] text-on-light-tertiary">
+                        <span className="text-[10px] text-ink-faint">
                           {eventData[i].count} found
                         </span>
                       )}
@@ -640,7 +641,7 @@ export default function ComparePage() {
                     {eventData[i]?.loading ? (
                       <div className="flex items-center gap-2 py-2">
                         <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-                        <span className="text-on-light-tertiary text-xs">Searching events...</span>
+                        <span className="text-ink-faint text-xs">Searching events...</span>
                       </div>
                     ) : eventData[i]?.events.length > 0 ? (
                       <ul className="space-y-2">
@@ -648,8 +649,8 @@ export default function ComparePage() {
                           <li key={j} className="flex items-start gap-2 text-sm">
                             <span className="material-symbols-outlined text-accent text-[14px] mt-0.5">confirmation_number</span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-gray-dark truncate">{ev.name}</p>
-                              <p className="text-[11px] text-on-light-tertiary">
+                              <p className="text-ink truncate">{ev.name}</p>
+                              <p className="text-[11px] text-ink-faint">
                                 {ev.category} -- {ev.venueName}
                                 {ev.priceMin != null && ev.priceMin > 0 && (
                                   <span className="text-accent ml-1">${ev.priceMin}+</span>
@@ -659,7 +660,7 @@ export default function ComparePage() {
                           </li>
                         ))}
                         {eventData[i].count > 4 && (
-                          <li className="text-xs text-on-light-tertiary pl-6">
+                          <li className="text-xs text-ink-faint pl-6">
                             +{eventData[i].count - 4} more events
                           </li>
                         )}
@@ -668,27 +669,27 @@ export default function ComparePage() {
                       /* Fallback to AI suggestions if no real events */
                       <ul className="space-y-1.5">
                         {trip.topEvents.slice(0, 3).map((ev, j) => (
-                          <li key={j} className="flex items-start gap-2 text-sm text-gray-dark">
-                            <span className="material-symbols-outlined text-on-light-tertiary text-[14px] mt-0.5">auto_awesome</span>
-                            <span>{ev} <span className="text-[10px] text-on-light-tertiary">(suggested)</span></span>
+                          <li key={j} className="flex items-start gap-2 text-sm text-ink">
+                            <span className="material-symbols-outlined text-ink-faint text-[14px] mt-0.5">auto_awesome</span>
+                            <span>{ev} <span className="text-[10px] text-ink-faint">(suggested)</span></span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-xs text-on-light-tertiary py-1">No events found for these dates</p>
+                      <p className="text-xs text-ink-faint py-1">No events found for these dates</p>
                     )}
                   </div>
 
                   {/* Trip Duration */}
                   <div className="flex items-center gap-2 mb-4">
                     <span className="material-symbols-outlined text-accent text-[16px]">schedule</span>
-                    <span className="text-sm text-on-light-secondary">
+                    <span className="text-sm text-ink-soft">
                       {trip.days?.length || 0} days
                     </span>
                     {trip.bestTimeToVisit && (
                       <>
-                        <span className="text-on-light-tertiary">|</span>
-                        <span className="text-sm text-on-light-secondary">{trip.bestTimeToVisit}</span>
+                        <span className="text-ink-faint">|</span>
+                        <span className="text-sm text-ink-soft">{trip.bestTimeToVisit}</span>
                       </>
                     )}
                   </div>
@@ -701,17 +702,17 @@ export default function ComparePage() {
                       transition={{ duration: 0.2 }}
                       className="mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]"
                     >
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-3">Day-by-day preview</p>
+                      <p className="text-ink-faint text-xs uppercase tracking-wider mb-3">Day-by-day preview</p>
                       <div className="space-y-3">
                         {trip.days.map((day) => (
                           <div key={day.dayNumber} className="bg-page-bg rounded-[10px] p-3">
-                            <p className="text-sm font-semibold text-gray-dark mb-1">
+                            <p className="text-sm font-semibold text-ink mb-1">
                               Day {day.dayNumber}: {day.title}
                             </p>
                             <div className="space-y-1">
                               {day.items?.slice(0, 3).map((item, k) => (
-                                <p key={k} className="text-xs text-on-light-secondary flex items-center gap-1.5">
-                                  <span className="text-on-light-tertiary">{item.startTime}</span>
+                                <p key={k} className="text-xs text-ink-soft flex items-center gap-1.5">
+                                  <span className="text-ink-faint">{item.startTime}</span>
                                   {item.title}
                                 </p>
                               ))}
@@ -726,7 +727,7 @@ export default function ComparePage() {
                   <div className="mt-auto pt-2 space-y-2">
                     <button
                       onClick={() => setExpandedTrip(isExpanded ? null : i)}
-                      className="w-full text-center text-accent text-sm font-semibold hover:text-accent-light transition-colors py-1"
+                      className="w-full text-center text-accent text-sm font-semibold hover:text-accent-dark transition-colors py-1"
                     >
                       {isExpanded ? "Show less" : "View day-by-day"}
                     </button>
@@ -737,7 +738,7 @@ export default function ComparePage() {
                         className={`flex-shrink-0 rounded-[10px] px-4 py-3 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                           savedIds.has(i)
                             ? "bg-page-bg text-accent"
-                            : "border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:border-accent hover:text-accent"
+                            : "border border-[rgba(91,141,239,0.08)] text-ink-soft hover:border-accent hover:text-accent"
                         }`}
                       >
                         <span className="material-symbols-outlined text-[16px]">
@@ -921,10 +922,10 @@ function DateCompare({
   return (
     <>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-        <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
+        <h1 className="text-[28px] font-semibold text-ink leading-page mb-3">
           When should you visit <span className="text-accent">{destination}</span>?
         </h1>
-        <p className="text-on-light-secondary text-[17px]">
+        <p className="text-ink-soft text-[17px]">
           Compare real prices and events across different dates.
         </p>
       </motion.div>
@@ -937,9 +938,9 @@ function DateCompare({
         >
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-accent text-[18px]">refresh</span>
-            <span className="text-sm font-semibold text-gray-dark">Not what you had in mind? Regenerate</span>
+            <span className="text-sm font-semibold text-ink">Not what you had in mind? Regenerate</span>
           </div>
-          <span className="material-symbols-outlined text-on-light-tertiary text-[18px]">
+          <span className="material-symbols-outlined text-ink-faint text-[18px]">
             {dateRegenOpen ? "expand_less" : "expand_more"}
           </span>
         </div>
@@ -951,7 +952,7 @@ function DateCompare({
             transition={{ duration: 0.2 }}
             className="mt-4 pt-4 border-t border-[rgba(91,141,239,0.06)]"
           >
-            <p className="text-on-light-secondary text-sm mb-3">
+            <p className="text-ink-soft text-sm mb-3">
               Tell Walter what dates you prefer -- a month, season, or time frame.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -960,7 +961,7 @@ function DateCompare({
                 value={dateRegenHint}
                 onChange={(e) => setDateRegenHint(e.target.value)}
                 placeholder='e.g. "May", "June 15", "December", "August"'
-                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-gray-dark text-sm placeholder:text-on-light-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20"
+                className="flex-1 px-4 py-2.5 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-ink text-sm placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -1012,17 +1013,17 @@ function DateCompare({
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
-                    <h3 className="font-semibold text-gray-dark text-[17px]">{destination}</h3>
+                    <h3 className="font-semibold text-ink text-[17px]">{destination}</h3>
                   </div>
                   <span className="bg-accent text-white rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
                     {tripDays} nights
                   </span>
                 </div>
-                <p className="text-on-light-secondary text-sm flex items-center gap-1.5">
+                <p className="text-ink-soft text-sm flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[14px]">calendar_today</span>
                   {formatDisplay(range.start)} - {formatDisplay(range.end)}
                 </p>
-                <p className="text-on-light-secondary text-sm flex items-center gap-1.5 mt-1">
+                <p className="text-ink-soft text-sm flex items-center gap-1.5 mt-1">
                   <span className="material-symbols-outlined text-[14px]">group</span>
                   {adults} traveler{adults !== 1 ? "s" : ""}
                 </p>
@@ -1032,7 +1033,7 @@ function DateCompare({
                 {/* Estimated Total */}
                 <div className="mb-5 bg-[#DBEAFE]/30 rounded-[10px] p-4 -mx-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-on-light-secondary text-sm">Estimated Total</span>
+                    <span className="text-ink-soft text-sm">Estimated Total</span>
                     <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
                   </div>
                   {!d || (d.flights.loading && d.hotels.loading) ? (
@@ -1042,10 +1043,10 @@ function DateCompare({
                       <p className="font-semibold text-accent text-[24px]">
                         ${totalMin.toLocaleString()} - ${totalMax.toLocaleString()}
                       </p>
-                      <p className="text-on-light-tertiary text-xs">per person</p>
+                      <p className="text-ink-faint text-xs">per person</p>
                     </div>
                   ) : (
-                    <p className="text-on-light-tertiary text-sm">No pricing available</p>
+                    <p className="text-ink-faint text-sm">No pricing available</p>
                   )}
                 </div>
 
@@ -1053,14 +1054,14 @@ function DateCompare({
                 <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
-                    <span className="text-gray-dark text-sm font-semibold">Flights</span>
+                    <span className="text-ink text-sm font-semibold">Flights</span>
                   </div>
                   {d?.flights.loading ? (
                     <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
                   ) : d?.flights.count > 0 ? (
                     <p className="font-semibold text-accent text-sm">${d.flights.min.toLocaleString()} - ${d.flights.max.toLocaleString()}</p>
                   ) : (
-                    <span className="text-on-light-tertiary text-xs">No flights found</span>
+                    <span className="text-ink-faint text-xs">No flights found</span>
                   )}
                 </div>
 
@@ -1068,14 +1069,14 @@ function DateCompare({
                 <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
-                    <span className="text-gray-dark text-sm font-semibold">Hotels</span>
+                    <span className="text-ink text-sm font-semibold">Hotels</span>
                   </div>
                   {d?.hotels.loading ? (
                     <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
                   ) : d?.hotels.count > 0 ? (
                     <p className="font-semibold text-accent text-sm">${d.hotels.min.toLocaleString()} - ${d.hotels.max.toLocaleString()}</p>
                   ) : (
-                    <span className="text-on-light-tertiary text-xs">No hotels found</span>
+                    <span className="text-ink-faint text-xs">No hotels found</span>
                   )}
                 </div>
 
@@ -1084,7 +1085,7 @@ function DateCompare({
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
-                      <span className="text-gray-dark text-sm font-semibold">Events Found</span>
+                      <span className="text-ink text-sm font-semibold">Events Found</span>
                     </div>
                     {d?.events.loading ? (
                       <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
@@ -1093,7 +1094,7 @@ function DateCompare({
                     )}
                   </div>
                   {d?.events.categories && d.events.categories.length > 0 && (() => {
-                    const pillColors = ["bg-accent text-white", "bg-cyan text-gray-dark", "bg-accent-dark text-white"];
+                    const pillColors = ["bg-accent text-white", "bg-cyan text-ink", "bg-accent-dark text-white"];
                     return (
                       <div className="flex flex-wrap gap-1.5 mb-3">
                         {d.events.categories.map((cat, j) => (
@@ -1108,8 +1109,8 @@ function DateCompare({
                         <div key={j} className="flex items-center gap-2.5">
                           {ev.image && <img src={ev.image} alt="" className="w-10 h-10 rounded-[6px] object-cover flex-shrink-0" />}
                           <div className="min-w-0">
-                            <p className="text-sm text-gray-dark font-semibold truncate">{ev.name}</p>
-                            <p className="text-[11px] text-on-light-tertiary truncate">{ev.venue}</p>
+                            <p className="text-sm text-ink font-semibold truncate">{ev.name}</p>
+                            <p className="text-[11px] text-ink-faint truncate">{ev.venue}</p>
                           </div>
                         </div>
                       ))}

@@ -87,13 +87,13 @@ export default function Step7Review() {
       subtitle="Sound right? Hit generate and Walter will plan your trip."
     >
       <div className="card-base p-6">
-        <p className="text-[17px] text-gray-dark leading-relaxed">
+        <p className="text-[17px] text-ink leading-relaxed">
           {finalSummary}
         </p>
       </div>
 
       {/* Quick edit hints */}
-      <p className="text-xs text-on-light-tertiary text-center mt-4">
+      <p className="text-xs text-ink-faint text-center mt-4">
         Need to change something? Use the Back button to edit any step.
       </p>
     </StepWrapper>

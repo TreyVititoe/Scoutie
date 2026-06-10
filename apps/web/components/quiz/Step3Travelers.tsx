@@ -39,10 +39,10 @@ export default function Step3Travelers() {
                     : "border-[rgba(91,141,239,0.08)] bg-white hover:border-accent/30"
                 }`}
               >
-                <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-on-light-tertiary"}`}>
+                <span className={`material-symbols-outlined text-[28px] ${isSelected ? "text-accent" : "text-ink-faint"}`}>
                   {t.icon}
                 </span>
-                <span className={`text-sm font-semibold ${isSelected ? "text-accent" : "text-gray-dark"}`}>
+                <span className={`text-sm font-semibold ${isSelected ? "text-accent" : "text-ink"}`}>
                   {t.label}
                 </span>
               </button>
@@ -52,24 +52,24 @@ export default function Step3Travelers() {
 
         {/* Traveler count */}
         <div>
-          <label className="block text-sm font-semibold text-gray-dark mb-3">
+          <label className="block text-sm font-semibold text-ink mb-3">
             How many travelers?
           </label>
           <div className="flex items-center gap-5">
             <button
               onClick={() => store.setTravelersCount(Math.max(1, store.travelersCount - 1))}
-              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-accent/10 transition-colors"
             >
-              <span className="material-symbols-outlined text-on-light-tertiary">remove</span>
+              <span className="material-symbols-outlined text-ink-faint">remove</span>
             </button>
-            <span className="text-3xl font-semibold text-gray-dark w-10 text-center">
+            <span className="text-3xl font-semibold text-ink w-10 text-center">
               {store.travelersCount}
             </span>
             <button
               onClick={() => store.setTravelersCount(store.travelersCount + 1)}
-              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+              className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-accent/10 transition-colors"
             >
-              <span className="material-symbols-outlined text-on-light-tertiary">add</span>
+              <span className="material-symbols-outlined text-ink-faint">add</span>
             </button>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function Step3Travelers() {
         {/* Children */}
         {store.travelerType === "family" && (
           <div>
-            <label className="block text-sm font-semibold text-gray-dark mb-3">
+            <label className="block text-sm font-semibold text-ink mb-3">
               Children?
             </label>
             <div className="flex items-center gap-5">
@@ -87,11 +87,11 @@ export default function Step3Travelers() {
                   store.setChildrenCount(next);
                   store.setChildrenAges(store.childrenAges.slice(0, next));
                 }}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-accent/10 transition-colors"
               >
-                <span className="material-symbols-outlined text-on-light-tertiary">remove</span>
+                <span className="material-symbols-outlined text-ink-faint">remove</span>
               </button>
-              <span className="text-3xl font-semibold text-gray-dark w-10 text-center">
+              <span className="text-3xl font-semibold text-ink w-10 text-center">
                 {store.childrenCount}
               </span>
               <button
@@ -99,9 +99,9 @@ export default function Step3Travelers() {
                   store.setChildrenCount(store.childrenCount + 1);
                   store.setChildrenAges([...store.childrenAges, 5]);
                 }}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-accent/10 transition-colors"
               >
-                <span className="material-symbols-outlined text-on-light-tertiary">add</span>
+                <span className="material-symbols-outlined text-ink-faint">add</span>
               </button>
             </div>
 
@@ -109,7 +109,7 @@ export default function Step3Travelers() {
               <div className="flex flex-wrap gap-3 mt-4">
                 {store.childrenAges.map((age, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <label className="text-sm text-on-light-secondary">Child {i + 1} age:</label>
+                    <label className="text-sm text-ink-soft">Child {i + 1} age:</label>
                     <input
                       type="number"
                       min={0}
@@ -120,7 +120,7 @@ export default function Step3Travelers() {
                         newAges[i] = Number(e.target.value);
                         store.setChildrenAges(newAges);
                       }}
-                      className="w-16 bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-2 px-3 text-center text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                      className="w-16 bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-2 px-3 text-center text-ink focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                     />
                   </div>
                 ))}

@@ -60,8 +60,8 @@ export default function CompareLocalPage() {
     <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
-          <Link href="/saved" className="text-on-dark-secondary text-sm hover:text-white transition-colors flex items-center gap-1.5">
+          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/saved" className="text-ink-soft text-sm hover:text-ink transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Saved Trips
           </Link>
@@ -74,10 +74,10 @@ export default function CompareLocalPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10"
         >
-          <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
+          <h1 className="text-[28px] font-semibold text-ink leading-page mb-3">
             Compare your saved trips
           </h1>
-          <p className="text-on-light-secondary text-[17px]">
+          <p className="text-ink-soft text-[17px]">
             {trips.length} trips side-by-side. Pick the one you love.
           </p>
         </motion.div>
@@ -132,14 +132,14 @@ export default function CompareLocalPage() {
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
-                      <h3 className="font-semibold text-gray-dark text-[17px]">{trip.destination}</h3>
+                      <h3 className="font-semibold text-ink text-[17px]">{trip.destination}</h3>
                     </div>
                     <span className="bg-accent text-white rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
                       {trip.items.length} items
                     </span>
                   </div>
-                  <p className="text-on-light-secondary text-sm">{trip.name}</p>
-                  <p className="text-on-light-secondary text-sm flex items-center gap-1.5 mt-1">
+                  <p className="text-ink-soft text-sm">{trip.name}</p>
+                  <p className="text-ink-soft text-sm flex items-center gap-1.5 mt-1">
                     <span className="material-symbols-outlined text-[14px]">group</span>
                     {travelers} traveler{travelers !== 1 ? "s" : ""}
                   </p>
@@ -149,7 +149,7 @@ export default function CompareLocalPage() {
                   {/* Estimated Total */}
                   <div className="mb-5 bg-[#DBEAFE]/30 rounded-[10px] p-4 -mx-1">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-on-light-secondary text-sm">Estimated Total</span>
+                      <span className="text-ink-soft text-sm">Estimated Total</span>
                       <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
                     </div>
                     {totalMin > 0 ? (
@@ -159,15 +159,15 @@ export default function CompareLocalPage() {
                             ? `$${totalMin.toLocaleString()}`
                             : `$${totalMin.toLocaleString()} - $${totalMax.toLocaleString()}`}
                         </p>
-                        <p className="text-on-light-tertiary text-xs">per person</p>
+                        <p className="text-ink-faint text-xs">per person</p>
                       </div>
                     ) : trip.totalCost > 0 ? (
                       <div>
                         <p className="font-semibold text-accent text-[24px]">${trip.totalCost.toLocaleString()}</p>
-                        <p className="text-on-light-tertiary text-xs">per person</p>
+                        <p className="text-ink-faint text-xs">per person</p>
                       </div>
                     ) : (
-                      <p className="text-on-light-tertiary text-sm">No pricing available</p>
+                      <p className="text-ink-faint text-sm">No pricing available</p>
                     )}
                   </div>
 
@@ -175,7 +175,7 @@ export default function CompareLocalPage() {
                   <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
-                      <span className="text-gray-dark text-sm font-semibold">Flights</span>
+                      <span className="text-ink text-sm font-semibold">Flights</span>
                     </div>
                     {flightItems.length > 0 ? (
                       <p className="font-semibold text-accent text-sm">
@@ -184,7 +184,7 @@ export default function CompareLocalPage() {
                           : `$${flightMin.toLocaleString()} - $${flightMax.toLocaleString()}`}
                       </p>
                     ) : (
-                      <span className="text-on-light-tertiary text-xs">None added</span>
+                      <span className="text-ink-faint text-xs">None added</span>
                     )}
                   </div>
 
@@ -192,7 +192,7 @@ export default function CompareLocalPage() {
                   <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
-                      <span className="text-gray-dark text-sm font-semibold">Hotels</span>
+                      <span className="text-ink text-sm font-semibold">Hotels</span>
                     </div>
                     {hotelItems.length > 0 ? (
                       <p className="font-semibold text-accent text-sm">
@@ -201,7 +201,7 @@ export default function CompareLocalPage() {
                           : `$${hotelMin.toLocaleString()} - $${hotelMax.toLocaleString()}`}
                       </p>
                     ) : (
-                      <span className="text-on-light-tertiary text-xs">None added</span>
+                      <span className="text-ink-faint text-xs">None added</span>
                     )}
                   </div>
 
@@ -210,14 +210,14 @@ export default function CompareLocalPage() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-accent text-[18px]">confirmation_number</span>
-                        <span className="text-gray-dark text-sm font-semibold">Events Found</span>
+                        <span className="text-ink text-sm font-semibold">Events Found</span>
                       </div>
                       <span className="font-semibold text-accent text-[24px]">{eventItems.length}</span>
                     </div>
 
                     {/* Category pills */}
                     {eventCategories.length > 0 && (() => {
-                      const pillColors = ["bg-accent text-white", "bg-cyan text-gray-dark", "bg-accent-dark text-white"];
+                      const pillColors = ["bg-accent text-white", "bg-cyan text-ink", "bg-accent-dark text-white"];
                       return (
                         <div className="flex flex-wrap gap-1.5 mb-3">
                           {eventCategories.map((cat, j) => (
@@ -238,8 +238,8 @@ export default function CompareLocalPage() {
                               <img src={ev.image} alt="" className="w-10 h-10 rounded-[6px] object-cover flex-shrink-0" />
                             )}
                             <div className="min-w-0">
-                              <p className="text-sm text-gray-dark font-semibold truncate">{ev.title}</p>
-                              <p className="text-[11px] text-on-light-tertiary truncate">{ev.subtitle}</p>
+                              <p className="text-sm text-ink font-semibold truncate">{ev.title}</p>
+                              <p className="text-[11px] text-ink-faint truncate">{ev.subtitle}</p>
                             </div>
                             {ev.bookingUrl && (
                               <a href={ev.bookingUrl} target="_blank" rel="noopener noreferrer" className="text-accent flex-shrink-0">
@@ -257,16 +257,16 @@ export default function CompareLocalPage() {
                     <div className="py-3 border-t border-[rgba(91,141,239,0.06)]">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="material-symbols-outlined text-accent text-[18px]">interests</span>
-                        <span className="text-gray-dark text-sm font-semibold">Your Interests</span>
+                        <span className="text-ink text-sm font-semibold">Your Interests</span>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {activityItems.slice(0, 4).map((act, j) => (
-                          <span key={j} className="bg-page-bg text-gray-dark rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(91,141,239,0.08)]">
+                          <span key={j} className="bg-page-bg text-ink rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(91,141,239,0.08)]">
                             {act.title.length > 20 ? act.title.slice(0, 20) + "..." : act.title}
                           </span>
                         ))}
                         {activityItems.length > 4 && (
-                          <span className="bg-page-bg text-on-light-tertiary rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(91,141,239,0.08)]">
+                          <span className="bg-page-bg text-ink-faint rounded-pill px-2.5 py-0.5 text-[10px] font-semibold border border-[rgba(91,141,239,0.08)]">
                             +{activityItems.length - 4} more
                           </span>
                         )}

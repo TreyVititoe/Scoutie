@@ -44,7 +44,7 @@ export default function Step4Budget() {
       subtitle="We'll find the best value within your range."
     >
       <div className="space-y-6">
-        {/* Budget mode toggle — 3 options */}
+        {/* Budget mode toggle: 3 options */}
         <div className="flex rounded-[10px] bg-page-bg p-1 gap-1">
           {budgetOptions.map((opt) => (
             <button
@@ -53,7 +53,7 @@ export default function Step4Budget() {
               className={`flex-1 py-3 rounded-[10px] text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
                 activeBudgetOption === opt.value
                   ? "bg-accent text-white shadow-md"
-                  : "text-on-light-secondary hover:bg-[#DBEAFE]"
+                  : "text-ink-soft hover:bg-accent/10"
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
@@ -62,20 +62,20 @@ export default function Step4Budget() {
           ))}
         </div>
 
-        {/* Budget input — hidden when skipped */}
+        {/* Budget input: hidden when skipped */}
         {!store.budgetSkipped && (
           <>
             {/* Amount with +/- stepper */}
             <div className="flex items-center gap-4">
               <button
                 onClick={decrementBudget}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-accent/10 transition-colors"
               >
-                <span className="material-symbols-outlined text-on-light-tertiary">remove</span>
+                <span className="material-symbols-outlined text-ink-faint">remove</span>
               </button>
 
               <div className="relative flex-1">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-light-tertiary text-[22px]">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[22px]">
                   payments
                 </span>
                 <input
@@ -83,15 +83,15 @@ export default function Step4Budget() {
                   value={store.budgetAmount || ""}
                   onChange={(e) => store.setBudgetAmount(Number(e.target.value) || null)}
                   placeholder="0"
-                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-2xl font-semibold text-gray-dark focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  className="w-full bg-white border border-[rgba(91,141,239,0.08)] rounded-[10px] py-3 pl-12 pr-4 text-2xl font-semibold text-ink focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 />
               </div>
 
               <button
                 onClick={incrementBudget}
-                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-[#DBEAFE] transition-colors"
+                className="w-12 h-12 rounded-full bg-page-bg flex items-center justify-center hover:bg-accent/10 transition-colors"
               >
-                <span className="material-symbols-outlined text-on-light-tertiary">add</span>
+                <span className="material-symbols-outlined text-ink-faint">add</span>
               </button>
             </div>
 
@@ -104,7 +104,7 @@ export default function Step4Budget() {
                   className={`px-4 py-2.5 rounded-pill text-sm font-semibold transition-all ${
                     store.budgetAmount === p
                       ? "bg-accent text-white shadow-md"
-                      : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
+                      : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-ink-soft hover:bg-accent/10"
                   }`}
                 >
                   ${p.toLocaleString()}
@@ -129,9 +129,9 @@ export default function Step4Budget() {
                     <div key={item.label} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-accent/70 text-[18px]">{item.icon}</span>
-                        <span className="text-sm text-gray-dark">{item.label}</span>
+                        <span className="text-sm text-ink">{item.label}</span>
                       </div>
-                      <span className="text-sm font-semibold text-gray-dark">
+                      <span className="text-sm font-semibold text-ink">
                         ~${Math.round((store.budgetAmount! * item.pct) / 100).toLocaleString()}
                       </span>
                     </div>
@@ -148,7 +148,7 @@ export default function Step4Budget() {
                 onChange={(e) => store.setBudgetFlexible(e.target.checked)}
                 className="w-5 h-5 rounded border-[rgba(91,141,239,0.08)] text-accent focus:ring-accent/20"
               />
-              <span className="text-on-light-secondary text-sm">I&apos;m flexible -- show me options slightly above my budget too</span>
+              <span className="text-ink-soft text-sm">I&apos;m flexible, show me options slightly above my budget too</span>
             </label>
           </>
         )}
@@ -156,9 +156,9 @@ export default function Step4Budget() {
         {/* Skipped state messaging */}
         {store.budgetSkipped && (
           <div className="flex items-center gap-3 bg-page-bg rounded-[10px] p-5">
-            <span className="material-symbols-outlined text-on-light-tertiary text-[28px]">auto_awesome</span>
-            <p className="text-sm text-on-light-secondary leading-relaxed">
-              No worries — Walter will show you a range of options at different price points.
+            <span className="material-symbols-outlined text-ink-faint text-[28px]">auto_awesome</span>
+            <p className="text-sm text-ink-soft leading-relaxed">
+              No worries. Walter will show you a range of options at different price points.
             </p>
           </div>
         )}

@@ -47,7 +47,7 @@ export default function AboutPage() {
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="font-semibold text-[17px] text-white"
+            className="font-semibold text-[17px] text-ink"
           >
             Walter
           </Link>
@@ -65,20 +65,20 @@ export default function AboutPage() {
         <div className="hero-glow" />
         <div className="max-w-content mx-auto px-6 py-24 sm:py-32">
           <div className="text-center">
-            <span className="inline-flex items-center gap-2 bg-accent-deep/50 text-on-dark-secondary rounded-pill px-4 py-1.5 border border-cyan/10 mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
+            <span className="inline-flex items-center gap-2 bg-accent/10 text-accent-dark rounded-pill px-4 py-1.5 border border-accent/20 mb-8">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
               <span className="text-sm font-semibold">
                 About Walter
               </span>
             </span>
 
-            <h1 className="text-white text-[56px] font-semibold leading-display tracking-display mb-6">
+            <h1 className="text-ink text-[56px] font-semibold leading-display tracking-display mb-6">
               One quiz.
               <br />
               Your whole trip.
             </h1>
 
-            <p className="text-xl sm:text-2xl text-on-dark-secondary leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xl sm:text-2xl text-ink-soft leading-relaxed max-w-2xl mx-auto">
               Walter is an AI-powered travel planner that turns a short quiz
               into a complete, bookable itinerary -- flights, hotels,
               activities, restaurants, and more.
@@ -94,10 +94,10 @@ export default function AboutPage() {
             <span className="text-accent text-sm font-semibold uppercase tracking-wider">
               Our mission
             </span>
-            <h2 className="text-[40px] font-semibold text-gray-dark leading-section mt-3 mb-6">
+            <h2 className="text-[40px] font-semibold text-ink leading-section mt-3 mb-6">
               Eliminate the tab overload
             </h2>
-            <div className="space-y-4 text-lg text-on-light-secondary leading-relaxed">
+            <div className="space-y-4 text-lg text-ink-soft leading-relaxed">
               <p>
                 Planning a trip should be exciting, not exhausting. But right
                 now, it means juggling flight search engines, hotel aggregators,
@@ -128,7 +128,7 @@ export default function AboutPage() {
             <span className="text-accent text-sm font-semibold uppercase tracking-wider">
               How it works
             </span>
-            <h2 className="text-[40px] font-semibold text-gray-dark leading-section tracking-section mt-3">
+            <h2 className="text-[40px] font-semibold text-ink leading-section tracking-section mt-3">
               Three steps to your perfect trip
             </h2>
           </div>
@@ -143,10 +143,10 @@ export default function AboutPage() {
                     {step.num}
                   </span>
                 </div>
-                <h3 className="text-gray-dark font-semibold text-xl mb-2">
+                <h3 className="text-ink font-semibold text-xl mb-2">
                   {step.title}
                 </h3>
-                <p className="text-on-light-secondary leading-relaxed">
+                <p className="text-ink-soft leading-relaxed">
                   {step.desc}
                 </p>
               </div>
@@ -162,7 +162,7 @@ export default function AboutPage() {
             <span className="text-accent text-sm font-semibold uppercase tracking-wider">
               What we believe
             </span>
-            <h2 className="text-[40px] font-semibold text-gray-dark leading-section tracking-section mt-3">
+            <h2 className="text-[40px] font-semibold text-ink leading-section tracking-section mt-3">
               Built different
             </h2>
           </div>
@@ -175,10 +175,10 @@ export default function AboutPage() {
                 <div className="flex items-start gap-4">
                   <span className="w-2 h-2 rounded-full bg-accent mt-2.5 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-dark mb-2">
+                    <h3 className="font-semibold text-lg text-ink mb-2">
                       {v.title}
                     </h3>
-                    <p className="text-on-light-secondary leading-relaxed">
+                    <p className="text-ink-soft leading-relaxed">
                       {v.desc}
                     </p>
                   </div>
@@ -194,10 +194,10 @@ export default function AboutPage() {
         <div className="hero-glow" />
         <div className="max-w-content mx-auto px-6 py-24 text-center">
           <div>
-            <h2 className="text-white text-[40px] font-semibold leading-section tracking-section mb-5">
+            <h2 className="text-ink text-[40px] font-semibold leading-section tracking-section mb-5">
               Ready to plan your next adventure?
             </h2>
-            <p className="text-on-dark-secondary text-lg mb-10 max-w-xl mx-auto">
+            <p className="text-ink-soft text-lg mb-10 max-w-xl mx-auto">
               No sign-up required. Take the quiz, get your trip, book when
               you are ready.
             </p>

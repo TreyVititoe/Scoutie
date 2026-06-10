@@ -28,7 +28,7 @@ export default function Step6Activities() {
   return (
     <StepWrapper
       title="What are you into?"
-      subtitle="Select all that sound fun -- the more we know, the better."
+      subtitle="Select all that sound fun. The more we know, the better."
     >
       <div className="space-y-6">
         {/* Top tier: larger cards */}
@@ -45,7 +45,7 @@ export default function Step6Activities() {
                 className={`flex flex-col items-center gap-3 p-4 rounded-[14px] border transition-colors cursor-pointer ${
                   selected
                     ? "border-accent bg-accent text-white"
-                    : "border-[rgba(91,141,239,0.08)] bg-white hover:border-accent/30"
+                    : "border-line bg-card hover:border-accent/30"
                 }`}
               >
                 <div
@@ -55,7 +55,7 @@ export default function Step6Activities() {
                 >
                   <span
                     className={`material-symbols-outlined text-[28px] ${
-                      selected ? "text-white" : "text-on-light-tertiary"
+                      selected ? "text-white" : "text-ink-faint"
                     }`}
                   >
                     {a.icon}
@@ -63,7 +63,7 @@ export default function Step6Activities() {
                 </div>
                 <span
                   className={`text-sm font-semibold text-center leading-tight ${
-                    selected ? "text-white" : "text-gray-dark"
+                    selected ? "text-white" : "text-ink"
                   }`}
                 >
                   {a.label}
@@ -78,7 +78,7 @@ export default function Step6Activities() {
 
         {/* Bottom tier: smaller pills */}
         <div>
-          <label className="block text-sm font-semibold text-gray-dark mb-2">
+          <label className="block text-sm font-semibold text-ink mb-2">
             More interests
           </label>
           <div className="flex flex-wrap gap-2">
@@ -94,7 +94,7 @@ export default function Step6Activities() {
                   className={`flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-sm font-medium transition-all ${
                     selected
                       ? "bg-accent text-white shadow-md"
-                      : "bg-page-bg border border-[rgba(91,141,239,0.08)] text-on-light-secondary hover:bg-[#DBEAFE]"
+                      : "bg-page-bg border border-line text-ink-soft hover:bg-hover-slate"
                   }`}
                 >
                   <span className="material-symbols-outlined text-[16px]">{a.icon}</span>
@@ -109,7 +109,7 @@ export default function Step6Activities() {
         </div>
 
         {store.activityInterests.length > 0 && (
-          <p className="text-sm text-on-light-secondary flex items-center gap-1.5">
+          <p className="text-sm text-ink-soft flex items-center gap-1.5">
             <span className="material-symbols-outlined text-accent text-[18px]">check_circle</span>
             {store.activityInterests.length} selected
           </p>

@@ -47,6 +47,7 @@ export default function SavedTripsPage() {
     // Set prefs so the trip page shows the right destination
     const prefs = { destinations: [trip.destination], destination: trip.destination };
     localStorage.setItem("walter_prefs", JSON.stringify(prefs));
+    localStorage.removeItem("walter_trip"); // no stale chosen trip downstream
 
     router.push("/trip");
   };
@@ -55,14 +56,14 @@ export default function SavedTripsPage() {
     <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
+          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-on-dark-secondary text-[11px] hidden sm:block hover:text-white transition-colors">
+            <Link href="/" className="text-ink-soft text-[11px] hidden sm:block hover:text-ink transition-colors">
               Plan a Trip
             </Link>
             <Link
               href="/"
-              className="bg-white/15 border border-white/20 text-white rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-white/25 transition-colors"
+              className="border border-ink/20 text-ink rounded-pill px-4 py-1.5 text-[11px] font-semibold hover:bg-ink/5 transition-colors"
             >
               New Trip
             </Link>
@@ -73,10 +74,10 @@ export default function SavedTripsPage() {
       <main className="max-w-content mx-auto px-6 pt-28 pb-16">
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
+            <h1 className="font-semibold text-[28px] text-ink leading-page mb-2">
               Saved Trips
             </h1>
-            <p className="text-on-light-secondary text-[17px]">
+            <p className="text-ink-soft text-[17px]">
               {trips.length === 0
                 ? "No saved trips yet. Plan a trip and save it here."
                 : `${trips.length} trip${trips.length !== 1 ? "s" : ""} saved`}
@@ -89,7 +90,7 @@ export default function SavedTripsPage() {
                 if (compareMode) setCompareIds([]);
               }}
               className={`text-sm font-semibold flex items-center gap-1.5 transition-colors ${
-                compareMode ? "text-accent" : "text-on-light-secondary hover:text-accent"
+                compareMode ? "text-accent" : "text-ink-soft hover:text-accent"
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">compare_arrows</span>
@@ -105,8 +106,8 @@ export default function SavedTripsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="card-base p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
           >
-            <p className="text-sm text-on-light-secondary">
-              {compareIds.length} selected <span className="text-on-light-tertiary">(pick 2-3)</span>
+            <p className="text-sm text-ink-soft">
+              {compareIds.length} selected <span className="text-ink-faint">(pick 2-3)</span>
             </p>
             <button
               onClick={handleCompare}
@@ -120,10 +121,10 @@ export default function SavedTripsPage() {
 
         {trips.length === 0 ? (
           <div className="card-base p-10 text-center">
-            <span className="material-symbols-outlined text-on-light-tertiary text-4xl mb-4 block">bookmark_border</span>
-            <p className="font-semibold text-gray-dark text-[17px] mb-2">No saved trips</p>
-            <p className="text-on-light-secondary text-sm mb-6 max-w-sm mx-auto">
-              Take the quiz, build your trip, and save it here to compare with other options later.
+            <span className="material-symbols-outlined text-ink-faint text-4xl mb-4 block">bookmark_border</span>
+            <p className="font-semibold text-ink text-[17px] mb-2">No saved trips</p>
+            <p className="text-ink-soft text-sm mb-6 max-w-sm mx-auto">
+              Search a destination, build your trip, and save it here to compare with other options later.
             </p>
             <Link
               href="/"
@@ -159,7 +160,7 @@ export default function SavedTripsPage() {
                         className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                           isSelected
                             ? "bg-accent border-accent text-white"
-                            : "border-on-light-tertiary text-transparent hover:border-accent"
+                            : "border-ink/30 text-transparent hover:border-accent"
                         }`}
                       >
                         {isSelected && (
@@ -176,10 +177,10 @@ export default function SavedTripsPage() {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h3 className="font-semibold text-gray-dark text-[17px] mb-1">
+                          <h3 className="font-semibold text-ink text-[17px] mb-1">
                             {trip.name}
                           </h3>
-                          <p className="text-sm text-on-light-secondary">{trip.destination}</p>
+                          <p className="text-sm text-ink-soft">{trip.destination}</p>
                         </div>
                       </div>
 
@@ -211,12 +212,12 @@ export default function SavedTripsPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-[rgba(91,141,239,0.06)]">
+                      <div className="flex items-center justify-between pt-3 border-t border-line">
                         <span className="font-semibold text-accent">
                           {trip.totalCost > 0 ? `$${trip.totalCost.toLocaleString()}` : "No pricing"}
                         </span>
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] text-on-light-tertiary">
+                          <span className="text-[11px] text-ink-faint">
                             {new Date(trip.createdAt).toLocaleDateString("en-US", {
                               month: "short",
                               day: "numeric",
@@ -240,7 +241,7 @@ export default function SavedTripsPage() {
                                 setDeleteConfirm(trip.id);
                                 setTimeout(() => setDeleteConfirm(null), 3000);
                               }}
-                              className="text-on-light-tertiary hover:text-red-500 transition-colors"
+                              className="text-ink-faint hover:text-red-500 transition-colors"
                             >
                               <span className="material-symbols-outlined text-[16px]">delete</span>
                             </button>

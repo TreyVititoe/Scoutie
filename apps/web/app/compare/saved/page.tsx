@@ -73,12 +73,12 @@ export default function CompareSavedPage() {
       <div className="min-h-screen bg-product-bg">
         <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
           <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-            <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
+            <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
           </div>
         </header>
         <div className="flex flex-col items-center justify-center min-h-screen">
           <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-6" />
-          <p className="text-[17px] font-semibold text-gray-dark">Loading your trips...</p>
+          <p className="text-[17px] font-semibold text-ink">Loading your trips...</p>
         </div>
       </div>
     );
@@ -88,8 +88,8 @@ export default function CompareSavedPage() {
     <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-white text-[17px] font-semibold">Walter</Link>
-          <Link href="/dashboard" className="text-on-dark-secondary text-sm hover:text-white transition-colors flex items-center gap-1.5">
+          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/dashboard" className="text-ink-soft text-sm hover:text-ink transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Dashboard
           </Link>
@@ -102,10 +102,10 @@ export default function CompareSavedPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-10"
         >
-          <h1 className="text-[28px] font-semibold text-gray-dark leading-page mb-3">
+          <h1 className="text-[28px] font-semibold text-ink leading-page mb-3">
             Compare your saved trips
           </h1>
-          <p className="text-on-light-secondary text-[17px]">
+          <p className="text-ink-soft text-[17px]">
             Side-by-side comparison of {trips.length} trips. Pick the winner.
           </p>
         </motion.div>
@@ -137,21 +137,21 @@ export default function CompareSavedPage() {
                   <div className="hero-glow absolute inset-0 pointer-events-none" />
                   <div className="relative z-10">
                     {trip.tier && (
-                      <span className="bg-cyan/20 text-cyan rounded-pill px-2.5 py-0.5 text-[11px] font-semibold mb-3 inline-block">
+                      <span className="bg-accent/10 text-accent-dark rounded-pill px-2.5 py-0.5 text-[11px] font-semibold mb-3 inline-block">
                         {trip.tier.charAt(0).toUpperCase() + trip.tier.slice(1)}
                       </span>
                     )}
-                    <h2 className="text-white text-[21px] font-semibold leading-card-title mb-1">
+                    <h2 className="text-ink text-[21px] font-semibold leading-card-title mb-1">
                       {trip.destination}
                     </h2>
-                    <p className="text-on-dark-secondary text-sm">{trip.title}</p>
+                    <p className="text-ink-soft text-sm">{trip.title}</p>
                   </div>
                 </div>
 
                 <div className="p-6 flex-1 flex flex-col">
                   {/* Cost */}
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]">
-                    <span className="text-on-light-secondary text-sm">Total cost</span>
+                    <span className="text-ink-soft text-sm">Total cost</span>
                     <span className="text-accent text-[21px] font-semibold">
                       ${trip.total_estimated_cost?.toLocaleString() || "N/A"}
                     </span>
@@ -160,29 +160,29 @@ export default function CompareSavedPage() {
                   {/* Quick stats */}
                   <div className="grid grid-cols-3 gap-3 mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]">
                     <div className="text-center">
-                      <p className="text-[21px] font-semibold text-gray-dark">{dayCount}</p>
-                      <p className="text-[11px] text-on-light-tertiary">Days</p>
+                      <p className="text-[21px] font-semibold text-ink">{dayCount}</p>
+                      <p className="text-[11px] text-ink-faint">Days</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-[21px] font-semibold text-gray-dark">{eventItems.length}</p>
-                      <p className="text-[11px] text-on-light-tertiary">Events</p>
+                      <p className="text-[21px] font-semibold text-ink">{eventItems.length}</p>
+                      <p className="text-[11px] text-ink-faint">Events</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-[21px] font-semibold text-gray-dark">{activityItems.length}</p>
-                      <p className="text-[11px] text-on-light-tertiary">Activities</p>
+                      <p className="text-[21px] font-semibold text-ink">{activityItems.length}</p>
+                      <p className="text-[11px] text-ink-faint">Activities</p>
                     </div>
                   </div>
 
                   {/* Flights */}
                   {flightItems.length > 0 && (
                     <div className="mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]">
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Flights</p>
+                      <p className="text-ink-faint text-xs uppercase tracking-wider mb-2">Flights</p>
                       {flightItems.map((fl, j) => (
-                        <p key={j} className="text-sm text-gray-dark mb-1 flex items-center gap-1.5">
+                        <p key={j} className="text-sm text-ink mb-1 flex items-center gap-1.5">
                           <span className="material-symbols-outlined text-accent text-[14px]">flight</span>
                           {fl.title}
                           {fl.estimated_cost > 0 && (
-                            <span className="text-on-light-tertiary ml-auto">${fl.estimated_cost}</span>
+                            <span className="text-ink-faint ml-auto">${fl.estimated_cost}</span>
                           )}
                         </p>
                       ))}
@@ -192,15 +192,15 @@ export default function CompareSavedPage() {
                   {/* Top Events */}
                   {eventItems.length > 0 && (
                     <div className="mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]">
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-2">Events</p>
+                      <p className="text-ink-faint text-xs uppercase tracking-wider mb-2">Events</p>
                       {eventItems.slice(0, 3).map((ev, j) => (
-                        <p key={j} className="text-sm text-gray-dark mb-1 flex items-center gap-1.5">
+                        <p key={j} className="text-sm text-ink mb-1 flex items-center gap-1.5">
                           <span className="material-symbols-outlined text-accent text-[14px]">confirmation_number</span>
                           {ev.title}
                         </p>
                       ))}
                       {eventItems.length > 3 && (
-                        <p className="text-xs text-on-light-tertiary mt-1">+{eventItems.length - 3} more</p>
+                        <p className="text-xs text-ink-faint mt-1">+{eventItems.length - 3} more</p>
                       )}
                     </div>
                   )}
@@ -213,20 +213,20 @@ export default function CompareSavedPage() {
                       transition={{ duration: 0.2 }}
                       className="mb-4 pb-4 border-b border-[rgba(91,141,239,0.06)]"
                     >
-                      <p className="text-on-light-tertiary text-xs uppercase tracking-wider mb-3">Day-by-day</p>
+                      <p className="text-ink-faint text-xs uppercase tracking-wider mb-3">Day-by-day</p>
                       <div className="space-y-3">
                         {trip.trip_days.map((day) => (
                           <div key={day.day_number} className="bg-page-bg rounded-[10px] p-3">
-                            <p className="text-sm font-semibold text-gray-dark mb-1">
+                            <p className="text-sm font-semibold text-ink mb-1">
                               Day {day.day_number}: {day.title}
                             </p>
                             <div className="space-y-1">
                               {day.trip_items?.slice(0, 3).map((item, k) => (
-                                <p key={k} className="text-xs text-on-light-secondary flex items-center gap-1.5">
-                                  <span className="text-on-light-tertiary">{item.start_time || ""}</span>
+                                <p key={k} className="text-xs text-ink-soft flex items-center gap-1.5">
+                                  <span className="text-ink-faint">{item.start_time || ""}</span>
                                   {item.title}
                                   {item.estimated_cost > 0 && (
-                                    <span className="text-on-light-tertiary ml-auto">${item.estimated_cost}</span>
+                                    <span className="text-ink-faint ml-auto">${item.estimated_cost}</span>
                                   )}
                                 </p>
                               ))}
@@ -242,7 +242,7 @@ export default function CompareSavedPage() {
                     {trip.trip_days && trip.trip_days.length > 0 && (
                       <button
                         onClick={() => setExpandedTrip(isExpanded ? null : i)}
-                        className="w-full text-center text-accent text-sm font-semibold hover:text-accent-light transition-colors py-1"
+                        className="w-full text-center text-accent text-sm font-semibold hover:text-accent-dark transition-colors py-1"
                       >
                         {isExpanded ? "Show less" : "View day-by-day"}
                       </button>

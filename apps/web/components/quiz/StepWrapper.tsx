@@ -20,11 +20,11 @@ export default function StepWrapper({
       className="w-full max-w-2xl mx-auto"
     >
       <div className="card-base p-8">
-        <h2 className="font-semibold text-[28px] text-gray-dark leading-page mb-2">
+        <h2 className="font-semibold text-[28px] text-ink leading-page mb-2">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-on-light-secondary text-sm leading-[1.43] tracking-caption mb-8">
+          <p className="text-ink-soft text-sm leading-[1.43] tracking-caption mb-8">
             {subtitle}
           </p>
         )}
