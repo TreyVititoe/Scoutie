@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuizStore } from "@/lib/stores/quizStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
 import { SearchBar, type SearchValue } from "@/components/quiz/SearchBar";
@@ -69,7 +68,6 @@ function NavLink({
 export default function LandingPage() {
   const router = useRouter();
   const pathname = usePathname();
-  const store = useQuizStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [search, setSearch] = useState<SearchValue>({
     destination: "",
@@ -102,7 +100,6 @@ export default function LandingPage() {
       .catch(() => setTripsLoading(false));
   }, []);
 
-  void store;
 
   const handleSearch = (v: SearchValue) => {
     // SearchBar only calls this with a valid, normalized value: destination
