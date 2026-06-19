@@ -211,8 +211,8 @@ export default function LandingPage() {
         {/* Image + overlays clipped, kept separate so SearchBar popovers can escape */}
         <div className="absolute inset-0 overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=2400&q=85&auto=format&fit=crop"
-            alt="Reykjavík at low light"
+            src="/new_walter_hero.jpg"
+            alt="Walter travel hero"
             className="absolute inset-0 w-full h-full object-cover"
             fetchPriority="high"
           />
