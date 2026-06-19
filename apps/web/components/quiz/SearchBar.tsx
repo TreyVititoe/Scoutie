@@ -416,7 +416,7 @@ function SectionButton({
   clearLabel,
 }: SectionButtonProps) {
   return (
-    <div
+    <motion.div
       role="button"
       tabIndex={0}
       aria-expanded={isActive}
@@ -429,13 +429,12 @@ function SectionButton({
           onClick();
         }
       }}
-      // The hovered/open segment grows; neighbours shrink. The CSS transition
-      // makes the widening slide smoothly as the cursor moves across.
-      style={{
-        flexGrow: isExpanded ? 1.7 : 1,
-        flexBasis: 0,
-        transition: "flex-grow 280ms cubic-bezier(0.2, 0.8, 0.2, 1)",
-      }}
+      // The hovered/open segment grows and its neighbours shrink; framer
+      // animates flex-grow so the widening slides smoothly across the bar.
+      initial={false}
+      animate={{ flexGrow: isExpanded ? 1.85 : 1 }}
+      transition={{ duration: 0.34, ease: [0.2, 0.8, 0.2, 1] }}
+      style={{ flexBasis: 0 }}
       className="group relative min-w-0 px-5 py-2 text-left rounded-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       {isActive ? (
@@ -476,7 +475,7 @@ function SectionButton({
           <span className="material-symbols-outlined text-[14px]">close</span>
         </button>
       )}
-    </div>
+    </motion.div>
   );
 }
 
