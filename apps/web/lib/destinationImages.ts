@@ -75,8 +75,9 @@ const DESTINATION_PHOTOS: Record<string, string> = {
   canada: "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?w=800&q=80",
 };
 
+// Generic landscapes for unmatched destinations. The old airplane-window photo
+// was removed: with no Unsplash key it became every card's image.
 const FALLBACK_PHOTOS = [
-  "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&q=80",
   "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80",
   "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=800&q=80",
   "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80",

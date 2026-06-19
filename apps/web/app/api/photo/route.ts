@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getDestinationImage } from "@/lib/destinationImages";
 
 /**
  * GET /api/photo?query=<destination>
  *
  * Returns a 302 redirect to a verified Unsplash photo tagged with the query.
  * Cached in-memory per process and via CDN headers (24h) so we don't burn
- * Unsplash quota. Falls back to a known-good landscape photo on any error.
+ * Unsplash quota. When the Unsplash search is unavailable (no key, rate limit,
+ * no result) we fall back to the curated per-destination photo map rather than
+ * one generic image, so cards stay place-specific.
  */
-
-const FALLBACK_PHOTO =
-  "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1600&q=85&auto=format&fit=crop";
 
 const cache = new Map<string, string>();
 
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     if (photoUrl) cache.set(normalized, photoUrl);
   }
 
-  const finalUrl = photoUrl || FALLBACK_PHOTO;
+  const finalUrl = photoUrl || getDestinationImage(query);
 
   return NextResponse.redirect(finalUrl, {
     status: 302,
