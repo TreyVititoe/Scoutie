@@ -223,7 +223,7 @@ export default function LandingPage() {
           <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-page-bg via-page-bg/80 to-transparent pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end w-full px-10 sm:px-16 pt-20 pb-8">
+        <div className="relative z-10 flex-1 flex flex-col justify-end w-full px-16 sm:px-24 pt-20 pb-8">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -232,15 +232,7 @@ export default function LandingPage() {
           >
             Where to next?
           </motion.h1>
-          <div className="flex items-end justify-between gap-6 mb-32">
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="text-ink-soft text-[18px] sm:text-[22px] max-w-[44ch]"
-            >
-              Tell Walter the basics, or fork a trip others have built.
-            </motion.p>
+          <div className="flex items-end justify-end gap-6 mb-32">
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
