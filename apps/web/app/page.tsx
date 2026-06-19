@@ -141,7 +141,9 @@ export default function LandingPage() {
       })
     );
 
-    router.push("/trips");
+    // Skip /trips: the Where/When/Who/What search goes straight to /results,
+    // which renders from walter_prefs (no chosen trip needed).
+    router.push("/results");
   };
 
   return (
