@@ -7,19 +7,17 @@ import Link from "next/link";
 import FlightCard from "@/components/results/FlightCard";
 import HotelCard from "@/components/results/HotelCard";
 import EventCard from "@/components/results/EventCard";
-import SuggestionCard from "@/components/results/SuggestionCard";
 import TripTracker from "@/components/results/TripTracker";
 import { useTripCartStore, selectItemCount } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
-import type { ScoredEvent, Suggestion } from "@/lib/types";
+import type { ScoredEvent } from "@/lib/types";
 
 const tabs = [
   { id: "flights", label: "Flights", icon: "flight" },
   { id: "stays", label: "Stays", icon: "hotel" },
   { id: "events", label: "Events", icon: "local_activity" },
-  { id: "picks", label: "Picks", icon: "explore" },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
@@ -43,8 +41,6 @@ export default function ResultsPage() {
   const [events, setEvents] = useState<ScoredEvent[]>([]);
   const [similarEvents, setSimilarEvents] = useState<ScoredEvent[]>([]);
   const [topEvents, setTopEvents] = useState<ScoredEvent[]>([]);
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [suggestionsLoading, setSuggestionsLoading] = useState(true);
   const [flightsLoading, setFlightsLoading] = useState(true);
   const [hotelsLoading, setHotelsLoading] = useState(true);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -96,42 +92,12 @@ export default function ResultsPage() {
     const adults = quizData.travelersCount || quizData.travelers || 1;
     const cabinClass = quizData.flightClass || "economy";
 
-    const suggestionsController = new AbortController();
     const flightsController = new AbortController();
     const hotelsController = new AbortController();
     const eventsController = new AbortController();
-    const suggestionsTimeout = setTimeout(() => suggestionsController.abort(), 30000);
     const flightsTimeout = setTimeout(() => flightsController.abort(), 25000);
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
     const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
-
-    if (destination) {
-      fetch("/api/suggestions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          destination,
-          startDate,
-          endDate,
-          interests: quizData.activityInterests || quizData.vibes || [],
-          travelers: adults,
-          travelerType: quizData.travelersType || quizData.travelerType || "",
-        }),
-        signal: suggestionsController.signal,
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          clearTimeout(suggestionsTimeout);
-          setSuggestions(data.suggestions || []);
-        })
-        .catch((err) => {
-          clearTimeout(suggestionsTimeout);
-          console.warn("[suggestions]", err);
-        })
-        .finally(() => setSuggestionsLoading(false));
-    } else {
-      setSuggestionsLoading(false);
-    }
 
     if (departureCity && destination && startDate && endDate) {
       fetch("/api/flights", {
@@ -205,11 +171,9 @@ export default function ResultsPage() {
     }
 
     return () => {
-      clearTimeout(suggestionsTimeout);
       clearTimeout(flightsTimeout);
       clearTimeout(hotelsTimeout);
       clearTimeout(eventsTimeout);
-      suggestionsController.abort();
       flightsController.abort();
       hotelsController.abort();
       eventsController.abort();
@@ -349,13 +313,11 @@ export default function ResultsPage() {
               const isLoading =
                 (tab.id === "flights" && flightsLoading) ||
                 (tab.id === "stays" && hotelsLoading) ||
-                (tab.id === "events" && eventsLoading) ||
-                (tab.id === "picks" && suggestionsLoading);
+                (tab.id === "events" && eventsLoading);
               const count =
                 tab.id === "flights" ? flights.length :
                 tab.id === "stays" ? hotels.length :
-                tab.id === "events" ? allEvents.length :
-                suggestions.length;
+                allEvents.length;
 
               return (
                 <button
@@ -507,39 +469,6 @@ export default function ResultsPage() {
             </motion.section>
           )}
 
-          {/* Picks */}
-          {activeTab === "picks" && (
-            <motion.section
-              key="picks"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.18, ease: EASE }}
-            >
-              <SectionHeading
-                title={
-                  suggestionsLoading
-                    ? "Walter is picking spots"
-                    : suggestions.length > 0
-                      ? `${suggestions.length} spots Walter likes`
-                      : "Walter's picks"
-                }
-              />
-
-              {suggestionsLoading && <CardSkeletonGrid />}
-
-              {!suggestionsLoading && suggestions.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {suggestions.map((s) => (
-                    <SuggestionCard key={s.id} suggestion={s} />
-                  ))}
-                </div>
-              )}
-
-              {!suggestionsLoading && suggestions.length === 0 && (
-                <EmptyState icon="explore" message="No curated picks for this destination yet." />
-              )}
-            </motion.section>
-          )}
         </main>
 
         <TripTracker />
