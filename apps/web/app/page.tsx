@@ -53,12 +53,12 @@ function NavLink({
       onClick={onClick}
       className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
         active
-          ? "bg-white/15 text-snow-off-glacier"
-          : "text-snow-off-glacier/90 hover:text-snow-off-glacier hover:bg-white/10"
+          ? "bg-ink/10 text-ink"
+          : "text-ink-soft hover:text-ink hover:bg-ink/5"
       }`}
     >
       {icon && (
-        <span className="material-symbols-outlined text-[18px] text-accent-light">{icon}</span>
+        <span className="material-symbols-outlined text-[18px] text-accent">{icon}</span>
       )}
       {label}
     </Link>
@@ -149,12 +149,12 @@ export default function LandingPage() {
       {/* Floating liquid-glass header */}
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
-          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.28_0.005_250_/_0.75)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(20,30,60,0.14),inset_0_1px_0_rgba(255,255,255,0.10)]">
+          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.99_0.004_250_/_0.72)] backdrop-blur-2xl backdrop-saturate-150 border border-black/5 shadow-[0_8px_32px_rgba(20,30,60,0.12),inset_0_1px_0_rgba(255,255,255,0.6)]">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
                 <span className="text-[oklch(0.28_0.005_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
               </span>
-              <span className="text-snow-off-glacier text-[17px] font-semibold tracking-tight">Walter</span>
+              <span className="text-ink text-[17px] font-semibold tracking-tight">Walter</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -173,7 +173,7 @@ export default function LandingPage() {
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen((v) => !v)}
-              className="md:hidden w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-snow-off-glacier transition-colors"
+              className="md:hidden w-9 h-9 rounded-full hover:bg-ink/5 flex items-center justify-center text-ink transition-colors"
             >
               <span className="material-symbols-outlined text-[22px]">
                 {mobileOpen ? "close" : "menu"}
@@ -188,7 +188,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.16, ease: "easeOut" }}
-                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-[oklch(0.28_0.005_250_/_0.92)] backdrop-blur-2xl backdrop-saturate-150 border border-white/15 shadow-[0_8px_32px_rgba(20,30,60,0.14)] px-4 py-3 flex flex-col gap-1"
+                className="pointer-events-auto md:hidden mt-2 rounded-[20px] bg-[oklch(0.99_0.004_250_/_0.95)] backdrop-blur-2xl backdrop-saturate-150 border border-black/5 shadow-[0_8px_32px_rgba(20,30,60,0.12)] px-4 py-3 flex flex-col gap-1"
               >
                 {NAV_LINKS.map((l) => (
                   <NavLink
@@ -216,19 +216,19 @@ export default function LandingPage() {
             className="absolute inset-0 w-full h-full object-cover"
             fetchPriority="high"
           />
-          {/* Top scrim: keeps nav legible over bright sky areas */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-tinted-pitch/70 to-transparent pointer-events-none" />
-          {/* Bottom scrim: keeps hero text legible regardless of photo content */}
-          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-tinted-pitch via-tinted-pitch/85 to-transparent pointer-events-none" />
+          {/* Top scrim: light touch now that the nav is a bright pill */}
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-tinted-pitch/30 to-transparent pointer-events-none" />
+          {/* Bottom: dissolve the image into the white page behind it */}
+          <div className="absolute inset-x-0 bottom-0 h-[150px] bg-gradient-to-t from-page-bg via-page-bg/70 to-transparent pointer-events-none" />
           <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-24 sm:px-32 pt-20 pb-8">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-24 sm:px-32 pt-20 pb-8 [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-snow-off-glacier text-[40px] sm:text-[56px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
+            className="text-white text-[40px] sm:text-[56px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
           >
             Where to next?
           </motion.h1>
@@ -237,7 +237,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="text-snow-off-glacier/90 text-[16px] sm:text-[18px] max-w-[44ch]"
+              className="text-white text-[16px] sm:text-[18px] max-w-[44ch]"
             >
               Tell Walter the basics, or fork a trip others have built.
             </motion.p>
@@ -245,7 +245,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="shrink-0 text-snow-off-glacier/95 text-[13px] sm:text-[14px] uppercase tracking-[2.5px] font-semibold flex items-center gap-1.5"
+              className="shrink-0 text-white text-[13px] sm:text-[14px] uppercase tracking-[2.5px] font-semibold flex items-center gap-1.5"
             >
               <span
                 className="material-symbols-outlined text-[18px] sm:text-[19px] text-emerald-400"
