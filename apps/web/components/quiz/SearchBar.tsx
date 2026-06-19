@@ -875,7 +875,7 @@ function WhoPopover({
   ];
 
   return (
-    <PopoverShell align="right" width="380px" className="p-5 mr-12">
+    <PopoverShell align="right" width="380px" className="p-5 mr-36">
       {rows.map((row, i) => (
         <div
           key={row.key}

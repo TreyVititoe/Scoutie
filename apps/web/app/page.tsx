@@ -223,7 +223,7 @@ export default function LandingPage() {
           <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-page-bg via-page-bg/80 to-transparent pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end w-full px-4 sm:px-6 pt-20 pb-8">
+        <div className="relative z-10 flex-1 flex flex-col justify-end w-full px-6 sm:px-10 pt-20 pb-8">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
