@@ -219,13 +219,15 @@ export default function LandingPage() {
             fetchPriority="high"
           />
           {/* Top scrim: light touch now that the nav is a bright pill */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-tinted-pitch/30 to-transparent pointer-events-none" />
-          {/* Bottom: dissolve the image into the white page behind it */}
-          <div className="absolute inset-x-0 bottom-0 h-[150px] bg-gradient-to-t from-page-bg via-page-bg/70 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-tinted-pitch/35 to-transparent pointer-events-none" />
+          {/* Legibility scrim: darken the photo behind the headline + subtitle */}
+          <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-tinted-pitch/80 via-tinted-pitch/40 to-transparent pointer-events-none" />
+          {/* Very bottom: soft dissolve into the white page */}
+          <div className="absolute inset-x-0 bottom-0 h-[90px] bg-gradient-to-t from-page-bg to-transparent pointer-events-none" />
           <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-7xl w-full mx-auto px-8 sm:px-14 pt-20 pb-8 [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-7xl w-full mx-auto px-8 sm:px-14 pt-20 pb-8 [text-shadow:0_1px_3px_rgba(0,0,0,0.55),0_2px_22px_rgba(0,0,0,0.6)]">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
