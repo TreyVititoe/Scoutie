@@ -213,6 +213,9 @@ export function normalizeSearch(v: SearchValue): SearchValue {
 
 export function SearchBar({ value, onChange, onSearch }: Props) {
   const [active, setActive] = useState<Section>(null);
+  // +1 when the newly opened tab is to the right of the current one, -1 to the
+  // left; drives the directional slide between popovers.
+  const [direction, setDirection] = useState(1);
   const [whereError, setWhereError] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -229,6 +232,10 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
   };
   const openSection = (s: Section) => {
     cancelClose();
+    if (s && active && s !== active) {
+      const order: Section[] = ["where", "when", "who", "what"];
+      setDirection(order.indexOf(s) > order.indexOf(active) ? 1 : -1);
+    }
     setActive(s);
   };
   const scheduleClose = () => {
@@ -384,19 +391,26 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         </button>
       </motion.div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence custom={direction} initial={false}>
         {active === "where" && (
           <WherePopover
             key="where"
+            direction={direction}
             value={value}
             onChange={onChange}
             onClose={() => setActive(null)}
             error={whereError && !value.destination}
           />
         )}
-        {active === "when" && <WhenPopover key="when" value={value} onChange={onChange} />}
-        {active === "who" && <WhoPopover key="who" value={value} onChange={onChange} />}
-        {active === "what" && <WhatPopover key="what" value={value} onChange={onChange} />}
+        {active === "when" && (
+          <WhenPopover key="when" direction={direction} value={value} onChange={onChange} />
+        )}
+        {active === "who" && (
+          <WhoPopover key="who" direction={direction} value={value} onChange={onChange} />
+        )}
+        {active === "what" && (
+          <WhatPopover key="what" direction={direction} value={value} onChange={onChange} />
+        )}
       </AnimatePresence>
     </div>
   );
@@ -500,32 +514,45 @@ function SectionButton({
   );
 }
 
+// Directional slide: a tab to the right enters from the right and the old one
+// leaves to the left; reversing flips it. custom = the slide direction (±1).
+const SHELL_VARIANTS = {
+  hidden: (dir: number) => ({ opacity: 0, x: 48 * dir }),
+  shown: { opacity: 1, x: 0 },
+  exit: (dir: number) => ({ opacity: 0, x: -48 * dir }),
+};
+
 function PopoverShell({
   children,
   className = "",
   align = "left",
   width = "auto",
+  direction = 1,
 }: {
   children: React.ReactNode;
   className?: string;
   align?: "left" | "center" | "right";
   width?: string;
+  direction?: number;
 }) {
-  // A Tailwind -translate-x-1/2 gets clobbered by framer-motion's own transform,
-  // which is what shoved the centered popover off to the right. Feed the
-  // horizontal centering through framer's x so both compose correctly.
   const isCenter = align === "center";
   const positionClass = isCenter ? "left-1/2" : align === "right" ? "right-0" : "left-0";
-  const x = isCenter ? "-50%" : 0;
+  // Center via margin, not transform, so framer's x stays free for the slide.
+  const halfWidth = Number.parseInt(width, 10) / 2;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8, x }}
-      animate={{ opacity: 1, y: 0, x }}
-      exit={{ opacity: 0, y: -8, x }}
-      transition={{ duration: 0.14, ease: "easeOut" }}
+      custom={direction}
+      variants={SHELL_VARIANTS}
+      initial="hidden"
+      animate="shown"
+      exit="exit"
+      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
       className={`absolute top-[calc(100%+12px)] ${positionClass} bg-card rounded-[24px] shadow-[0_12px_40px_rgba(20,30,60,0.12)] border border-line z-30 ${className}`}
-      style={{ width }}
+      style={{
+        width,
+        marginLeft: isCenter && Number.isFinite(halfWidth) ? -halfWidth : undefined,
+      }}
     >
       {children}
     </motion.div>
@@ -537,11 +564,13 @@ function WherePopover({
   onChange,
   onClose,
   error,
+  direction,
 }: {
   value: SearchValue;
   onChange: (n: SearchValue) => void;
   onClose: () => void;
   error: boolean;
+  direction: number;
 }) {
   const [highlight, setHighlight] = useState(-1);
   const [results, setResults] = useState<GeoItem[]>([]);
@@ -606,7 +635,7 @@ function WherePopover({
   }
 
   return (
-    <PopoverShell align="left" width="430px" className="p-2">
+    <PopoverShell align="left" width="430px" className="p-2" direction={direction}>
       <div className="px-4 pt-3 pb-2">
         <input
           autoFocus
@@ -675,9 +704,11 @@ function WherePopover({
 function WhenPopover({
   value,
   onChange,
+  direction,
 }: {
   value: SearchValue;
   onChange: (n: SearchValue) => void;
+  direction: number;
 }) {
   const today = startOfToday();
 
@@ -713,7 +744,7 @@ function WhenPopover({
   }
 
   return (
-    <PopoverShell align="center" width="780px" className="p-6">
+    <PopoverShell align="center" width="780px" className="p-6" direction={direction}>
       <div className="flex items-center justify-center gap-2 mb-5">
         <div className="inline-flex bg-raised-slate rounded-full p-1">
           <button
@@ -854,9 +885,11 @@ function WhenPopover({
 function WhoPopover({
   value,
   onChange,
+  direction,
 }: {
   value: SearchValue;
   onChange: (n: SearchValue) => void;
+  direction: number;
 }) {
   // Untouched adults read as the default party of 2; the first tap edits from there.
   const shownAdults = value.adults <= 0 ? 2 : value.adults;
@@ -875,7 +908,7 @@ function WhoPopover({
   ];
 
   return (
-    <PopoverShell align="right" width="380px" className="p-5 mr-36">
+    <PopoverShell align="right" width="380px" className="p-5 mr-36" direction={direction}>
       {rows.map((row, i) => (
         <div
           key={row.key}
@@ -922,12 +955,14 @@ function WhoPopover({
 function WhatPopover({
   value,
   onChange,
+  direction,
 }: {
   value: SearchValue;
   onChange: (n: SearchValue) => void;
+  direction: number;
 }) {
   return (
-    <PopoverShell align="right" width="460px" className="p-4">
+    <PopoverShell align="right" width="460px" className="p-4" direction={direction}>
       <textarea
         autoFocus
         value={value.description}
