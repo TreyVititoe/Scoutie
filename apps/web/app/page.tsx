@@ -225,12 +225,12 @@ export default function LandingPage() {
           <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl w-full mx-auto px-24 sm:px-32 pt-20 pb-8 [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-7xl w-full mx-auto px-8 sm:px-14 pt-20 pb-8 [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-white text-[40px] sm:text-[56px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
+            className="text-white text-[52px] sm:text-[76px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
           >
             Where to next?
           </motion.h1>
@@ -239,7 +239,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="text-white text-[16px] sm:text-[18px] max-w-[44ch]"
+              className="text-white text-[18px] sm:text-[22px] max-w-[44ch]"
             >
               Tell Walter the basics, or fork a trip others have built.
             </motion.p>
@@ -247,7 +247,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="shrink-0 text-white text-[13px] sm:text-[14px] uppercase tracking-[2.5px] font-semibold flex items-center gap-1.5"
+              className="shrink-0 text-white text-[14px] sm:text-[16px] uppercase tracking-[2.5px] font-semibold flex items-center gap-1.5"
             >
               <span
                 className="material-symbols-outlined text-[18px] sm:text-[19px] text-emerald-400"
@@ -255,7 +255,7 @@ export default function LandingPage() {
               >
                 location_on
               </span>
-              Reykjavík, Iceland
+              Mount Egmont, Taranaki, New Zealand
             </motion.p>
           </div>
         </div>
