@@ -57,31 +57,22 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Walter",
-          tabBarLabel: "Home",
-          headerLargeTitle: true,
+          headerShown: false,
+          tabBarLabel: "Explore",
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="house.fill" />
+            <TabIcon focused={focused} sfSymbol="magnifyingglass" />
           ),
         }}
       />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          headerLargeTitle: true,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="safari.fill" />
-          ),
-        }}
-      />
+      {/* Folded into the Explore home; hidden from the bar. */}
+      <Tabs.Screen name="explore" options={{ href: null }} />
       <Tabs.Screen
         name="saved"
         options={{
-          title: "Saved",
+          title: "Wishlists",
           headerLargeTitle: true,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="bookmark.fill" />
+            <TabIcon focused={focused} sfSymbol="heart.fill" />
           ),
         }}
       />
