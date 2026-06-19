@@ -213,13 +213,28 @@ export function normalizeSearch(v: SearchValue): SearchValue {
 
 export function SearchBar({ value, onChange, onSearch }: Props) {
   const [active, setActive] = useState<Section>(null);
-  const [hovered, setHovered] = useState<Section>(null);
   const [whereError, setWhereError] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // The segment that visually expands: the one under the cursor, or the open one.
-  const expanded = hovered ?? active;
+  // Hovering a segment opens it; moving to the next slides the open state over.
+  // A short close delay bridges the gap between the bar and the popover so the
+  // panel doesn't flicker shut as the cursor travels down into it.
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const openSection = (s: Section) => {
+    cancelClose();
+    setActive(s);
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setActive(null), 160);
+  };
 
   useEffect(() => {
     function onDown(e: MouseEvent) {
@@ -235,6 +250,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
     return () => {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onEsc);
+      if (closeTimer.current) clearTimeout(closeTimer.current);
     };
   }, []);
 
@@ -288,19 +304,24 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
   const whatLabel = value.description || "What you love to do";
 
   return (
-    <div ref={wrapRef} onKeyDown={handleWrapKeyDown} className="relative max-w-3xl mx-auto">
+    <div
+      ref={wrapRef}
+      onKeyDown={handleWrapKeyDown}
+      onMouseEnter={cancelClose}
+      onMouseLeave={scheduleClose}
+      className="relative max-w-3xl mx-auto"
+    >
       <motion.div
         key={shakeKey}
         initial={false}
         animate={shakeKey > 0 ? { x: [0, -10, 10, -6, 6, 0] } : { x: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        onMouseLeave={() => setHovered(null)}
         className="rounded-full flex items-stretch p-1.5 bg-card ring-1 ring-line shadow-[0_12px_40px_rgba(20,30,60,0.10)]"
       >
         <SectionButton
           isActive={active === "where"}
-          isExpanded={expanded === "where"}
-          onHover={() => setHovered("where")}
+          isExpanded={active === "where"}
+          onHover={() => openSection("where")}
           label="Where"
           value={whereLabel}
           placeholder={!value.destination}
@@ -312,8 +333,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <Divider show={active !== "where" && active !== "when"} />
         <SectionButton
           isActive={active === "when"}
-          isExpanded={expanded === "when"}
-          onHover={() => setHovered("when")}
+          isExpanded={active === "when"}
+          onHover={() => openSection("when")}
           label="When"
           value={whenLabel}
           placeholder={!value.startDate}
@@ -328,8 +349,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <Divider show={active !== "when" && active !== "who"} />
         <SectionButton
           isActive={active === "who"}
-          isExpanded={expanded === "who"}
-          onHover={() => setHovered("who")}
+          isExpanded={active === "who"}
+          onHover={() => openSection("who")}
           label="Who"
           value={whoLabel}
           placeholder={!whoTouched}
@@ -344,8 +365,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <Divider show={active !== "who" && active !== "what"} />
         <SectionButton
           isActive={active === "what"}
-          isExpanded={expanded === "what"}
-          onHover={() => setHovered("what")}
+          isExpanded={active === "what"}
+          onHover={() => openSection("what")}
           label="What"
           value={whatLabel}
           placeholder={!value.description}
