@@ -43,6 +43,87 @@ const SUGGESTED_DESCRIPTIONS = [
   "Beach, no schedule, one good book.",
 ];
 
+// Tappable interest categories for the What popover. Selecting them adds the
+// label to the free-text description, so categories and full sentences coexist.
+const WHAT_CATEGORIES: { label: string; icon: string }[] = [
+  { label: "Food & dining", icon: "restaurant" },
+  { label: "Hiking & nature", icon: "forest" },
+  { label: "Museums & culture", icon: "museum" },
+  { label: "Nightlife", icon: "nightlife" },
+  { label: "Beaches", icon: "beach_access" },
+  { label: "Architecture", icon: "apartment" },
+  { label: "Live music", icon: "music_note" },
+  { label: "Shopping", icon: "shopping_bag" },
+  { label: "Adventure & sports", icon: "hiking" },
+  { label: "Wellness & spa", icon: "spa" },
+  { label: "Local markets", icon: "storefront" },
+  { label: "Photography", icon: "photo_camera" },
+];
+
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Add or remove a category label from the free-text description. */
+function toggleCategory(desc: string, cat: string): string {
+  const present = new RegExp(`(^|,\\s*)${escapeRegExp(cat)}(\\s*,|$)`, "i").test(desc);
+  if (present) {
+    return desc
+      .replace(new RegExp(`\\s*,?\\s*${escapeRegExp(cat)}`, "i"), "")
+      .replace(/^\s*,\s*/, "")
+      .replace(/\s*,\s*,/g, ", ")
+      .trim();
+  }
+  const base = desc.trim();
+  return base ? `${base}, ${cat}` : cat;
+}
+
+function hasCategory(desc: string, cat: string): boolean {
+  return new RegExp(`(^|,\\s*)${escapeRegExp(cat)}(\\s*,|$)`, "i").test(desc);
+}
+
+type GeoItem = { id: string; label: string; value: string; secondary: string; icon: string };
+
+/** Worldwide place lookup via Mapbox: cities, regions, countries, airports. */
+async function geocodePlaces(query: string, signal: AbortSignal): Promise<GeoItem[]> {
+  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  if (!token) return [];
+  const url =
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json` +
+    `?access_token=${token}&autocomplete=true&limit=6&language=en` +
+    `&types=country,region,place,locality,district,poi`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) return [];
+  const data = (await res.json()) as {
+    features?: {
+      id: string;
+      text: string;
+      place_name: string;
+      place_type: string[];
+      properties?: { category?: string; maki?: string };
+    }[];
+  };
+  return (data.features ?? []).map((f) => {
+    const type = f.place_type?.[0] ?? "";
+    const isAirport =
+      f.properties?.maki === "airport" || (f.properties?.category ?? "").includes("airport");
+    const icon = isAirport
+      ? "flight"
+      : type === "country"
+        ? "public"
+        : type === "region"
+          ? "map"
+          : type === "poi"
+            ? "place"
+            : "location_city";
+    // Secondary = the place_name minus the leading short name.
+    const secondary = f.place_name.startsWith(f.text)
+      ? f.place_name.slice(f.text.length).replace(/^,\s*/, "")
+      : f.place_name;
+    return { id: f.id, label: f.text, value: f.place_name, secondary, icon };
+  });
+}
+
 const FLEX_OPTIONS = [1, 2, 3, 7, 14] as const;
 const DEFAULT_TRIP_DAYS = 7;
 
@@ -132,9 +213,13 @@ export function normalizeSearch(v: SearchValue): SearchValue {
 
 export function SearchBar({ value, onChange, onSearch }: Props) {
   const [active, setActive] = useState<Section>(null);
+  const [hovered, setHovered] = useState<Section>(null);
   const [whereError, setWhereError] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
+
+  // The segment that visually expands: the one under the cursor, or the open one.
+  const expanded = hovered ?? active;
 
   useEffect(() => {
     function onDown(e: MouseEvent) {
@@ -209,10 +294,13 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         initial={false}
         animate={shakeKey > 0 ? { x: [0, -10, 10, -6, 6, 0] } : { x: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
+        onMouseLeave={() => setHovered(null)}
         className="rounded-full flex items-stretch p-1.5 bg-card ring-1 ring-line shadow-[0_12px_40px_rgba(20,30,60,0.10)]"
       >
         <SectionButton
           isActive={active === "where"}
+          isExpanded={expanded === "where"}
+          onHover={() => setHovered("where")}
           label="Where"
           value={whereLabel}
           placeholder={!value.destination}
@@ -224,6 +312,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <Divider show={active !== "where" && active !== "when"} />
         <SectionButton
           isActive={active === "when"}
+          isExpanded={expanded === "when"}
+          onHover={() => setHovered("when")}
           label="When"
           value={whenLabel}
           placeholder={!value.startDate}
@@ -238,6 +328,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <Divider show={active !== "when" && active !== "who"} />
         <SectionButton
           isActive={active === "who"}
+          isExpanded={expanded === "who"}
+          onHover={() => setHovered("who")}
           label="Who"
           value={whoLabel}
           placeholder={!whoTouched}
@@ -252,6 +344,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <Divider show={active !== "who" && active !== "what"} />
         <SectionButton
           isActive={active === "what"}
+          isExpanded={expanded === "what"}
+          onHover={() => setHovered("what")}
           label="What"
           value={whatLabel}
           placeholder={!value.description}
@@ -298,6 +392,8 @@ function Divider({ show }: { show: boolean }) {
 
 type SectionButtonProps = {
   isActive: boolean;
+  isExpanded: boolean;
+  onHover: () => void;
   label: string;
   value: string;
   placeholder: boolean;
@@ -309,6 +405,8 @@ type SectionButtonProps = {
 
 function SectionButton({
   isActive,
+  isExpanded,
+  onHover,
   label,
   value,
   placeholder,
@@ -323,6 +421,7 @@ function SectionButton({
       tabIndex={0}
       aria-expanded={isActive}
       onClick={onClick}
+      onMouseEnter={onHover}
       onKeyDown={(e) => {
         // Space opens the section. Enter bubbles up and submits the search.
         if (e.key === " ") {
@@ -330,22 +429,39 @@ function SectionButton({
           onClick();
         }
       }}
-      className={`group relative flex-1 px-5 py-2 text-left rounded-full transition-colors min-w-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-        isActive ? "bg-hover-slate shadow-[0_3px_10px_rgba(20,30,60,0.10)]" : "hover:bg-ink/5"
-      }`}
+      // The hovered/open segment grows; neighbours shrink. The CSS transition
+      // makes the widening slide smoothly as the cursor moves across.
+      style={{
+        flexGrow: isExpanded ? 1.7 : 1,
+        flexBasis: 0,
+        transition: "flex-grow 280ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+      }}
+      className="group relative min-w-0 px-5 py-2 text-left rounded-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
-      <p className="text-[12px] uppercase tracking-[1.5px] text-ink font-bold mb-1">{label}</p>
-      <p
-        className={`text-[14px] truncate ${onClear ? "pr-7" : ""} ${
-          error
-            ? "text-[oklch(0.55_0.19_25)] font-medium"
-            : placeholder
-              ? "text-ink-faint"
-              : "text-ink font-medium"
-        }`}
-      >
-        {value}
-      </p>
+      {isActive ? (
+        // Shared element: framer slides this highlight between segments.
+        <motion.div
+          layoutId="search-active-seg"
+          transition={{ type: "spring", stiffness: 420, damping: 36 }}
+          className="absolute inset-0 rounded-full bg-hover-slate shadow-[0_3px_10px_rgba(20,30,60,0.10)]"
+        />
+      ) : (
+        <div className="absolute inset-0 rounded-full bg-ink/0 group-hover:bg-ink/5 transition-colors" />
+      )}
+      <div className="relative z-10">
+        <p className="text-[12px] uppercase tracking-[1.5px] text-ink font-bold mb-1">{label}</p>
+        <p
+          className={`text-[14px] truncate ${onClear ? "pr-7" : ""} ${
+            error
+              ? "text-[oklch(0.55_0.19_25)] font-medium"
+              : placeholder
+                ? "text-ink-faint"
+                : "text-ink font-medium"
+          }`}
+        >
+          {value}
+        </p>
+      </div>
       {onClear && (
         <button
           type="button"
@@ -355,7 +471,7 @@ function SectionButton({
             e.stopPropagation();
             onClear();
           }}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-ink/10 hover:bg-ink/20 text-ink items-center justify-center hidden group-hover:flex group-focus-within:flex"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-ink/10 hover:bg-ink/20 text-ink items-center justify-center hidden group-hover:flex group-focus-within:flex"
         >
           <span className="material-symbols-outlined text-[14px]">close</span>
         </button>
@@ -375,14 +491,18 @@ function PopoverShell({
   align?: "left" | "center" | "right";
   width?: string;
 }) {
-  const positionClass =
-    align === "center" ? "left-1/2 -translate-x-1/2" : align === "right" ? "right-0" : "left-0";
+  // A Tailwind -translate-x-1/2 gets clobbered by framer-motion's own transform,
+  // which is what shoved the centered popover off to the right. Feed the
+  // horizontal centering through framer's x so both compose correctly.
+  const isCenter = align === "center";
+  const positionClass = isCenter ? "left-1/2" : align === "right" ? "right-0" : "left-0";
+  const x = isCenter ? "-50%" : 0;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
+      initial={{ opacity: 0, y: -8, x }}
+      animate={{ opacity: 1, y: 0, x }}
+      exit={{ opacity: 0, y: -8, x }}
       transition={{ duration: 0.14, ease: "easeOut" }}
       className={`absolute top-[calc(100%+12px)] ${positionClass} bg-card rounded-[24px] shadow-[0_12px_40px_rgba(20,30,60,0.12)] border border-line z-30 ${className}`}
       style={{ width }}
@@ -404,14 +524,40 @@ function WherePopover({
   error: boolean;
 }) {
   const [highlight, setHighlight] = useState(-1);
+  const [results, setResults] = useState<GeoItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const query = value.destination.trim().toLowerCase();
-  const matches = query
-    ? SUGGESTED_DESTINATIONS.filter(
-        (d) => d.name.toLowerCase().includes(query) || d.tagline.toLowerCase().includes(query)
-      )
-    : SUGGESTED_DESTINATIONS;
+  const query = value.destination.trim();
+  const suggestions: GeoItem[] = SUGGESTED_DESTINATIONS.map((d) => ({
+    id: d.name,
+    label: d.name,
+    value: d.name,
+    secondary: d.tagline,
+    icon: d.icon,
+  }));
+  const matches = query ? results : suggestions;
+
+  // Debounced worldwide geocoding: cities, regions, countries, airports.
+  useEffect(() => {
+    if (!query) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setLoading(true);
+    const t = setTimeout(() => {
+      geocodePlaces(query, controller.signal)
+        .then(setResults)
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }, 250);
+    return () => {
+      clearTimeout(t);
+      controller.abort();
+    };
+  }, [query]);
 
   useEffect(() => {
     if (highlight < 0) return;
@@ -419,8 +565,8 @@ function WherePopover({
     el?.scrollIntoView({ block: "nearest" });
   }, [highlight]);
 
-  function pick(name: string) {
-    onChange({ ...value, destination: name });
+  function pick(dest: string) {
+    onChange({ ...value, destination: dest });
     onClose();
   }
 
@@ -435,7 +581,7 @@ function WherePopover({
       // A highlighted suggestion takes priority over submitting.
       e.preventDefault();
       e.stopPropagation();
-      pick(matches[highlight].name);
+      pick(matches[highlight].value);
     }
   }
 
@@ -454,7 +600,7 @@ function WherePopover({
             setHighlight(-1);
           }}
           onKeyDown={handleInputKeyDown}
-          placeholder="Search destinations"
+          placeholder="City, country, state, or airport"
           className="w-full text-[15px] text-ink placeholder:text-ink-faint bg-transparent focus:outline-none"
         />
         {error && (
@@ -465,22 +611,24 @@ function WherePopover({
       </div>
       <div className="border-t border-line pt-3 pb-2 px-2">
         <p className="text-[11px] text-ink-faint px-3 mb-2 font-medium">
-          {query ? "Matching destinations" : "Suggested destinations"}
+          {query ? (loading ? "Searching…" : "Destinations") : "Suggested destinations"}
         </p>
         {matches.length === 0 ? (
           <p className="text-[13px] text-ink-soft px-3 pb-2">
-            No matches. Press Enter to search &quot;{value.destination.trim()}&quot;.
+            {loading
+              ? "Looking…"
+              : `No matches. Press Enter to search "${query}".`}
           </p>
         ) : (
           <div ref={listRef} className="max-h-[320px] overflow-y-auto" role="listbox">
             {matches.map((d, i) => (
               <button
-                key={d.name}
+                key={d.id}
                 type="button"
                 role="option"
                 aria-selected={i === highlight}
                 tabIndex={-1}
-                onClick={() => pick(d.name)}
+                onClick={() => pick(d.value)}
                 onMouseEnter={() => setHighlight(i)}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-[12px] transition-colors text-left ${
                   i === highlight ? "bg-ink/5" : ""
@@ -490,8 +638,10 @@ function WherePopover({
                   <span className="material-symbols-outlined text-accent text-[20px]">{d.icon}</span>
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[14px] font-semibold text-ink truncate">{d.name}</p>
-                  <p className="text-[12px] text-ink-soft truncate">{d.tagline}</p>
+                  <p className="text-[14px] font-semibold text-ink truncate">{d.label}</p>
+                  {d.secondary && (
+                    <p className="text-[12px] text-ink-soft truncate">{d.secondary}</p>
+                  )}
                 </div>
               </button>
             ))}
@@ -705,7 +855,7 @@ function WhoPopover({
   ];
 
   return (
-    <PopoverShell align="right" width="380px" className="p-5">
+    <PopoverShell align="right" width="380px" className="p-5 mr-12">
       {rows.map((row, i) => (
         <div
           key={row.key}
@@ -757,17 +907,44 @@ function WhatPopover({
   onChange: (n: SearchValue) => void;
 }) {
   return (
-    <PopoverShell align="right" width="430px" className="p-4">
+    <PopoverShell align="right" width="460px" className="p-4">
       <textarea
         autoFocus
         value={value.description}
         onChange={(e) => onChange({ ...value, description: e.target.value })}
         placeholder="Hikes, museums, slow dinners. Tell Walter what you love doing."
-        rows={4}
+        rows={3}
         className="w-full text-[14px] text-ink placeholder:text-ink-faint bg-transparent border border-line rounded-[14px] p-3 focus:outline-none focus:border-accent resize-none"
       />
       <p className="text-[11px] text-ink-faint mt-1 px-1">Enter searches. Shift+Enter for a new line.</p>
-      <p className="text-[11px] text-ink-faint mt-4 mb-2 px-1 font-medium">Or pick a starting point</p>
+
+      <p className="text-[11px] text-ink-faint mt-4 mb-2 px-1 font-medium">
+        Tap categories, and mix in your own words
+      </p>
+      <div className="flex flex-wrap gap-2 px-1">
+        {WHAT_CATEGORIES.map((c) => {
+          const on = hasCategory(value.description, c.label);
+          return (
+            <button
+              key={c.label}
+              type="button"
+              onClick={() =>
+                onChange({ ...value, description: toggleCategory(value.description, c.label) })
+              }
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
+                on
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-line text-ink hover:border-ink/40"
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">{c.icon}</span>
+              {c.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-[11px] text-ink-faint mt-4 mb-2 px-1 font-medium">Or start from an example</p>
       <div className="space-y-1">
         {SUGGESTED_DESCRIPTIONS.map((s) => (
           <button
