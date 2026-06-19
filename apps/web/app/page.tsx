@@ -218,21 +218,17 @@ export default function LandingPage() {
             className="absolute inset-0 w-full h-full object-cover object-[center_37.5%]"
             fetchPriority="high"
           />
-          {/* Top scrim: light touch now that the nav is a bright pill */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-tinted-pitch/35 to-transparent pointer-events-none" />
-          {/* Legibility scrim: darken the photo behind the headline + subtitle */}
-          <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-tinted-pitch/80 via-tinted-pitch/40 to-transparent pointer-events-none" />
-          {/* Very bottom: soft dissolve into the white page */}
-          <div className="absolute inset-x-0 bottom-0 h-[90px] bg-gradient-to-t from-page-bg to-transparent pointer-events-none" />
-          <div className="absolute inset-0 hero-radial opacity-25 pointer-events-none" />
+          {/* Lighten the photo toward the bottom so the black copy reads and
+              the image dissolves into the white page; the peak stays clear. */}
+          <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-page-bg via-page-bg/80 to-transparent pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-7xl w-full mx-auto px-8 sm:px-14 pt-20 pb-8 [text-shadow:0_1px_3px_rgba(0,0,0,0.55),0_2px_22px_rgba(0,0,0,0.6)]">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-7xl w-full mx-auto px-4 sm:px-6 pt-20 pb-8">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-white text-[52px] sm:text-[76px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
+            className="text-ink text-[52px] sm:text-[76px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
           >
             Where to next?
           </motion.h1>
@@ -241,7 +237,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="text-white text-[18px] sm:text-[22px] max-w-[44ch]"
+              className="text-ink-soft text-[18px] sm:text-[22px] max-w-[44ch]"
             >
               Tell Walter the basics, or fork a trip others have built.
             </motion.p>
@@ -249,7 +245,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="shrink-0 text-white text-[14px] sm:text-[16px] uppercase tracking-[2.5px] font-semibold flex items-center gap-1.5"
+              className="shrink-0 text-ink-soft text-[14px] sm:text-[16px] uppercase tracking-[2.5px] font-semibold flex items-center gap-1.5"
             >
               <span
                 className="material-symbols-outlined text-[18px] sm:text-[19px] text-emerald-400"
