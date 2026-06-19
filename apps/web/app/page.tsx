@@ -213,7 +213,7 @@ export default function LandingPage() {
           <img
             src="/new_walter_hero.jpg"
             alt="Walter travel hero"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-[center_25%]"
             fetchPriority="high"
           />
           {/* Top scrim: light touch now that the nav is a bright pill */}
