@@ -517,9 +517,11 @@ function SectionButton({
 // Directional slide: a tab to the right enters from the right and the old one
 // leaves to the left; reversing flips it. custom = the slide direction (±1).
 const SHELL_VARIANTS = {
-  hidden: (dir: number) => ({ opacity: 0, x: 48 * dir }),
+  hidden: (dir: number) => ({ opacity: 0, x: 64 * dir }),
   shown: { opacity: 1, x: 0 },
-  exit: (dir: number) => ({ opacity: 0, x: -48 * dir }),
+  // Stay fully visible while sliding out, fading only at the tail, so the panel
+  // reads as gliding away in the cursor's direction rather than snapping shut.
+  exit: (dir: number) => ({ opacity: [1, 1, 0], x: -64 * dir }),
 };
 
 function PopoverShell({
@@ -547,7 +549,7 @@ function PopoverShell({
       initial="hidden"
       animate="shown"
       exit="exit"
-      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       className={`absolute top-[calc(100%+12px)] ${positionClass} bg-card rounded-[24px] shadow-[0_12px_40px_rgba(20,30,60,0.12)] border border-line z-30 ${className}`}
       style={{
         width,
