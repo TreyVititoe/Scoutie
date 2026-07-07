@@ -318,10 +318,10 @@ function TripPage() {
             <span className="material-symbols-outlined text-[18px]">
               credit_card
             </span>
-            Book everything
+            Book your trip
           </button>
           <p className="text-ink-faint text-xs mt-2">
-            Nothing to book yet. Walter only books what you add.
+            Nothing to book yet. Walter only lines up what you add.
           </p>
         </div>
       </div>
@@ -376,7 +376,7 @@ function TripPage() {
               <span className="material-symbols-outlined text-[18px]">
                 credit_card
               </span>
-              <span className="hidden sm:inline">Book everything</span>
+              <span className="hidden sm:inline">Book your trip</span>
             </Link>
           </div>
         </div>
@@ -603,7 +603,7 @@ function TripPage() {
                   <span className="material-symbols-outlined text-[18px]">
                     credit_card
                   </span>
-                  Book everything
+                  Book your trip
                 </Link>
                 <button
                   onClick={handleShare}
@@ -616,8 +616,9 @@ function TripPage() {
                   {sharing ? "Creating link..." : "Share this trip"}
                 </button>
                 <p className="text-xs text-ink-faint text-center">
-                  One click. Walter books all {items.length}{" "}
-                  {items.length === 1 ? "item" : "items"}.
+                  Walter lines up all {items.length}{" "}
+                  {items.length === 1 ? "item" : "items"}. You book each with
+                  its provider in a click.
                 </p>
 
                 {(shareUrl || shareFallback) && (

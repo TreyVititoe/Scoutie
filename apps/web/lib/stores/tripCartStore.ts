@@ -23,18 +23,22 @@ export type CartItem = {
 
 export interface TripCartState {
   items: CartItem[];
+  /* ids the traveler has marked booked on the checkout checklist */
+  bookedIds: string[];
 }
 
 export interface TripCartActions {
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   isInCart: (id: string) => boolean;
+  toggleBooked: (id: string) => void;
   clearCart: () => void;
 }
 
 export const useTripCartStore = create<TripCartState & TripCartActions>()(
   (set, get) => ({
     items: [],
+    bookedIds: [],
 
     addItem: (item) =>
       set((state) => {
@@ -45,11 +49,19 @@ export const useTripCartStore = create<TripCartState & TripCartActions>()(
     removeItem: (id) =>
       set((state) => ({
         items: state.items.filter((i) => i.id !== id),
+        bookedIds: state.bookedIds.filter((b) => b !== id),
       })),
 
     isInCart: (id) => get().items.some((i) => i.id === id),
 
-    clearCart: () => set({ items: [] }),
+    toggleBooked: (id) =>
+      set((state) => ({
+        bookedIds: state.bookedIds.includes(id)
+          ? state.bookedIds.filter((b) => b !== id)
+          : [...state.bookedIds, id],
+      })),
+
+    clearCart: () => set({ items: [], bookedIds: [] }),
   })
 );
 
@@ -59,13 +71,20 @@ if (typeof window !== "undefined") {
     const stored = localStorage.getItem("walter_cart");
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (parsed.items) useTripCartStore.setState({ items: parsed.items });
+      if (parsed.items)
+        useTripCartStore.setState({
+          items: parsed.items,
+          bookedIds: parsed.bookedIds ?? [],
+        });
     }
   } catch {}
 
   // Auto-save on changes
   useTripCartStore.subscribe((state) => {
-    localStorage.setItem("walter_cart", JSON.stringify({ items: state.items }));
+    localStorage.setItem(
+      "walter_cart",
+      JSON.stringify({ items: state.items, bookedIds: state.bookedIds })
+    );
   });
 }
 

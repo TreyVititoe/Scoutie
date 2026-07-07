@@ -6,7 +6,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Walter. The world is wasted on people who stay home.",
   description:
-    "Tell Walter a few facts and he builds a real trip: flights, hotels, activities, all in one cart. Ready to book in one click.",
+    "Tell Walter a few facts and he builds a real trip: flights, hotels, activities, all in one place. Book each piece in a click.",
 };
 
 export default function RootLayout({
