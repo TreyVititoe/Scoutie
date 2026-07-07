@@ -92,6 +92,8 @@ export default function ResultsScreen() {
               title: `${flight.airline} ${flight.flightNumber}`,
               subtitle: `${flight.departureCity} → ${flight.arrivalCity}`,
               price: flight.price,
+              bookingUrl: flight.bookingUrl ?? null,
+              provider: "Google Flights",
             });
           }}
         />
@@ -116,6 +118,8 @@ export default function ResultsScreen() {
               title: hotel.name,
               subtitle: hotel.address,
               price: hotel.totalPrice,
+              bookingUrl: hotel.bookingUrl ?? null,
+              provider: "Booking.com",
             });
           }}
         />
@@ -145,6 +149,8 @@ export default function ResultsScreen() {
               subtitle: e.venueName,
               price: e.priceMin ?? 0,
               image: e.image,
+              bookingUrl: e.url ?? null,
+              provider: "Ticketmaster",
             });
           }}
         />

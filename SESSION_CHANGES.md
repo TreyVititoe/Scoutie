@@ -258,3 +258,22 @@ The `load-context.mjs` script resolves `contextDir` to `apps/web` by default; fo
 3. `/impeccable polish /results` — final-pass cleanup before that page ships
 4. `/impeccable adapt` — when we want mobile parity on a specific page
 5. `/impeccable live` — pick elements in the browser and generate variants (best for marketing surfaces)
+
+# Session changes - 2026-07-07
+
+## Production push (plan.md / app_plan.md executed)
+
+Web:
+- `/checkout` rewritten as an affiliate booking checklist (deep links + click tracking + booked toggles, progress persisted in `walter_cart.bookedIds`); `/checkout/confirmation` now redirects there; `/api/checkout` deleted.
+- `lib/affiliate.ts`: `providerLabel` / `affiliateUrl` / `lookupUrl`; affiliate tags env-driven (`NEXT_PUBLIC_BOOKING_AFFILIATE_ID`, `NEXT_PUBLIC_TM_IMPACT_URL`), pass-through until program approvals land.
+- `lib/apiGuard.ts` + `lib/searchCache.ts`: per-IP rate limits, input clamps, and 1h caching on all paid API routes. `next.config.ts`: security headers (CSP deferred).
+- SEO: metadataBase + OG/Twitter, `sitemap.ts`, `robots.ts`, branded `error.tsx`/`not-found.tsx`.
+- `next lint` was broken (removed in Next 16): replaced with eslint flat config; vitest unit tests for apiGuard/affiliate; `.github/workflows/ci.yml` runs lint+test+build; Vercel Analytics + Speed Insights mounted.
+- Deleted dead `lib/mockData.ts` and empty `packages/ui`.
+
+Mobile:
+- EAS project created (`1950ce6e-c7c7-4dcd-b7fa-8e28e164553d`, owner treyvititoe) + `eas.json` (dev/preview/production; `EXPO_PUBLIC_API_BASE_URL` per profile); Supabase/Mapbox env vars pushed to EAS production+preview.
+- `app.json`: iOS privacy manifest added, `supportsTablet` false, removed unused `expo-secure-store` plugin (source of the stray Face ID permission).
+- `app/auth-callback.tsx` (NEW): handles `walter://auth-callback` magic links (setSession or verifyOtp) - email sign-in now completes in production builds.
+- Checkout parity: `TripCartItem` gained `bookingUrl`/`provider` (results screens now populate them), cart store gained `bookedIds`/`toggleBooked`, `app/checkout.tsx` (NEW) is the booking checklist, trip screen gained the "Book your trip" CTA.
+- Trip map now geocodes the destination (was centered on [0,0]); packing list got an error+retry state; fixed pre-existing invalid header props in the tabs layout.

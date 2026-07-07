@@ -145,6 +145,11 @@ export default function RootLayout() {
               options={{ title: "Your trip", headerLargeTitle: true }}
             />
             <Stack.Screen
+              name="checkout"
+              options={{ title: "Book your trip", headerLargeTitle: true }}
+            />
+            <Stack.Screen name="auth-callback" options={{ headerShown: false }} />
+            <Stack.Screen
               name="auth/login"
               options={{ presentation: "modal", title: "Sign in" }}
             />

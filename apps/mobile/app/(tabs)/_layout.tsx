@@ -49,7 +49,6 @@ export default function TabsLayout() {
         },
         headerStyle: { backgroundColor: colors.pageBg },
         headerTintColor: colors.text,
-        headerLargeTitleStyle: { color: colors.text },
         headerTitleStyle: { color: colors.text },
         sceneStyle: { backgroundColor: colors.pageBg },
       }}
@@ -70,7 +69,6 @@ export default function TabsLayout() {
         name="saved"
         options={{
           title: "Wishlists",
-          headerLargeTitle: true,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} sfSymbol="heart.fill" />
           ),
@@ -80,7 +78,6 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "Profile",
-          headerLargeTitle: true,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} sfSymbol="person.crop.circle.fill" />
           ),

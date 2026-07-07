@@ -26,8 +26,27 @@ const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? "";
 export default function TripScreen() {
   const prefs = usePrefs((s) => s.prefs);
   const items = useTripCart((s) => s.items);
+  const bookedIds = useTripCart((s) => s.bookedIds);
   const clear = useTripCart((s) => s.clear);
   const total = useTripCart(selectTotalPrice);
+
+  const bookedCount = items.filter((i) => bookedIds.includes(i.id)).length;
+
+  /* Center the map on the destination; [0,0] is the Gulf of Guinea. */
+  const geo = useQuery({
+    queryKey: ["geocode", prefs.destination],
+    queryFn: async () => {
+      const resp = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          prefs.destination ?? ""
+        )}.json?types=place,region,country&limit=1&access_token=${MAPBOX_TOKEN}`
+      );
+      const data = await resp.json();
+      return (data.features?.[0]?.center ?? null) as [number, number] | null;
+    },
+    enabled: !!prefs.destination && !!MAPBOX_TOKEN,
+    staleTime: Infinity,
+  });
 
   const grouped = useMemo(() => {
     const g: Record<string, typeof items> = {};
@@ -112,7 +131,7 @@ export default function TripScreen() {
             </View>
 
             {/* Map */}
-            {MAPBOX_TOKEN ? (
+            {MAPBOX_TOKEN && geo.data ? (
               <View
                 className="mx-4 mt-4 rounded-2xl overflow-hidden border border-line"
                 style={{ height: 240 }}
@@ -124,7 +143,7 @@ export default function TripScreen() {
                   attributionEnabled={false}
                   logoEnabled={false}
                 >
-                  <Mapbox.Camera zoomLevel={9} centerCoordinate={[0, 0]} animationMode="flyTo" />
+                  <Mapbox.Camera zoomLevel={9} centerCoordinate={geo.data} animationMode="flyTo" />
                 </Mapbox.MapView>
               </View>
             ) : null}
@@ -197,7 +216,35 @@ export default function TripScreen() {
               <View className="items-center mt-6">
                 <ActivityIndicator color={colors.accent} />
               </View>
+            ) : packing.isError ? (
+              <View className="mx-4 mt-6 bg-card rounded-2xl p-4 border border-line items-center">
+                <Text className="text-ink-soft text-[13px] text-center">
+                  The packing list didn't load.
+                </Text>
+                <Pressable
+                  onPress={() => packing.refetch()}
+                  className="mt-3 px-5 py-2 rounded-full"
+                  style={{ backgroundColor: colors.surface2 }}
+                >
+                  <Text className="text-ink text-[13px] font-medium">
+                    Try again
+                  </Text>
+                </Pressable>
+              </View>
             ) : null}
+
+            <Pressable
+              /* Route types regenerate on next `expo start`; cast until then. */
+              onPress={() => router.push("/checkout" as Parameters<typeof router.push>[0])}
+              className="mx-4 mt-8 py-4 rounded-full items-center"
+              style={{ backgroundColor: colors.accent }}
+            >
+              <Text className="text-white text-[15px] font-semibold">
+                {bookedCount > 0
+                  ? `Book your trip · ${bookedCount} of ${items.length} done`
+                  : "Book your trip"}
+              </Text>
+            </Pressable>
 
             <Pressable
               onPress={() =>
@@ -217,7 +264,7 @@ export default function TripScreen() {
                   ]
                 )
               }
-              className="mx-4 mt-8 py-3.5 rounded-full items-center border border-line-strong"
+              className="mx-4 mt-3 py-3.5 rounded-full items-center border border-line-strong"
             >
               <Text className="text-ink-soft text-[14px] font-medium">
                 Clear trip

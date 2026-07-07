@@ -13,12 +13,32 @@
       "backgroundColor": "#5B8DEF"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.walterus.app",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "Walter uses your location to suggest nearby trips and show your travel itinerary on a map."
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",
+            "NSPrivacyAccessedAPITypeReasons": ["C617.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime",
+            "NSPrivacyAccessedAPITypeReasons": ["35F9.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace",
+            "NSPrivacyAccessedAPITypeReasons": ["E174.1"]
+          }
+        ]
       }
     },
     "android": {
@@ -49,7 +69,6 @@
       ],
       "expo-apple-authentication",
       "expo-font",
-      "expo-secure-store",
       [
         "expo-build-properties",
         {
@@ -61,13 +80,16 @@
       "@react-native-community/datetimepicker"
     ],
     "extra": {
-      "router": {},
+      "router": {
+        "root": "./app"
+      },
       "eas": {
-        "projectId": ""
+        "projectId": "1950ce6e-c7c7-4dcd-b7fa-8e28e164553d"
       }
     },
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "treyvititoe"
   }
 }

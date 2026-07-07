@@ -89,5 +89,8 @@ export type TripCartItem = {
   subtitle?: string;
   price: number;
   image?: string | null;
+  /* Where this item gets booked; drives the checkout checklist. */
+  bookingUrl?: string | null;
+  provider?: string | null;
   meta?: Record<string, unknown>;
 };

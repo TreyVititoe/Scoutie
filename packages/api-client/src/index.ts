@@ -126,6 +126,18 @@ export const api = {
     url: (query: string) =>
       `${baseUrl}/api/photo?query=${encodeURIComponent(query)}`,
   },
+  affiliate: {
+    /** Fire-and-forget click tracking; never throws. */
+    click: (input: {
+      tripId?: string;
+      provider: string;
+      itemType?: string;
+      destinationUrl: string;
+    }) =>
+      post<{ ok: boolean }>("/api/affiliate/click", input).catch(() => ({
+        ok: false,
+      })),
+  },
 };
 
 export type WalterApi = typeof api;
