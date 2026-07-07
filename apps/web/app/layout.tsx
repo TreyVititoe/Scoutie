@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "../components/Footer";
 import "./globals.css";
 
@@ -48,6 +50,8 @@ export default function RootLayout({
       <body className="font-sans bg-page-bg text-ink antialiased">
         {children}
         <Footer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
