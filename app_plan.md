@@ -2,6 +2,8 @@
 
 _Written 2026-07-07. Companion doc: [plan.md](plan.md) (web). Target: public App Store release under the **Praxis** developer team. Android is out of scope (parked in the parking lot)._
 
+**Status 2026-07-07 (same day, executed):** Phases 1, 2, and most of 3 are DONE and pushed (see SESSION_CHANGES.md). EAS project `1950ce6e-c7c7-4dcd-b7fa-8e28e164553d` under account `treyvititoe`; env vars pushed to EAS production+preview. Note `supportsTablet` is now `false` (review-safety call — flip back if iPad matters). Still open: **3.3 device QA** (needs real devices + a fresh `expo prebuild -p ios` since app.json changed), **magic-link end-to-end test on device**, and all of **Phase 4** (listing, TestFlight, submission — needs App Store Connect under Praxis).
+
 ## Current state (survey 2026-07-07)
 
 More is built than earlier notes suggested: Home/Explore rails, Explore grid, destination search modal (Mapbox), Clarify (dates/travelers/lodging/departure), Compare (three tiers), Results (Flights/Stay/Events/Do tabs with add-to-cart), Trip cart with map + packing list, and auth (Apple Sign-In + Supabase magic link). Data comes through `packages/api-client` pointed at the web deployment (`scoutie.vercel.app`). TypeScript strict, clean architecture, no tests.

@@ -2,6 +2,8 @@
 
 _Written 2026-07-07. Companion doc: [app_plan.md](app_plan.md) (iOS app)._
 
+**Status 2026-07-07 (same day, executed):** Phases 1.2–1.4, 2, 4, and 5 are DONE and pushed (see SESSION_CHANGES.md). Still open: **1.1 affiliate program applications** (human signup — Booking.com Partner + Impact/Ticketmaster; IDs then go in `NEXT_PUBLIC_BOOKING_AFFILIATE_ID` / `NEXT_PUBLIC_TM_IMPACT_URL`), **Sentry** (needs an account + DSN), **Vercel Analytics dashboard enablement**, **CSP** (deferred, needs browser verification), and the Playwright smoke test (skipped by preference — CI runs lint + unit tests + build instead).
+
 ## Decisions (locked)
 
 - **Checkout = affiliate handoff.** No real payments, no Stripe, no Duffel. Checkout becomes a booking checklist that deep-links each cart item to its provider with our affiliate tags. Real bookings ("v2" in PURCHASE_AGENT.md) stay parked.
