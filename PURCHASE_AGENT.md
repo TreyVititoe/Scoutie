@@ -18,7 +18,7 @@ checkout pages with the user's card hits, in order: terms-of-service bans on aut
 industrial anti-bot walls (Ticketmaster queues, PerimeterX, CAPTCHAs designed exactly for this),
 checkout flows that change weekly and silently break the agent, and card-not-present fraud flags
 when one IP buys for many users. Airlines litigate this pattern (Southwest v. Kiwi). At any real
-volume Walter gets blocked, then sued.
+volume Walter gets blocked, then sued. 
 
 **3. The money problems are worse than the technical ones.**
 - Holding card numbers to re-enter on third-party sites puts us in full PCI-DSS scope.
