@@ -1,5 +1,12 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import {
+  rateLimit,
+  cleanString,
+  cleanStringArray,
+  clampInt,
+  isReasonableDate,
+} from "@/lib/apiGuard";
 
 export const maxDuration = 30;
 
@@ -47,9 +54,23 @@ Categories must be exactly these six, in this order:
 Keep each category to 5-10 items. Be practical, not exhaustive.`;
 
 export async function POST(req: NextRequest) {
+  const limited = rateLimit(req, { name: "packing", limit: 15 });
+  if (limited) return limited;
+
   try {
-    const body: PackingRequest = await req.json();
-    const { destination, startDate, endDate, activities, pace, travelers } = body;
+    const raw = (await req.json()) as PackingRequest;
+    const destination = cleanString(raw?.destination, 80) ?? "";
+    const { startDate, endDate } = raw ?? {};
+    const activities = cleanStringArray(raw?.activities, 15, 60);
+    const pace = cleanString(raw?.pace, 30) ?? "moderate";
+    const travelers = clampInt(raw?.travelers, 1, 10, 1);
+
+    if (!destination || !isReasonableDate(startDate) || !isReasonableDate(endDate)) {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const nights = Math.round(
       (new Date(endDate).getTime() - new Date(startDate).getTime()) /

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { rateLimit, cleanStringArray } from "@/lib/apiGuard";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -60,10 +61,14 @@ If the user mentioned specific dates or a date range, set startDate and endDate 
 Generate EXACTLY 3 trips. Each should interpret the keywords differently — different destinations, different angles on the same interests.`;
 
 export async function POST(req: NextRequest) {
-  try {
-    const { tags } = await req.json();
+  const limited = rateLimit(req, { name: "quick", limit: 20 });
+  if (limited) return limited;
 
-    if (!tags || !Array.isArray(tags) || tags.length === 0) {
+  try {
+    const body = await req.json();
+    const tags = cleanStringArray(body?.tags, 12, 80);
+
+    if (tags.length === 0) {
       return NextResponse.json({ error: "No tags provided" }, { status: 400 });
     }
 
