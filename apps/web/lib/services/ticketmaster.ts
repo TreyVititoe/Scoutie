@@ -35,6 +35,7 @@ type TMEvent = {
     venues?: {
       name?: string;
       city?: { name?: string };
+      location?: { latitude?: string; longitude?: string };
     }[];
   };
   classifications?: {
@@ -63,6 +64,8 @@ function parseTMEvent(e: TMEvent): ScoutEvent {
     time: e.dates?.start?.localTime ?? null,
     venueName: venue?.name ?? "TBD",
     venueCity: venue?.city?.name ?? "",
+    venueLat: venue?.location?.latitude ? parseFloat(venue.location.latitude) : null,
+    venueLng: venue?.location?.longitude ? parseFloat(venue.location.longitude) : null,
     category:
       (classification?.segment?.name !== "Undefined"
         ? classification?.segment?.name

@@ -300,7 +300,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
   const whoTouched = value.adults + value.children + value.infants + value.pets > 0;
   const whoLabel = (() => {
     if (!whoTouched) return "Add travelers";
-    const travelers = (value.adults || 2) + value.children;
+    const travelers = value.adults + value.children;
     const parts = [`${travelers} ${travelers === 1 ? "traveler" : "travelers"}`];
     if (value.infants > 0) parts.push(`${value.infants} ${value.infants === 1 ? "infant" : "infants"}`);
     if (value.pets > 0) parts.push(`${value.pets} ${value.pets === 1 ? "pet" : "pets"}`);
@@ -831,7 +831,7 @@ function WhenPopover({
                           : isEdge
                             ? "bg-accent text-snow-off-glacier rounded-full font-semibold"
                             : inR
-                              ? "bg-accent/20 text-ink"
+                              ? "bg-accent-tint text-ink font-medium"
                               : "hover:bg-ink/5 rounded-full text-ink"
                       }`}
                     >
@@ -893,8 +893,9 @@ function WhoPopover({
   onChange: (n: SearchValue) => void;
   direction: number;
 }) {
-  // Untouched adults read as the default party of 2; the first tap edits from there.
-  const shownAdults = value.adults <= 0 ? 2 : value.adults;
+  // Starts at 0 so the panel reads as empty until the traveler adds people;
+  // an untouched party still normalizes to 2 adults at search time.
+  const shownAdults = Math.max(0, value.adults);
 
   const rows: {
     key: "adults" | "children" | "infants" | "pets";
@@ -903,7 +904,7 @@ function WhoPopover({
     min: number;
     count: number;
   }[] = [
-    { key: "adults", label: "Adults", sub: "13 or older", min: 1, count: shownAdults },
+    { key: "adults", label: "Adults", sub: "13 or older", min: 0, count: shownAdults },
     { key: "children", label: "Children", sub: "Ages 2 to 12", min: 0, count: value.children },
     { key: "infants", label: "Infants", sub: "Under 2", min: 0, count: value.infants },
     { key: "pets", label: "Pets", sub: "Dogs and cats", min: 0, count: value.pets },

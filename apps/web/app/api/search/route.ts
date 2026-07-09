@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchEventsByVibes, fetchTopEventsInArea } from "@/lib/services/ticketmaster";
 import { scoreAndBucket } from "@/lib/services/scoring";
+import { expandInterests } from "@/lib/services/claude";
 import {
   rateLimit,
   cleanString,
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest) {
     const destination = cleanString(body?.destination, 80);
     const { startDate, endDate } = body ?? {};
     const vibes = cleanStringArray(body?.vibes, 10, 40);
+    const description = cleanString(body?.description, 300);
 
     if (
       !destination ||
@@ -29,13 +31,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const key = cacheKey("events", { destination, startDate, endDate, vibes });
+    const key = cacheKey("events", { destination, startDate, endDate, vibes, description });
     const cached = cacheGet<Record<string, unknown>>(key);
     if (cached) return NextResponse.json(cached);
 
-    // Fetch events from Ticketmaster in parallel — skip Claude expansion to keep it fast
+    /* The free-text "what you love" answer is the strongest interest
+     * signal; expand it into concrete event keywords so "I love comedy
+     * and sports" actually surfaces comedy shows and games. */
+    const expanded =
+      description || vibes.length > 0
+        ? await expandInterests([...vibes, ...(description ? [description] : [])]).catch(
+            () => [] as string[]
+          )
+        : [];
+
     const [vibeEvents, topAreaEvents] = await Promise.all([
-      fetchEventsByVibes(destination, startDate, endDate, vibes, []),
+      fetchEventsByVibes(destination, startDate, endDate, vibes, expanded),
       fetchTopEventsInArea(destination, startDate, endDate),
     ]);
 
@@ -44,7 +55,7 @@ export async function POST(req: NextRequest) {
       vibeEvents,
       topAreaEvents,
       vibes,
-      [],
+      expanded,
       startDate,
       endDate
     );

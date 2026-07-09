@@ -30,11 +30,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /* Fold the free-text "what you love" answer into the interest list
+     * so Walter's picks actually reflect it. */
+    const interests = cleanStringArray(body?.interests, 10, 40);
+    const description = cleanString(body?.description, 300);
+    if (description) interests.push(description);
+
     const result = await generateSuggestions({
       destination,
       startDate,
       endDate,
-      interests: cleanStringArray(body?.interests, 10, 40),
+      interests,
       travelers: clampInt(body?.travelers, 1, 10, 1),
       travelerType: cleanString(body?.travelerType, 30) || "travelers",
     });

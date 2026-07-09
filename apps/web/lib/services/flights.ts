@@ -109,7 +109,7 @@ const CITY_TO_IATA: Record<string, string> = {
 function resolveIATA(input: string): string | null {
   if (!input) return null;
 
-  const trimmed = input.trim();
+  const trimmed = input.trim().replace(/[.\s]+$/, "");
 
   // If it's already a 3-letter uppercase code, use it directly
   if (/^[A-Z]{3}$/.test(trimmed)) return trimmed;

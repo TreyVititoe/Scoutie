@@ -25,6 +25,9 @@ const config: Config = {
         accent: {
           DEFAULT: "oklch(0.65 0.135 263)",
           light: "oklch(0.72 0.11 261)",
+          /* Opacity modifiers (accent/20) don't work on raw OKLCH strings;
+           * tint is the pre-mixed band color for calendar ranges etc. */
+          tint: "oklch(0.65 0.135 263 / 0.16)",
         },
         "accent-dark": "oklch(0.54 0.16 263)",
         "accent-deep": "oklch(0.27 0.10 263)",

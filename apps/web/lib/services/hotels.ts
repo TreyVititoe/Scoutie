@@ -32,6 +32,9 @@ async function getDestinationId(city: string): Promise<string | null> {
     }
   );
 
+  if (res.status === 401 || res.status === 403) {
+    throw new Error("provider-unavailable");
+  }
   if (!res.ok) return null;
   const data = await res.json();
   const first = data?.data?.[0];
@@ -41,14 +44,25 @@ async function getDestinationId(city: string): Promise<string | null> {
 /**
  * Search hotels in a destination.
  */
+export type StayType = "hotel" | "vacation_rental" | "hostel";
+
+/* Booking.com property-type facet ids: 204 hotels, 201 apartments,
+ * 220 holiday homes, 222 villas, 203 hostels. */
+const STAY_TYPE_FILTERS: Record<StayType, string> = {
+  hotel: "property_type::204",
+  vacation_rental: "property_type::220,property_type::201,property_type::222",
+  hostel: "property_type::203",
+};
+
 export async function searchHotels(params: {
   destination: string;
   checkIn: string;
   checkOut: string;
   adults?: number;
   rooms?: number;
+  stayType?: StayType;
 }): Promise<HotelResult[]> {
-  const { destination, checkIn, checkOut, adults = 2, rooms = 1 } = params;
+  const { destination, checkIn, checkOut, adults = 2, rooms = 1, stayType = "hotel" } = params;
 
   const destId = await getDestinationId(destination);
   if (!destId) {
@@ -70,6 +84,7 @@ export async function searchHotels(params: {
   url.searchParams.set("departure_date", checkOut);
   url.searchParams.set("adults", String(adults));
   url.searchParams.set("room_qty", String(rooms));
+  url.searchParams.set("categories_filter", STAY_TYPE_FILTERS[stayType]);
   url.searchParams.set("currency_code", "USD");
   url.searchParams.set("locale", "en-us");
   url.searchParams.set("units", "metric");
@@ -83,6 +98,9 @@ export async function searchHotels(params: {
     },
   });
 
+  if (res.status === 401 || res.status === 403) {
+    throw new Error("provider-unavailable");
+  }
   if (!res.ok) {
     console.error("[hotels] API error:", res.status, await res.text());
     return [];

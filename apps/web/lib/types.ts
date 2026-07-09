@@ -18,6 +18,8 @@ export type ScoutEvent = {
   time: string | null;
   venueName: string;
   venueCity: string;
+  venueLat: number | null;
+  venueLng: number | null;
   category: string;
   url: string;
   priceMin: number | null;

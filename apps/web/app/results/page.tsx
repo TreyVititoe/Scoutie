@@ -25,6 +25,13 @@ const tabs = [
 type TabId = (typeof tabs)[number]["id"];
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 
+const STAY_TYPES = [
+  { id: "hotel", label: "Hotels" },
+  { id: "vacation_rental", label: "Vacation Rentals" },
+  { id: "hostel", label: "Hostels" },
+] as const;
+type StayType = (typeof STAY_TYPES)[number]["id"];
+
 type ChosenTrip = {
   id: string;
   title: string;
@@ -52,6 +59,12 @@ export default function ResultsPage() {
   const [trip, setTrip] = useState<ChosenTrip | null>(null);
   const [pageReady, setPageReady] = useState(false);
   const [fetchKey, setFetchKey] = useState(0);
+  const [stayType, setStayType] = useState<StayType>("hotel");
+  const [hotelsUnavailable, setHotelsUnavailable] = useState(false);
+  /* Lets the main fetch effect read the current stay type without
+   * re-running everything when it changes. */
+  const stayTypeRef = useRef<StayType>("hotel");
+  const stayTypeMounted = useRef(false);
 
   const handleInlineUpdate = (updates: Record<string, unknown>) => {
     const stored = localStorage.getItem("walter_prefs");
@@ -114,6 +127,7 @@ export default function ResultsPage() {
           startDate,
           endDate,
           interests: quizData.activityInterests || quizData.vibes || [],
+          description: quizData.description || "",
           travelers: adults,
           travelerType: quizData.travelersType || quizData.travelerType || "",
         }),
@@ -158,13 +172,14 @@ export default function ResultsPage() {
       fetch("/api/hotels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ destination, checkIn: startDate, checkOut: endDate, adults }),
+        body: JSON.stringify({ destination, checkIn: startDate, checkOut: endDate, adults, stayType: stayTypeRef.current }),
         signal: hotelsController.signal,
       })
         .then((r) => r.json())
         .then((data) => {
           clearTimeout(hotelsTimeout);
           setHotels(data.hotels || []);
+          setHotelsUnavailable(!!data.unavailable);
         })
         .catch((err) => {
           clearTimeout(hotelsTimeout);
@@ -184,6 +199,7 @@ export default function ResultsPage() {
           startDate,
           endDate,
           vibes: quizData.activityInterests || quizData.vibes || [],
+          description: quizData.description || "",
           travelers: adults,
         }),
         signal: eventsController.signal,
@@ -215,6 +231,51 @@ export default function ResultsPage() {
       eventsController.abort();
     };
   }, [router, fetchKey]);
+
+  /* Stay-type switches refetch hotels only; the other searches stand. */
+  useEffect(() => {
+    stayTypeRef.current = stayType;
+    if (!stayTypeMounted.current) {
+      stayTypeMounted.current = true;
+      return;
+    }
+    const p = prefs as Record<string, unknown> | null;
+    const dest =
+      trip?.destination ||
+      (p?.destinations as string[])?.[0] ||
+      (p?.destination as string) ||
+      "";
+    const startDate = (p?.startDate as string) || "";
+    const endDate = (p?.endDate as string) || "";
+    const adults = (p?.travelersCount as number) || (p?.travelers as number) || 1;
+    if (!dest || !startDate || !endDate) return;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    setHotels([]);
+    setHotelsLoading(true);
+    fetch("/api/hotels", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ destination: dest, checkIn: startDate, checkOut: endDate, adults, stayType }),
+      signal: controller.signal,
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setHotels(data.hotels || []);
+        setHotelsUnavailable(!!data.unavailable);
+      })
+      .catch((err) => console.warn("[hotels]", err))
+      .finally(() => {
+        clearTimeout(timeout);
+        setHotelsLoading(false);
+      });
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stayType]);
 
   const destination =
     trip?.destination ||
@@ -271,43 +332,52 @@ export default function ResultsPage() {
         </div>
       </header>
 
-      {/* Hero with destination photograph */}
-      <section className="relative pt-14 min-h-[420px] flex flex-col overflow-hidden">
-        <img
-          src={heroImage}
-          alt={`${destination} landscape`}
-          className="absolute inset-0 w-full h-full object-cover"
-          fetchPriority="high"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-tinted-pitch/55 via-tinted-pitch/30 to-tinted-pitch pointer-events-none" />
-
-        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-content w-full mx-auto px-5 lg:px-8 pt-24 pb-12">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE }}
-            className="text-snow-off-glacier/65 text-[11px] uppercase tracking-[2.5px] font-medium mb-3"
+      {/* Hero: text on the canvas, destination photograph boxed on the right */}
+      <section className="pt-14">
+        <div className="max-w-content w-full mx-auto px-5 lg:px-8 pt-10 pb-4 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 order-2 lg:order-1">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="text-ink-faint text-[11px] uppercase tracking-[2.5px] font-medium mb-3"
+            >
+              {trip
+                ? [trip.destination, tripWindow || `${trip.days} days`].join("  |  ")
+                : tripWindow || "Your trip"}
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, duration: 0.7, ease: EASE }}
+              className="text-ink text-[36px] sm:text-[48px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
+            >
+              {trip?.title || destination}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12, duration: 0.6, ease: EASE }}
+              className="text-ink-soft text-[15px] max-w-[44ch]"
+            >
+              {trip?.summary || "Nothing is booked yet. Add the pieces you want."}
+            </motion.p>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, duration: 0.6, ease: EASE }}
+            className="lg:col-span-5 order-1 lg:order-2"
           >
-            {trip
-              ? [trip.destination, tripWindow || `${trip.days} days`].join("  |  ")
-              : tripWindow || "Your trip"}
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05, duration: 0.7, ease: EASE }}
-            className="text-snow-off-glacier text-[36px] sm:text-[48px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
-          >
-            {trip?.title || destination}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.6, ease: EASE }}
-            className="text-snow-off-glacier/70 text-[15px] max-w-[44ch]"
-          >
-            {trip?.summary || "Nothing is booked yet. Add the pieces you want."}
-          </motion.p>
+            <div className="rounded-[20px] overflow-hidden border border-line shadow-[0_12px_40px_rgba(20,30,60,0.10)] aspect-[4/3]">
+              <img
+                src={heroImage}
+                alt={`${destination} landscape`}
+                className="w-full h-full object-cover"
+                fetchPriority="high"
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -400,7 +470,7 @@ export default function ResultsPage() {
                 if (!hasDates) {
                   return <InlineDatePicker onSubmit={(start, end) => handleInlineUpdate({ startDate: start, endDate: end })} tripDays={(p?.tripDurationDays as number) || 5} />;
                 }
-                return <EmptyState icon="flight_off" message="No flights found. Try different dates or a different departure city." />;
+                return <EmptyState icon="flight_off" message="No flights found. Try different dates, or enter a 3-letter airport code like AUS or JFK as your departure." />;
               })()}
             </motion.section>
           )}
@@ -423,6 +493,22 @@ export default function ResultsPage() {
                 }
               />
 
+              <div className="flex items-center gap-2 mb-6 flex-wrap">
+                {STAY_TYPES.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setStayType(t.id)}
+                    className={`px-4 py-2 rounded-pill text-[13px] font-semibold border transition-colors ${
+                      stayType === t.id
+                        ? "bg-ink text-snow-off-glacier border-ink"
+                        : "border-line text-ink-soft hover:text-ink hover:border-ink/40"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
               {hotelsLoading && <CardSkeletonGrid withImage />}
 
               {!hotelsLoading && hotels.length > 0 && (
@@ -434,6 +520,9 @@ export default function ResultsPage() {
               )}
 
               {!hotelsLoading && hotels.length === 0 && (() => {
+                if (hotelsUnavailable) {
+                  return <EmptyState icon="construction" message="Stay search is down on our end right now, not because the city is booked out. The rest of your trip still works." />;
+                }
                 const p = prefs as Record<string, unknown> | null;
                 const hasDates = !!(p?.startDate && p?.endDate);
                 if (!hasDates) {
@@ -745,8 +834,21 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
             Search
           </button>
         </div>
-        {showSuggestions && suggestions.length > 0 && (
+        {showSuggestions && (suggestions.length > 0 || /^[a-zA-Z]{3}$/.test(query.trim())) && (
           <div className="absolute z-20 left-0 right-0 mt-2 bg-card rounded-[14px] border border-line shadow-[0_12px_40px_rgba(20,30,60,0.12)] overflow-hidden">
+            {/^[a-zA-Z]{3}$/.test(query.trim()) && (
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  onSubmit(query.trim().toUpperCase());
+                  setShowSuggestions(false);
+                }}
+                className="w-full text-left px-4 py-3 text-sm text-ink hover:bg-ink/5 transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-accent text-[18px]">flight_takeoff</span>
+                Use airport code <span className="font-semibold">{query.trim().toUpperCase()}</span>
+              </button>
+            )}
             {suggestions.map((f) => (
               <button
                 key={f.id}

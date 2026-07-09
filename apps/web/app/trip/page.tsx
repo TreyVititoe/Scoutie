@@ -135,8 +135,14 @@ function TripPage() {
           (item.meta?.locationName as string) ||
           (item.meta?.venueName as string) ||
           item.title,
-        locationLat: (item.meta?.locationLat as number) ?? null,
-        locationLng: (item.meta?.locationLng as number) ?? null,
+        locationLat:
+          (item.meta?.locationLat as number) ??
+          (item.meta?.venueLat as number) ??
+          null,
+        locationLng:
+          (item.meta?.locationLng as number) ??
+          (item.meta?.venueLng as number) ??
+          null,
       }));
   }, [items]);
 

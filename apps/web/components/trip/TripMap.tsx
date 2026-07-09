@@ -24,12 +24,18 @@ type TripMapProps = {
 };
 
 /**
- * Geocode a location name via Mapbox to get coordinates.
+ * Geocode a location name via Mapbox, optionally biased toward the trip
+ * destination so venue names don't match same-named places abroad.
  */
-async function geocode(query: string, token: string): Promise<{ lat: number; lng: number } | null> {
+async function geocode(
+  query: string,
+  token: string,
+  proximity?: { lat: number; lng: number } | null
+): Promise<{ lat: number; lng: number } | null> {
   try {
+    const prox = proximity ? `&proximity=${proximity.lng},${proximity.lat}` : "";
     const res = await fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&limit=1`
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&limit=1${prox}`
     );
     if (!res.ok) return null;
     const data = await res.json();
@@ -40,6 +46,25 @@ async function geocode(query: string, token: string): Promise<{ lat: number; lng
     return null;
   }
 }
+
+function distanceKm(
+  a: { lat: number; lng: number },
+  b: { lat: number; lng: number }
+): number {
+  const R = 6371;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((a.lat * Math.PI) / 180) *
+      Math.cos((b.lat * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+/* A pin farther than this from the destination is a mis-geocode
+ * (an Austin trip once pinned an event in Brazil), not a day trip. */
+const MAX_PIN_DISTANCE_KM = 200;
 
 export default function TripMap({ items, destination }: TripMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -59,6 +84,9 @@ export default function TripMap({ items, destination }: TripMapProps) {
       const results: ResolvedItem[] = [];
       const seen = new Set<string>();
 
+      // Anchor everything on the destination itself.
+      const anchor = destination ? await geocode(destination, token!) : null;
+
       for (const item of items) {
         // Skip duplicates
         const key = item.locationName?.toLowerCase() || item.title.toLowerCase();
@@ -77,15 +105,18 @@ export default function TripMap({ items, destination }: TripMapProps) {
           const query = destination
             ? `${item.locationName}, ${destination}`
             : item.locationName;
-          const coords = await geocode(query, token!);
-          if (coords) {
-            results.push({
-              title: item.title,
-              locationName: item.locationName,
-              lat: coords.lat,
-              lng: coords.lng,
-            });
+          const coords = await geocode(query, token!, anchor);
+          if (!coords) continue;
+          if (anchor && distanceKm(coords, anchor) > MAX_PIN_DISTANCE_KM) {
+            // Wrong match somewhere across the globe; better no pin than a lie.
+            continue;
           }
+          results.push({
+            title: item.title,
+            locationName: item.locationName,
+            lat: coords.lat,
+            lng: coords.lng,
+          });
         }
       }
 
