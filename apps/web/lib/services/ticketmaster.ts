@@ -66,11 +66,15 @@ function parseTMEvent(e: TMEvent): ScoutEvent {
     venueCity: venue?.city?.name ?? "",
     venueLat: venue?.location?.latitude ? parseFloat(venue.location.latitude) : null,
     venueLng: venue?.location?.longitude ? parseFloat(venue.location.longitude) : null,
+    /* Genre first ("Comedy", "Volleyball") — the segment ("Arts &
+     * Theatre", "Sports") is too coarse for chips and interest matching. */
     category:
+      (classification?.genre?.name !== "Undefined"
+        ? classification?.genre?.name
+        : null) ??
       (classification?.segment?.name !== "Undefined"
         ? classification?.segment?.name
         : null) ??
-      classification?.genre?.name ??
       "Event",
     url: e.url ?? "#",
     priceMin: e.priceRanges?.[0]?.min ?? null,
