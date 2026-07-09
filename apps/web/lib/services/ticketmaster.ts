@@ -184,6 +184,49 @@ export async function fetchTopEventsInArea(
   }
 }
 
+async function fetchEventsByClassification(
+  startDate: string,
+  endDate: string,
+  classificationName: string,
+  locationParams: Record<string, string>,
+  size = 25
+): Promise<ScoutEvent[]> {
+  const apiKey = process.env.TICKETMASTER_API_KEY;
+  if (!apiKey) return [];
+
+  const params = new URLSearchParams({
+    apikey: apiKey,
+    ...locationParams,
+    classificationName,
+    startDateTime: `${startDate}T00:00:00Z`,
+    endDateTime: `${endDate}T23:59:59Z`,
+    size: String(size),
+    sort: "date,asc",
+  });
+
+  try {
+    const res = await fetch(`${BASE_URL}/events.json?${params}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data._embedded?.events ?? []).map(parseTMEvent);
+  } catch {
+    return [];
+  }
+}
+
+/* Terms like "comedy show" or "MLS soccer" find nothing as name-keyword
+ * searches; route them to Ticketmaster's classification facets instead. */
+function classificationFor(term: string): string | null {
+  const t = term.toLowerCase();
+  if (/comedy|stand[- ]?up/.test(t)) return "Comedy";
+  if (/sport|soccer|football|baseball|basketball|hockey|mls|nba|nfl|mlb|nhl/.test(t)) return "Sports";
+  if (/music|concert|band|dj|rave/.test(t)) return "Music";
+  if (/theat|broadway|opera|ballet|dance/.test(t)) return "Arts & Theatre";
+  if (/film|movie|cinema/.test(t)) return "Film";
+  if (/family|kids/.test(t)) return "Family";
+  return null;
+}
+
 export async function fetchEventsByVibes(
   destination: string,
   startDate: string,
@@ -192,32 +235,44 @@ export async function fetchEventsByVibes(
   expandedInterests: string[]
 ): Promise<ScoutEvent[]> {
   const allKeywords = new Set<string>();
+  const classifications = new Set<string>();
+
+  const route = (term: string) => {
+    const cls = classificationFor(term);
+    if (cls) classifications.add(cls);
+    // A bare category name adds nothing as a name-keyword search.
+    if (!cls || cls.toLowerCase() !== term.toLowerCase()) allKeywords.add(term);
+  };
 
   for (const vibe of vibes) {
-    const mapped = VIBE_TO_TM_KEYWORDS[vibe.toLowerCase()] ?? [];
-    mapped.forEach((k) => allKeywords.add(k));
+    const mapped = VIBE_TO_TM_KEYWORDS[vibe.toLowerCase()];
+    if (mapped) mapped.forEach((k) => route(k));
+    else route(vibe);
   }
 
   for (const interest of expandedInterests) {
-    allKeywords.add(interest);
+    route(interest);
   }
 
-  if (allKeywords.size === 0) {
-    // No specific vibes — just search for general events
-    allKeywords.add("Music");
-    allKeywords.add("Sports");
+  if (allKeywords.size === 0 && classifications.size === 0) {
+    // No specific vibes — just search the big categories
+    classifications.add("Music");
+    classifications.add("Sports");
   }
 
-  // Geocode once, reuse for all keyword searches
+  // Geocode once, reuse for all searches
   const locationParams = await buildLocationParams(destination);
 
-  // Fetch in parallel for top keyword groups
   const keywordList = Array.from(allKeywords).slice(0, 6);
-  const results = await Promise.all(
-    keywordList.map((kw) =>
+  const classificationList = Array.from(classifications).slice(0, 4);
+  const results = await Promise.all([
+    ...keywordList.map((kw) =>
       fetchEventsByKeyword(destination, startDate, endDate, kw, locationParams, 25)
-    )
-  );
+    ),
+    ...classificationList.map((cls) =>
+      fetchEventsByClassification(startDate, endDate, cls, locationParams, 25)
+    ),
+  ]);
 
   // Deduplicate by event id
   const seen = new Set<string>();

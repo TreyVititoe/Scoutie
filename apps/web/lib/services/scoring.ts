@@ -29,7 +29,13 @@ function interestScore(event: ScoutEvent, vibes: string[], expandedInterests: st
   }
 
   for (const interest of expandedInterests) {
-    if (eventText.includes(interest.toLowerCase())) score += 0.15;
+    const t = interest.toLowerCase();
+    if (eventText.includes(t)) {
+      score += 0.15;
+    } else if (t.split(/\s+/).some((w) => w.length > 3 && eventText.includes(w))) {
+      // "comedy show" should still credit an event categorized "Comedy"
+      score += 0.1;
+    }
   }
 
   return Math.min(score, 1.0);
@@ -46,7 +52,11 @@ function matchReason(event: ScoutEvent, vibes: string[], expandedInterests: stri
   }
 
   for (const interest of expandedInterests) {
-    if (eventText.includes(interest.toLowerCase())) {
+    const t = interest.toLowerCase();
+    if (
+      eventText.includes(t) ||
+      t.split(/\s+/).some((w) => w.length > 3 && eventText.includes(w))
+    ) {
       return `Related to your interests`;
     }
   }
