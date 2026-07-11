@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Source_Serif_4 } from "next/font/google";
+import { Fraunces } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "../components/Footer";
 import "./globals.css";
 
-const sourceSerif = Source_Serif_4({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-source-serif",
+  variable: "--font-serif-brand",
 });
 
 const SITE_URL =
@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={sourceSerif.variable}>
+    <html lang="en" className={fraunces.variable}>
       <head>
         <link
           rel="stylesheet"

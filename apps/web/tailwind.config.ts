@@ -55,7 +55,7 @@ const config: Config = {
       fontFamily: {
         /* "sans" stays the utility name so nothing needs a sweep; the
          * face behind it is now the sitewide serif. */
-        sans: ["var(--font-source-serif)", "Georgia", "serif"],
+        sans: ["var(--font-serif-brand)", "Georgia", "serif"],
       },
       borderRadius: {
         DEFAULT: "14px",

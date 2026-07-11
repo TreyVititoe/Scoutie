@@ -830,7 +830,7 @@ function WhenPopover({
                         key={i}
                         type="button"
                         disabled
-                        className="relative h-10 text-[13px] text-ink/25 line-through cursor-not-allowed"
+                        className="relative h-10 text-[13px] cursor-not-allowed text-ink/45 line-through decoration-[1.5px] decoration-ink/45 bg-ink/[0.04]"
                       >
                         {cell.getDate()}
                       </button>
