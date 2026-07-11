@@ -123,7 +123,7 @@ The visual character borrows from Patagonia (wild, sincere, indifferent to fashi
 - Paper-bright, cool-tinted canvas; ink for words; cornflower as the only voice.
 - Real photography, never illustration, on any surface that has room for an image. Dark chrome (Tinted Pitch) exists only on top of photographs.
 - Tonal layering for depth; shadow only on the SearchBar and popovers as a structural cue, always soft slate-blue, never grey-black.
-- Geist Sans throughout; one type family, sharp scale ratios.
+- Source Serif 4 throughout; one serif family, sharp scale ratios.
 - Confidence in motion: exponential ease, never bounce, never announce.
 
 **The Field Cinematographer Rule.** If a screen would still make the user want to go after the copy was removed, it's working. If the copy is doing the lifting, the imagery is too weak or the layout is too busy.
@@ -166,11 +166,11 @@ A daylight palette: near-white paper tinted cool, deep slate-blue ink, and a sin
 
 ## 3. Typography
 
-**Display Font:** Geist Sans (with system-ui, sans-serif fallback)
-**Body Font:** Geist Sans (single-family system)
-**Label/Mono Font:** Geist Sans, weight 500, tracking widened for uppercase eyebrows. No mono in the system.
+**Display Font:** Source Serif 4 (with Georgia, serif fallback)
+**Body Font:** Source Serif 4 (single-family system)
+**Label/Mono Font:** Source Serif 4, weight 500, tracking widened for uppercase eyebrows. No mono in the system.
 
-**Character:** Geist is the only voice. It is geometric without being cold, modern without being trend-locked, and its semibold weight at display sizes carries the cinematic confidence Walter wants. Single-family makes the brand discipline visible: there is no second voice because Walter has only one thing to say.
+**Character:** Source Serif 4 is the only voice. It is literary without being stuffy, warm without losing precision, and its semibold weight at display sizes carries the cinematic confidence Walter wants. Single-family makes the brand discipline visible: there is no second voice because Walter has only one thing to say.
 
 ### Hierarchy
 

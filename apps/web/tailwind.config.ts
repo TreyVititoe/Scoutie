@@ -53,7 +53,9 @@ const config: Config = {
         "reykjavik-sky": "oklch(0.72 0.11 261)",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        /* "sans" stays the utility name so nothing needs a sweep; the
+         * face behind it is now the sitewide serif. */
+        sans: ["var(--font-source-serif)", "Georgia", "serif"],
       },
       borderRadius: {
         DEFAULT: "14px",

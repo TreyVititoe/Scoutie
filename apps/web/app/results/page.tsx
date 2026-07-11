@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { LineWobble } from "ldrs/react";
+import "ldrs/react/LineWobble.css";
 import Link from "next/link";
 import FlightCard from "@/components/results/FlightCard";
 import HotelCard from "@/components/results/HotelCard";
@@ -450,7 +452,20 @@ export default function ResultsPage() {
                 }
               />
 
-              {flightsLoading && <CardSkeletonGrid />}
+              {flightsLoading && (
+                <div className="flex flex-col items-center justify-center py-20 gap-5">
+                  <LineWobble
+                    size="220"
+                    stroke="5"
+                    bgOpacity="0.12"
+                    speed="1.75"
+                    color="#5B8DEF"
+                  />
+                  <p className="text-ink-soft text-sm">
+                    Searching real flights — this usually takes 10 to 20 seconds.
+                  </p>
+                </div>
+              )}
 
               {!flightsLoading && flights.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -819,23 +819,51 @@ function WhenPopover({
                   const isEnd = endDate && isSameDay(cell, endDate);
                   const inR = inRange(cell);
                   const isEdge = isStart || isEnd;
+                  /* The tinted band runs edge-to-edge between the two
+                   * endpoints and tucks halfway under each end cap. */
+                  const hasRange = Boolean(
+                    startDate && endDate && !isSameDay(startDate, endDate)
+                  );
+                  if (past) {
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        disabled
+                        className="relative h-10 text-[13px] text-ink/25 line-through cursor-not-allowed"
+                      >
+                        {cell.getDate()}
+                      </button>
+                    );
+                  }
                   return (
                     <button
                       key={i}
                       type="button"
-                      disabled={past}
                       onClick={() => selectDate(cell)}
-                      className={`relative h-10 text-[13px] transition-colors ${
-                        past
-                          ? "text-ink/20 cursor-not-allowed"
-                          : isEdge
-                            ? "bg-accent text-snow-off-glacier rounded-full font-semibold"
-                            : inR
-                              ? "bg-accent-tint text-ink font-medium"
-                              : "hover:bg-ink/5 rounded-full text-ink"
+                      className={`relative h-10 text-[13px] text-ink transition-colors ${
+                        !isEdge && inR
+                          ? "bg-accent-tint font-medium"
+                          : !isEdge
+                            ? "hover:bg-ink/5 rounded-full"
+                            : ""
                       }`}
                     >
-                      {cell.getDate()}
+                      {isEdge && hasRange && (
+                        <span
+                          aria-hidden
+                          className={`absolute inset-y-0 bg-accent-tint ${
+                            isStart ? "left-1/2 right-0" : "left-0 right-1/2"
+                          }`}
+                        />
+                      )}
+                      {isEdge ? (
+                        <span className="absolute inset-0 z-10 flex items-center justify-center bg-accent text-snow-off-glacier rounded-full font-semibold">
+                          {cell.getDate()}
+                        </span>
+                      ) : (
+                        cell.getDate()
+                      )}
                     </button>
                   );
                 })}

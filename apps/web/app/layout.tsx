@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
+import { Source_Serif_4 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "../components/Footer";
 import "./globals.css";
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
+});
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://scoutie.vercel.app";
@@ -40,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={GeistSans.variable}>
+    <html lang="en" className={sourceSerif.variable}>
       <head>
         <link
           rel="stylesheet"
