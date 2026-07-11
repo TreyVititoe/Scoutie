@@ -12,6 +12,11 @@ export async function POST(req: NextRequest) {
     const parsed = await readJsonCapped(req);
     if ("errorResponse" in parsed) return parsed.errorResponse;
     const quizData = parsed.body as Parameters<typeof generateCompareTrips>[0];
+    /* A chosen destination means three takes on THAT place; only a truly
+     * empty search is "surprise me" with three different cities. */
+    if (!quizData.destinations?.length && quizData.destination) {
+      quizData.destinations = [quizData.destination];
+    }
     const result = (await generateCompareTrips(quizData)) as {
       trips?: Record<string, unknown>[];
     };
