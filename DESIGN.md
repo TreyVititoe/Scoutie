@@ -123,7 +123,7 @@ The visual character borrows from Patagonia (wild, sincere, indifferent to fashi
 - Paper-bright, cool-tinted canvas; ink for words; cornflower as the only voice.
 - Real photography, never illustration, on any surface that has room for an image. Dark chrome (Tinted Pitch) exists only on top of photographs.
 - Tonal layering for depth; shadow only on the SearchBar and popovers as a structural cue, always soft slate-blue, never grey-black.
-- Fraunces throughout; one serif family, sharp scale ratios.
+- System sans throughout (SF Pro on Apple devices); one family, sharp scale ratios.
 - Confidence in motion: exponential ease, never bounce, never announce.
 
 **The Field Cinematographer Rule.** If a screen would still make the user want to go after the copy was removed, it's working. If the copy is doing the lifting, the imagery is too weak or the layout is too busy.
@@ -166,11 +166,11 @@ A daylight palette: near-white paper tinted cool, deep slate-blue ink, and a sin
 
 ## 3. Typography
 
-**Display Font:** Fraunces (with Georgia, serif fallback)
-**Body Font:** Fraunces (single-family system)
-**Label/Mono Font:** Fraunces, weight 500, tracking widened for uppercase eyebrows. No mono in the system.
+**Display Font:** System sans stack (SF Pro on Apple devices)
+**Body Font:** System sans stack (single-family system)
+**Label/Mono Font:** System sans stack, weight 500, tracking widened for uppercase eyebrows. No mono in the system.
 
-**Character:** Fraunces is the only voice. It is expressive without being precious, old-world warm with a modern edge, and its semibold weight at display sizes carries the cinematic confidence Walter wants. Single-family makes the brand discipline visible: there is no second voice because Walter has only one thing to say.
+**Character:** The platform's own type is the only voice - the same SF Pro the native app wears. It is native without being anonymous, quick to render, and its semibold weight at display sizes carries the cinematic confidence Walter wants. Single-family makes the brand discipline visible: there is no second voice because Walter has only one thing to say.
 
 ### Hierarchy
 

@@ -5,7 +5,13 @@ import { SymbolView } from "expo-symbols";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { LineWobble } from "../../components/LineWobble";
+import { PlaneLoader } from "../../components/PlaneLoader";
+import {
+  EventCard,
+  FlightCard,
+  HotelCard,
+  SuggestionCard,
+} from "../../components/results/ResultCards";
 import { SegmentedControl } from "../../components/SegmentedControl";
 import { SkeletonListItem } from "../../components/Skeleton";
 import { api } from "../../lib/apiClient";
@@ -15,10 +21,18 @@ import { colors } from "../../theme/colors";
 
 type Section = "flights" | "stay" | "events" | "do";
 
+const STAY_TYPES = [
+  { id: "hotel", label: "Hotels" },
+  { id: "vacation_rental", label: "Vacation Rentals" },
+  { id: "hostel", label: "Hostels" },
+] as const;
+type StayType = (typeof STAY_TYPES)[number]["id"];
+
 export default function ResultsScreen() {
   const prefs = usePrefs((s) => s.prefs);
   const cart = useTripCart();
   const [section, setSection] = useState<Section>("flights");
+  const [stayType, setStayType] = useState<StayType>("hotel");
 
   const flights = useQuery({
     queryKey: ["flights", prefs],
@@ -34,13 +48,14 @@ export default function ResultsScreen() {
   });
 
   const hotels = useQuery({
-    queryKey: ["hotels", prefs],
+    queryKey: ["hotels", prefs, stayType],
     queryFn: () =>
       api.hotels.search({
         destination: prefs.destination ?? "",
         checkIn: prefs.startDate ?? "",
         checkOut: prefs.endDate ?? "",
         adults: prefs.travelers ?? 2,
+        stayType,
       }),
     enabled: section === "stay" || !!prefs.destination,
   });
@@ -80,14 +95,15 @@ export default function ResultsScreen() {
       if (flights.isLoading) return <Loading label="Searching flights…" />;
       const f = flights.data?.flights ?? [];
       if (!f.length) return <Empty icon="airplane" label="No flights found." />;
+      const cheapest = f.reduce((a, b) => (a.price < b.price ? a : b));
       return f.map((flight) => (
-        <ListItem
+        <FlightCard
           key={flight.id}
-          title={`${flight.airline} ${flight.flightNumber}`}
-          subtitle={`${flight.departureCity} → ${flight.arrivalCity} · ${flight.duration} · ${flight.stops} stops`}
-          price={flight.price}
-          inCart={cart.has(flight.id)}
-          onAdd={() => {
+          flight={flight}
+          cheapest={flight.id === cheapest.id}
+          added={cart.has(flight.id)}
+          onToggle={() => {
+            if (cart.has(flight.id)) return cart.remove(flight.id);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             cart.add({
               id: flight.id,
@@ -103,30 +119,75 @@ export default function ResultsScreen() {
       ));
     }
     if (section === "stay") {
-      if (hotels.isLoading) return <Loading label="Searching hotels…" />;
+      const pills = (
+        <View className="flex-row gap-2 mb-4 flex-wrap">
+          {STAY_TYPES.map((t) => (
+            <Pressable
+              key={t.id}
+              onPress={() => setStayType(t.id)}
+              className="px-3.5 py-2 rounded-full border"
+              style={{
+                backgroundColor: stayType === t.id ? colors.text : "transparent",
+                borderColor:
+                  stayType === t.id ? colors.text : colors.hairlineStrong,
+              }}
+            >
+              <Text
+                className="text-[13px] font-semibold"
+                style={{ color: stayType === t.id ? "white" : colors.textSecondary }}
+              >
+                {t.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      );
+      if (hotels.isLoading)
+        return (
+          <View>
+            {pills}
+            <Loading label="Searching stays…" />
+          </View>
+        );
       const h = hotels.data?.hotels ?? [];
-      if (!h.length) return <Empty icon="bed.double" label="No hotels found." />;
-      return h.map((hotel) => (
-        <ListItem
-          key={hotel.id}
-          title={hotel.name}
-          subtitle={`${hotel.rating.toFixed(1)} · ${hotel.reviewCount.toLocaleString()} reviews`}
-          price={hotel.totalPrice}
-          inCart={cart.has(hotel.id)}
-          onAdd={() => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            cart.add({
-              id: hotel.id,
-              type: "hotel",
-              title: hotel.name,
-              subtitle: hotel.address,
-              price: hotel.totalPrice,
-              bookingUrl: hotel.bookingUrl ?? null,
-              provider: "Booking.com",
-            });
-          }}
-        />
-      ));
+      const bestValue = h.length
+        ? h.reduce((a, b) =>
+            a.rating / (a.pricePerNight || 1) > b.rating / (b.pricePerNight || 1)
+              ? a
+              : b
+          )
+        : null;
+      return (
+        <View>
+          {pills}
+          {!h.length ? (
+            <Empty icon="bed.double" label="No stays found for this type." />
+          ) : (
+            h.map((hotel) => (
+              <HotelCard
+                key={hotel.id}
+                hotel={hotel}
+                bestValue={hotel.id === bestValue?.id}
+                added={cart.has(hotel.id)}
+                onToggle={() => {
+                  if (cart.has(hotel.id)) return cart.remove(hotel.id);
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  cart.add({
+                    id: hotel.id,
+                    type: "hotel",
+                    title: hotel.name,
+                    subtitle: hotel.address,
+                    price: hotel.totalPrice,
+                    image: hotel.image,
+                    bookingUrl: hotel.bookingUrl ?? null,
+                    provider: "Booking.com",
+                  });
+                }}
+              />
+            ))
+          )}
+        </View>
+      );
     }
     if (section === "events") {
       if (events.isLoading) return <Loading label="Searching events…" />;
@@ -137,13 +198,12 @@ export default function ResultsScreen() {
       ];
       if (!all.length) return <Empty icon="ticket" label="No events found." />;
       return all.map((e) => (
-        <ListItem
+        <EventCard
           key={e.id}
-          title={e.name}
-          subtitle={`${e.venueName} · ${e.date}`}
-          price={e.priceMin ?? 0}
-          inCart={cart.has(e.id)}
-          onAdd={() => {
+          event={e}
+          added={cart.has(e.id)}
+          onToggle={() => {
+            if (cart.has(e.id)) return cart.remove(e.id);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             cart.add({
               id: e.id,
@@ -154,6 +214,7 @@ export default function ResultsScreen() {
               image: e.image,
               bookingUrl: e.url ?? null,
               provider: "Ticketmaster",
+              meta: { venueLat: e.venueLat ?? null, venueLng: e.venueLng ?? null },
             });
           }}
         />
@@ -166,13 +227,12 @@ export default function ResultsScreen() {
       if (!s.length)
         return <Empty icon="lightbulb" label="No suggestions yet." />;
       return s.map((sug) => (
-        <ListItem
+        <SuggestionCard
           key={sug.id}
-          title={sug.title}
-          subtitle={`${sug.locationName} · ${sug.bestTime}`}
-          price={sug.estimatedCost ?? 0}
-          inCart={cart.has(sug.id)}
-          onAdd={() => {
+          suggestion={sug}
+          added={cart.has(sug.id)}
+          onToggle={() => {
+            if (cart.has(sug.id)) return cart.remove(sug.id);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             cart.add({
               id: sug.id,
@@ -180,13 +240,17 @@ export default function ResultsScreen() {
               title: sug.title,
               subtitle: sug.locationName,
               price: sug.estimatedCost ?? 0,
+              bookingUrl: `https://www.google.com/search?q=${encodeURIComponent(
+                sug.bookingSearchQuery || `${sug.title} ${sug.locationName}`
+              )}`,
+              provider: "the web",
             });
           }}
         />
       ));
     }
     return null;
-  }, [section, flights, hotels, events, suggestions, cart]);
+  }, [section, flights, hotels, events, suggestions, cart, stayType]);
 
   return (
     <View className="flex-1 bg-page-bg">
@@ -243,7 +307,7 @@ function Loading({ label }: { label: string }) {
   return (
     <View>
       <View className="items-center py-5">
-        <LineWobble />
+        <PlaneLoader />
       </View>
       <Text className="text-ink-soft text-[12px] mb-3 text-center">{label}</Text>
       <SkeletonListItem />
@@ -268,53 +332,3 @@ function Empty({ icon, label }: { icon: string; label: string }) {
   );
 }
 
-function ListItem({
-  title,
-  subtitle,
-  price,
-  inCart,
-  onAdd,
-}: {
-  title: string;
-  subtitle: string;
-  price: number;
-  inCart: boolean;
-  onAdd: () => void;
-}) {
-  return (
-    <View className="bg-card rounded-2xl p-4 mb-3 border border-line">
-      <Text className="text-ink text-[15px] font-semibold" numberOfLines={1}>
-        {title}
-      </Text>
-      <Text className="text-ink-soft text-[12px] mt-1" numberOfLines={2}>
-        {subtitle}
-      </Text>
-      <View className="flex-row items-center justify-between mt-3">
-        <Text className="text-ink text-[16px] font-bold">
-          ${price.toLocaleString()}
-        </Text>
-        <Pressable
-          onPress={onAdd}
-          disabled={inCart}
-          className="px-4 py-2 rounded-full flex-row items-center gap-1.5"
-          style={{
-            backgroundColor: inCart ? colors.surface2 : colors.accent,
-          }}
-        >
-          <SymbolView
-            name={inCart ? "checkmark" : "plus"}
-            tintColor={inCart ? colors.textSecondary : "white"}
-            size={12}
-            fallback={null}
-          />
-          <Text
-            className="text-[13px] font-semibold"
-            style={{ color: inCart ? colors.textSecondary : "white" }}
-          >
-            {inCart ? "Added" : "Add"}
-          </Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-}

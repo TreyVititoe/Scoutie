@@ -11,7 +11,6 @@ import { colors } from "../theme/colors";
 
 const ACCOMMODATIONS = [
   { id: "hotel", label: "Hotel", icon: "bed.double.fill", hint: "Reliable, full-service" },
-  { id: "boutique", label: "Boutique", icon: "sparkles", hint: "Small, designed, local" },
   { id: "rental", label: "Rental", icon: "house.fill", hint: "Whole place, kitchen" },
   { id: "hostel", label: "Hostel", icon: "person.2.fill", hint: "Cheap, social" },
   { id: "surprise", label: "Surprise me", icon: "questionmark", hint: "Walter picks" },

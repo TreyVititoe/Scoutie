@@ -54,6 +54,7 @@ export type HotelSearchInput = {
   checkOut: string;
   adults?: number;
   rooms?: number;
+  stayType?: "hotel" | "vacation_rental" | "hostel";
 };
 
 export type EventSearchInput = {

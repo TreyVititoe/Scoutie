@@ -53,9 +53,17 @@ const config: Config = {
         "reykjavik-sky": "oklch(0.72 0.11 261)",
       },
       fontFamily: {
-        /* "sans" stays the utility name so nothing needs a sweep; the
-         * face behind it is now the sitewide serif. */
-        sans: ["var(--font-serif-brand)", "Georgia", "serif"],
+        /* System stack: SF Pro on Apple devices, matching the native
+         * app's typography exactly. */
+        sans: [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
       },
       borderRadius: {
         DEFAULT: "14px",

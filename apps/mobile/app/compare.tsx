@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { LineWobble } from "../components/LineWobble";
+import { PlaneLoader } from "../components/PlaneLoader";
 import { SkeletonCard } from "../components/Skeleton";
 import { api } from "../lib/apiClient";
 import { usePrefs } from "../lib/stores/walterPrefsStore";
@@ -40,7 +40,7 @@ export default function CompareScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
       >
         <View className="items-center py-5">
-          <LineWobble />
+          <PlaneLoader />
         </View>
         <Text className="text-ink-soft text-[13px] mb-5 leading-5 text-center">
           Walter is scouting three angles on {prefs.destination ?? "your trip"}…

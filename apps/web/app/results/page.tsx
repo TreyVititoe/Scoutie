@@ -3,8 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LineWobble } from "ldrs/react";
-import "ldrs/react/LineWobble.css";
+import PlaneLoader from "@/components/PlaneLoader";
 import Link from "next/link";
 import FlightCard from "@/components/results/FlightCard";
 import HotelCard from "@/components/results/HotelCard";
@@ -454,13 +453,7 @@ export default function ResultsPage() {
 
               {flightsLoading && (
                 <div className="flex flex-col items-center justify-center py-20 gap-5">
-                  <LineWobble
-                    size="220"
-                    stroke="5"
-                    bgOpacity="0.12"
-                    speed="1.75"
-                    color="#5B8DEF"
-                  />
+                  <PlaneLoader />
                   <p className="text-ink-soft text-sm">
                     Searching real flights — this usually takes 10 to 20 seconds.
                   </p>

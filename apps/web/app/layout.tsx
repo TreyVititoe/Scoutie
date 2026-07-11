@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Fraunces } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "../components/Footer";
 import "./globals.css";
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-serif-brand",
-});
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://scoutie.vercel.app";
@@ -45,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={fraunces.variable}>
+    <html lang="en">
       <head>
         <link
           rel="stylesheet"
