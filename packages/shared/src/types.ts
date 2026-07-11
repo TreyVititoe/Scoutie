@@ -13,6 +13,8 @@ export type TripPrefs = {
   devotion?: "casual" | "balanced" | "ambitious";
   departureCity?: string;
   departureAirportCode?: string;
+  /** Free-text "what you love" answer; strongest interest signal. */
+  description?: string;
 };
 
 export type ScoutEvent = {

@@ -1,7 +1,6 @@
-import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { colors } from "../../theme/colors";
 
@@ -27,22 +26,10 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.textTertiary,
         tabBarStyle: {
-          position: Platform.OS === "ios" ? "absolute" : "relative",
           borderTopWidth: StyleSheet.hairlineWidth,
           borderTopColor: colors.hairline,
-          backgroundColor:
-            Platform.OS === "ios" ? "transparent" : colors.pageBg,
+          backgroundColor: colors.surface1,
         },
-        tabBarBackground:
-          Platform.OS === "ios"
-            ? () => (
-                <BlurView
-                  tint="light"
-                  intensity={80}
-                  style={StyleSheet.absoluteFill}
-                />
-              )
-            : undefined,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: "500",

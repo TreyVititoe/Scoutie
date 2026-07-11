@@ -84,6 +84,9 @@ export function TripCard({ trip, onPress, width = 168 }: Props) {
         {trip.title}
       </Text>
       <Text className="text-ink-soft text-[13px] mt-0.5" numberOfLines={1}>
+        {trip.destination}
+      </Text>
+      <Text className="text-ink-faint text-[13px] mt-0.5" numberOfLines={1}>
         From ${trip.totalCost.toLocaleString()} · {trip.durationDays} days
       </Text>
     </Pressable>

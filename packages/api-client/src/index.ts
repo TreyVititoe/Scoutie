@@ -61,6 +61,8 @@ export type EventSearchInput = {
   startDate: string;
   endDate: string;
   vibes?: string[];
+  /** Free-text "what you love" answer; expanded into event keywords. */
+  description?: string;
 };
 
 export type SuggestionInput = {
@@ -70,6 +72,8 @@ export type SuggestionInput = {
   interests?: string[];
   travelers?: number;
   travelerType?: string;
+  /** Free-text "what you love" answer; folded into the interests. */
+  description?: string;
 };
 
 export type CompareInput = TripPrefs;
@@ -77,6 +81,7 @@ export type CompareInput = TripPrefs;
 export type CompareTripTier = {
   tier: "comfortable" | "balanced" | "ambitious";
   title: string;
+  destination: string;
   summary: string;
   totalCost: number;
   highlights: string[];

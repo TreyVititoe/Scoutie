@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { LineWobble } from "../components/LineWobble";
 import { SkeletonCard } from "../components/Skeleton";
 import { api } from "../lib/apiClient";
 import { usePrefs } from "../lib/stores/walterPrefsStore";
@@ -25,6 +26,7 @@ export default function CompareScreen() {
         budgetType: prefs.budgetType ?? "total",
         vibes: prefs.vibes ?? [],
         stay: prefs.stay ?? [],
+        description: prefs.description ?? "",
       }),
     enabled: !!prefs.destination,
     staleTime: 5 * 60_000,
@@ -37,7 +39,10 @@ export default function CompareScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
       >
-        <Text className="text-ink-soft text-[13px] mb-5 leading-5">
+        <View className="items-center py-5">
+          <LineWobble />
+        </View>
+        <Text className="text-ink-soft text-[13px] mb-5 leading-5 text-center">
           Walter is scouting three angles on {prefs.destination ?? "your trip"}…
         </Text>
         <SkeletonCard />
@@ -86,26 +91,29 @@ export default function CompareScreen() {
         the rest.
       </Text>
 
-      {data?.trips.map((tier) => (
+      {(data?.trips ?? []).map((tier, i) => (
         <Pressable
-          key={tier.tier}
+          key={`${tier.tier}-${i}`}
           onPress={() => {
             usePrefs.getState().patch({
+              destination: tier.destination || prefs.destination,
               devotion:
                 tier.tier === "ambitious"
                   ? "ambitious"
                   : tier.tier === "comfortable"
                   ? "casual"
                   : "balanced",
-              budget: tier.totalCost,
+              budget: tier.totalCost ?? 0,
             });
             router.push("/results");
           }}
           className="bg-card rounded-3xl overflow-hidden border border-line mb-4"
         >
-          {tier.image ? (
+          {tier.image || tier.destination ? (
             <Image
-              source={{ uri: tier.image }}
+              source={{
+                uri: tier.image ?? api.photo.url(tier.destination),
+              }}
               contentFit="cover"
               style={{ width: "100%", height: 160 }}
             />
@@ -129,12 +137,25 @@ export default function CompareScreen() {
             <Text className="text-ink text-[22px] font-bold tracking-tight mt-1">
               {tier.title}
             </Text>
+            {tier.destination ? (
+              <View className="flex-row items-center gap-1 mt-1">
+                <SymbolView
+                  name="mappin"
+                  tintColor={colors.textSecondary}
+                  size={12}
+                  fallback={null}
+                />
+                <Text className="text-ink-soft text-[13px] font-medium">
+                  {tier.destination}
+                </Text>
+              </View>
+            ) : null}
             <Text className="text-ink-soft text-[14px] mt-2 leading-5">
               {tier.summary}
             </Text>
             <View className="mt-4 flex-row items-center justify-between">
               <Text className="text-ink text-[18px] font-bold">
-                ${tier.totalCost.toLocaleString()}
+                ${(tier.totalCost ?? 0).toLocaleString()}
               </Text>
               <View
                 className="px-3.5 py-2 rounded-full flex-row items-center gap-1.5"

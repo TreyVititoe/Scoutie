@@ -50,6 +50,7 @@ type QuizData = {
   activityInterests?: string[];
   destination?: string;
   destinationHint?: string;
+  description?: string;
   travelers?: number;
   budget?: number;
   vibes?: string[];
@@ -410,7 +411,7 @@ TRAVELERS: ${travelers} ${travelerType}${quizData.childrenCount ? ` + ${quizData
 BUDGET: $${budget.toLocaleString()} ${quizData.budgetMode === "per_day" ? "per day" : "total"}
 FLIGHT CLASS: ${quizData.flightClass || "economy"}
 ACCOMMODATION: ${accommodationTypes}
-INTERESTS: ${interests}
+INTERESTS: ${interests}${quizData.description ? `\nIN THEIR OWN WORDS: "${quizData.description}" — weight this heavily when picking destinations and activities.` : ""}
 
 Generate ${isSurprise || destinations.length <= 1 ? "3" : destinations.length} complete trip itineraries as JSON. Each trip should have a different destination${destinations.length === 1 ? " theme or time period" : ""}. Include estimated flight cost and hotel cost per night for comparison. The summary should explain WHY this destination is perfect for this specific traveler.`;
 

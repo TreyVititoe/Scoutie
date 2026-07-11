@@ -5,6 +5,7 @@ import { SymbolView } from "expo-symbols";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { LineWobble } from "../../components/LineWobble";
 import { SegmentedControl } from "../../components/SegmentedControl";
 import { SkeletonListItem } from "../../components/Skeleton";
 import { api } from "../../lib/apiClient";
@@ -52,6 +53,7 @@ export default function ResultsScreen() {
         startDate: prefs.startDate ?? "",
         endDate: prefs.endDate ?? "",
         vibes: prefs.vibes ?? [],
+        description: prefs.description ?? "",
       }),
     enabled: section === "events" || !!prefs.destination,
   });
@@ -66,6 +68,7 @@ export default function ResultsScreen() {
         interests: prefs.vibes ?? [],
         travelers: prefs.travelers ?? 2,
         travelerType: prefs.travelersType ?? "couple",
+        description: prefs.description ?? "",
       }),
     enabled: section === "do",
   });
@@ -239,7 +242,10 @@ export default function ResultsScreen() {
 function Loading({ label }: { label: string }) {
   return (
     <View>
-      <Text className="text-ink-soft text-[12px] mb-3 mt-1">{label}</Text>
+      <View className="items-center py-5">
+        <LineWobble />
+      </View>
+      <Text className="text-ink-soft text-[12px] mb-3 text-center">{label}</Text>
       <SkeletonListItem />
       <SkeletonListItem />
       <SkeletonListItem />

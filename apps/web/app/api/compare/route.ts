@@ -12,8 +12,28 @@ export async function POST(req: NextRequest) {
     const parsed = await readJsonCapped(req);
     if ("errorResponse" in parsed) return parsed.errorResponse;
     const quizData = parsed.body as Parameters<typeof generateCompareTrips>[0];
-    const result = await generateCompareTrips(quizData);
-    return NextResponse.json(result);
+    const result = (await generateCompareTrips(quizData)) as {
+      trips?: Record<string, unknown>[];
+    };
+
+    /* Claude's raw shape (totalEstimatedCost, no tier) crashed the app;
+     * normalize to the CompareTripTier contract, cheapest tier first. */
+    const TIERS = ["comfortable", "balanced", "ambitious"] as const;
+    const cost = (t: Record<string, unknown>) =>
+      Number(t.totalEstimatedCost ?? t.totalCost ?? 0) || 0;
+    const trips = (result?.trips ?? [])
+      .slice(0, 3)
+      .sort((a, b) => cost(a) - cost(b))
+      .map((t, i) => ({
+        tier: TIERS[Math.min(i, TIERS.length - 1)],
+        title: String(t.title ?? t.destination ?? "Trip option"),
+        destination: String(t.destination ?? ""),
+        summary: String(t.summary ?? ""),
+        totalCost: cost(t),
+        highlights: Array.isArray(t.highlights) ? (t.highlights as string[]) : [],
+      }));
+
+    return NextResponse.json({ trips });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[/api/compare]", message);
