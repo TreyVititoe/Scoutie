@@ -40,7 +40,7 @@ export default function CompareScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
       >
         <View className="items-center py-5">
-          <PlaneLoader />
+          <PlaneLoader durationMs={22000} />
         </View>
         <Text className="text-ink-soft text-[13px] mb-5 leading-5 text-center">
           Walter is scouting three angles on {prefs.destination ?? "your trip"}…

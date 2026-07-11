@@ -5,28 +5,34 @@ import { SymbolView } from "expo-symbols";
 import { colors } from "../theme/colors";
 
 /*
- * Loading bar as a flight: a little plane sweeps the track and pulls a
- * cornflower contrail behind it, then banks back for another pass.
- * Mirror of apps/web/components/PlaneLoader.tsx.
+ * Loading bar as a flight: the plane makes one pass, decelerating as it
+ * nears the far end (a progress feel, not a loop), pulling a cornflower
+ * contrail behind it. Mirror of apps/web/components/PlaneLoader.tsx.
  */
-export function PlaneLoader({ width = 220 }: { width?: number }) {
+export function PlaneLoader({
+  width = 220,
+  durationMs = 14000,
+}: {
+  width?: number;
+  durationMs?: number;
+}) {
   const t = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const loop = Animated.loop(
-      Animated.timing(t, {
-        toValue: 1,
-        duration: 1800,
-        easing: Easing.inOut(Easing.quad),
-        useNativeDriver: false,
-      })
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [t]);
+    /* One flight, easing out toward ~96%; the component unmounts when
+     * loading ends. */
+    const flight = Animated.timing(t, {
+      toValue: 1,
+      duration: durationMs,
+      easing: Easing.bezier(0.1, 0.6, 0.3, 1),
+      useNativeDriver: false,
+    });
+    flight.start();
+    return () => flight.stop();
+  }, [t, durationMs]);
 
   const PLANE = 20;
-  const track = width - PLANE;
+  const track = (width - PLANE) * 0.96;
   const translateX = t.interpolate({
     inputRange: [0, 1],
     outputRange: [0, track],
@@ -34,10 +40,6 @@ export function PlaneLoader({ width = 220 }: { width?: number }) {
   const contrailWidth = t.interpolate({
     inputRange: [0, 1],
     outputRange: [0, track],
-  });
-  const opacity = t.interpolate({
-    inputRange: [0, 0.06, 0.94, 1],
-    outputRange: [0, 1, 1, 0],
   });
 
   return (
@@ -62,17 +64,10 @@ export function PlaneLoader({ width = 220 }: { width?: number }) {
           borderRadius: 1.5,
           backgroundColor: colors.accent,
           width: contrailWidth,
-          opacity,
         }}
       />
       {/* the plane */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          transform: [{ translateX }],
-          opacity,
-        }}
-      >
+      <Animated.View style={{ position: "absolute", transform: [{ translateX }] }}>
         <SymbolView
           name="airplane"
           tintColor={colors.accent}

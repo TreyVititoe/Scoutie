@@ -3,17 +3,25 @@
 import { motion } from "framer-motion";
 
 /*
- * Loading bar as a flight: a little plane sweeps the track and pulls a
- * cornflower contrail behind it, then banks back for another pass.
+ * Loading bar as a flight: the plane makes one pass, decelerating as it
+ * nears the far end (a progress feel, not a loop), pulling a cornflower
+ * contrail behind it. The rotation lives on an inner span because the
+ * motion transform on the outer element would overwrite it.
  * Mirror of apps/mobile/components/PlaneLoader.tsx.
  */
-export default function PlaneLoader({ width = 220 }: { width?: number }) {
+export default function PlaneLoader({
+  width = 220,
+  durationMs = 14000,
+}: {
+  width?: number;
+  durationMs?: number;
+}) {
   const PLANE = 22;
   const track = width - PLANE;
-  const sweep = {
-    duration: 1.8,
-    repeat: Infinity,
-    ease: "easeInOut" as const,
+  /* Ease out to ~96% and hold; the component unmounts when loading ends. */
+  const flight = {
+    duration: durationMs / 1000,
+    ease: [0.1, 0.6, 0.3, 1] as const,
   };
 
   return (
@@ -28,20 +36,24 @@ export default function PlaneLoader({ width = 220 }: { width?: number }) {
       {/* contrail */}
       <motion.div
         className="absolute left-0 h-[3px] rounded-full bg-accent"
-        initial={{ width: 0, opacity: 0 }}
-        animate={{ width: [0, track], opacity: [0, 1, 1, 0] }}
-        transition={sweep}
+        initial={{ width: 0 }}
+        animate={{ width: track * 0.96 }}
+        transition={flight}
       />
       {/* the plane */}
       <motion.span
         aria-hidden
-        className="material-symbols-outlined absolute text-accent rotate-90"
-        style={{ fontSize: PLANE }}
-        initial={{ x: 0, opacity: 0 }}
-        animate={{ x: [0, track], opacity: [0, 1, 1, 0] }}
-        transition={sweep}
+        className="absolute"
+        initial={{ x: 0 }}
+        animate={{ x: track * 0.96 }}
+        transition={flight}
       >
-        flight
+        <span
+          className="material-symbols-outlined block rotate-90 text-accent"
+          style={{ fontSize: PLANE }}
+        >
+          flight
+        </span>
       </motion.span>
     </div>
   );
