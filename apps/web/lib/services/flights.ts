@@ -287,7 +287,9 @@ export async function searchFlights(params: {
   const otherFlights = data.other_flights || [];
   const allFlights = [...bestFlights, ...otherFlights];
 
-  const top = allFlights.slice(0, 8) as Array<Record<string, unknown>>;
+  /* Each result costs one extra SerpAPI request for its return journey,
+   * so this cap is a spend guard, not a UI choice. */
+  const top = allFlights.slice(0, 16) as Array<Record<string, unknown>>;
 
   // Fetch return journey for each outbound in parallel
   const returnJourneys = await Promise.all(
