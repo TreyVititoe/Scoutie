@@ -49,7 +49,7 @@ export default function PlaneLoader({
         transition={flight}
       >
         <span
-          className="material-symbols-outlined block rotate-90 text-accent"
+          className="material-symbols-outlined block rotate-90 translate-y-[2px] text-accent"
           style={{ fontSize: PLANE }}
         >
           flight

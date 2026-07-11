@@ -109,7 +109,8 @@ export async function searchHotels(params: {
   const data = await res.json();
   const hotels = data?.data?.hotels || [];
 
-  return hotels.slice(0, 8).map((h: Record<string, unknown>, i: number): HotelResult => {
+  // Booking returns roughly a 20-result page; show the whole page.
+  return hotels.slice(0, 24).map((h: Record<string, unknown>, i: number): HotelResult => {
     const property = (h.property as Record<string, unknown>) || h;
     const priceBreakdown = (property.priceBreakdown as Record<string, unknown>) || {};
     const grossPrice = (priceBreakdown.grossPrice as Record<string, unknown>) || {};
