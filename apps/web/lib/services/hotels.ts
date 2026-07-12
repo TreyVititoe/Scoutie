@@ -34,8 +34,13 @@ async function lookupDestination(query: string): Promise<string | null> {
   }
   if (!res.ok) return null;
   const data = await res.json();
-  const first = data?.data?.[0];
-  return first?.dest_id || first?.destId || null;
+  const list = (data?.data ?? []) as Record<string, unknown>[];
+  /* Suffixed queries often match a HOTEL named after the city first;
+   * we search with search_type=CITY, so only a city entry works. */
+  const city = list.find(
+    (d) => String(d.search_type ?? d.dest_type ?? "").toLowerCase() === "city"
+  );
+  return (city?.dest_id as string) || (city?.destId as string) || null;
 }
 
 /**
