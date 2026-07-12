@@ -377,7 +377,7 @@ export default function TripsPage() {
             <PlaneLoader durationMs={50000} />
             <p className="text-ink-soft text-sm text-center max-w-[46ch]">
               Walter is building three complete trips: flights, stays, days,
-              and what's on while you're there. About a minute.
+              and what&apos;s on while you&apos;re there. About a minute.
             </p>
           </div>
         )}
@@ -463,7 +463,7 @@ function TripCard({
         {option.events.length > 0 && (
           <div className="mt-3">
             <p className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1.5">
-              Happening while you're there
+              Happening while you&apos;re there
             </p>
             {option.events.map((ev) => (
               <div key={ev} className="flex items-start gap-1.5 py-0.5">
