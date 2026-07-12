@@ -1,4 +1,5 @@
 import * as AppleAuthentication from "expo-apple-authentication";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useEffect, useState } from "react";
@@ -87,12 +88,10 @@ export default function LoginScreen() {
         }}
       >
         <View className="items-center mb-8">
-          <View
-            className="w-14 h-14 rounded-2xl items-center justify-center mb-4"
-            style={{ backgroundColor: colors.accent }}
-          >
-            <Text className="text-white text-[24px] font-black italic">W</Text>
-          </View>
+          <Image
+            source={require("../../assets/logo.png")}
+            style={{ width: 56, height: 56, borderRadius: 16, marginBottom: 16 }}
+          />
           <Text className="text-ink text-[24px] font-bold tracking-tight">
             Sign in to Walter
           </Text>

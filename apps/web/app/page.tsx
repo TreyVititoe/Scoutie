@@ -153,9 +153,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
           <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.99_0.004_250_/_0.72)] backdrop-blur-2xl backdrop-saturate-150 border border-black/5 shadow-[0_8px_32px_rgba(20,30,60,0.12),inset_0_1px_0_rgba(255,255,255,0.6)]">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
-              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
-                <span className="text-[oklch(0.28_0.005_250)] text-[14px] font-black italic leading-none -mt-px">W</span>
-              </span>
+              <img src="/walter-logo.png" alt="" className="w-7 h-7 rounded-[8px]" />
               <span className="text-ink text-[17px] font-semibold tracking-tight">Walter</span>
             </Link>
 

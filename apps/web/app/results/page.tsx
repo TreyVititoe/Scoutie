@@ -318,9 +318,7 @@ export default function ResultsPage() {
       <header className="fixed top-0 left-0 right-0 z-30 nav-glass">
         <div className="max-w-content mx-auto px-5 lg:px-8 py-3.5 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-cyan to-accent-light flex items-center justify-center shadow-[0_2px_10px_rgba(56,189,248,0.3)]">
-              <span className="text-tinted-pitch text-[14px] font-black italic leading-none -mt-px">W</span>
-            </span>
+            <img src="/walter-logo.png" alt="" className="w-7 h-7 rounded-[8px]" />
             <span className="text-ink text-[16px] font-semibold tracking-tight">Walter</span>
           </Link>
           <Link
