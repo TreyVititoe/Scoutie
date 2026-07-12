@@ -14,12 +14,14 @@ import {
 } from "react-native";
 
 import { getApiBaseUrl } from "@walter/api-client";
+import * as Haptics from "expo-haptics";
 
 import { api } from "../../lib/apiClient";
 import {
   selectTotalPrice,
   useTripCart,
 } from "../../lib/stores/tripCartStore";
+import { useSavedTrips } from "../../lib/stores/savedTripsStore";
 import { usePrefs } from "../../lib/stores/walterPrefsStore";
 import { colors } from "../../theme/colors";
 
@@ -79,6 +81,31 @@ export default function TripScreen() {
         options={{
           headerRight: () =>
             items.length > 0 ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 18 }}>
+              <Pressable
+                hitSlop={6}
+                onPress={() => {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  useSavedTrips.getState().save({
+                    id: `trip-${Date.now()}`,
+                    name: `Trip to ${prefs.destination?.split(",")[0] ?? "somewhere good"}`,
+                    destination: prefs.destination ?? "",
+                    items,
+                    totalCost: total,
+                    savedAt: new Date().toISOString(),
+                    startDate: prefs.startDate,
+                    endDate: prefs.endDate,
+                  });
+                  Alert.alert("Saved", "This trip now lives in your Trips tab.");
+                }}
+              >
+                <SymbolView
+                  name="bookmark"
+                  tintColor={colors.accent}
+                  size={19}
+                  fallback={null}
+                />
+              </Pressable>
               <Pressable
                 onPress={async () => {
                   const summary = `My ${prefs.destination} trip on Walter: $${total.toLocaleString()} for ${items.length} items.`;
@@ -103,6 +130,7 @@ export default function TripScreen() {
                   fallback={null}
                 />
               </Pressable>
+              </View>
             ) : null,
         }}
       />

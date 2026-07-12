@@ -55,21 +55,23 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="saved"
         options={{
-          title: "Wishlists",
+          title: "Trips",
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="bookmark.fill" />
+            <TabIcon focused={focused} sfSymbol="suitcase.fill" />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="quick"
         options={{
-          title: "Profile",
+          title: "Quick",
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="person.fill" />
+            <TabIcon focused={focused} sfSymbol="sparkles" />
           ),
         }}
       />
+      {/* Accounts are parked; the screen stays reachable by code only. */}
+      <Tabs.Screen name="profile" options={{ href: null }} />
     </Tabs>
   );
 }
