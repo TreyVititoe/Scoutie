@@ -1,3 +1,5 @@
+import { MAJOR_AIRPORTS } from "../data/airports";
+
 const SERPAPI_KEY = process.env.SERPAPI_KEY!;
 
 export type FlightLeg = {
@@ -133,6 +135,46 @@ function resolveIATA(input: string): string | null {
   return CITY_TO_IATA[city] || CITY_TO_IATA[dashCity] || null;
 }
 
+function haversineKm(aLat: number, aLng: number, bLat: number, bLng: number): number {
+  const R = 6371;
+  const dLat = ((bLat - aLat) * Math.PI) / 180;
+  const dLng = ((bLng - aLng) * Math.PI) / 180;
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+/**
+ * Any city the dictionary doesn't know: geocode it and snap to the
+ * nearest major airport within 400km. "Fresno" -> FAT, "Boise" -> BOI,
+ * "Waco" -> DAL. Returns null for unresolvable strings.
+ */
+export async function nearestAirportCode(place: string): Promise<string | null> {
+  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  if (!token || !place.trim()) return null;
+  try {
+    const res = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        place
+      )}.json?access_token=${token}&limit=1&types=place,locality,region,district`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const center = data.features?.[0]?.center as [number, number] | undefined;
+    if (!center) return null;
+    const [lng, lat] = center;
+    let best: { code: string; km: number } | null = null;
+    for (const a of MAJOR_AIRPORTS) {
+      const km = haversineKm(lat, lng, a.lat, a.lng);
+      if (!best || km < best.km) best = { code: a.code, km };
+    }
+    return best && best.km <= 400 ? best.code : null;
+  } catch {
+    return null;
+  }
+}
+
 function formatMinutes(mins: number): string {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
@@ -241,8 +283,8 @@ export async function searchFlights(params: {
 }): Promise<FlightResult[]> {
   const { origin, destination, departDate, returnDate, adults = 1, cabinClass = "economy" } = params;
 
-  const originCode = resolveIATA(origin);
-  const destCode = resolveIATA(destination);
+  const originCode = resolveIATA(origin) ?? (await nearestAirportCode(origin));
+  const destCode = resolveIATA(destination) ?? (await nearestAirportCode(destination));
 
   if (!originCode || !destCode) {
     console.warn(`[flights] Could not resolve IATA: origin="${origin}"=>${originCode} dest="${destination}"=>${destCode}`);

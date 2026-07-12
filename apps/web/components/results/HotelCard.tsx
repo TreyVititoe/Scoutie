@@ -35,9 +35,9 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
     : null;
 
   return (
-    <div className={`w-full card-base overflow-hidden ${bestValue ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+    <div className={`w-full card-base overflow-hidden ${bestValue ? "sm:col-span-2" : ""}`}>
       {/* Image */}
-      <div className={`relative bg-raised-slate ${bestValue ? "h-64 lg:h-80" : "h-40"}`}>
+      <div className={`relative bg-raised-slate ${bestValue ? "h-64 lg:h-72" : "h-40"}`}>
         {hotel.image ? (
           <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
