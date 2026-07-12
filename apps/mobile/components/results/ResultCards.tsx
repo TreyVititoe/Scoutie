@@ -17,10 +17,11 @@ function AddButton({ added, onPress }: { added: boolean; onPress: () => void }) 
     <Pressable
       onPress={onPress}
       className="px-4 py-2 rounded-full flex-row items-center gap-1.5 border"
-      style={{
-        backgroundColor: added ? colors.accent : "transparent",
+      style={({ pressed }) => ({
+        backgroundColor: added ? colors.accent : pressed ? colors.surface2 : "transparent",
         borderColor: added ? colors.accent : colors.hairlineStrong,
-      }}
+        transform: [{ scale: pressed ? 0.96 : 1 }],
+      })}
     >
       <SymbolView
         name={added ? "checkmark" : "plus"}

@@ -156,6 +156,7 @@ export default function SearchScreen() {
             <Pressable
               key={f.id}
               onPress={() => {
+                Haptics.selectionAsync();
                 setDestination(f.place_name);
                 setQuery(f.place_name);
                 setFeatures([]);

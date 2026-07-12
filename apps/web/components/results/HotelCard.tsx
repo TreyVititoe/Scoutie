@@ -90,7 +90,7 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
           </div>
           <button
             onClick={handleToggle}
-            className={`rounded-pill px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-colors ${
+            className={`rounded-pill px-4 py-2 text-sm font-semibold flex items-center gap-1.5 transition-all active:scale-[0.96] ${
               added
                 ? "bg-accent text-snow-off-glacier hover:bg-accent-light"
                 : "border border-ink/20 text-ink hover:bg-ink/5 hover:border-ink/40"

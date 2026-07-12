@@ -159,9 +159,15 @@ function DesktopSidebar() {
             <span className="text-sm text-ink-soft">
               Estimated total
             </span>
-            <span className="font-semibold text-ink text-2xl">
+            <motion.span
+              key={totalPrice}
+              initial={{ scale: 1.12 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+              className="font-semibold text-ink text-2xl inline-block"
+            >
               {totalPrice > 0 ? `$${totalPrice.toLocaleString()}` : "--"}
-            </span>
+            </motion.span>
           </div>
           <div className="flex items-center gap-2">
             <Link
@@ -324,9 +330,15 @@ function MobileBar() {
                 <span className="text-sm text-ink-soft">
                   Estimated total
                 </span>
-                <span className="font-semibold text-ink text-2xl">
+                <motion.span
+                  key={totalPrice}
+                  initial={{ scale: 1.12 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+                  className="font-semibold text-ink text-2xl inline-block"
+                >
                   ${totalPrice.toLocaleString()}
-                </span>
+                </motion.span>
               </div>
               <div className="flex items-center gap-2">
                 <Link
@@ -373,9 +385,15 @@ function MobileBar() {
             <span className="bg-accent text-snow-off-glacier text-[12px] font-semibold rounded-pill px-2 h-5 flex items-center justify-center">
               {itemCount}
             </span>
-            <span className="font-semibold text-ink text-lg">
+            <motion.span
+              key={totalPrice}
+              initial={{ scale: 1.12 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+              className="font-semibold text-ink text-lg inline-block"
+            >
               ${totalPrice.toLocaleString()}
-            </span>
+            </motion.span>
           </button>
           <div className="flex items-center gap-2">
             <button

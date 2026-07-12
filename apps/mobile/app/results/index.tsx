@@ -265,30 +265,30 @@ export default function ResultsScreen() {
 
   return (
     <View className="flex-1 bg-page-bg">
+      {prefs.destination ? (
+        <View className="px-4 pt-2 pb-3 bg-page-bg border-b" style={{ borderBottomColor: colors.hairline }}>
+          <Text
+            className="text-ink font-semibold"
+            style={{ fontSize: 26, lineHeight: 29, letterSpacing: -0.3 }}
+            numberOfLines={1}
+          >
+            {prefs.destination.split(",")[0]}
+          </Text>
+          {prefs.startDate && prefs.endDate ? (
+            <Text className="text-ink-faint text-[13px] mt-1">
+              {new Date(prefs.startDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              {" to "}
+              {new Date(prefs.endDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              {" · "}
+              {prefs.travelers ?? 2} travelers
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 16, paddingBottom: 180 }}
       >
-        {prefs.destination ? (
-          <View className="mb-4">
-            <Text
-              className="text-ink font-semibold"
-              style={{ fontSize: 26, lineHeight: 29, letterSpacing: -0.3 }}
-              numberOfLines={1}
-            >
-              {prefs.destination.split(",")[0]}
-            </Text>
-            {prefs.startDate && prefs.endDate ? (
-              <Text className="text-ink-faint text-[13px] mt-1">
-                {new Date(prefs.startDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                {" to "}
-                {new Date(prefs.endDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                {" · "}
-                {prefs.travelers ?? 2} travelers
-              </Text>
-            ) : null}
-          </View>
-        ) : null}
         <SegmentedControl<Section>
           options={[
             { value: "flights", label: "Flights" },
