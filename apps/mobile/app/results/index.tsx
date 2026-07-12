@@ -13,6 +13,7 @@ import {
   HotelCard,
   SuggestionCard,
 } from "../../components/results/ResultCards";
+import { AirportAutocomplete } from "../../components/AirportAutocomplete";
 import { SegmentedControl } from "../../components/SegmentedControl";
 import { SkeletonListItem } from "../../components/Skeleton";
 import { api } from "../../lib/apiClient";
@@ -36,6 +37,7 @@ export default function ResultsScreen() {
   const [stayType, setStayType] = useState<StayType>("hotel");
   const destPhoto = prefs.destination ? api.photo.url(prefs.destination) : undefined;
 
+  const hasOrigin = !!(prefs.departureAirportCode || prefs.departureCity);
   const flights = useQuery({
     queryKey: ["flights", prefs],
     queryFn: () =>
@@ -46,7 +48,7 @@ export default function ResultsScreen() {
         returnDate: prefs.endDate ?? "",
         adults: prefs.travelers ?? 2,
       }),
-    enabled: !!prefs.destination && !!prefs.startDate && !!prefs.endDate,
+    enabled: hasOrigin && !!prefs.destination && !!prefs.startDate && !!prefs.endDate,
   });
 
   const hotels = useQuery({
@@ -94,6 +96,14 @@ export default function ResultsScreen() {
 
   const content = useMemo(() => {
     if (section === "flights") {
+      if (!hasOrigin)
+        return (
+          <DeparturePrompt
+            onSubmit={(city) =>
+              usePrefs.getState().patch({ departureCity: city })
+            }
+          />
+        );
       if (flights.isLoading) return <Loading label="Searching flights…" photo={destPhoto} />;
       const f = flights.data?.flights ?? [];
       if (!f.length) return <Empty icon="airplane" label="No flights found." />;
@@ -263,7 +273,7 @@ export default function ResultsScreen() {
       ));
     }
     return null;
-  }, [section, flights, hotels, events, suggestions, cart, stayType]);
+  }, [section, flights, hotels, events, suggestions, cart, stayType, hasOrigin, destPhoto]);
 
   return (
     <View className="flex-1 bg-page-bg">
@@ -332,6 +342,36 @@ export default function ResultsScreen() {
           </Pressable>
         </View>
       ) : null}
+    </View>
+  );
+}
+
+function DeparturePrompt({ onSubmit }: { onSubmit: (city: string) => void }) {
+  const [value, setValue] = useState("");
+  const ready = value.trim().length >= 2;
+  return (
+    <View className="bg-card rounded-2xl p-5 border border-line">
+      <Text className="text-ink text-[16px] font-semibold">
+        Where are you flying from?
+      </Text>
+      <Text className="text-ink-faint text-[12px] mt-1 mb-3 leading-4">
+        A city or a 3-letter airport code. Walter searches real fares from
+        there.
+      </Text>
+      <AirportAutocomplete value={value} onChange={setValue} />
+      <Pressable
+        disabled={!ready}
+        onPress={() => onSubmit(value.trim())}
+        className="mt-3 py-3 rounded-full items-center"
+        style={{ backgroundColor: ready ? colors.accent : colors.surface2 }}
+      >
+        <Text
+          className="text-[14px] font-semibold"
+          style={{ color: ready ? "white" : colors.textTertiary }}
+        >
+          Search flights
+        </Text>
+      </Pressable>
     </View>
   );
 }

@@ -113,6 +113,7 @@ export default function RootLayout() {
               headerTintColor: colors.text,
               headerLargeTitleStyle: { color: colors.text },
               headerTitleStyle: { color: colors.text },
+              headerBackButtonDisplayMode: "minimal",
               contentStyle: { backgroundColor: colors.pageBg },
             }}
           >
@@ -134,19 +135,19 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name="compare"
-              options={{ title: "Three ways to go", headerLargeTitle: true }}
+              options={{ presentation: "modal", title: "Three ways to go" }}
             />
             <Stack.Screen
               name="results/index"
-              options={{ title: "Build your trip", headerLargeTitle: true }}
+              options={{ presentation: "modal", title: "Build your trip" }}
             />
             <Stack.Screen
               name="trip/index"
-              options={{ title: "Your trip", headerLargeTitle: true }}
+              options={{ presentation: "modal", title: "Your trip" }}
             />
             <Stack.Screen
               name="checkout"
-              options={{ title: "Book your trip", headerLargeTitle: true }}
+              options={{ presentation: "modal", title: "Book your trip" }}
             />
             <Stack.Screen name="auth-callback" options={{ headerShown: false }} />
             <Stack.Screen
