@@ -46,7 +46,7 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarLabel: "Explore",
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="magnifyingglass" />
+            <TabIcon focused={focused} sfSymbol="globe.americas.fill" />
           ),
         }}
       />
@@ -57,7 +57,7 @@ export default function TabsLayout() {
         options={{
           title: "Wishlists",
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="heart.fill" />
+            <TabIcon focused={focused} sfSymbol="bookmark.fill" />
           ),
         }}
       />
@@ -66,7 +66,7 @@ export default function TabsLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} sfSymbol="person.crop.circle.fill" />
+            <TabIcon focused={focused} sfSymbol="person.fill" />
           ),
         }}
       />
