@@ -86,6 +86,8 @@ export type CompareTripTier = {
   summary: string;
   totalCost: number;
   highlights: string[];
+  /** Real Ticketmaster events happening there during the dates. */
+  events?: string[];
   image?: string;
 };
 

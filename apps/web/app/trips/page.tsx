@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { getDestinationImage } from "@/lib/destinationImages";
 import { CURATED_TRIPS, type CuratedTrip } from "@/lib/curatedTrips";
+import PlaneLoader from "@/components/PlaneLoader";
 
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 
@@ -39,6 +40,7 @@ type ApiTrip = {
   days?: unknown[];
   topEvents?: string[];
   highlights?: string[];
+  liveEvents?: string[];
 };
 
 type TripOption = {
@@ -53,6 +55,8 @@ type TripOption = {
   why: string;
   /** Suggested items for the trip: events first, then highlights. */
   list: string[];
+  /** Real events happening there during the dates. */
+  events: string[];
 };
 
 function prefDays(prefs: Prefs): number {
@@ -167,6 +171,7 @@ function curatedFallback(prefs: Prefs): TripOption[] {
         `/api/photo?query=${encodeURIComponent(trip.photoQuery || trip.destination)}`,
       why: whyItFits(prefs, trip.totalCost, trip.durationDays),
       list: [],
+      events: [],
     }));
 }
 
@@ -199,6 +204,7 @@ function apiTripToOption(trip: ApiTrip, index: number, prefs: Prefs): TripOption
           : []),
       ]),
     ].slice(0, 4),
+    events: (trip.liveEvents || []).slice(0, 3),
   };
 }
 
@@ -366,6 +372,15 @@ export default function TripsPage() {
           Same brief, three cuts. Pick one and Walter builds it out.
         </motion.p>
 
+        {loading && (
+          <div className="flex flex-col items-center gap-4 mb-10">
+            <PlaneLoader durationMs={50000} />
+            <p className="text-ink-soft text-sm text-center max-w-[46ch]">
+              Walter is building three complete trips: flights, stays, days,
+              and what's on while you're there. About a minute.
+            </p>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {loading
             ? [0, 1, 2].map((i) => <SkeletonCard key={i} index={i} />)
@@ -445,6 +460,21 @@ function TripCard({
           </p>
         )}
 
+        {option.events.length > 0 && (
+          <div className="mt-3">
+            <p className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1.5">
+              Happening while you're there
+            </p>
+            {option.events.map((ev) => (
+              <div key={ev} className="flex items-start gap-1.5 py-0.5">
+                <span className="material-symbols-outlined text-accent text-[14px] mt-px">
+                  confirmation_number
+                </span>
+                <p className="text-ink-soft text-[12.5px] leading-snug">{ev}</p>
+              </div>
+            ))}
+          </div>
+        )}
         {option.list.length > 0 && (
           <div className="mt-3">
             <p className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1.5">

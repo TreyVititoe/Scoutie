@@ -171,6 +171,26 @@ export default function CompareScreen() {
             <Text className="text-ink-soft text-[14px] mt-2 leading-5">
               {tier.summary}
             </Text>
+            {tier.events?.length ? (
+              <View className="mt-3">
+                <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1">
+                  Happening while you're there
+                </Text>
+                {tier.events.slice(0, 3).map((ev) => (
+                  <View key={ev} className="flex-row items-start gap-1.5 py-0.5">
+                    <SymbolView
+                      name="ticket.fill"
+                      tintColor={colors.accent}
+                      size={11}
+                      fallback={null}
+                    />
+                    <Text className="text-ink-soft text-[13px] leading-4 flex-1">
+                      {ev}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
             {tier.highlights?.length ? (
               <View className="mt-3">
                 <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1">

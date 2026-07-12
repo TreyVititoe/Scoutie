@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateCompareTrips } from "@/lib/services/claude";
 import { rateLimit, readJsonCapped } from "@/lib/apiGuard";
+import { fetchTopEventsInArea } from "@/lib/services/ticketmaster";
 
 export const maxDuration = 300;
 
@@ -36,7 +37,24 @@ export async function POST(req: NextRequest) {
         summary: String(t.summary ?? ""),
         totalCost: cost(t),
         highlights: Array.isArray(t.highlights) ? (t.highlights as string[]) : [],
+        events: [] as string[],
       }));
+
+    /* Real events happening there during the dates, when dates exist. */
+    const q = quizData as { startDate?: string | null; endDate?: string | null };
+    if (q.startDate && q.endDate) {
+      await Promise.all(
+        trips.map(async (trip) => {
+          if (!trip.destination) return;
+          try {
+            const evs = await fetchTopEventsInArea(trip.destination, q.startDate!, q.endDate!, 8);
+            trip.events = [...new Set(evs.map((e) => e.name))].slice(0, 3);
+          } catch {
+            /* the card just goes without */
+          }
+        })
+      );
+    }
 
     return NextResponse.json({ trips });
   } catch (err) {
