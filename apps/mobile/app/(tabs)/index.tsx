@@ -49,7 +49,7 @@ export default function HomeScreen() {
       <View style={{ paddingTop: insets.top + 6 }} className="bg-page-bg px-5 pb-3">
         <Pressable
           onPress={() => router.push("/search")}
-          className="bg-card flex-row items-center rounded-full px-5"
+          className="bg-card flex-row items-center justify-center rounded-full px-5"
           style={{
             height: 56,
             borderWidth: 1,

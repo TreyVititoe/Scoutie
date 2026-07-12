@@ -13,25 +13,38 @@ import { colors } from "../../theme/colors";
  */
 
 function AddButton({ added, onPress }: { added: boolean; onPress: () => void }) {
+  /* Plain style objects only: mixing className with a style function
+   * dropped the class styles and left white-on-white buttons. */
   return (
     <Pressable
       onPress={onPress}
-      className="px-4 py-2 rounded-full flex-row items-center gap-1.5 border"
+      hitSlop={6}
       style={({ pressed }) => ({
-        backgroundColor: added ? colors.accent : pressed ? colors.surface2 : "transparent",
-        borderColor: added ? colors.accent : colors.hairlineStrong,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: colors.accent,
+        backgroundColor: added ? "#FFFFFF" : colors.accent,
+        opacity: pressed ? 0.85 : 1,
         transform: [{ scale: pressed ? 0.96 : 1 }],
       })}
     >
       <SymbolView
         name={added ? "checkmark" : "plus"}
-        tintColor={added ? "white" : colors.text}
+        tintColor={added ? colors.accent : "white"}
         size={12}
         fallback={null}
       />
       <Text
-        className="text-[13px] font-semibold"
-        style={{ color: added ? "white" : colors.text }}
+        style={{
+          fontSize: 13,
+          fontWeight: "600",
+          color: added ? colors.accent : "white",
+        }}
       >
         {added ? "Added" : "Add to Trip"}
       </Text>

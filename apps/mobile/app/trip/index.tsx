@@ -2,7 +2,7 @@ import Mapbox from "@rnmapbox/maps";
 import { useQuery } from "@tanstack/react-query";
 import { Stack, router } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -12,6 +12,8 @@ import {
   Text,
   View,
 } from "react-native";
+
+import { getApiBaseUrl } from "@walter/api-client";
 
 import { api } from "../../lib/apiClient";
 import {
@@ -24,6 +26,7 @@ import { colors } from "../../theme/colors";
 const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? "";
 
 export default function TripScreen() {
+  const [packCollapsed, setPackCollapsed] = useState(false);
   const prefs = usePrefs((s) => s.prefs);
   const items = useTripCart((s) => s.items);
   const bookedIds = useTripCart((s) => s.bookedIds);
@@ -78,9 +81,19 @@ export default function TripScreen() {
             items.length > 0 ? (
               <Pressable
                 onPress={async () => {
-                  await Share.share({
-                    message: `My ${prefs.destination} trip on Walter: $${total.toLocaleString()} for ${items.length} items.`,
-                  });
+                  const summary = `My ${prefs.destination} trip on Walter: $${total.toLocaleString()} for ${items.length} items.`;
+                  try {
+                    const { shareSlug } = await api.trips.share({
+                      title: `Trip to ${prefs.destination ?? "somewhere good"}`,
+                      destination: prefs.destination ?? "",
+                      totalCost: total,
+                      items,
+                    });
+                    const url = `${getApiBaseUrl()}/shared/${shareSlug}`;
+                    await Share.share({ message: `${summary}\n${url}`, url });
+                  } catch {
+                    await Share.share({ message: summary });
+                  }
                 }}
               >
                 <SymbolView
@@ -182,10 +195,22 @@ export default function TripScreen() {
             {/* Packing list */}
             {packing.data ? (
               <View className="mt-6 px-4">
-                <Text className="text-ink text-[18px] font-bold tracking-tight mb-3">
-                  Pack
-                </Text>
-                {packing.data.categories.map((cat) => (
+                <Pressable
+                  onPress={() => setPackCollapsed((c) => !c)}
+                  className="flex-row items-center justify-between mb-3"
+                  hitSlop={6}
+                >
+                  <Text className="text-ink text-[18px] font-bold tracking-tight">
+                    Pack
+                  </Text>
+                  <SymbolView
+                    name={packCollapsed ? "chevron.down" : "chevron.up"}
+                    tintColor={colors.textSecondary}
+                    size={15}
+                    fallback={null}
+                  />
+                </Pressable>
+                {!packCollapsed && packing.data.categories.map((cat) => (
                   <View
                     key={cat.name}
                     className="bg-card rounded-2xl p-4 mb-2 border border-line"

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 import { useMemo, useState } from "react";
@@ -277,6 +277,28 @@ export default function ResultsScreen() {
 
   return (
     <View className="flex-1 bg-page-bg">
+      <Stack.Screen
+        options={{
+          headerRight: () =>
+            itemCount > 0 ? (
+              <Pressable
+                onPress={() => router.push("/trip")}
+                className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: colors.accent }}
+              >
+                <Text className="text-white text-[13px] font-semibold">
+                  {itemCount} {itemCount === 1 ? "item" : "items"}
+                </Text>
+                <SymbolView
+                  name="arrow.right"
+                  tintColor="white"
+                  size={11}
+                  fallback={null}
+                />
+              </Pressable>
+            ) : null,
+        }}
+      />
       {prefs.destination ? (
         <View className="px-4 pt-2 pb-3 bg-page-bg border-b" style={{ borderBottomColor: colors.hairline }}>
           <Text
@@ -315,33 +337,6 @@ export default function ResultsScreen() {
         <View className="mt-4">{content}</View>
       </ScrollView>
 
-      {itemCount > 0 ? (
-        <View
-          className="absolute left-4 right-4 bottom-28"
-          style={{
-            shadowColor: colors.shadow,
-            shadowOpacity: 0.12,
-            shadowRadius: 20,
-            shadowOffset: { width: 0, height: 8 },
-          }}
-        >
-          <Pressable
-            onPress={() => router.push("/trip")}
-            className="rounded-full px-5 py-4 flex-row items-center justify-between"
-            style={{ backgroundColor: colors.accent }}
-          >
-            <Text className="text-white text-[15px] font-semibold">
-              View {itemCount} {itemCount === 1 ? "item" : "items"}
-            </Text>
-            <SymbolView
-              name="arrow.right"
-              tintColor="white"
-              size={16}
-              fallback={null}
-            />
-          </Pressable>
-        </View>
-      ) : null}
     </View>
   );
 }

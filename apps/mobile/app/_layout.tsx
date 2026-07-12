@@ -11,6 +11,14 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import "../global.css";
 import { bootApiClient } from "../lib/apiClient";
+
+/* Hold the splash a full second; guarded so binaries built before the
+ * module existed don't crash. */
+let SplashScreen: typeof import("expo-splash-screen") | null = null;
+try {
+  SplashScreen = require("expo-splash-screen");
+  SplashScreen?.preventAutoHideAsync().catch(() => {});
+} catch {}
 import { colors } from "../theme/colors";
 
 export function ErrorBoundary({
@@ -100,6 +108,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     bootApiClient();
+    const t = setTimeout(() => SplashScreen?.hideAsync().catch(() => {}), 1000);
+    return () => clearTimeout(t);
   }, []);
 
   return (

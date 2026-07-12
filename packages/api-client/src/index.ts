@@ -134,6 +134,15 @@ export const api = {
     url: (query: string) =>
       `${baseUrl}/api/photo?query=${encodeURIComponent(query)}`,
   },
+  trips: {
+    /** Creates a public shared trip; link is `<origin>/shared/<slug>`. */
+    share: (input: {
+      title: string;
+      destination: string;
+      totalCost: number;
+      items: unknown[];
+    }) => post<{ shareSlug: string }>("/api/trips/share", input),
+  },
   affiliate: {
     /** Fire-and-forget click tracking; never throws. */
     click: (input: {

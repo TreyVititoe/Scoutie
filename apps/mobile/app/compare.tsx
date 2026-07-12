@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { Animated } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
@@ -9,6 +11,38 @@ import { SkeletonCard } from "../components/Skeleton";
 import { api } from "../lib/apiClient";
 import { usePrefs } from "../lib/stores/walterPrefsStore";
 import { colors } from "../theme/colors";
+
+const WORKING_PHRASES = [
+  "Analyzing your preferences…",
+  "Looking for the spots…",
+  "Checking the weather…",
+  "Pricing the three ways…",
+  "Reading the light…",
+];
+
+function WorkingPhrases() {
+  const [index, setIndex] = useState(0);
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Animated.timing(opacity, { toValue: 0, duration: 250, useNativeDriver: true }).start(() => {
+        setIndex((i) => (i + 1) % WORKING_PHRASES.length);
+        Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }).start();
+      });
+    }, 2400);
+    return () => clearInterval(interval);
+  }, [opacity]);
+
+  return (
+    <Animated.Text
+      style={{ opacity }}
+      className="text-ink-soft text-[13px] mb-5 leading-5 text-center"
+    >
+      {WORKING_PHRASES[index]}
+    </Animated.Text>
+  );
+}
 
 export default function CompareScreen() {
   const prefs = usePrefs((s) => s.prefs);
@@ -50,11 +84,7 @@ export default function CompareScreen() {
           <View className="items-center py-5">
             <PlaneLoader durationMs={22000} />
           </View>
-          <Text className="text-ink-soft text-[13px] mb-5 leading-5 text-center">
-            {prefs.destination
-              ? `Reading the light in ${prefs.destination.split(",")[0]}…`
-              : "Scanning the map for your kind of place…"}
-          </Text>
+          <WorkingPhrases />
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />

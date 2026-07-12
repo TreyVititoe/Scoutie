@@ -18,12 +18,9 @@ export type HotelResult = {
   bookingUrl: string | null;
 };
 
-/**
- * Get Booking.com destination ID for a city.
- */
-async function getDestinationId(city: string): Promise<string | null> {
+async function lookupDestination(query: string): Promise<string | null> {
   const res = await fetch(
-    `https://${RAPIDAPI_HOST}/api/v1/hotels/searchDestination?query=${encodeURIComponent(city)}`,
+    `https://${RAPIDAPI_HOST}/api/v1/hotels/searchDestination?query=${encodeURIComponent(query)}`,
     {
       headers: {
         "x-rapidapi-key": RAPIDAPI_KEY,
@@ -39,6 +36,27 @@ async function getDestinationId(city: string): Promise<string | null> {
   const data = await res.json();
   const first = data?.data?.[0];
   return first?.dest_id || first?.destId || null;
+}
+
+/**
+ * Get the Booking.com destination ID. Their search chokes on suffixed
+ * forms ("Mexico City, Mexico" finds nothing while "Mexico City"
+ * works), so try the full string, then progressively shorter ones.
+ */
+async function getDestinationId(city: string): Promise<string | null> {
+  const parts = city.split(",").map((s) => s.trim()).filter(Boolean);
+  const candidates = [
+    ...new Set([
+      city,
+      ...(parts.length > 2 ? [parts.slice(0, 2).join(", ")] : []),
+      ...(parts.length > 1 ? [parts[0]] : []),
+    ]),
+  ];
+  for (const q of candidates) {
+    const id = await lookupDestination(q);
+    if (id) return id;
+  }
+  return null;
 }
 
 /**
