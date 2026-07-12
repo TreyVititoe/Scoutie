@@ -86,7 +86,7 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-ink text-[17px] font-semibold">
+          <Link href="/" className="text-ink text-title font-semibold">
             Walter
           </Link>
           <button
@@ -119,7 +119,7 @@ export default function DashboardPage() {
                 <div className="w-10 h-10 icon-gradient rounded-[8px] flex items-center justify-center">
                   <span className="material-symbols-outlined text-accent text-xl">add</span>
                 </div>
-                <h2 className="font-semibold text-[17px] text-ink">Start New Trip</h2>
+                <h2 className="font-semibold text-title text-ink">Start New Trip</h2>
               </div>
               <p className="text-ink-soft text-sm">
                 Tell Walter the basics and build an AI-powered itinerary.
@@ -135,7 +135,7 @@ export default function DashboardPage() {
                   <div className="w-10 h-10 icon-gradient rounded-[8px] flex items-center justify-center">
                     <span className="material-symbols-outlined text-accent text-xl">shopping_cart</span>
                   </div>
-                  <h2 className="font-semibold text-[17px] text-ink">Continue Building</h2>
+                  <h2 className="font-semibold text-title text-ink">Continue Building</h2>
                 </div>
                 <p className="text-ink-soft text-sm">
                   You have {cartItemCount} item{cartItemCount !== 1 ? "s" : ""} in your trip cart.

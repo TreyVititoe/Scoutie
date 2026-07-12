@@ -56,7 +56,7 @@ export default function SavedTripsPage() {
     <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/" className="text-ink text-title font-semibold">Walter</Link>
           <div className="flex items-center gap-4">
             <Link href="/" className="text-ink-soft text-[11px] hidden sm:block hover:text-ink transition-colors">
               Plan a Trip
@@ -77,7 +77,7 @@ export default function SavedTripsPage() {
             <h1 className="font-semibold text-[28px] text-ink leading-page mb-2">
               Saved Trips
             </h1>
-            <p className="text-ink-soft text-[17px]">
+            <p className="text-ink-soft text-title">
               {trips.length === 0
                 ? "No saved trips yet. Plan a trip and save it here."
                 : `${trips.length} trip${trips.length !== 1 ? "s" : ""} saved`}
@@ -122,7 +122,7 @@ export default function SavedTripsPage() {
         {trips.length === 0 ? (
           <div className="card-base p-10 text-center">
             <span className="material-symbols-outlined text-ink-faint text-4xl mb-4 block">bookmark_border</span>
-            <p className="font-semibold text-ink text-[17px] mb-2">No saved trips</p>
+            <p className="font-semibold text-ink text-title mb-2">No saved trips</p>
             <p className="text-ink-soft text-sm mb-6 max-w-sm mx-auto">
               Search a destination, build your trip, and save it here to compare with other options later.
             </p>
@@ -177,7 +177,7 @@ export default function SavedTripsPage() {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h3 className="font-semibold text-ink text-[17px] mb-1">
+                          <h3 className="font-semibold text-ink text-title mb-1">
                             {trip.name}
                           </h3>
                           <p className="text-sm text-ink-soft">{trip.destination}</p>

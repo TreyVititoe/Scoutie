@@ -5,6 +5,7 @@ import { SymbolView } from "expo-symbols";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { Image } from "expo-image";
 import { PlaneLoader } from "../../components/PlaneLoader";
 import {
   EventCard,
@@ -33,6 +34,7 @@ export default function ResultsScreen() {
   const cart = useTripCart();
   const [section, setSection] = useState<Section>("flights");
   const [stayType, setStayType] = useState<StayType>("hotel");
+  const destPhoto = prefs.destination ? api.photo.url(prefs.destination) : undefined;
 
   const flights = useQuery({
     queryKey: ["flights", prefs],
@@ -92,7 +94,7 @@ export default function ResultsScreen() {
 
   const content = useMemo(() => {
     if (section === "flights") {
-      if (flights.isLoading) return <Loading label="Searching flights…" />;
+      if (flights.isLoading) return <Loading label="Searching flights…" photo={destPhoto} />;
       const f = flights.data?.flights ?? [];
       if (!f.length) return <Empty icon="airplane" label="No flights found." />;
       const cheapest = f.reduce((a, b) => (a.price < b.price ? a : b));
@@ -146,7 +148,7 @@ export default function ResultsScreen() {
         return (
           <View>
             {pills}
-            <Loading label="Searching stays…" />
+            <Loading label="Searching stays…" photo={destPhoto} />
           </View>
         );
       const h = hotels.data?.hotels ?? [];
@@ -190,7 +192,7 @@ export default function ResultsScreen() {
       );
     }
     if (section === "events") {
-      if (events.isLoading) return <Loading label="Searching events…" />;
+      if (events.isLoading) return <Loading label="Searching events…" photo={destPhoto} />;
       const all = [
         ...(events.data?.exactMatches ?? []),
         ...(events.data?.similarMatches ?? []),
@@ -222,7 +224,7 @@ export default function ResultsScreen() {
     }
     if (section === "do") {
       if (suggestions.isLoading)
-        return <Loading label="Walter is thinking…" />;
+        return <Loading label="Walter is thinking…" photo={destPhoto} />;
       const s = suggestions.data?.suggestions ?? [];
       if (!s.length)
         return <Empty icon="lightbulb" label="No suggestions yet." />;
@@ -258,6 +260,26 @@ export default function ResultsScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 16, paddingBottom: 180 }}
       >
+        {prefs.destination ? (
+          <View className="mb-4">
+            <Text
+              className="text-ink font-semibold"
+              style={{ fontSize: 26, lineHeight: 29, letterSpacing: -0.3 }}
+              numberOfLines={1}
+            >
+              {prefs.destination.split(",")[0]}
+            </Text>
+            {prefs.startDate && prefs.endDate ? (
+              <Text className="text-ink-faint text-[13px] mt-1">
+                {new Date(prefs.startDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                {" to "}
+                {new Date(prefs.endDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                {" · "}
+                {prefs.travelers ?? 2} travelers
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
         <SegmentedControl<Section>
           options={[
             { value: "flights", label: "Flights" },
@@ -303,9 +325,16 @@ export default function ResultsScreen() {
   );
 }
 
-function Loading({ label }: { label: string }) {
+function Loading({ label, photo }: { label: string; photo?: string }) {
   return (
-    <View>
+    <View className="rounded-3xl overflow-hidden">
+      {photo ? (
+        <Image
+          source={{ uri: photo }}
+          contentFit="cover"
+          style={{ position: "absolute", inset: 0, opacity: 0.07 }}
+        />
+      ) : null}
       <View className="items-center py-5">
         <PlaneLoader />
       </View>

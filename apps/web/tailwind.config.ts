@@ -65,6 +65,13 @@ const config: Config = {
           "sans-serif",
         ],
       },
+      fontSize: {
+        /* DESIGN.md type ramp. Size-only tokens (no line-height baked in)
+         * so swapping a literal for a token never shifts layout. */
+        label: "13px",
+        body: "15px",
+        title: "17px",
+      },
       borderRadius: {
         DEFAULT: "14px",
         pill: "980px",

@@ -323,7 +323,7 @@ export default function ResultsPage() {
           </Link>
           <Link
             href="/"
-            className="text-ink-soft hover:text-ink text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
+            className="text-ink-soft hover:text-ink text-label font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">edit</span>
             Edit trip
@@ -357,7 +357,7 @@ export default function ResultsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.12, duration: 0.6, ease: EASE }}
-              className="text-ink-soft text-[15px] max-w-[44ch]"
+              className="text-ink-soft text-body max-w-[44ch]"
             >
               {trip?.summary || "Nothing is booked yet. Add the pieces you want."}
             </motion.p>
@@ -406,7 +406,7 @@ export default function ResultsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-pill text-[13px] font-medium transition-colors ${
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-pill text-label font-medium transition-colors ${
                     isActive
                       ? "bg-hover-slate text-ink"
                       : "text-ink-soft hover:text-ink hover:bg-ink/5"
@@ -450,12 +450,14 @@ export default function ResultsPage() {
               />
 
               {flightsLoading && (
-                <div className="flex flex-col items-center justify-center py-20 gap-5">
-                  <PlaneLoader />
-                  <p className="text-ink-soft text-sm">
-                    Searching real flights — this usually takes 10 to 20 seconds.
-                  </p>
-                </div>
+                <LoadingBackdrop image={heroImage}>
+                  <div className="flex flex-col items-center justify-center py-20 gap-5">
+                    <PlaneLoader />
+                    <p className="text-ink-soft text-sm">
+                      Searching real flights — this usually takes 10 to 20 seconds.
+                    </p>
+                  </div>
+                </LoadingBackdrop>
               )}
 
               {!flightsLoading && flights.length > 0 && (
@@ -504,7 +506,7 @@ export default function ResultsPage() {
                   <button
                     key={t.id}
                     onClick={() => setStayType(t.id)}
-                    className={`px-4 py-2 rounded-pill text-[13px] font-semibold border transition-colors ${
+                    className={`px-4 py-2 rounded-pill text-label font-semibold border transition-colors ${
                       stayType === t.id
                         ? "bg-ink text-snow-off-glacier border-ink"
                         : "border-line text-ink-soft hover:text-ink hover:border-ink/40"
@@ -515,7 +517,7 @@ export default function ResultsPage() {
                 ))}
               </div>
 
-              {hotelsLoading && <CardSkeletonGrid withImage />}
+              {hotelsLoading && <LoadingBackdrop image={heroImage} caption="Talking to Booking.com…"><CardSkeletonGrid withImage /></LoadingBackdrop>}
 
               {!hotelsLoading && hotels.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -557,7 +559,7 @@ export default function ResultsPage() {
                 }
               />
 
-              {eventsLoading && <CardSkeletonGrid withImage />}
+              {eventsLoading && <LoadingBackdrop image={heroImage} caption="Checking Ticketmaster for your dates…"><CardSkeletonGrid withImage /></LoadingBackdrop>}
 
               {!eventsLoading && allEvents.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -596,7 +598,7 @@ export default function ResultsPage() {
                 }
               />
 
-              {suggestionsLoading && <CardSkeletonGrid />}
+              {suggestionsLoading && <LoadingBackdrop image={heroImage} caption="Walter is thinking…"><CardSkeletonGrid /></LoadingBackdrop>}
 
               {!suggestionsLoading && suggestions.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -657,6 +659,33 @@ function EmptyState({ icon, message }: { icon: string; message: string }) {
 }
 
 /* ── Loading skeleton grid ── */
+/* Loading never sits on a blank surface; the destination shows through. */
+function LoadingBackdrop({
+  image,
+  caption,
+  children,
+}: {
+  image: string;
+  caption?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative rounded-[14px] overflow-hidden">
+      <img
+        src={image}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover opacity-[0.06]"
+      />
+      <div className="relative">
+        {caption && (
+          <p className="text-ink-soft text-sm text-center pt-6 pb-4">{caption}</p>
+        )}
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function CardSkeletonGrid({ withImage = false }: { withImage?: boolean }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

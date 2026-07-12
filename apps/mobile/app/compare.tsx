@@ -34,21 +34,29 @@ export default function CompareScreen() {
 
   if (isLoading) {
     return (
-      <ScrollView
-        className="flex-1 bg-page-bg"
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
-      >
-        <View className="items-center py-5">
-          <PlaneLoader durationMs={22000} />
-        </View>
-        <Text className="text-ink-soft text-[13px] mb-5 leading-5 text-center">
-          Walter is scouting three angles on {prefs.destination ?? "your trip"}…
-        </Text>
-        <SkeletonCard />
-        <SkeletonCard />
-        <SkeletonCard />
-      </ScrollView>
+      <View className="flex-1 bg-page-bg">
+        {prefs.destination ? (
+          <Image
+            source={{ uri: api.photo.url(prefs.destination) }}
+            contentFit="cover"
+            style={{ position: "absolute", inset: 0, opacity: 0.08 }}
+          />
+        ) : null}
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
+        >
+          <View className="items-center py-5">
+            <PlaneLoader durationMs={22000} />
+          </View>
+          <Text className="text-ink-soft text-[13px] mb-5 leading-5 text-center">
+            Reading the light in {prefs.destination ?? "your destination"}…
+          </Text>
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </ScrollView>
+      </View>
     );
   }
 
@@ -86,9 +94,14 @@ export default function CompareScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
     >
-      <Text className="text-ink-soft text-[13px] mb-5 leading-5">
-        Three takes on {prefs.destination}. Pick one and Walter will lay out
-        the rest.
+      <Text
+        className="text-ink font-semibold"
+        style={{ fontSize: 30, lineHeight: 33, letterSpacing: -0.3 }}
+      >
+        Three takes on {prefs.destination?.split(",")[0]}.
+      </Text>
+      <Text className="text-ink-soft text-[13px] mt-2 mb-6 leading-5">
+        Pick one and Walter will lay out the rest.
       </Text>
 
       {(data?.trips ?? []).map((tier, i) => (

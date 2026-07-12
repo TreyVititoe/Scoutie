@@ -652,7 +652,7 @@ function WherePopover({
           }}
           onKeyDown={handleInputKeyDown}
           placeholder="City, country, state, or airport"
-          className="w-full text-[15px] text-ink placeholder:text-ink-faint bg-transparent focus:outline-none"
+          className="w-full text-body text-ink placeholder:text-ink-faint bg-transparent focus:outline-none"
         />
         {error && (
           <p className="text-[12px] text-[oklch(0.55_0.19_25)] mt-1.5 font-medium">
@@ -665,7 +665,7 @@ function WherePopover({
           {query ? (loading ? "Searching…" : "Destinations") : "Suggested destinations"}
         </p>
         {matches.length === 0 ? (
-          <p className="text-[13px] text-ink-soft px-3 pb-2">
+          <p className="text-label text-ink-soft px-3 pb-2">
             {loading
               ? "Looking…"
               : `No matches. Press Enter to search "${query}".`}
@@ -752,7 +752,7 @@ function WhenPopover({
           <button
             type="button"
             onClick={() => onChange({ ...value, exactDates: true, flexDays: 0 })}
-            className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+            className={`px-5 py-1.5 rounded-full text-label font-semibold transition-colors ${
               value.exactDates ? "bg-card text-ink shadow-sm" : "text-ink-soft"
             }`}
           >
@@ -761,7 +761,7 @@ function WhenPopover({
           <button
             type="button"
             onClick={() => onChange({ ...value, exactDates: false })}
-            className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+            className={`px-5 py-1.5 rounded-full text-label font-semibold transition-colors ${
               !value.exactDates ? "bg-card text-ink shadow-sm" : "text-ink-soft"
             }`}
           >
@@ -830,7 +830,7 @@ function WhenPopover({
                         key={i}
                         type="button"
                         disabled
-                        className="relative h-10 text-[13px] cursor-not-allowed text-ink/45 line-through decoration-[1.5px] decoration-ink/45 bg-ink/[0.04]"
+                        className="relative h-10 text-label cursor-not-allowed text-ink/45 line-through decoration-[1.5px] decoration-ink/45 bg-ink/[0.04]"
                       >
                         {cell.getDate()}
                       </button>
@@ -841,7 +841,7 @@ function WhenPopover({
                       key={i}
                       type="button"
                       onClick={() => selectDate(cell)}
-                      className={`relative h-10 text-[13px] text-ink transition-colors ${
+                      className={`relative h-10 text-label text-ink transition-colors ${
                         !isEdge && inR
                           ? "bg-accent-tint font-medium"
                           : !isEdge
@@ -1017,7 +1017,7 @@ function WhatPopover({
               onClick={() =>
                 onChange({ ...value, description: toggleCategory(value.description, c.label) })
               }
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label font-medium border transition-colors ${
                 on
                   ? "border-accent bg-accent/10 text-accent"
                   : "border-line text-ink hover:border-ink/40"
@@ -1042,7 +1042,7 @@ function WhatPopover({
             <span className="w-9 h-9 rounded-full border border-line flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-ink-soft text-[18px]">search</span>
             </span>
-            <span className="text-[13px] text-ink leading-snug">{s}</span>
+            <span className="text-label text-ink leading-snug">{s}</span>
           </button>
         ))}
       </div>

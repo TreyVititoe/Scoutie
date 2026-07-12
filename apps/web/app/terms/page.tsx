@@ -14,7 +14,7 @@ export default function TermsPage() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-ink text-[17px] font-semibold"
+            className="text-ink text-title font-semibold"
           >
             Walter
           </Link>

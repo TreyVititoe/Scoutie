@@ -60,7 +60,7 @@ export default function CompareLocalPage() {
     <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/" className="text-ink text-title font-semibold">Walter</Link>
           <Link href="/saved" className="text-ink-soft text-sm hover:text-ink transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Saved Trips
@@ -77,7 +77,7 @@ export default function CompareLocalPage() {
           <h1 className="text-[28px] font-semibold text-ink leading-page mb-3">
             Compare your saved trips
           </h1>
-          <p className="text-ink-soft text-[17px]">
+          <p className="text-ink-soft text-title">
             {trips.length} trips side-by-side. Pick the one you love.
           </p>
         </motion.div>
@@ -132,7 +132,7 @@ export default function CompareLocalPage() {
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
-                      <h3 className="font-semibold text-ink text-[17px]">{trip.destination}</h3>
+                      <h3 className="font-semibold text-ink text-title">{trip.destination}</h3>
                     </div>
                     <span className="bg-accent text-white rounded-pill px-2.5 py-0.5 text-[11px] font-semibold">
                       {trip.items.length} items
@@ -277,7 +277,7 @@ export default function CompareLocalPage() {
                   {/* CTA */}
                   <button
                     onClick={() => handleChoose(trip)}
-                    className="mt-auto w-full bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
+                    className="mt-auto w-full bg-accent text-white rounded-[10px] px-5 py-3 text-body font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
                   >
                     View Full Details
                     <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

@@ -129,7 +129,7 @@ export default function ClarifyPage() {
           </Link>
           <Link
             href="/"
-            className="text-ink-soft hover:text-ink text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
+            className="text-ink-soft hover:text-ink text-label font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">arrow_back</span>
             Back
@@ -158,7 +158,7 @@ export default function ClarifyPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6, ease: EASE }}
-          className="text-ink-soft text-[15px] sm:text-[16px] mb-12 max-w-[55ch]"
+          className="text-ink-soft text-body sm:text-[16px] mb-12 max-w-[55ch]"
         >
           Walter needs three more facts before he books your spine.
         </motion.p>
@@ -172,7 +172,7 @@ export default function ClarifyPage() {
           {/* Travelers */}
           <section>
             <h2 className="text-ink text-[18px] font-semibold mb-1">How many of you?</h2>
-            <p className="text-ink-faint text-[13px] mb-5">Adults only. We will ask about kids on the booking page if you need it.</p>
+            <p className="text-ink-faint text-label mb-5">Adults only. We will ask about kids on the booking page if you need it.</p>
             <div className="flex items-center gap-5">
               <button
                 type="button"
@@ -194,7 +194,7 @@ export default function ClarifyPage() {
               >
                 <span className="material-symbols-outlined text-[20px]">add</span>
               </button>
-              <span className="text-ink-faint text-[13px] ml-2">
+              <span className="text-ink-faint text-label ml-2">
                 {travelers === 1 ? "Solo trip" : travelers === 2 ? "Two of you" : `${travelers} travelers`}
               </span>
             </div>
@@ -203,7 +203,7 @@ export default function ClarifyPage() {
           {/* Accommodation */}
           <section>
             <h2 className="text-ink text-[18px] font-semibold mb-1">Where do you want to stay?</h2>
-            <p className="text-ink-faint text-[13px] mb-5">Pick one. You can always swap on the results page.</p>
+            <p className="text-ink-faint text-label mb-5">Pick one. You can always swap on the results page.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {ACCOMMODATION_OPTIONS.map((opt) => {
                 const selected = accommodation === opt.id;
@@ -238,7 +238,7 @@ export default function ClarifyPage() {
           {/* Departure */}
           <section>
             <h2 className="text-ink text-[18px] font-semibold mb-1">Where are you flying from?</h2>
-            <p className="text-ink-faint text-[13px] mb-5">A city or an airport code, whichever you know.</p>
+            <p className="text-ink-faint text-label mb-5">A city or an airport code, whichever you know.</p>
             <div className="relative">
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[18px] pointer-events-none">
                 flight_takeoff
@@ -259,7 +259,7 @@ export default function ClarifyPage() {
                   }
                 }}
                 placeholder="A city or airport (Chicago, JFK, Heathrow...)"
-                className="w-full pl-11 pr-4 py-3.5 rounded-pill bg-raised-slate border border-line text-ink text-[15px] placeholder:text-ink-faint focus:outline-none focus:border-accent transition-colors"
+                className="w-full pl-11 pr-4 py-3.5 rounded-pill bg-raised-slate border border-line text-ink text-body placeholder:text-ink-faint focus:outline-none focus:border-accent transition-colors"
               />
               {showDepartureSuggestions && departureSuggestions.length > 0 && (
                 <div className="absolute z-20 left-0 right-0 mt-2 bg-card rounded-[14px] border border-line shadow-[0_12px_40px_rgba(20,30,60,0.12)] overflow-hidden">
@@ -299,7 +299,7 @@ export default function ClarifyPage() {
               type="button"
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className="w-full sm:w-auto bg-accent text-snow-off-glacier rounded-pill px-7 py-3.5 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full sm:w-auto bg-accent text-snow-off-glacier rounded-pill px-7 py-3.5 text-body font-semibold hover:bg-accent-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               Build my trip
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>

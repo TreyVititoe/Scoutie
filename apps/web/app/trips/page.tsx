@@ -311,7 +311,7 @@ export default function TripsPage() {
           </Link>
           <Link
             href="/"
-            className="text-ink-soft hover:text-ink text-[13px] font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
+            className="text-ink-soft hover:text-ink text-label font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">arrow_back</span>
             Edit search
@@ -340,7 +340,7 @@ export default function TripsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6, ease: EASE }}
-          className="text-ink-soft text-[15px] sm:text-[16px] mb-12 max-w-[55ch]"
+          className="text-ink-soft text-body sm:text-[16px] mb-12 max-w-[55ch]"
         >
           Same brief, three cuts. Pick one and Walter builds it out.
         </motion.p>
@@ -409,7 +409,7 @@ function TripCard({
         <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
           {option.tier}
         </span>
-        <span className="absolute bottom-3 left-3 text-snow-off-glacier text-[13px] font-semibold drop-shadow">
+        <span className="absolute bottom-3 left-3 text-snow-off-glacier text-label font-semibold drop-shadow">
           {option.destination}
         </span>
       </div>
@@ -419,20 +419,20 @@ function TripCard({
           {option.title}
         </h2>
         {option.summary && (
-          <p className="text-ink-soft text-[13px] mt-1.5 line-clamp-2 leading-snug">
+          <p className="text-ink-soft text-label mt-1.5 line-clamp-2 leading-snug">
             {option.summary}
           </p>
         )}
 
         <div className="flex items-baseline gap-3 mt-3 mb-4">
-          <span className="text-ink text-[17px] font-semibold tabular-nums">
+          <span className="text-ink text-title font-semibold tabular-nums">
             ${option.estTotal.toLocaleString()}
           </span>
           <span className="text-ink-faint text-[12px]">{option.days} days, all in</span>
         </div>
 
         <div className="mt-auto pt-4 border-t border-line flex items-start gap-2">
-          <span className="material-symbols-outlined text-accent text-[17px] mt-px">
+          <span className="material-symbols-outlined text-accent text-title mt-px">
             check_circle
           </span>
           <p className="text-ink-soft text-[12.5px] leading-snug">{option.why}</p>

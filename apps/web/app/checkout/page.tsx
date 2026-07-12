@@ -101,7 +101,7 @@ export default function CheckoutPage() {
       <div className="min-h-screen bg-product-bg">
         <header className="nav-glass sticky top-0 z-20">
           <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="text-[17px] font-semibold text-ink">
+            <Link href="/" className="text-title font-semibold text-ink">
               Walter
             </Link>
           </div>
@@ -136,7 +136,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-product-bg">
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-[17px] font-semibold text-ink">
+          <Link href="/" className="text-title font-semibold text-ink">
             Walter
           </Link>
           <Link
@@ -187,7 +187,7 @@ export default function CheckoutPage() {
                       <span className="material-symbols-outlined text-accent text-[22px]">
                         {section.icon}
                       </span>
-                      <h2 className="font-semibold text-[17px] text-ink">
+                      <h2 className="font-semibold text-title text-ink">
                         {section.label}
                       </h2>
                     </div>
@@ -224,7 +224,7 @@ export default function CheckoutPage() {
                           </button>
                           <div className="min-w-0 flex-1">
                             <p
-                              className={`font-semibold text-[15px] truncate ${
+                              className={`font-semibold text-body truncate ${
                                 isBooked
                                   ? "text-ink-faint line-through"
                                   : "text-ink"
@@ -244,7 +244,7 @@ export default function CheckoutPage() {
                             )}
                           </div>
                           <div className="flex items-center gap-3 flex-shrink-0">
-                            <p className="font-semibold text-[15px] text-ink">
+                            <p className="font-semibold text-body text-ink">
                               {item.price != null && item.price > 0
                                 ? `$${item.price.toLocaleString()}`
                                 : "Included"}

@@ -47,7 +47,7 @@ export default function AboutPage() {
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="font-semibold text-[17px] text-ink"
+            className="font-semibold text-title text-ink"
           >
             Walter
           </Link>
@@ -203,7 +203,7 @@ export default function AboutPage() {
             </p>
             <Link
               href="/"
-              className="inline-flex items-center justify-center bg-accent text-white rounded-[10px] px-10 py-5 text-[17px] font-semibold hover:bg-accent-light transition-colors"
+              className="inline-flex items-center justify-center bg-accent text-white rounded-[10px] px-10 py-5 text-title font-semibold hover:bg-accent-light transition-colors"
             >
               Start planning
               <svg

@@ -191,7 +191,7 @@ export default function SharedTripPage() {
       {/* Header */}
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-ink text-[17px] font-semibold">
+          <Link href="/" className="text-ink text-title font-semibold">
             Walter
           </Link>
           <Link
@@ -222,7 +222,7 @@ export default function SharedTripPage() {
           <h1 className="font-semibold text-[28px] sm:text-[36px] text-ink leading-tight mb-2">
             {trip.title}
           </h1>
-          <p className="text-ink-soft max-w-2xl text-[15px] leading-relaxed">{trip.summary}</p>
+          <p className="text-ink-soft max-w-2xl text-body leading-relaxed">{trip.summary}</p>
 
           {/* Stats row */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-6">
@@ -238,7 +238,7 @@ export default function SharedTripPage() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-accent text-[18px]">payments</span>
-              <span className="font-semibold text-accent text-[17px]">${trip.total_estimated_cost.toLocaleString()}</span>
+              <span className="font-semibold text-accent text-title">${trip.total_estimated_cost.toLocaleString()}</span>
             </div>
             {trip.start_date && trip.end_date && (
               <div className="flex items-center gap-1.5">

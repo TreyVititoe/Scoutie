@@ -111,7 +111,7 @@ export default function ExplorePage() {
       {/* Header */}
       <header className="nav-glass sticky top-0 z-20">
         <div className="max-w-content mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-ink text-[17px] font-semibold">
+          <Link href="/" className="text-ink text-title font-semibold">
             Walter
           </Link>
           <Link

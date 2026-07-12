@@ -7,14 +7,14 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12">
         <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
           <div className="max-w-xs">
-            <Link href="/" className="text-[17px] font-semibold text-ink">
+            <Link href="/" className="text-title font-semibold text-ink">
               Walter
             </Link>
-            <p className="text-[13px] text-ink-faint mt-2 leading-[1.55]">
+            <p className="text-label text-ink-faint mt-2 leading-[1.55]">
               The world is wasted on people who stay home.
             </p>
           </div>
-          <div className="flex gap-10 text-[13px]">
+          <div className="flex gap-10 text-label">
             <div className="flex flex-col gap-2">
               <span className="text-ink-faint font-medium">Product</span>
               <Link href="/" className="text-ink-soft hover:text-ink transition-colors">Plan a trip</Link>

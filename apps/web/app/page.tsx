@@ -51,7 +51,7 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-[15px] font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
+      className={`text-body font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
         active
           ? "bg-ink/10 text-ink"
           : "text-ink-soft hover:text-ink hover:bg-ink/5"
@@ -154,7 +154,7 @@ export default function LandingPage() {
           <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.99_0.004_250_/_0.72)] backdrop-blur-2xl backdrop-saturate-150 border border-black/5 shadow-[0_8px_32px_rgba(20,30,60,0.12),inset_0_1px_0_rgba(255,255,255,0.6)]">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <img src="/walter-logo.png" alt="" className="w-7 h-7 rounded-[8px]" />
-              <span className="text-ink text-[17px] font-semibold tracking-tight">Walter</span>
+              <span className="text-ink text-title font-semibold tracking-tight">Walter</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -275,7 +275,7 @@ export default function LandingPage() {
                   <h2 className="text-[22px] sm:text-[28px] font-semibold text-ink tracking-display leading-[1.05]">
                     {CATEGORY_LABELS[cat]}
                   </h2>
-                  <p className="text-ink-faint text-[13px] mt-1.5">
+                  <p className="text-ink-faint text-label mt-1.5">
                     {CATEGORY_TAGLINES[cat]}
                   </p>
                 </div>
@@ -296,7 +296,7 @@ export default function LandingPage() {
               <h2 className="text-[22px] sm:text-[28px] font-semibold text-ink tracking-display leading-[1.05]">
                 Trips from the community
               </h2>
-              <p className="text-ink-faint text-[13px] mt-1.5">
+              <p className="text-ink-faint text-label mt-1.5">
                 Built by other travelers, public for anyone to fork.
               </p>
             </div>
@@ -331,7 +331,7 @@ export default function LandingPage() {
                       </p>
                       <div className="mt-2">
                         <div className="flex items-baseline gap-1.5">
-                          <span className="font-semibold text-ink text-[13px]">
+                          <span className="font-semibold text-ink text-label">
                             ${trip.total_estimated_cost.toLocaleString()}
                           </span>
                           <span className="text-ink-faint text-[10.5px]">per person</span>
@@ -416,7 +416,7 @@ function CuratedTripCard({
         </p>
         <div className="mt-2">
           <div className="flex items-baseline gap-1.5">
-            <span className="font-semibold text-ink text-[13px]">
+            <span className="font-semibold text-ink text-label">
               ${trip.totalCost.toLocaleString()}
             </span>
             <span className="text-ink-faint text-[10.5px]">

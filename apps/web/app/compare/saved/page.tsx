@@ -73,12 +73,12 @@ export default function CompareSavedPage() {
       <div className="min-h-screen bg-product-bg">
         <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
           <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-            <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+            <Link href="/" className="text-ink text-title font-semibold">Walter</Link>
           </div>
         </header>
         <div className="flex flex-col items-center justify-center min-h-screen">
           <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-6" />
-          <p className="text-[17px] font-semibold text-ink">Loading your trips...</p>
+          <p className="text-title font-semibold text-ink">Loading your trips...</p>
         </div>
       </div>
     );
@@ -88,7 +88,7 @@ export default function CompareSavedPage() {
     <div className="min-h-screen bg-product-bg">
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/" className="text-ink text-title font-semibold">Walter</Link>
           <Link href="/dashboard" className="text-ink-soft text-sm hover:text-ink transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Dashboard
@@ -105,7 +105,7 @@ export default function CompareSavedPage() {
           <h1 className="text-[28px] font-semibold text-ink leading-page mb-3">
             Compare your saved trips
           </h1>
-          <p className="text-ink-soft text-[17px]">
+          <p className="text-ink-soft text-title">
             Side-by-side comparison of {trips.length} trips. Pick the winner.
           </p>
         </motion.div>
@@ -249,7 +249,7 @@ export default function CompareSavedPage() {
                     )}
                     <Link
                       href={`/shared/${trip.share_slug}`}
-                      className="w-full bg-accent text-white rounded-[10px] px-5 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-accent text-white rounded-[10px] px-5 py-3 text-body font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
                     >
                       View full trip
                       <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

@@ -281,7 +281,7 @@ function TripPage() {
           <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
             <Link
               href="/"
-              className="text-[17px] font-semibold text-ink"
+              className="text-title font-semibold text-ink"
             >
               Walter
             </Link>
@@ -342,7 +342,7 @@ function TripPage() {
         <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-[17px] font-semibold text-ink"
+            className="text-title font-semibold text-ink"
           >
             Walter
           </Link>
@@ -410,7 +410,7 @@ function TripPage() {
                   <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                     Destination
                   </p>
-                  <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                  <p className="font-semibold text-title text-ink flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-accent text-[20px]">
                       location_on
                     </span>
@@ -427,7 +427,7 @@ function TripPage() {
                   <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                     Dates
                   </p>
-                  <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                  <p className="font-semibold text-title text-ink flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-accent text-[20px]">
                       calendar_today
                     </span>
@@ -444,7 +444,7 @@ function TripPage() {
                   <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                     Length
                   </p>
-                  <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+                  <p className="font-semibold text-title text-ink flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-accent text-[20px]">
                       schedule
                     </span>
@@ -459,7 +459,7 @@ function TripPage() {
               <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                 Travelers
               </p>
-              <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+              <p className="font-semibold text-title text-ink flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-accent text-[20px]">
                   group
                 </span>
@@ -472,7 +472,7 @@ function TripPage() {
               <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-1">
                 Items
               </p>
-              <p className="font-semibold text-[17px] text-ink flex items-center gap-1.5">
+              <p className="font-semibold text-title text-ink flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-accent text-[20px]">
                   shopping_bag
                 </span>
@@ -547,7 +547,7 @@ function TripPage() {
                 <span className="material-symbols-outlined text-accent text-[22px]">
                   near_me
                 </span>
-                <h3 className="font-semibold text-[17px] text-ink">
+                <h3 className="font-semibold text-title text-ink">
                   Trip Map
                 </h3>
               </div>
@@ -566,7 +566,7 @@ function TripPage() {
                 <span className="material-symbols-outlined text-accent text-[22px]">
                   payments
                 </span>
-                <h3 className="font-semibold text-[17px] text-ink">
+                <h3 className="font-semibold text-title text-ink">
                   Cost Breakdown
                 </h3>
               </div>
@@ -791,7 +791,7 @@ function ItemCard({
             ) : null}
           </div>
 
-          <h3 className="font-semibold text-[17px] text-ink truncate">
+          <h3 className="font-semibold text-title text-ink truncate">
             {item.title}
           </h3>
 
@@ -834,7 +834,7 @@ function ItemCard({
 
           {/* Price */}
           {item.price != null && item.price > 0 && (
-            <p className={`font-semibold text-[17px] ${isAi ? "text-ink-faint" : "text-accent"}`}>
+            <p className={`font-semibold text-title ${isAi ? "text-ink-faint" : "text-accent"}`}>
               ${item.price.toLocaleString()}
               {isAi && <span className="text-[10px] ml-0.5">est.</span>}
             </p>

@@ -209,7 +209,7 @@ export default function QuickPlanPage() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-20 nav-glass">
         <div className="max-w-content mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-ink text-[17px] font-semibold">Walter</Link>
+          <Link href="/" className="text-ink text-title font-semibold">Walter</Link>
           <Link href="/" className="text-ink-soft text-sm hover:text-ink transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">tune</span>
             Full Trip Design
@@ -228,7 +228,7 @@ export default function QuickPlanPage() {
           <h1 className="text-[28px] md:text-[36px] font-semibold text-ink leading-tight mb-3">
             What sounds fun?
           </h1>
-          <p className="text-ink-soft text-[17px] mb-8">
+          <p className="text-ink-soft text-title mb-8">
             Add anything -- places, artists, foods, activities, vibes, dates. Walter will build trip options around everything you love.
           </p>
 
@@ -277,7 +277,7 @@ export default function QuickPlanPage() {
                       : "Add more..."
                 }
                 disabled={tags.length >= 15}
-                className="flex-1 px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-ink text-[15px] placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-[10px] border border-[rgba(91,141,239,0.08)] text-ink text-body placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
               />
               <button
                 onClick={() => addTag(input)}
@@ -297,7 +297,7 @@ export default function QuickPlanPage() {
                 <div className="sm:flex sm:justify-end w-full sm:w-auto">
                   <button
                     onClick={() => setStep("details")}
-                    className="w-full sm:w-auto bg-accent text-white rounded-[10px] px-6 py-2.5 text-[15px] font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto bg-accent text-white rounded-[10px] px-6 py-2.5 text-body font-semibold hover:bg-accent-light transition-colors flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                     Plan My Trip
@@ -326,7 +326,7 @@ export default function QuickPlanPage() {
             <h1 className="text-[28px] md:text-[36px] font-semibold text-ink leading-tight mb-3">
               A few quick details
             </h1>
-            <p className="text-ink-soft text-[17px] mb-8">
+            <p className="text-ink-soft text-title mb-8">
               Walter needs two more things before planning your trip.
             </p>
 
@@ -428,7 +428,7 @@ export default function QuickPlanPage() {
                 <button
                   onClick={handleGenerate}
                   disabled={loading}
-                  className="bg-accent text-white rounded-[10px] px-7 py-3 text-[15px] font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="bg-accent text-white rounded-[10px] px-7 py-3 text-body font-semibold hover:bg-accent-light transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-[18px]">
                     {loading ? "hourglass_empty" : "auto_awesome"}
@@ -546,7 +546,7 @@ export default function QuickPlanPage() {
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <span className="material-symbols-outlined text-accent text-[18px]">location_on</span>
-                            <h3 className="font-semibold text-ink text-[17px]">{trip.destination}</h3>
+                            <h3 className="font-semibold text-ink text-title">{trip.destination}</h3>
                           </div>
                           <p className="text-ink-soft text-sm">{trip.summary}</p>
                         </div>
