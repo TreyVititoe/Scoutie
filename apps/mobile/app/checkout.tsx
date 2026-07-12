@@ -1,10 +1,13 @@
-import { Stack } from "expo-router";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import { router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import * as Haptics from "expo-haptics";
 import { useMemo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { providerLabel, trackAndOpen } from "../lib/affiliate";
+import { api } from "../lib/apiClient";
 import { selectTotalPrice, useTripCart } from "../lib/stores/tripCartStore";
 import { usePrefs } from "../lib/stores/walterPrefsStore";
 import { colors } from "../theme/colors";
@@ -45,6 +48,35 @@ export default function CheckoutScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
       >
+        {/* The place you're committing to */}
+        {destination ? (
+          <View className="rounded-3xl overflow-hidden mb-4" style={{ height: 200 }}>
+            <Image
+              source={{ uri: api.photo.url(destination) }}
+              contentFit="cover"
+              transition={300}
+              style={{ position: "absolute", inset: 0 }}
+            />
+            <LinearGradient
+              colors={["transparent", "rgba(15, 20, 34, 0.75)"]}
+              locations={[0.35, 1]}
+              style={{ position: "absolute", inset: 0 }}
+            />
+            <View className="flex-1 justify-end p-5">
+              <Text className="text-white/70 text-[11px] font-semibold uppercase tracking-widest">
+                {allBooked ? "Locked in" : "Securing your trip"}
+              </Text>
+              <Text
+                className="text-white font-semibold mt-0.5"
+                style={{ fontSize: 26, lineHeight: 29, letterSpacing: -0.3 }}
+                numberOfLines={1}
+              >
+                {destination.split(",")[0]}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
         {/* Progress */}
         <View className="bg-card rounded-2xl p-5 border border-line">
           <Text className="text-ink text-[24px] font-bold">
@@ -115,7 +147,11 @@ export default function CheckoutScreen() {
                       >
                         {item.title}
                       </Text>
-                      {item.subtitle ? (
+                      {isBooked ? (
+                        <Text className="text-accent text-[12px] font-medium mt-0.5" numberOfLines={1}>
+                          Booked on {providerLabel(item)}
+                        </Text>
+                      ) : item.subtitle ? (
                         <Text
                           className="text-ink-soft text-[12px] mt-0.5"
                           numberOfLines={1}
@@ -152,6 +188,27 @@ export default function CheckoutScreen() {
             })}
           </View>
         ))}
+
+        {allBooked ? (
+          <Pressable
+            onPress={() => router.push("/trip")}
+            className="rounded-3xl p-6 mt-6 items-center"
+            style={{ backgroundColor: "#141926" }}
+          >
+            <SymbolView
+              name="checkmark.seal.fill"
+              tintColor={colors.accent}
+              size={28}
+              fallback={null}
+            />
+            <Text className="text-white text-[20px] font-semibold mt-3">
+              Trip complete. Go pack.
+            </Text>
+            <Text className="text-white/60 text-[13px] mt-1 text-center">
+              Your packing list is waiting on the itinerary.
+            </Text>
+          </Pressable>
+        ) : null}
 
         <Text className="text-ink-faint text-[11px] text-center mt-6 leading-4 px-6">
           Walter earns a commission when you book through our links at no extra

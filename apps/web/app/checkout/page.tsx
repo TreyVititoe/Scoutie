@@ -17,6 +17,7 @@ import {
   trackAndOpen,
 } from "@/lib/affiliate";
 import AffiliateDisclosure from "@/components/AffiliateDisclosure";
+import { getDestinationImage } from "@/lib/destinationImages";
 
 /* ── Section config ── */
 const sectionConfig: Record<string, { label: string; icon: string }> = {
@@ -152,6 +153,24 @@ export default function CheckoutPage() {
       </header>
 
       <div className="max-w-[1080px] mx-auto px-6 py-10">
+        {destination && (
+          <div className="relative rounded-[20px] overflow-hidden mb-10 h-[220px] lg:h-[280px]">
+            <img
+              src={getDestinationImage(destination)}
+              alt={destination}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-tinted-pitch/75 via-tinted-pitch/20 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
+              <p className="text-snow-off-glacier/70 text-[11px] uppercase tracking-[2.5px] font-medium mb-1">
+                {allBooked ? "Locked in" : "Securing your trip"}
+              </p>
+              <p className="text-snow-off-glacier text-[28px] lg:text-[36px] font-semibold leading-tight">
+                {destination}
+              </p>
+            </div>
+          </div>
+        )}
         <p className="text-ink-faint text-[12px] tracking-wider uppercase mb-2">
           Booking checklist
         </p>
@@ -250,8 +269,8 @@ export default function CheckoutPage() {
                                 : "Included"}
                             </p>
                             {isBooked ? (
-                              <span className="text-xs font-semibold text-accent px-3 py-2">
-                                Booked
+                              <span className="text-xs font-semibold text-accent px-3 py-2 whitespace-nowrap">
+                                Booked on {providerLabel(item)}
                               </span>
                             ) : (
                               <button
