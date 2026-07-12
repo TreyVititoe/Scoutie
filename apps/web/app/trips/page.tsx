@@ -185,7 +185,20 @@ function apiTripToOption(trip: ApiTrip, index: number, prefs: Prefs): TripOption
     tier: TIER_LABELS[tierKey] || trip.tier || "Signature",
     image: `/api/photo?query=${encodeURIComponent(destination)}`,
     why: whyItFits(prefs, estTotal, days),
-    list: [...new Set([...(trip.topEvents || []), ...(trip.highlights || [])])].slice(0, 4),
+    /* Claude sometimes omits topEvents/highlights; the day-by-day
+     * itinerary items always exist, so they back the list up. */
+    list: [
+      ...new Set([
+        ...(trip.topEvents || []),
+        ...(trip.highlights || []),
+        ...(Array.isArray(trip.days)
+          ? (trip.days as { items?: { title?: string }[] }[])
+              .flatMap((d) => d.items ?? [])
+              .map((i) => i.title)
+              .filter((x): x is string => Boolean(x))
+          : []),
+      ]),
+    ].slice(0, 4),
   };
 }
 
