@@ -27,10 +27,17 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
     }
   };
 
+  /* The pick earns a taller photograph, a full row, and a reason. */
+  const curatorNote = bestValue
+    ? hotel.rating > 0 && hotel.reviewCount > 0
+      ? `The math favors this one: ${hotel.rating}/10 from ${hotel.reviewCount.toLocaleString()} guests at $${hotel.pricePerNight} a night. We'd book it.`
+      : `The best stay for the money on this search. We'd book it.`
+    : null;
+
   return (
-    <div className="w-full card-base overflow-hidden">
+    <div className={`w-full card-base overflow-hidden ${bestValue ? "sm:col-span-2 lg:col-span-3" : ""}`}>
       {/* Image */}
-      <div className="relative h-40 bg-raised-slate">
+      <div className={`relative bg-raised-slate ${bestValue ? "h-64 lg:h-80" : "h-40"}`}>
         {hotel.image ? (
           <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
@@ -50,6 +57,9 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
         <p className="font-semibold text-ink mb-1 leading-tight line-clamp-2">{hotel.name}</p>
         {hotel.neighborhood && (
           <p className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold mb-3">{hotel.neighborhood}</p>
+        )}
+        {curatorNote && (
+          <p className="text-body text-ink-soft leading-relaxed mb-3 max-w-[52ch]">{curatorNote}</p>
         )}
 
         {/* Rating */}

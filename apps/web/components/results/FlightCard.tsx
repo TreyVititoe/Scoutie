@@ -106,8 +106,15 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
     }
   };
 
+  /* The pick gets a wider berth and a reason. */
+  const curatorNote = cheapest
+    ? isDirect
+      ? `Nonstop, ${outbound.duration} in the air, and the lowest fare on this search. This is the one.`
+      : `The lowest fare on this search. ${stopsLabel(totalStops)} total, but the hours are decent.`
+    : null;
+
   return (
-    <div className="w-full card-base p-6 relative">
+    <div className={`w-full card-base p-6 relative ${cheapest ? "sm:col-span-2" : ""}`}>
       {cheapest && (
         <span className="absolute top-4 right-4 bg-raised-slate text-ink border border-line rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
           Walter&apos;s pick
@@ -128,6 +135,12 @@ export default function FlightCard({ flight, cheapest }: { flight: FlightResult;
           <span className="text-[11px] text-ink-faint ml-auto">Nonstop</span>
         )}
       </div>
+
+      {curatorNote && (
+        <p className="text-body text-ink-soft leading-relaxed mb-4 max-w-[52ch]">
+          {curatorNote}
+        </p>
+      )}
 
       {/* Outbound + return */}
       <div className="space-y-4 mb-4">

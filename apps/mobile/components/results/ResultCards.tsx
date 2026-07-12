@@ -66,19 +66,21 @@ function CardImage({
   uri,
   fallbackIcon,
   chip,
+  height = 160,
 }: {
   uri: string | null;
   fallbackIcon: string;
   chip?: string | null;
+  height?: number;
 }) {
   return (
-    <View style={{ height: 160, backgroundColor: colors.surface2 }}>
+    <View style={{ height, backgroundColor: colors.surface2 }}>
       {uri ? (
         <Image
           source={{ uri }}
           contentFit="cover"
           transition={200}
-          style={{ width: "100%", height: 160 }}
+          style={{ width: "100%", height }}
         />
       ) : (
         <View className="w-full h-full items-center justify-center">
@@ -108,6 +110,13 @@ function InfoRow({ icon, children }: { icon: string; children: React.ReactNode }
         {children}
       </Text>
     </View>
+  );
+}
+
+/* The pick gets a reason in Walter's voice, grounded in the data. */
+function CuratorNote({ children }: { children: React.ReactNode }) {
+  return (
+    <Text className="text-ink-soft text-[13px] leading-5 mt-1.5">{children}</Text>
   );
 }
 
@@ -185,6 +194,14 @@ export function FlightCard({
           ) : null}
         </View>
 
+        {cheapest ? (
+          <CuratorNote>
+            {flight.stops === 0
+              ? `Nonstop, ${flight.duration} in the air, and the lowest fare on this search. This is the one.`
+              : `The lowest fare on this search. ${stopsLabel(flight.stops)}, but the hours are decent.`}
+          </CuratorNote>
+        ) : null}
+
         <View className="flex-row items-center justify-between mt-4">
           <View>
             <Text className="text-ink text-[17px] font-semibold">
@@ -249,6 +266,7 @@ export function HotelCard({
         uri={hotel.image}
         fallbackIcon="bed.double.fill"
         chip={bestValue ? "Walter's pick" : null}
+        height={bestValue ? 240 : 160}
       />
       <View className="p-4">
         <Text className="text-ink text-[15px] font-semibold" numberOfLines={2}>
@@ -261,6 +279,13 @@ export function HotelCard({
           >
             {hotel.address}
           </Text>
+        ) : null}
+        {bestValue ? (
+          <CuratorNote>
+            {hotel.rating > 0 && hotel.reviewCount > 0
+              ? `The math favors this one: ${hotel.rating}/10 from ${hotel.reviewCount.toLocaleString()} guests at $${hotel.pricePerNight} a night. We'd book it.`
+              : "The best stay for the money on this search. We'd book it."}
+          </CuratorNote>
         ) : null}
         {hotel.rating > 0 ? (
           <View className="flex-row items-center gap-1.5 mt-2.5">
@@ -313,21 +338,33 @@ function formatEventTime(timeStr: string | null): string {
 
 export function EventCard({
   event,
+  featured = false,
   added,
   onToggle,
 }: {
   event: ScoredEvent;
+  featured?: boolean;
   added: boolean;
   onToggle: () => void;
 }) {
   const time = formatEventTime(event.time);
   return (
     <CardShell>
-      <CardImage uri={event.image} fallbackIcon="ticket.fill" chip={event.category} />
+      <CardImage
+        uri={event.image}
+        fallbackIcon="ticket.fill"
+        chip={featured ? "This is why you're going" : event.category}
+        height={featured ? 240 : 160}
+      />
       <View className="p-4">
         <Text className="text-ink text-[15px] font-semibold" numberOfLines={2}>
           {event.name}
         </Text>
+        {featured ? (
+          <CuratorNote>
+            The closest match to what you told Walter you love, during your dates.
+          </CuratorNote>
+        ) : null}
         <InfoRow icon="mappin">{event.venueName}</InfoRow>
         <InfoRow icon="calendar">
           {formatEventDate(event.date)}

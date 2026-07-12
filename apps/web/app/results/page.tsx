@@ -462,9 +462,13 @@ export default function ResultsPage() {
 
               {!flightsLoading && flights.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {flights.map((f) => (
-                    <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
-                  ))}
+                  {[...flights]
+                    .sort((a, b) =>
+                      a.id === cheapestFlight?.id ? -1 : b.id === cheapestFlight?.id ? 1 : 0
+                    )
+                    .map((f) => (
+                      <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
+                    ))}
                 </div>
               )}
 
@@ -521,9 +525,13 @@ export default function ResultsPage() {
 
               {!hotelsLoading && hotels.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {hotels.map((h) => (
-                    <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
-                  ))}
+                  {[...hotels]
+                    .sort((a, b) =>
+                      a.id === bestValueHotel?.id ? -1 : b.id === bestValueHotel?.id ? 1 : 0
+                    )
+                    .map((h) => (
+                      <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
+                    ))}
                 </div>
               )}
 
@@ -563,8 +571,8 @@ export default function ResultsPage() {
 
               {!eventsLoading && allEvents.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {allEvents.map((ev) => (
-                    <EventCard key={ev.id} event={ev} />
+                  {allEvents.map((ev, i) => (
+                    <EventCard key={ev.id} event={ev} featured={i === 0 && events.length > 0} />
                   ))}
                 </div>
               )}

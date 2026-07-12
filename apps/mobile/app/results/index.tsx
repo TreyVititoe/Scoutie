@@ -98,7 +98,10 @@ export default function ResultsScreen() {
       const f = flights.data?.flights ?? [];
       if (!f.length) return <Empty icon="airplane" label="No flights found." />;
       const cheapest = f.reduce((a, b) => (a.price < b.price ? a : b));
-      return f.map((flight) => (
+      const ordered = [...f].sort((a, b) =>
+        a.id === cheapest.id ? -1 : b.id === cheapest.id ? 1 : 0
+      );
+      return ordered.map((flight) => (
         <FlightCard
           key={flight.id}
           flight={flight}
@@ -165,7 +168,11 @@ export default function ResultsScreen() {
           {!h.length ? (
             <Empty icon="bed.double" label="No stays found for this type." />
           ) : (
-            h.map((hotel) => (
+            [...h]
+              .sort((a, b) =>
+                a.id === bestValue?.id ? -1 : b.id === bestValue?.id ? 1 : 0
+              )
+              .map((hotel) => (
               <HotelCard
                 key={hotel.id}
                 hotel={hotel}
@@ -199,10 +206,12 @@ export default function ResultsScreen() {
         ...(events.data?.topInArea ?? []),
       ];
       if (!all.length) return <Empty icon="ticket" label="No events found." />;
-      return all.map((e) => (
+      const exactCount = events.data?.exactMatches?.length ?? 0;
+      return all.map((e, i) => (
         <EventCard
           key={e.id}
           event={e}
+          featured={i === 0 && exactCount > 0}
           added={cart.has(e.id)}
           onToggle={() => {
             if (cart.has(e.id)) return cart.remove(e.id);

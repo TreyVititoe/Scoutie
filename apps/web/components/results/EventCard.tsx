@@ -17,7 +17,13 @@ function formatTime(timeStr: string | null): string {
   return `${hour}:${String(m).padStart(2, "0")} ${period}`;
 }
 
-export default function EventCard({ event }: { event: ScoredEvent }) {
+export default function EventCard({
+  event,
+  featured = false,
+}: {
+  event: ScoredEvent;
+  featured?: boolean;
+}) {
   const addItem = useTripCartStore((s) => s.addItem);
   const removeItem = useTripCartStore((s) => s.removeItem);
   const added = useTripCartStore((s) => s.items.some((i) => i.id === event.id));
@@ -42,9 +48,9 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
   };
 
   return (
-    <div className="w-full card-base overflow-hidden">
+    <div className={`w-full card-base overflow-hidden ${featured ? "sm:col-span-2 lg:col-span-3" : ""}`}>
       {/* Image */}
-      <div className="relative h-40 bg-raised-slate">
+      <div className={`relative bg-raised-slate ${featured ? "h-64 lg:h-80" : "h-40"}`}>
         {event.image ? (
           <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
         ) : (
@@ -53,7 +59,7 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
           </div>
         )}
         <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-snow-off-glacier border border-white/10 rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
-          {event.category}
+          {featured ? "This is why you're going" : event.category}
         </span>
       </div>
 
@@ -62,6 +68,11 @@ export default function EventCard({ event }: { event: ScoredEvent }) {
         <p className="font-semibold text-ink leading-tight line-clamp-2 mb-1">
           {event.name}
         </p>
+        {featured && (
+          <p className="text-body text-ink-soft leading-relaxed mb-2 max-w-[52ch]">
+            The closest match to what you told Walter you love: {event.category.toLowerCase()} at {event.venueName}, during your dates.
+          </p>
+        )}
 
         {/* Venue */}
         <div className="flex items-center gap-1.5 mb-3">
