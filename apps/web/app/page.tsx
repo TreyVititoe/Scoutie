@@ -226,7 +226,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-ink text-[52px] sm:text-[76px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
+            className="text-ink text-[44px] sm:text-[64px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
           >
             Where to next?
           </motion.h1>

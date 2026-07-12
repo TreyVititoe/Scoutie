@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { Pressable, Text, View } from "react-native";
-import type { Flight, Hotel, ScoredEvent, Suggestion } from "@walter/shared";
+import type { Flight, FlightJourney, Hotel, ScoredEvent, Suggestion } from "@walter/shared";
 
 import { colors } from "../../theme/colors";
 
@@ -154,6 +154,49 @@ function stopsLabel(stops: number) {
   return stops === 0 ? "Nonstop" : `${stops} stop${stops === 1 ? "" : "s"}`;
 }
 
+function JourneyRow({ label, journey }: { label: string; journey: FlightJourney }) {
+  return (
+    <View className="mt-4">
+      <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1.5">
+        {label}
+      </Text>
+      <View className="flex-row items-center justify-between">
+        <View>
+          <Text className="text-ink text-[17px] font-semibold">
+            {journey.departTime}
+          </Text>
+          <Text className="text-ink-faint text-[12px] mt-0.5" numberOfLines={1}>
+            {journey.departure}
+          </Text>
+        </View>
+        <View className="items-center flex-1 px-3">
+          <Text className="text-ink-faint text-[11px]">{journey.duration}</Text>
+          <View
+            className="w-full h-px my-1.5"
+            style={{ backgroundColor: colors.hairlineStrong }}
+          />
+          <Text
+            className="text-[11px] font-medium"
+            style={{
+              color: journey.stops === 0 ? colors.accent : colors.textSecondary,
+            }}
+          >
+            {stopsLabel(journey.stops)}
+          </Text>
+        </View>
+        <View className="items-end">
+          <Text className="text-ink text-[17px] font-semibold">
+            {journey.arriveTime}
+          </Text>
+          <Text className="text-ink-faint text-[12px] mt-0.5" numberOfLines={1}>
+            {journey.arrival}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export function FlightCard({
   flight,
   cheapest,
@@ -165,23 +208,34 @@ export function FlightCard({
   added: boolean;
   onToggle: () => void;
 }) {
+  const outbound = flight.outbound;
+  const ret = flight.return;
+  const totalStops = outbound.stops + (ret?.stops ?? 0);
   return (
     <CardShell>
       <View className="p-4">
         <View className="flex-row items-center gap-2.5">
           <View
-            className="w-9 h-9 rounded-full items-center justify-center"
+            className="w-9 h-9 rounded-full items-center justify-center overflow-hidden"
             style={{ backgroundColor: colors.surface2 }}
           >
-            <SymbolView
-              name="airplane"
-              tintColor={colors.accent}
-              size={16}
-              fallback={null}
-            />
+            {flight.airlineLogo ? (
+              <Image
+                source={{ uri: flight.airlineLogo }}
+                contentFit="contain"
+                style={{ width: 20, height: 20 }}
+              />
+            ) : (
+              <SymbolView
+                name="airplane"
+                tintColor={colors.accent}
+                size={16}
+                fallback={null}
+              />
+            )}
           </View>
           <Text className="text-ink text-[14px] font-semibold flex-1" numberOfLines={1}>
-            {flight.airline} {flight.flightNumber}
+            {flight.airline}
           </Text>
           {cheapest ? (
             <View
@@ -197,49 +251,18 @@ export function FlightCard({
 
         {cheapest ? (
           <CuratorNote>
-            {flight.stops === 0
-              ? `Nonstop, ${flight.duration} in the air, and the lowest fare on this search. This is the one.`
-              : `The lowest fare on this search. ${stopsLabel(flight.stops)}, but the hours are decent.`}
+            {totalStops === 0
+              ? `Nonstop, ${outbound.duration} in the air, and the lowest fare on this search. This is the one.`
+              : `The lowest fare on this search. ${stopsLabel(totalStops)} total, but the hours are decent.`}
           </CuratorNote>
         ) : null}
 
-        <View className="flex-row items-center justify-between mt-4">
-          <View>
-            <Text className="text-ink text-[17px] font-semibold">
-              {flight.departureTime}
-            </Text>
-            <Text className="text-ink-faint text-[12px] mt-0.5" numberOfLines={1}>
-              {flight.departureCity}
-            </Text>
-          </View>
-          <View className="items-center flex-1 px-3">
-            <Text className="text-ink-faint text-[11px]">{flight.duration}</Text>
-            <View
-              className="w-full h-px my-1.5"
-              style={{ backgroundColor: colors.hairlineStrong }}
-            />
-            <Text
-              className="text-[11px] font-medium"
-              style={{
-                color: flight.stops === 0 ? colors.accent : colors.textSecondary,
-              }}
-            >
-              {stopsLabel(flight.stops)}
-            </Text>
-          </View>
-          <View className="items-end">
-            <Text className="text-ink text-[17px] font-semibold">
-              {flight.arrivalTime}
-            </Text>
-            <Text className="text-ink-faint text-[12px] mt-0.5" numberOfLines={1}>
-              {flight.arrivalCity}
-            </Text>
-          </View>
-        </View>
+        <JourneyRow label="Outbound" journey={outbound} />
+        {ret ? <JourneyRow label="Return" journey={ret} /> : null}
 
         <CardFooter
           amount={`$${flight.price.toLocaleString()}`}
-          caption="Roundtrip"
+          caption={ret ? "Roundtrip total" : "One way"}
           added={added}
           onToggle={onToggle}
         />

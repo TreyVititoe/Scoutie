@@ -59,18 +59,26 @@ export type SearchResults = {
   aiSummary: string;
 };
 
+/* Mirrors what /api/flights actually returns (apps/web FlightResult):
+ * nested outbound/return journeys, not a flat record. */
+export type FlightJourney = {
+  duration: string;
+  stops: number;
+  departure: string;
+  arrival: string;
+  departTime: string;
+  arriveTime: string;
+};
+
 export type Flight = {
   id: string;
   airline: string;
-  flightNumber: string;
-  departureCity: string;
-  arrivalCity: string;
-  departureTime: string;
-  arrivalTime: string;
-  duration: string;
-  stops: number;
+  airlineLogo: string | null;
+  outbound: FlightJourney;
+  return: FlightJourney | null;
   price: number;
-  bookingUrl?: string;
+  currency: string;
+  bookingUrl: string | null;
 };
 
 export type Hotel = {

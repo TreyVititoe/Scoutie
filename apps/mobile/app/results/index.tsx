@@ -113,8 +113,10 @@ export default function ResultsScreen() {
             cart.add({
               id: flight.id,
               type: "flight",
-              title: `${flight.airline} ${flight.flightNumber}`,
-              subtitle: `${flight.departureCity} → ${flight.arrivalCity}`,
+              title: `${flight.airline} ${flight.outbound.departure}, ${flight.outbound.arrival}`,
+              subtitle: flight.return
+                ? `${flight.outbound.duration} out | ${flight.return.duration} back | roundtrip`
+                : `${flight.outbound.departTime} | ${flight.outbound.duration}`,
               price: flight.price,
               bookingUrl: flight.bookingUrl ?? null,
               provider: "Google Flights",
