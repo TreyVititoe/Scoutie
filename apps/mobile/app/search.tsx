@@ -100,10 +100,10 @@ export default function SearchScreen() {
     };
   }, [query, destination]);
 
-  const canSearch = destination.trim().length > 0;
+  /* Blank Where is a real search: Walter picks three places that fit. */
+  const canSearch = true;
 
   const submit = () => {
-    if (!canSearch) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     usePrefs.getState().patch({
       destination: destination.trim(),
@@ -142,7 +142,7 @@ export default function SearchScreen() {
                 setQuery(v);
                 if (v !== destination) setDestination("");
               }}
-              placeholder="City, country, or region"
+              placeholder="Anywhere. Leave blank and Walter picks."
               placeholderTextColor={colors.textTertiary}
               className="flex-1 ml-3 text-ink text-[15px]"
               autoCorrect={false}

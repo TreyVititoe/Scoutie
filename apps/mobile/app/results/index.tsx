@@ -296,7 +296,7 @@ export default function ResultsScreen() {
             { value: "flights", label: "Flights" },
             { value: "stay", label: "Stay" },
             { value: "events", label: "Events" },
-            { value: "do", label: "Do" },
+            { value: "do", label: "Picks" },
           ]}
           value={section}
           onChange={setSection}

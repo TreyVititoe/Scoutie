@@ -103,9 +103,13 @@ ${budgetLine}
 FLIGHT CLASS: ${quizData.flightClass || "economy"}
 FLIGHT PRIORITY: ${quizData.flightPriority || "best value"}
 ${accommodationLine}
-INTERESTS: ${interests}
+INTERESTS: ${interests}${quizData.description ? `\nIN THEIR OWN WORDS: "${quizData.description}" — weight this heavily when picking destinations and activities. If no destination was given, all three destinations must fit these words.` : ""}
 
-Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.`;
+Generate 3 complete trip itineraries (budget, balanced, premium) as JSON.${
+    destination === "Surprise me"
+      ? " No destination was given: pick 3 DIFFERENT destinations, each a genuine match for the interests and words above."
+      : ""
+  }`;
 }
 
 function parseClaudeJson(text: string) {

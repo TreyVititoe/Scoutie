@@ -120,9 +120,9 @@ export default function LandingPage() {
     localStorage.setItem(
       "walter_prefs",
       JSON.stringify({
-        destinations: [v.destination],
+        destinations: v.destination ? [v.destination] : [],
         destination: v.destination,
-        surpriseMe: false,
+        surpriseMe: !v.destination,
         startDate: v.startDate,
         endDate: v.endDate,
         exactDates: v.exactDates,
@@ -141,9 +141,9 @@ export default function LandingPage() {
       })
     );
 
-    // Skip /trips: the Where/When/Who/What search goes straight to /results,
-    // which renders from walter_prefs (no chosen trip needed).
-    router.push("/results");
+    // Every search lands on the three comparison cards; a blank Where
+    // means Walter picks three places that fit the brief.
+    router.push("/trips");
   };
 
   return (
@@ -230,6 +230,14 @@ export default function LandingPage() {
           >
             Where to next?
           </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+            className="text-ink-soft text-title mb-3"
+          >
+            Use Walter to plan your perfect trip
+          </motion.p>
           <div className="flex items-end justify-end gap-6 mb-32">
             <motion.p
               initial={{ opacity: 0, y: 12 }}

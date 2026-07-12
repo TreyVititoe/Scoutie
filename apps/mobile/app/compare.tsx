@@ -28,7 +28,8 @@ export default function CompareScreen() {
         stay: prefs.stay ?? [],
         description: prefs.description ?? "",
       }),
-    enabled: !!prefs.destination,
+    /* Reached only from search; a blank destination is surprise mode. */
+    enabled: true,
     staleTime: 5 * 60_000,
   });
 
@@ -50,7 +51,9 @@ export default function CompareScreen() {
             <PlaneLoader durationMs={22000} />
           </View>
           <Text className="text-ink-soft text-[13px] mb-5 leading-5 text-center">
-            Reading the light in {prefs.destination ?? "your destination"}…
+            {prefs.destination
+              ? `Reading the light in ${prefs.destination.split(",")[0]}…`
+              : "Scanning the map for your kind of place…"}
           </Text>
           <SkeletonCard />
           <SkeletonCard />
@@ -98,7 +101,9 @@ export default function CompareScreen() {
         className="text-ink font-semibold"
         style={{ fontSize: 30, lineHeight: 33, letterSpacing: -0.3 }}
       >
-        Three takes on {prefs.destination?.split(",")[0]}.
+        {prefs.destination
+          ? `Three takes on ${prefs.destination.split(",")[0]}.`
+          : "Three places that fit you."}
       </Text>
       <Text className="text-ink-soft text-[13px] mt-2 mb-6 leading-5">
         Pick one and Walter will lay out the rest.
@@ -166,6 +171,26 @@ export default function CompareScreen() {
             <Text className="text-ink-soft text-[14px] mt-2 leading-5">
               {tier.summary}
             </Text>
+            {tier.highlights?.length ? (
+              <View className="mt-3">
+                <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1">
+                  On the list
+                </Text>
+                {tier.highlights.slice(0, 4).map((h) => (
+                  <View key={h} className="flex-row items-start gap-1.5 py-0.5">
+                    <SymbolView
+                      name="arrow.right"
+                      tintColor={colors.accent}
+                      size={11}
+                      fallback={null}
+                    />
+                    <Text className="text-ink-soft text-[13px] leading-4 flex-1">
+                      {h}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
             <View className="mt-4 flex-row items-center justify-between">
               <Text className="text-ink text-[18px] font-bold">
                 ${(tier.totalCost ?? 0).toLocaleString()}

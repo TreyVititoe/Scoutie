@@ -37,6 +37,8 @@ type ApiTrip = {
   destination?: string;
   totalEstimatedCost?: number;
   days?: unknown[];
+  topEvents?: string[];
+  highlights?: string[];
 };
 
 type TripOption = {
@@ -49,6 +51,8 @@ type TripOption = {
   tier: string;
   image: string;
   why: string;
+  /** Suggested items for the trip: events first, then highlights. */
+  list: string[];
 };
 
 function prefDays(prefs: Prefs): number {
@@ -162,6 +166,7 @@ function curatedFallback(prefs: Prefs): TripOption[] {
         trip.image ||
         `/api/photo?query=${encodeURIComponent(trip.photoQuery || trip.destination)}`,
       why: whyItFits(prefs, trip.totalCost, trip.durationDays),
+      list: [],
     }));
 }
 
@@ -180,6 +185,7 @@ function apiTripToOption(trip: ApiTrip, index: number, prefs: Prefs): TripOption
     tier: TIER_LABELS[tierKey] || trip.tier || "Signature",
     image: `/api/photo?query=${encodeURIComponent(destination)}`,
     why: whyItFits(prefs, estTotal, days),
+    list: [...new Set([...(trip.topEvents || []), ...(trip.highlights || [])])].slice(0, 4),
   };
 }
 
@@ -334,7 +340,9 @@ export default function TripsPage() {
           transition={{ delay: 0.05, duration: 0.6, ease: EASE }}
           className="text-ink text-[32px] sm:text-[42px] font-semibold tracking-display leading-[1.05] mb-3"
         >
-          Walter found three ways to do this.
+          {prefs?.surpriseMe
+            ? "Walter picked three places for you."
+            : "Walter found three ways to do this."}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -422,6 +430,22 @@ function TripCard({
           <p className="text-ink-soft text-label mt-1.5 line-clamp-2 leading-snug">
             {option.summary}
           </p>
+        )}
+
+        {option.list.length > 0 && (
+          <div className="mt-3">
+            <p className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1.5">
+              On the list
+            </p>
+            {option.list.map((item) => (
+              <div key={item} className="flex items-start gap-1.5 py-0.5">
+                <span className="material-symbols-outlined text-accent text-[14px] mt-px">
+                  arrow_forward
+                </span>
+                <p className="text-ink-soft text-[12.5px] leading-snug">{item}</p>
+              </div>
+            ))}
+          </div>
         )}
 
         <div className="flex items-baseline gap-3 mt-3 mb-4">

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Mapbox from "@rnmapbox/maps";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView } from "expo-symbols";
 import * as SystemUI from "expo-system-ui";
@@ -120,18 +120,8 @@ export default function RootLayout() {
             <Stack.Screen
               name="search"
               options={{
-                presentation: "fullScreenModal",
+                presentation: "modal",
                 title: "Plan a trip",
-                headerLeft: () => (
-                  <Pressable onPress={() => router.back()} hitSlop={10}>
-                    <SymbolView
-                      name="xmark"
-                      tintColor={colors.text}
-                      size={17}
-                      fallback={<Text style={{ color: colors.text }}>Close</Text>}
-                    />
-                  </Pressable>
-                ),
               }}
             />
             <Stack.Screen

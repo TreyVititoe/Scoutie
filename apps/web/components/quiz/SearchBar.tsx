@@ -267,12 +267,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
   }, [value.destination]);
 
   function attemptSearch() {
-    if (!value.destination.trim()) {
-      setWhereError(true);
-      setShakeKey((k) => k + 1);
-      setActive("where");
-      return;
-    }
+    // A blank Where is a real search: Walter picks the places.
     const next = normalizeSearch(value);
     onChange(next);
     setActive(null);
@@ -307,7 +302,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
     return parts.join(", ");
   })();
 
-  const whereLabel = value.destination || (whereError ? "Add a destination" : "Search destinations");
+  const whereLabel = value.destination || "Anywhere";
   const whatLabel = value.description || "What you love to do";
 
   return (
