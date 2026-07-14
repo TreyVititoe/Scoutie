@@ -368,7 +368,7 @@ export default function ResultsPage() {
             transition={{ delay: 0.1, duration: 0.6, ease: EASE }}
             className="lg:col-span-5 order-1 lg:order-2"
           >
-            <div className="rounded-[20px] overflow-hidden border border-line shadow-[0_12px_40px_rgba(20,30,60,0.10)] aspect-[4/3]">
+            <div className="rounded-[20px] overflow-hidden border border-line shadow-[0_12px_40px_rgba(20,30,60,0.10)] aspect-video lg:aspect-[4/3]">
               <img
                 src={heroImage}
                 alt={`${destination} landscape`}
@@ -388,7 +388,7 @@ export default function ResultsPage() {
       {/* Flat tab bar */}
       <div className="sticky top-[56px] z-20 bg-page-bg/85 backdrop-blur-md border-y border-line">
         <div className="max-w-content mx-auto px-5 lg:px-8 py-3">
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               const isLoading =
@@ -406,7 +406,7 @@ export default function ResultsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-pill text-label font-medium transition-colors ${
+                  className={`snap-start relative flex items-center gap-2 px-4 py-2 rounded-pill text-label font-medium transition-colors ${
                     isActive
                       ? "bg-hover-slate text-ink"
                       : "text-ink-soft hover:text-ink hover:bg-ink/5"
@@ -865,7 +865,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
                 }
               }}
               placeholder="City or airport code"
-              className="w-full pl-10 pr-4 py-3 rounded-pill bg-raised-slate border border-line text-ink placeholder:text-ink-faint focus:outline-none focus:border-accent transition-colors"
+              className="w-full pl-10 pr-4 py-3 rounded-pill bg-raised-slate border border-line text-[16px] text-ink placeholder:text-ink-faint focus:outline-none focus:border-accent transition-colors"
             />
           </div>
           <button

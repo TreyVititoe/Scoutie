@@ -161,7 +161,7 @@ export default function CheckoutPage() {
               className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-tinted-pitch/75 via-tinted-pitch/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
+            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 lg:p-8">
               <p className="text-snow-off-glacier/70 text-[11px] uppercase tracking-[2.5px] font-medium mb-1">
                 {allBooked ? "Locked in" : "Securing your trip"}
               </p>
@@ -221,7 +221,7 @@ export default function CheckoutPage() {
                       return (
                         <div
                           key={item.id}
-                          className="flex items-center gap-4 py-3.5 border-b border-line last:border-b-0 last:pb-0"
+                          className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3.5 border-b border-line last:border-b-0 last:pb-0"
                         >
                           <button
                             type="button"
@@ -262,7 +262,7 @@ export default function CheckoutPage() {
                               </p>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end pl-10 sm:pl-0">
                             <p className="font-semibold text-body text-ink">
                               {item.price != null && item.price > 0
                                 ? `$${item.price.toLocaleString()}`

@@ -681,7 +681,7 @@ function TripPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.2 }}
-            className="relative card-base p-6 w-full max-w-md"
+            className="relative card-base p-6 w-full max-w-md mx-4 sm:mx-0"
           >
             <h3 className="font-semibold text-[21px] text-ink mb-1">Save this trip</h3>
             <p className="text-ink-soft text-sm mb-6">

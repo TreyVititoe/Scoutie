@@ -221,7 +221,7 @@ export default function LandingPage() {
           <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-page-bg via-page-bg/80 to-transparent pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end w-full px-16 sm:px-24 pt-20 pb-8">
+        <div className="relative z-10 flex-1 flex flex-col justify-end w-full px-5 sm:px-12 lg:px-24 pt-20 pb-8">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -288,7 +288,7 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
                 {tripsInCat.map((trip) => (
                   <CuratedTripCard key={trip.id} trip={trip} router={router} />
                 ))}
@@ -308,7 +308,7 @@ export default function LandingPage() {
                 Built by other travelers, public for anyone to fork.
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
               {[...trips]
                 .sort((a, b) => b.upvote_count - a.upvote_count)
                 .slice(0, 14)

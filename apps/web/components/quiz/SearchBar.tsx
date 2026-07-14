@@ -213,6 +213,7 @@ export function normalizeSearch(v: SearchValue): SearchValue {
 
 export function SearchBar({ value, onChange, onSearch }: Props) {
   const [active, setActive] = useState<Section>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
   // +1 when the newly opened tab is to the right of the current one, -1 to the
   // left; drives the directional slide between popovers.
   const [direction, setDirection] = useState(1);
@@ -306,13 +307,47 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
   const whatLabel = value.description || "What you love to do";
 
   return (
-    <div
-      ref={wrapRef}
-      onKeyDown={handleWrapKeyDown}
-      onMouseEnter={cancelClose}
-      onMouseLeave={scheduleClose}
-      className="relative max-w-3xl mx-auto"
-    >
+    <div ref={wrapRef} onKeyDown={handleWrapKeyDown} className="relative max-w-3xl mx-auto">
+      {/* Mobile: a compact pill opens the full-screen sheet; the hover
+          popovers below are desktop-only. */}
+      <button
+        type="button"
+        onClick={() => setSheetOpen(true)}
+        className="md:hidden w-full rounded-full flex items-center gap-3 px-5 py-3 bg-card ring-1 ring-line shadow-[0_12px_40px_rgba(20,30,60,0.10)] text-left"
+      >
+        <span className="material-symbols-outlined text-ink text-[22px]">search</span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-body font-semibold text-ink truncate">
+            {value.destination || "Where to next?"}
+          </span>
+          <span className="block text-[12px] text-ink-soft truncate">
+            {value.startDate ? rangeLabel(value.startDate, value.endDate) : "Any week"}
+            {" · "}
+            {whoTouched ? whoLabel : "Add travelers"}
+          </span>
+        </span>
+      </button>
+      <AnimatePresence>
+        {sheetOpen && (
+          <MobileSearchSheet
+            value={value}
+            onChange={onChange}
+            onClose={() => setSheetOpen(false)}
+            onSearch={() => {
+              const next = normalizeSearch(value);
+              onChange(next);
+              setSheetOpen(false);
+              onSearch(next);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <div
+        className="hidden md:block relative"
+        onMouseEnter={cancelClose}
+        onMouseLeave={scheduleClose}
+      >
       <motion.div
         key={shakeKey}
         initial={false}
@@ -407,7 +442,335 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
           <WhatPopover key="what" direction={direction} value={value} onChange={onChange} />
         )}
       </AnimatePresence>
+      </div>
     </div>
+  );
+}
+
+/* ── Mobile full-screen search: the app's stacked Where/When/Who/What ── */
+function MobileSearchSheet({
+  value,
+  onChange,
+  onClose,
+  onSearch,
+}: {
+  value: SearchValue;
+  onChange: (next: SearchValue) => void;
+  onClose: () => void;
+  onSearch: () => void;
+}) {
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
+  /* Where */
+  const [query, setQuery] = useState("");
+  const [geo, setGeo] = useState<GeoItem[]>([]);
+  useEffect(() => {
+    if (query.trim().length < 2) {
+      setGeo([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      geocodePlaces(query, controller.signal)
+        .then((items) => setGeo(items.slice(0, 5)))
+        .catch(() => {});
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
+  /* When */
+  const today = startOfToday();
+  const startDate = parseYMD(value.startDate);
+  const endDate = parseYMD(value.endDate);
+  const [viewMonth, setViewMonth] = useState(() =>
+    startOfMonth(startDate ?? today)
+  );
+  const canGoBack = viewMonth.getTime() > startOfMonth(today).getTime();
+  const cells = buildMonthCells(viewMonth.getFullYear(), viewMonth.getMonth());
+
+  function selectDate(d: Date) {
+    if (d.getTime() < today.getTime()) return;
+    if (!startDate || (startDate && endDate)) {
+      onChange({ ...value, startDate: formatYMD(d), endDate: "" });
+      return;
+    }
+    if (d.getTime() < startDate.getTime()) {
+      onChange({ ...value, startDate: formatYMD(d), endDate: "" });
+    } else if (isSameDay(d, startDate)) {
+      onChange({ ...value, startDate: "", endDate: "" });
+    } else {
+      onChange({ ...value, endDate: formatYMD(d) });
+    }
+  }
+  function inRange(d: Date) {
+    if (!startDate || !endDate) return false;
+    return d.getTime() >= startDate.getTime() && d.getTime() <= endDate.getTime();
+  }
+
+  /* Who */
+  const shownAdults = Math.max(0, value.adults);
+  const whoRows: {
+    key: "adults" | "children" | "infants" | "pets";
+    label: string;
+    sub: string;
+    min: number;
+    count: number;
+  }[] = [
+    { key: "adults", label: "Adults", sub: "13 or older", min: 0, count: shownAdults },
+    { key: "children", label: "Children", sub: "Ages 2 to 12", min: 0, count: value.children },
+    { key: "infants", label: "Infants", sub: "Under 2", min: 0, count: value.infants },
+    { key: "pets", label: "Pets", sub: "Dogs and cats", min: 0, count: value.pets },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 24 }}
+      transition={{ duration: 0.25, ease: [0.2, 0.8, 0.2, 1] }}
+      className="fixed inset-0 z-[70] bg-paper flex flex-col md:hidden"
+    >
+      <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-line">
+        <p className="text-title font-semibold text-ink">Plan a trip</p>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close search"
+          className="w-11 h-11 -mr-2 rounded-full flex items-center justify-center hover:bg-ink/5"
+        >
+          <span className="material-symbols-outlined text-ink text-[22px]">close</span>
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {/* Where */}
+        <div className="bg-card border border-line rounded-[18px] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint mb-2">
+            Where
+          </p>
+          <input
+            type="text"
+            value={value.destination}
+            onChange={(e) => {
+              onChange({ ...value, destination: e.target.value });
+              setQuery(e.target.value);
+            }}
+            placeholder="Anywhere. Leave blank and Walter picks."
+            className="w-full text-[16px] text-ink placeholder:text-ink-faint bg-raised-slate rounded-[12px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent/25"
+          />
+          {geo.length > 0 && (
+            <div className="mt-2">
+              {geo.map((g) => (
+                <button
+                  key={g.id}
+                  type="button"
+                  onClick={() => {
+                    onChange({ ...value, destination: g.value });
+                    setQuery("");
+                    setGeo([]);
+                  }}
+                  className="w-full flex items-center gap-2.5 py-3 text-left border-b border-line last:border-b-0"
+                >
+                  <span className="material-symbols-outlined text-accent text-[18px]">
+                    {g.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-body text-ink truncate">{g.label}</span>
+                    <span className="block text-[12px] text-ink-faint truncate">
+                      {g.secondary}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* When */}
+        <div className="bg-card border border-line rounded-[18px] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint mb-2">
+            When
+          </p>
+          <div className="flex items-center justify-between mb-2">
+            <button
+              type="button"
+              disabled={!canGoBack}
+              onClick={() => setViewMonth(addMonths(viewMonth, -1))}
+              className={`w-11 h-11 rounded-full flex items-center justify-center ${
+                canGoBack ? "hover:bg-ink/5 text-ink" : "text-ink/20"
+              }`}
+              aria-label="Previous month"
+            >
+              <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+            </button>
+            <p className="text-[14px] font-semibold text-ink">{monthLabel(viewMonth)}</p>
+            <button
+              type="button"
+              onClick={() => setViewMonth(addMonths(viewMonth, 1))}
+              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-ink/5 text-ink"
+              aria-label="Next month"
+            >
+              <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-y-1 text-center">
+            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+              <div key={i} className="text-[11px] text-ink-faint font-medium pb-1.5">
+                {d}
+              </div>
+            ))}
+            {cells.map((cell, i) => {
+              if (!cell) return <div key={i} />;
+              const past = cell.getTime() < today.getTime();
+              const isStart = startDate && isSameDay(cell, startDate);
+              const isEnd = endDate && isSameDay(cell, endDate);
+              const inR = inRange(cell);
+              const isEdge = isStart || isEnd;
+              const hasRange = Boolean(startDate && endDate && !isSameDay(startDate, endDate));
+              if (past) {
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    disabled
+                    className="relative h-12 text-[15px] cursor-not-allowed text-ink/45 line-through decoration-[1.5px] decoration-ink/45 bg-ink/[0.04]"
+                  >
+                    {cell.getDate()}
+                  </button>
+                );
+              }
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => selectDate(cell)}
+                  className={`relative h-12 text-[15px] text-ink ${
+                    !isEdge && inR ? "bg-accent-tint font-medium" : !isEdge ? "rounded-full" : ""
+                  }`}
+                >
+                  {isEdge && hasRange && (
+                    <span
+                      aria-hidden
+                      className={`absolute inset-y-0 bg-accent-tint ${
+                        isStart ? "left-1/2 right-0" : "left-0 right-1/2"
+                      }`}
+                    />
+                  )}
+                  {isEdge ? (
+                    <span className="absolute inset-0 z-10 flex items-center justify-center bg-accent text-snow-off-glacier rounded-full font-semibold">
+                      {cell.getDate()}
+                    </span>
+                  ) : (
+                    cell.getDate()
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Who */}
+        <div className="bg-card border border-line rounded-[18px] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint mb-1">
+            Who
+          </p>
+          {whoRows.map((row, i) => (
+            <div
+              key={row.key}
+              className={`flex items-center justify-between py-3 ${
+                i < whoRows.length - 1 ? "border-b border-line" : ""
+              }`}
+            >
+              <div>
+                <p className="text-[14px] font-semibold text-ink">{row.label}</p>
+                <p className="text-[12px] text-ink-faint">{row.sub}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  aria-label={`Fewer ${row.label.toLowerCase()}`}
+                  disabled={row.count <= row.min}
+                  onClick={() => onChange({ ...value, [row.key]: row.count - 1 })}
+                  className={`w-10 h-10 rounded-full border flex items-center justify-center ${
+                    row.count <= row.min
+                      ? "border-line text-ink/20"
+                      : "border-ink/30 text-ink active:bg-ink/5"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">remove</span>
+                </button>
+                <span className="w-6 text-center text-body font-semibold text-ink tabular-nums">
+                  {row.count}
+                </span>
+                <button
+                  type="button"
+                  aria-label={`More ${row.label.toLowerCase()}`}
+                  onClick={() => onChange({ ...value, [row.key]: row.count + 1 })}
+                  className="w-10 h-10 rounded-full border border-ink/30 text-ink flex items-center justify-center active:bg-ink/5"
+                >
+                  <span className="material-symbols-outlined text-[18px]">add</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* What */}
+        <div className="bg-card border border-line rounded-[18px] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint mb-2">
+            What
+          </p>
+          <textarea
+            value={value.description}
+            onChange={(e) => onChange({ ...value, description: e.target.value })}
+            placeholder="Hikes, museums, slow dinners. Tell Walter what you love doing."
+            rows={3}
+            className="w-full text-[16px] text-ink placeholder:text-ink-faint bg-raised-slate rounded-[12px] p-3 focus:outline-none focus:ring-2 focus:ring-accent/25 resize-none"
+          />
+          <div className="flex flex-wrap gap-2 mt-3">
+            {WHAT_CATEGORIES.slice(0, 8).map((cat) => {
+              const selected = hasCategory(value.description, cat.label);
+              return (
+                <button
+                  key={cat.label}
+                  type="button"
+                  onClick={() =>
+                    onChange({ ...value, description: toggleCategory(value.description, cat.label) })
+                  }
+                  className={`px-3.5 py-2 rounded-full text-[13px] font-medium border ${
+                    selected
+                      ? "bg-ink text-snow-off-glacier border-ink"
+                      : "border-line text-ink-soft"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 py-3 border-t border-line bg-paper" style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
+        <button
+          type="button"
+          onClick={onSearch}
+          className="w-full bg-accent text-snow-off-glacier rounded-full py-4 text-[16px] font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+        >
+          <span className="material-symbols-outlined text-[20px]">search</span>
+          Search
+        </button>
+      </div>
+    </motion.div>
   );
 }
 
@@ -647,7 +1010,7 @@ function WherePopover({
           }}
           onKeyDown={handleInputKeyDown}
           placeholder="City, country, state, or airport"
-          className="w-full text-body text-ink placeholder:text-ink-faint bg-transparent focus:outline-none"
+          className="w-full text-[16px] text-ink placeholder:text-ink-faint bg-transparent focus:outline-none"
         />
         {error && (
           <p className="text-[12px] text-[oklch(0.55_0.19_25)] mt-1.5 font-medium">
@@ -995,7 +1358,7 @@ function WhatPopover({
         onChange={(e) => onChange({ ...value, description: e.target.value })}
         placeholder="Hikes, museums, slow dinners. Tell Walter what you love doing."
         rows={3}
-        className="w-full text-[14px] text-ink placeholder:text-ink-faint bg-transparent border border-line rounded-[14px] p-3 focus:outline-none focus:border-accent resize-none"
+        className="w-full text-[16px] text-ink placeholder:text-ink-faint bg-transparent border border-line rounded-[14px] p-3 focus:outline-none focus:border-accent resize-none"
       />
       <p className="text-[11px] text-ink-faint mt-1 px-1">Enter searches. Shift+Enter for a new line.</p>
 

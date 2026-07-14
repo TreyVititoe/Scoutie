@@ -14,7 +14,7 @@ export default function Footer() {
               The world is wasted on people who stay home.
             </p>
           </div>
-          <div className="flex gap-10 text-label">
+          <div className="flex flex-wrap gap-x-8 gap-y-6 sm:gap-10 text-label">
             <div className="flex flex-col gap-2">
               <span className="text-ink-faint font-medium">Product</span>
               <Link href="/" className="text-ink-soft hover:text-ink transition-colors">Plan a trip</Link>
