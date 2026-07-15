@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import type { Flight, FlightJourney, Hotel, ScoredEvent, Suggestion } from "@walter/shared";
 
@@ -286,6 +287,44 @@ export function FlightCard({
 
 /* ── Stays ── */
 
+function ArrowButton({
+  dir,
+  onPress,
+}: {
+  dir: "left" | "right";
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={8}
+      style={{
+        position: "absolute",
+        [dir]: 8,
+        top: "50%",
+        marginTop: -16,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: "rgba(252, 252, 254, 0.92)",
+        alignItems: "center",
+        justifyContent: "center",
+        shadowColor: colors.shadow,
+        shadowOpacity: 0.18,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
+      }}
+    >
+      <SymbolView
+        name={dir === "left" ? "chevron.left" : "chevron.right"}
+        tintColor={colors.text}
+        size={14}
+        fallback={null}
+      />
+    </Pressable>
+  );
+}
+
 export function HotelCard({
   hotel,
   bestValue,
@@ -297,14 +336,69 @@ export function HotelCard({
   added: boolean;
   onToggle: () => void;
 }) {
+  const photos =
+    hotel.images && hotel.images.length > 0
+      ? hotel.images
+      : hotel.image
+        ? [hotel.image]
+        : [];
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const step = (dir: number) =>
+    setPhotoIndex((i) => (i + dir + photos.length) % photos.length);
+  const height = bestValue ? 240 : 160;
+
   return (
     <CardShell>
-      <CardImage
-        uri={hotel.image}
-        fallbackIcon="bed.double.fill"
-        chip={bestValue ? "Walter's pick" : null}
-        height={bestValue ? 240 : 160}
-      />
+      <View style={{ height, backgroundColor: colors.surface2 }}>
+        {photos.length > 0 ? (
+          <Image
+            source={{ uri: photos[photoIndex] }}
+            contentFit="cover"
+            transition={150}
+            style={{ width: "100%", height }}
+          />
+        ) : (
+          <View className="w-full h-full items-center justify-center">
+            <SymbolView
+              name="bed.double.fill"
+              tintColor={colors.textTertiary}
+              size={34}
+              fallback={null}
+            />
+          </View>
+        )}
+        {bestValue ? <ImageChip label="Walter's pick" /> : null}
+        {photos.length > 1 ? (
+          <>
+            <ArrowButton dir="left" onPress={() => step(-1)} />
+            <ArrowButton dir="right" onPress={() => step(1)} />
+            <View
+              style={{
+                position: "absolute",
+                bottom: 8,
+                left: 0,
+                right: 0,
+                flexDirection: "row",
+                justifyContent: "center",
+                gap: 4,
+              }}
+            >
+              {photos.map((_, i) => (
+                <View
+                  key={i}
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: 3,
+                    backgroundColor:
+                      i === photoIndex ? "#FFFFFF" : "rgba(255,255,255,0.5)",
+                  }}
+                />
+              ))}
+            </View>
+          </>
+        ) : null}
+      </View>
       <View className="p-4">
         <Text className="text-ink text-[15px] font-semibold" numberOfLines={2}>
           {hotel.name}

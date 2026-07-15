@@ -89,6 +89,8 @@ export type Hotel = {
   pricePerNight: number;
   totalPrice: number;
   image: string | null;
+  /** Full photo set for the card carousel, main photo first. */
+  images?: string[];
   amenities: string[];
   address: string;
   bookingUrl?: string;

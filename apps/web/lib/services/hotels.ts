@@ -16,6 +16,8 @@ export type HotelResult = {
   longitude: number | null;
   amenities: string[];
   bookingUrl: string | null;
+  /** Full photo set for the card carousel, main photo first. */
+  images: string[];
 };
 
 async function lookupDestination(query: string): Promise<string | null> {
@@ -144,8 +146,12 @@ export async function searchHotels(params: {
     const reviewWord = (property.reviewScoreWord as string) || "";
     const reviewCount = (property.reviewCount as number) || 0;
 
-    const photoUrls = (property.photoUrls as string[]) || [];
-    const mainPhoto = (property.mainPhotoUrl as string) || photoUrls[0] || null;
+    /* Booking hands back thumbnail-sized URLs; swap the size segment up. */
+    const upsize = (u: string) => u.replace(/square\d+/, "max500");
+    const photoUrls = ((property.photoUrls as string[]) || []).map(upsize);
+    const mainRaw = (property.mainPhotoUrl as string) || photoUrls[0] || null;
+    const mainPhoto = mainRaw ? upsize(mainRaw) : null;
+    const images = [...new Set([...(mainPhoto ? [mainPhoto] : []), ...photoUrls])].slice(0, 8);
 
     // Build Booking.com search URL
     const hotelName = (property.name as string) || "Unknown Hotel";
@@ -173,6 +179,7 @@ export async function searchHotels(params: {
       longitude: (property.longitude as number) || null,
       amenities: [],
       bookingUrl,
+      images,
     };
   });
 }

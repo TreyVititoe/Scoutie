@@ -1,9 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import type { HotelResult } from "@/lib/services/hotels";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; bestValue: boolean }) {
+  const photos =
+    hotel.images && hotel.images.length > 0
+      ? hotel.images
+      : hotel.image
+        ? [hotel.image]
+        : [];
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const step = (dir: number) =>
+    setPhotoIndex((i) => (i + dir + photos.length) % photos.length);
+
   const addItem = useTripCartStore((s) => s.addItem);
   const removeItem = useTripCartStore((s) => s.removeItem);
   const added = useTripCartStore((s) => s.items.some((i) => i.id === hotel.id));
@@ -37,13 +48,43 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
   return (
     <div className={`w-full card-base overflow-hidden ${bestValue ? "sm:col-span-2" : ""}`}>
       {/* Image */}
-      <div className={`relative bg-raised-slate ${bestValue ? "h-64 lg:h-72" : "h-40"}`}>
-        {hotel.image ? (
-          <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
+      <div className={`relative bg-raised-slate group ${bestValue ? "h-64 lg:h-72" : "h-40"}`}>
+        {photos.length > 0 ? (
+          <img src={photos[photoIndex]} alt={hotel.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-raised-slate">
             <span className="material-symbols-outlined text-ink-faint text-4xl">hotel</span>
           </div>
+        )}
+        {photos.length > 1 && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={() => step(-1)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card/90 shadow-[0_2px_10px_rgba(20,30,60,0.18)] flex items-center justify-center text-ink hover:bg-card transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={() => step(1)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card/90 shadow-[0_2px_10px_rgba(20,30,60,0.18)] flex items-center justify-center text-ink hover:bg-card transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              {photos.map((_, i) => (
+                <span
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    i === photoIndex ? "bg-white" : "bg-white/50"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
         )}
         {bestValue && (
           <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-snow-off-glacier border border-white/10 rounded-pill px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">

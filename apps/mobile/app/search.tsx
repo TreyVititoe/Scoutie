@@ -112,7 +112,8 @@ export default function SearchScreen() {
       travelers,
       description: description.trim(),
     });
-    router.replace("/compare");
+    /* Complete brief (place + dates) skips the three options. */
+    router.replace(destination.trim() && startDate ? "/results" : "/compare");
   };
 
   return (

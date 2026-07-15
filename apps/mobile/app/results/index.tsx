@@ -42,7 +42,7 @@ export default function ResultsScreen() {
     queryKey: ["flights", prefs],
     queryFn: () =>
       api.flights.search({
-        origin: prefs.departureAirportCode ?? prefs.departureCity ?? "",
+        origin: prefs.departureAirportCode || prefs.departureCity || "",
         destination: prefs.destination ?? "",
         departDate: prefs.startDate ?? "",
         returnDate: prefs.endDate ?? "",
@@ -99,9 +99,15 @@ export default function ResultsScreen() {
       if (!hasOrigin)
         return (
           <DeparturePrompt
-            onSubmit={(city) =>
-              usePrefs.getState().patch({ departureCity: city })
-            }
+            onSubmit={(entry) => {
+              const isCode = /^[a-zA-Z]{3}$/.test(entry.trim());
+              usePrefs.getState().patch({
+                departureCity: entry,
+                departureAirportCode: isCode
+                  ? entry.trim().toUpperCase()
+                  : undefined,
+              });
+            }}
           />
         );
       if (flights.isLoading) return <Loading label="Searching flights…" photo={destPhoto} />;

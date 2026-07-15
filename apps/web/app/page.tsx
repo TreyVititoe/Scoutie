@@ -141,9 +141,10 @@ export default function LandingPage() {
       })
     );
 
-    // Every search lands on the three comparison cards; a blank Where
-    // means Walter picks three places that fit the brief.
-    router.push("/trips");
+    // A complete brief (place + dates) goes straight to building the
+    // trip; the three-options page is only for open questions.
+    const complete = Boolean(v.destination.trim() && v.startDate);
+    router.push(complete ? "/results" : "/trips");
   };
 
   return (
