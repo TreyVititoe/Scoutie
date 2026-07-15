@@ -173,7 +173,13 @@ export default function LandingPage() {
               <span className="text-ink text-title font-semibold tracking-tight">Walter</span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1">
+            {/* At rest the links spread across the glass; once scrolling
+                they gather to the right like a compact toolbar. */}
+            <nav
+              className={`hidden md:flex items-center transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
+                scrolled ? "grow-0 justify-end gap-1" : "grow justify-evenly gap-0"
+              }`}
+            >
               {NAV_LINKS.map((l) => (
                 <NavLink
                   key={l.href}
