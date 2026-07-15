@@ -51,7 +51,7 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-body font-medium px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
+      className={`text-[16px] font-semibold px-4 py-2 rounded-pill transition-colors flex items-center gap-1.5 ${
         active
           ? "bg-ink/10 text-ink"
           : "text-ink-soft hover:text-ink hover:bg-ink/5"
@@ -170,7 +170,7 @@ export default function LandingPage() {
           >
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <img src="/walter-logo.png" alt="" className="w-7 h-7 rounded-[8px]" />
-              <span className="text-ink text-title font-semibold tracking-tight">Walter</span>
+              <span className="text-ink text-[16px] font-semibold tracking-tight">Walter</span>
             </Link>
 
             {/* At rest the links spread across the glass; once scrolling
@@ -181,13 +181,18 @@ export default function LandingPage() {
               }`}
             >
               {NAV_LINKS.map((l) => (
-                <NavLink
+                <motion.div
                   key={l.href}
-                  href={l.href}
-                  label={l.label}
-                  icon={l.icon}
-                  active={pathname === l.href}
-                />
+                  layout
+                  transition={{ duration: 0.55, ease: [0.2, 0.8, 0.2, 1] }}
+                >
+                  <NavLink
+                    href={l.href}
+                    label={l.label}
+                    icon={l.icon}
+                    active={pathname === l.href}
+                  />
+                </motion.div>
               ))}
             </nav>
 
