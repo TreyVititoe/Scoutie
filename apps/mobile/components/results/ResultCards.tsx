@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { api } from "@walter/api-client";
 import type { Flight, FlightJourney, Hotel, ScoredEvent, Suggestion } from "@walter/shared";
 
 import { colors } from "../../theme/colors";
@@ -336,15 +337,31 @@ export function HotelCard({
   added: boolean;
   onToggle: () => void;
 }) {
-  const photos =
+  const basePhotos =
     hotel.images && hotel.images.length > 0
       ? hotel.images
       : hotel.image
         ? [hotel.image]
         : [];
+  const [photos, setPhotos] = useState<string[]>(basePhotos);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const step = (dir: number) =>
-    setPhotoIndex((i) => (i + dir + photos.length) % photos.length);
+  const [fetchedMore, setFetchedMore] = useState(false);
+  /* Full photo set loads on the first arrow press. */
+  const step = (dir: number) => {
+    if (!fetchedMore && hotel.hotelId) {
+      setFetchedMore(true);
+      api.hotels
+        .photos(hotel.hotelId)
+        .then(({ photos: more }) => {
+          if (more.length > 0) setPhotos((prev) => [...new Set([...prev, ...more])]);
+        })
+        .catch(() => {});
+    }
+    setPhotos((prev) => {
+      setPhotoIndex((i) => (i + dir + prev.length) % prev.length);
+      return prev;
+    });
+  };
   const height = bestValue ? 240 : 160;
 
   return (
@@ -368,7 +385,7 @@ export function HotelCard({
           </View>
         )}
         {bestValue ? <ImageChip label="Walter's pick" /> : null}
-        {photos.length > 1 ? (
+        {photos.length > 1 || hotel.hotelId ? (
           <>
             <ArrowButton dir="left" onPress={() => step(-1)} />
             <ArrowButton dir="right" onPress={() => step(1)} />

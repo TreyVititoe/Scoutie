@@ -89,7 +89,9 @@ export type Hotel = {
   pricePerNight: number;
   totalPrice: number;
   image: string | null;
-  /** Full photo set for the card carousel, main photo first. */
+  /** Booking's real hotel id, for the lazy photo-carousel endpoint. */
+  hotelId?: string;
+  /** Photo set for the card carousel, main photo first. */
   images?: string[];
   amenities: string[];
   address: string;

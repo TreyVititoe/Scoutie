@@ -16,7 +16,10 @@ export type HotelResult = {
   longitude: number | null;
   amenities: string[];
   bookingUrl: string | null;
-  /** Full photo set for the card carousel, main photo first. */
+  /** Booking's real hotel id, for the lazy photo-carousel endpoint. */
+  hotelId: string;
+  /** Photo set for the card carousel; the list endpoint only carries
+   * one real photo, the rest load lazily via getHotelPhotos. */
   images: string[];
 };
 
@@ -166,6 +169,7 @@ export async function searchHotels(params: {
 
     return {
       id: `hotel-${i}`,
+      hotelId: String((h.hotel_id as number | string | undefined) ?? (property.id as number | string | undefined) ?? ""),
       name: hotelName,
       image: mainPhoto,
       rating: Math.round(reviewScore * 10) / 10,
@@ -182,4 +186,25 @@ export async function searchHotels(params: {
       images,
     };
   });
+}
+
+/**
+ * Full photo set for one hotel (Booking returns ~60; we take 12).
+ * The search list only carries one real photo per property, so the
+ * carousel loads these lazily on first interaction.
+ */
+export async function getHotelPhotos(hotelId: string): Promise<string[]> {
+  const res = await fetch(
+    `https://${RAPIDAPI_HOST}/api/v1/hotels/getHotelPhotos?hotel_id=${encodeURIComponent(hotelId)}`,
+    {
+      headers: {
+        "x-rapidapi-key": RAPIDAPI_KEY,
+        "x-rapidapi-host": RAPIDAPI_HOST,
+      },
+    }
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  const list = (data?.data ?? []) as { url?: string }[];
+  return [...new Set(list.map((p) => p.url).filter((u): u is string => Boolean(u)))].slice(0, 12);
 }

@@ -5,15 +5,34 @@ import type { HotelResult } from "@/lib/services/hotels";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; bestValue: boolean }) {
-  const photos =
+  const basePhotos =
     hotel.images && hotel.images.length > 0
       ? hotel.images
       : hotel.image
         ? [hotel.image]
         : [];
+  const [photos, setPhotos] = useState<string[]>(basePhotos);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const step = (dir: number) =>
-    setPhotoIndex((i) => (i + dir + photos.length) % photos.length);
+  const [fetchedMore, setFetchedMore] = useState(false);
+  /* The search list carries one photo; the full set loads on the first
+   * arrow press so browsing costs nothing until someone cares. */
+  const step = (dir: number) => {
+    if (!fetchedMore && hotel.hotelId) {
+      setFetchedMore(true);
+      fetch(`/api/hotels/photos?hotelId=${encodeURIComponent(hotel.hotelId)}`)
+        .then((r) => r.json())
+        .then((data: { photos?: string[] }) => {
+          if (data.photos && data.photos.length > 0) {
+            setPhotos((prev) => [...new Set([...prev, ...data.photos!])]);
+          }
+        })
+        .catch(() => {});
+    }
+    setPhotos((prev) => {
+      setPhotoIndex((i) => (i + dir + prev.length) % prev.length);
+      return prev;
+    });
+  };
 
   const addItem = useTripCartStore((s) => s.addItem);
   const removeItem = useTripCartStore((s) => s.removeItem);
@@ -56,7 +75,7 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
             <span className="material-symbols-outlined text-ink-faint text-4xl">hotel</span>
           </div>
         )}
-        {photos.length > 1 && (
+        {(photos.length > 1 || hotel.hotelId) && (
           <>
             <button
               type="button"

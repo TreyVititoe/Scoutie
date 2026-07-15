@@ -26,6 +26,15 @@ export function getApiBaseUrl() {
   return baseUrl;
 }
 
+async function get<T>(path: string): Promise<T> {
+  const resp = await fetch(`${baseUrl}${path}`);
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`GET ${path} failed: ${resp.status} ${text}`);
+  }
+  return resp.json() as Promise<T>;
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   const resp = await fetch(`${baseUrl}${path}`, {
     method: "POST",
@@ -102,6 +111,9 @@ export const api = {
   hotels: {
     search: (input: HotelSearchInput) =>
       post<{ hotels: Hotel[] }>("/api/hotels", input),
+    /** Lazy full photo set; call on first carousel interaction. */
+    photos: (hotelId: string) =>
+      get<{ photos: string[] }>(`/api/hotels/photos?hotelId=${encodeURIComponent(hotelId)}`),
   },
   events: {
     search: (input: EventSearchInput) =>
