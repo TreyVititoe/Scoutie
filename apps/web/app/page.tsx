@@ -69,6 +69,15 @@ export default function LandingPage() {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  /* At the top the nav sits on the hero frost with no chrome of its own;
+   * scrolled past it, the pill gets its glass back. */
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const [search, setSearch] = useState<SearchValue>({
     destination: "",
     startDate: "",
@@ -152,7 +161,13 @@ export default function LandingPage() {
       {/* Floating liquid-glass header */}
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
-          <div className="pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill bg-[oklch(0.99_0.004_250_/_0.72)] backdrop-blur-2xl backdrop-saturate-150 border border-black/5 shadow-[0_8px_32px_rgba(20,30,60,0.12),inset_0_1px_0_rgba(255,255,255,0.6)]">
+          <div
+            className={`pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill transition-all duration-300 ${
+              scrolled
+                ? "bg-[oklch(0.99_0.004_250_/_0.72)] backdrop-blur-2xl backdrop-saturate-150 border border-black/5 shadow-[0_8px_32px_rgba(20,30,60,0.12),inset_0_1px_0_rgba(255,255,255,0.6)]"
+                : "bg-transparent border border-transparent shadow-none"
+            }`}
+          >
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <img src="/walter-logo.png" alt="" className="w-7 h-7 rounded-[8px]" />
               <span className="text-ink text-title font-semibold tracking-tight">Walter</span>
@@ -218,15 +233,16 @@ export default function LandingPage() {
             fetchPriority="high"
           />
 
-          {/* Frosted center: brighter than the scene, edges melt away */}
+          {/* Frosted panel: starts above the top edge so the navbar sits on
+              the same glass, navbar-wide, edges melting into the scene */}
           <div
             aria-hidden
-            className="absolute left-1/2 top-[54%] -translate-x-1/2 -translate-y-1/2 w-[96%] sm:w-[900px] h-[84%] rounded-[56px] bg-white/45 backdrop-blur-[7px] backdrop-saturate-[1.15] pointer-events-none"
+            className="absolute left-1/2 -translate-x-1/2 -top-10 h-[92%] w-[96%] max-w-6xl rounded-[56px] bg-white/35 backdrop-blur-[5px] backdrop-saturate-[1.1] pointer-events-none"
             style={{
               WebkitMaskImage:
-                "radial-gradient(100% 100% at 50% 50%, black 52%, transparent 98%)",
+                "radial-gradient(120% 135% at 50% 0%, black 55%, transparent 100%)",
               maskImage:
-                "radial-gradient(100% 100% at 50% 50%, black 52%, transparent 98%)",
+                "radial-gradient(120% 135% at 50% 0%, black 55%, transparent 100%)",
             }}
           />
 

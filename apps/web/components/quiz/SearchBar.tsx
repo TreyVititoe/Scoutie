@@ -418,7 +418,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         <button
           type="button"
           onClick={attemptSearch}
-          className="ml-1.5 shrink-0 rounded-[16px] px-5 text-[14px] font-semibold text-white bg-[#F97A5F] hover:bg-[#f7684a] transition-all active:scale-[0.98] flex items-center shadow-[0_8px_22px_rgba(249,122,95,0.35)]"
+          className="ml-1.5 shrink-0 rounded-[16px] px-5 text-[14px] font-semibold text-snow-off-glacier bg-accent hover:bg-accent-light transition-all active:scale-[0.98] flex items-center shadow-[0_8px_22px_rgba(91,141,239,0.35)]"
         >
           Plan My Adventure
         </button>
