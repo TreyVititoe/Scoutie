@@ -207,29 +207,33 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero: the story cliff in a rounded frame, invitation centered */}
-      <section className="relative z-40 pt-20 sm:pt-24 px-4 sm:px-8">
-        <div className="relative">
-          {/* Ambient bleed: a blurred copy of the image spills past the
-              frame so its colors melt into the page (loose barrier). */}
-          <div aria-hidden className="absolute -inset-3 sm:-inset-6 pointer-events-none">
-            <img
-              src="/hero-story.jpg"
-              alt=""
-              className="w-full h-full object-cover object-[center_78%] rounded-[44px] blur-2xl opacity-50 saturate-[1.25]"
-            />
-          </div>
-        <div className="relative h-[440px] sm:h-[540px] rounded-[28px] overflow-hidden ring-1 ring-white/60">
+      {/* Hero: full-bleed story cliff; a bright liquid-glass panel floats
+          over the center with feathered edges so ink text reads on it. */}
+      <section className="relative z-40">
+        <div className="relative h-[520px] sm:h-[620px] overflow-hidden">
           <img
             src="/hero-story.jpg"
             alt="A traveler on a cliff above a sea of clouds"
-            className="absolute inset-0 w-full h-full object-cover object-[center_78%]"
+            className="absolute inset-0 w-full h-full object-cover object-[center_72%]"
             fetchPriority="high"
           />
-          {/* Soft veil so the headline reads over the sky */}
-          <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-page-bg/70 via-page-bg/25 to-transparent pointer-events-none" />
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-5 pb-16">
+          {/* Frosted center: brighter than the scene, edges melt away */}
+          <div
+            aria-hidden
+            className="absolute left-1/2 top-[54%] -translate-x-1/2 -translate-y-1/2 w-[96%] sm:w-[900px] h-[84%] rounded-[56px] bg-white/45 backdrop-blur-[7px] backdrop-saturate-[1.15] pointer-events-none"
+            style={{
+              WebkitMaskImage:
+                "radial-gradient(100% 100% at 50% 50%, black 52%, transparent 98%)",
+              maskImage:
+                "radial-gradient(100% 100% at 50% 50%, black 52%, transparent 98%)",
+            }}
+          />
+
+          {/* Dissolve into the page below */}
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-page-bg to-transparent pointer-events-none" />
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-5 pt-16 pb-14">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -248,7 +252,6 @@ export default function LandingPage() {
               around your interests, schedule, and travel style.
             </motion.p>
           </div>
-        </div>
         </div>
       </section>
 
