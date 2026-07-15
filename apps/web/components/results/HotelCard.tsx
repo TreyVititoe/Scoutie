@@ -81,7 +81,7 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
               type="button"
               aria-label="Previous photo"
               onClick={() => step(-1)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card/90 shadow-[0_2px_10px_rgba(20,30,60,0.18)] flex items-center justify-center text-ink hover:bg-card transition-colors"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-[0_2px_12px_rgba(20,30,60,0.35)] flex items-center justify-center text-ink hover:scale-105 transition-transform"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_left</span>
             </button>
@@ -89,7 +89,7 @@ export default function HotelCard({ hotel, bestValue }: { hotel: HotelResult; be
               type="button"
               aria-label="Next photo"
               onClick={() => step(1)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card/90 shadow-[0_2px_10px_rgba(20,30,60,0.18)] flex items-center justify-center text-ink hover:bg-card transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-[0_2px_12px_rgba(20,30,60,0.35)] flex items-center justify-center text-ink hover:scale-105 transition-transform"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>

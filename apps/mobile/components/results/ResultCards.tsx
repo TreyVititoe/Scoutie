@@ -307,12 +307,12 @@ function ArrowButton({
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: "rgba(252, 252, 254, 0.92)",
+        backgroundColor: "#FFFFFF",
         alignItems: "center",
         justifyContent: "center",
         shadowColor: colors.shadow,
-        shadowOpacity: 0.18,
-        shadowRadius: 6,
+        shadowOpacity: 0.35,
+        shadowRadius: 7,
         shadowOffset: { width: 0, height: 2 },
       }}
     >

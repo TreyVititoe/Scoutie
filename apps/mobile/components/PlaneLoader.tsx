@@ -68,7 +68,7 @@ export function PlaneLoader({
       />
       {/* the plane */}
       <Animated.View
-        style={{ position: "absolute", transform: [{ translateX }, { translateY: 1.75 }] }}
+        style={{ position: "absolute", transform: [{ translateX }, { translateY: 1.95 }] }}
       >
         <SymbolView
           name="airplane"
