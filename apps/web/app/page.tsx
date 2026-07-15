@@ -238,7 +238,7 @@ export default function LandingPage() {
               into the page instead. */}
           <div
             aria-hidden
-            className="absolute left-1/2 -translate-x-1/2 top-2.5 h-[96%] w-[98%] max-w-[1320px] rounded-[44px] bg-white/28 backdrop-blur-[3.5px] backdrop-saturate-[1.08] border-[1.5px] border-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] pointer-events-none"
+            className="absolute left-1/2 -translate-x-1/2 top-2.5 h-[96%] w-[98%] max-w-[1320px] rounded-[44px] bg-white/30 backdrop-blur-[3.5px] backdrop-saturate-[1.08] border-[1.5px] border-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] pointer-events-none"
             style={{
               WebkitMaskImage:
                 "linear-gradient(to bottom, black 58%, transparent 100%)",
