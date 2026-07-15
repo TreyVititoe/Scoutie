@@ -353,12 +353,14 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         initial={false}
         animate={shakeKey > 0 ? { x: [0, -10, 10, -6, 6, 0] } : { x: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="rounded-full flex items-stretch p-1.5 bg-card ring-1 ring-line shadow-[0_12px_40px_rgba(20,30,60,0.10)]"
+        className="rounded-[24px] p-4 bg-card ring-1 ring-line shadow-[0_24px_70px_rgba(20,30,60,0.16)]"
       >
+      <div className="flex items-stretch">
         <SectionButton
           isActive={active === "where"}
           isExpanded={active === "where"}
           onHover={() => openSection("where")}
+          icon="location_on"
           label="Where"
           value={whereLabel}
           placeholder={!value.destination}
@@ -372,6 +374,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
           isActive={active === "when"}
           isExpanded={active === "when"}
           onHover={() => openSection("when")}
+          icon="calendar_today"
           label="When"
           value={whenLabel}
           placeholder={!value.startDate}
@@ -388,6 +391,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
           isActive={active === "who"}
           isExpanded={active === "who"}
           onHover={() => openSection("who")}
+          icon="group"
           label="Who"
           value={whoLabel}
           placeholder={!whoTouched}
@@ -404,6 +408,7 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
           isActive={active === "what"}
           isExpanded={active === "what"}
           onHover={() => openSection("what")}
+          icon="auto_awesome"
           label="What"
           value={whatLabel}
           placeholder={!value.description}
@@ -411,13 +416,19 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
           onClear={value.description ? () => onChange({ ...value, description: "" }) : undefined}
           clearLabel="Clear interests"
         />
+      </div>
         <button
           type="button"
           onClick={attemptSearch}
-          className="bg-accent text-snow-off-glacier rounded-full px-5 py-3 text-[14px] font-semibold hover:bg-accent-light transition-colors flex items-center gap-2 ml-1 shrink-0"
+          className="mt-4 w-full rounded-full py-3.5 text-body font-semibold text-white bg-[#F97A5F] hover:bg-[#f7684a] transition-all active:scale-[0.99] flex items-center justify-center gap-2 shadow-[0_10px_28px_rgba(249,122,95,0.35)]"
         >
-          <span className="material-symbols-outlined text-[20px]">search</span>
-          Search
+          <span
+            className="material-symbols-outlined text-[19px]"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            auto_awesome
+          </span>
+          Plan My Adventure
         </button>
       </motion.div>
 
@@ -784,6 +795,7 @@ function Divider({ show }: { show: boolean }) {
 }
 
 type SectionButtonProps = {
+  icon: string;
   isActive: boolean;
   isExpanded: boolean;
   onHover: () => void;
@@ -800,6 +812,7 @@ function SectionButton({
   isActive,
   isExpanded,
   onHover,
+  icon,
   label,
   value,
   placeholder,
@@ -828,26 +841,32 @@ function SectionButton({
       animate={{ flexGrow: isExpanded ? 1.85 : 1 }}
       transition={{ duration: 0.34, ease: [0.2, 0.8, 0.2, 1] }}
       style={{ flexBasis: 0 }}
-      className="group relative min-w-0 px-5 py-2 text-left rounded-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className="group relative min-w-0 px-4 py-2.5 text-left rounded-[16px] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       {isActive ? (
         // Shared element: framer slides this highlight between segments.
         <motion.div
           layoutId="search-active-seg"
           transition={{ type: "spring", stiffness: 420, damping: 36 }}
-          className="absolute inset-0 rounded-full bg-hover-slate shadow-[0_3px_10px_rgba(20,30,60,0.10)]"
+          className="absolute inset-0 rounded-[16px] bg-hover-slate shadow-[0_3px_10px_rgba(20,30,60,0.10)]"
         />
       ) : (
-        <div className="absolute inset-0 rounded-full bg-ink/0 group-hover:bg-ink/5 transition-colors" />
+        <div className="absolute inset-0 rounded-[16px] bg-ink/0 group-hover:bg-ink/5 transition-colors" />
       )}
       <div className="relative z-10">
-        <p className="text-[12px] uppercase tracking-[1.5px] text-ink font-bold mb-1">{label}</p>
+        <p className="flex items-center gap-1.5 text-body text-ink font-semibold mb-0.5">
+          <span className="material-symbols-outlined text-[18px] text-ink">{icon}</span>
+          {label}
+          <span className="material-symbols-outlined text-[16px] text-ink-faint ml-auto">
+            expand_more
+          </span>
+        </p>
         <p
-          className={`text-[14px] truncate ${onClear ? "pr-7" : ""} ${
+          className={`text-label truncate ${onClear ? "pr-7" : ""} ${
             error
               ? "text-[oklch(0.55_0.19_25)] font-medium"
               : placeholder
-                ? "text-ink-faint"
+                ? "text-ink-soft"
                 : "text-ink font-medium"
           }`}
         >

@@ -189,7 +189,7 @@ export async function searchHotels(params: {
 }
 
 /**
- * Full photo set for one hotel (Booking returns ~60; we take 12).
+ * Full photo set for one hotel (Booking returns ~60; we take 15).
  * The search list only carries one real photo per property, so the
  * carousel loads these lazily on first interaction.
  */
@@ -206,5 +206,5 @@ export async function getHotelPhotos(hotelId: string): Promise<string[]> {
   if (!res.ok) return [];
   const data = await res.json();
   const list = (data?.data ?? []) as { url?: string }[];
-  return [...new Set(list.map((p) => p.url).filter((u): u is string => Boolean(u)))].slice(0, 12);
+  return [...new Set(list.map((p) => p.url).filter((u): u is string => Boolean(u)))].slice(0, 15);
 }
