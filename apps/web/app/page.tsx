@@ -208,8 +208,18 @@ export default function LandingPage() {
       </header>
 
       {/* Hero: the story cliff in a rounded frame, invitation centered */}
-      <section className="relative z-40 pt-20 sm:pt-24 px-3 sm:px-5">
-        <div className="relative h-[440px] sm:h-[540px] rounded-[28px] overflow-hidden">
+      <section className="relative z-40 pt-20 sm:pt-24 px-4 sm:px-8">
+        <div className="relative">
+          {/* Ambient bleed: a blurred copy of the image spills past the
+              frame so its colors melt into the page (loose barrier). */}
+          <div aria-hidden className="absolute -inset-3 sm:-inset-6 pointer-events-none">
+            <img
+              src="/hero-story.jpg"
+              alt=""
+              className="w-full h-full object-cover object-[center_78%] rounded-[44px] blur-2xl opacity-50 saturate-[1.25]"
+            />
+          </div>
+        <div className="relative h-[440px] sm:h-[540px] rounded-[28px] overflow-hidden ring-1 ring-white/60">
           <img
             src="/hero-story.jpg"
             alt="A traveler on a cliff above a sea of clouds"
@@ -238,6 +248,7 @@ export default function LandingPage() {
               around your interests, schedule, and travel style.
             </motion.p>
           </div>
+        </div>
         </div>
       </section>
 
