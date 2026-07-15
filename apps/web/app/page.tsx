@@ -207,65 +207,51 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero: the story cliff, centered invitation, search card in frame */}
-      <section className="relative z-40 min-h-[660px] sm:min-h-[780px] flex flex-col">
-        {/* Image + overlays clipped, kept separate so SearchBar popovers can escape */}
-        <div className="absolute inset-0 overflow-hidden">
+      {/* Hero: the story cliff in a rounded frame, invitation centered */}
+      <section className="relative z-40 pt-20 sm:pt-24 px-3 sm:px-5">
+        <div className="relative h-[440px] sm:h-[540px] rounded-[28px] overflow-hidden">
           <img
             src="/hero-story.jpg"
             alt="A traveler on a cliff above a sea of clouds"
             className="absolute inset-0 w-full h-full object-cover object-[center_78%]"
             fetchPriority="high"
           />
-          {/* Soft veil at the top for nav + headline legibility; dissolve
-              into the page at the bottom. */}
-          <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-page-bg/85 via-page-bg/35 to-transparent pointer-events-none" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-page-bg to-transparent pointer-events-none" />
-        </div>
+          {/* Soft veil so the headline reads over the sky */}
+          <div className="absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-page-bg/70 via-page-bg/25 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center w-full px-5 pt-28 pb-10">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-            className="flex items-center gap-2 text-ink text-[12px] font-bold uppercase tracking-[2.5px] mb-4"
-          >
-            <span
-              className="material-symbols-outlined text-[18px] text-[#F97A5F]"
-              style={{ fontVariationSettings: "'FILL' 1" }}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-5 pb-16">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+              className="font-serif text-ink text-[38px] sm:text-[56px] font-semibold leading-[1.05] tracking-tight max-w-[16ch]"
             >
-              auto_awesome
-            </span>
-            AI Trip Planner
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="font-serif text-ink text-[42px] sm:text-[68px] font-semibold leading-[1.05] tracking-tight max-w-[16ch]"
-          >
-            Where will your story take you?
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="text-ink-soft text-body sm:text-title max-w-[48ch] mt-4"
-          >
-            Walter is your AI travel companion that plans complete trips
-            around your interests, schedule, and travel style.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-            className="w-full max-w-3xl mt-9"
-          >
-            <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
-          </motion.div>
+              Where will your trip take you?
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+              className="text-ink-soft text-body sm:text-title max-w-[48ch] mt-4"
+            >
+              Walter is your AI travel companion that plans complete trips
+              around your interests, schedule, and travel style.
+            </motion.p>
+          </div>
         </div>
       </section>
+
+      {/* SearchBar: overlaps the hero frame, then sticks under the navbar */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+        className="sticky top-[80px] z-[45] -mt-[52px]"
+      >
+        <div className="max-w-6xl mx-auto px-5 sm:px-12">
+          <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+        </div>
+      </motion.div>
 
       {/* Curated trips grouped by category */}
       <section className="bg-page-bg pb-16 pt-16 relative z-0">

@@ -353,9 +353,8 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
         initial={false}
         animate={shakeKey > 0 ? { x: [0, -10, 10, -6, 6, 0] } : { x: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="rounded-[24px] p-4 bg-card ring-1 ring-line shadow-[0_24px_70px_rgba(20,30,60,0.16)]"
+        className="rounded-[22px] p-2 bg-card ring-1 ring-line shadow-[0_24px_70px_rgba(20,30,60,0.16)] flex items-stretch"
       >
-      <div className="flex items-stretch">
         <SectionButton
           isActive={active === "where"}
           isExpanded={active === "where"}
@@ -416,14 +415,13 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
           onClear={value.description ? () => onChange({ ...value, description: "" }) : undefined}
           clearLabel="Clear interests"
         />
-      </div>
         <button
           type="button"
           onClick={attemptSearch}
-          className="mt-4 w-full rounded-full py-3.5 text-body font-semibold text-white bg-[#F97A5F] hover:bg-[#f7684a] transition-all active:scale-[0.99] flex items-center justify-center gap-2 shadow-[0_10px_28px_rgba(249,122,95,0.35)]"
+          className="ml-1.5 shrink-0 rounded-[16px] px-5 text-[14px] font-semibold text-white bg-[#F97A5F] hover:bg-[#f7684a] transition-all active:scale-[0.98] flex items-center gap-2 shadow-[0_8px_22px_rgba(249,122,95,0.35)]"
         >
           <span
-            className="material-symbols-outlined text-[19px]"
+            className="material-symbols-outlined text-[18px]"
             style={{ fontVariationSettings: "'FILL' 1" }}
           >
             auto_awesome
