@@ -160,7 +160,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-page-bg">
       {/* Floating liquid-glass header */}
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-3">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 pt-3">
           <div
             className={`pointer-events-auto flex items-center justify-between gap-6 px-5 sm:px-6 py-2.5 rounded-pill transition-all duration-300 ${
               scrolled
@@ -233,16 +233,17 @@ export default function LandingPage() {
             fetchPriority="high"
           />
 
-          {/* Frosted panel: starts above the top edge so the navbar sits on
-              the same glass, navbar-wide, edges melting into the scene */}
+          {/* Frosted panel: rounded top corners visible just inside the top
+              of the page (the navbar rides on it); the bottom dissolves
+              into the page instead. */}
           <div
             aria-hidden
-            className="absolute left-1/2 -translate-x-1/2 -top-10 h-[92%] w-[96%] max-w-6xl rounded-[56px] bg-white/35 backdrop-blur-[5px] backdrop-saturate-[1.1] pointer-events-none"
+            className="absolute left-1/2 -translate-x-1/2 top-2.5 h-[96%] w-[98%] max-w-[1320px] rounded-[44px] bg-white/35 backdrop-blur-[5px] backdrop-saturate-[1.1] pointer-events-none"
             style={{
               WebkitMaskImage:
-                "radial-gradient(120% 135% at 50% 0%, black 55%, transparent 100%)",
+                "linear-gradient(to bottom, black 58%, transparent 100%)",
               maskImage:
-                "radial-gradient(120% 135% at 50% 0%, black 55%, transparent 100%)",
+                "linear-gradient(to bottom, black 58%, transparent 100%)",
             }}
           />
 
