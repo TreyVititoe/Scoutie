@@ -105,15 +105,17 @@ export default function SearchScreen() {
 
   const submit = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    /* A typed place counts even if no suggestion was tapped. */
+    const where = (destination || query).trim();
     usePrefs.getState().patch({
-      destination: destination.trim(),
+      destination: where,
       startDate,
       endDate,
       travelers,
       description: description.trim(),
     });
     /* Complete brief (place + dates) skips the three options. */
-    router.replace(destination.trim() && startDate ? "/results" : "/compare");
+    router.replace(where && startDate ? "/results" : "/compare");
   };
 
   return (

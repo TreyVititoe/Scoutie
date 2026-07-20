@@ -191,7 +191,7 @@ export default function CheckoutScreen() {
 
         {allBooked ? (
           <Pressable
-            onPress={() => router.push("/trip")}
+            onPress={() => (router.canGoBack() ? router.back() : router.replace("/trip"))}
             className="rounded-3xl p-6 mt-6 items-center"
             style={{ backgroundColor: "#141926" }}
           >

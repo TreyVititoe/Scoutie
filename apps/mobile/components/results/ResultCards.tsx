@@ -358,7 +358,9 @@ export function HotelCard({
         .catch(() => {});
     }
     setPhotos((prev) => {
-      setPhotoIndex((i) => (i + dir + prev.length) % prev.length);
+      if (prev.length > 0) {
+        setPhotoIndex((i) => (i + dir + prev.length) % prev.length);
+      }
       return prev;
     });
   };
@@ -479,9 +481,11 @@ function formatEventDate(dateStr: string): string {
 function formatEventTime(timeStr: string | null): string {
   if (!timeStr) return "";
   const [h, m] = timeStr.split(":").map(Number);
+  if (!Number.isFinite(h)) return "";
   const period = h >= 12 ? "PM" : "AM";
   const hour = h % 12 || 12;
-  return `${hour}:${String(m).padStart(2, "0")} ${period}`;
+  const minute = Number.isFinite(m) ? m : 0;
+  return `${hour}:${String(minute).padStart(2, "0")} ${period}`;
 }
 
 export function EventCard({

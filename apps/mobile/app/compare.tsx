@@ -206,8 +206,8 @@ export default function CompareScreen() {
                 <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1">
                   Happening while you're there
                 </Text>
-                {tier.events.slice(0, 3).map((ev) => (
-                  <View key={ev} className="flex-row items-start gap-1.5 py-0.5">
+                {tier.events.slice(0, 3).map((ev, i) => (
+                  <View key={`${i}-${ev}`} className="flex-row items-start gap-1.5 py-0.5">
                     <SymbolView
                       name="ticket.fill"
                       tintColor={colors.accent}
@@ -226,8 +226,8 @@ export default function CompareScreen() {
                 <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1">
                   On the list
                 </Text>
-                {tier.highlights.slice(0, 4).map((h) => (
-                  <View key={h} className="flex-row items-start gap-1.5 py-0.5">
+                {tier.highlights.slice(0, 4).map((h, i) => (
+                  <View key={`${i}-${h}`} className="flex-row items-start gap-1.5 py-0.5">
                     <SymbolView
                       name="arrow.right"
                       tintColor={colors.accent}

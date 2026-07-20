@@ -27,6 +27,16 @@ import { colors } from "../../theme/colors";
 
 const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? "";
 
+/* Mirrors TYPE_LABELS in app/checkout.tsx. */
+const GROUP_LABELS: Record<string, string> = {
+  flight: "Flights",
+  hotel: "Stays",
+  event: "Events",
+  activity: "Activities",
+  restaurant: "Restaurants",
+  site: "Sites",
+};
+
 export default function TripScreen() {
   const [packCollapsed, setPackCollapsed] = useState(false);
   const prefs = usePrefs((s) => s.prefs);
@@ -108,7 +118,8 @@ export default function TripScreen() {
               </Pressable>
               <Pressable
                 onPress={async () => {
-                  const summary = `My ${prefs.destination} trip on Walter: $${total.toLocaleString()} for ${items.length} items.`;
+                  const where = prefs.destination?.split(",")[0] || "somewhere good";
+                  const summary = `My ${where} trip on Walter: $${total.toLocaleString()} for ${items.length} items.`;
                   try {
                     const { shareSlug } = await api.trips.share({
                       title: `Trip to ${prefs.destination ?? "somewhere good"}`,
@@ -181,8 +192,6 @@ export default function TripScreen() {
                   styleURL={Mapbox.StyleURL.Light}
                   style={{ flex: 1 }}
                   scaleBarEnabled={false}
-                  attributionEnabled={false}
-                  logoEnabled={false}
                 >
                   <Mapbox.Camera zoomLevel={9} centerCoordinate={geo.data} animationMode="flyTo" />
                 </Mapbox.MapView>
@@ -192,8 +201,8 @@ export default function TripScreen() {
             {/* Items grouped by type */}
             {Object.entries(grouped).map(([type, list]) => (
               <View key={type} className="mt-6 px-4">
-                <Text className="text-ink text-[18px] font-bold tracking-tight mb-3 capitalize">
-                  {type === "site" ? "Sites" : `${type}s`}
+                <Text className="text-ink text-[18px] font-bold tracking-tight mb-3">
+                  {GROUP_LABELS[type] ?? type}
                 </Text>
                 {list.map((i) => (
                   <View

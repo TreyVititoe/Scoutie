@@ -91,6 +91,10 @@ Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? null);
 
 SystemUI.setBackgroundColorAsync(colors.pageBg);
 
+/* Module scope, not an effect: child screens' first-render queries fire
+ * before the parent layout's useEffect runs. */
+bootApiClient();
+
 export default function RootLayout() {
   const queryClient = useMemo(
     () =>
@@ -107,7 +111,6 @@ export default function RootLayout() {
   );
 
   useEffect(() => {
-    bootApiClient();
     const t = setTimeout(() => SplashScreen?.hideAsync().catch(() => {}), 1000);
     return () => clearTimeout(t);
   }, []);

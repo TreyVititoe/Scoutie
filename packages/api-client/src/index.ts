@@ -26,26 +26,41 @@ export function getApiBaseUrl() {
   return baseUrl;
 }
 
-async function get<T>(path: string): Promise<T> {
-  const resp = await fetch(`${baseUrl}${path}`);
+/* Hermes lacks AbortSignal.timeout, so wire the controller by hand. */
+const REQUEST_TIMEOUT_MS = 20_000;
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const method = init?.method ?? "GET";
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let resp: Response;
+  try {
+    resp = await fetch(`${baseUrl}${path}`, { ...init, signal: controller.signal });
+  } catch (err) {
+    if (controller.signal.aborted) {
+      throw new Error(`${method} ${path} timed out`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
   if (!resp.ok) {
     const text = await resp.text().catch(() => "");
-    throw new Error(`GET ${path} failed: ${resp.status} ${text}`);
+    throw new Error(`${method} ${path} failed: ${resp.status} ${text}`);
   }
   return resp.json() as Promise<T>;
 }
 
+async function get<T>(path: string): Promise<T> {
+  return request<T>(path);
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
-  const resp = await fetch(`${baseUrl}${path}`, {
+  return request<T>(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!resp.ok) {
-    const text = await resp.text().catch(() => "");
-    throw new Error(`POST ${path} failed: ${resp.status} ${text}`);
-  }
-  return resp.json() as Promise<T>;
 }
 
 export type FlightSearchInput = {

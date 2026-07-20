@@ -12,9 +12,16 @@ type Props = {
   onChange: (start: string, end: string) => void;
 };
 
+/* Stored dates are bare YYYY-MM-DD. Parse at local noon and build ISO from
+ * local parts — bare-string Date parsing is UTC midnight, which shifts the
+ * displayed and stored day for every timezone west of UTC. */
+function parseISO(iso: string): Date {
+  return new Date(`${iso}T12:00:00`);
+}
+
 function fmtDate(iso?: string): string {
   if (!iso) return "Pick a date";
-  const d = new Date(iso);
+  const d = parseISO(iso);
   return d.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -23,21 +30,22 @@ function fmtDate(iso?: string): string {
 }
 
 function toISO(d: Date): string {
-  return d.toISOString().slice(0, 10);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 export function DateRangePicker({ startDate, endDate, onChange }: Props) {
   const [activeField, setActiveField] = useState<"start" | "end" | null>(null);
 
   const startDateObj = useMemo(
-    () => (startDate ? new Date(startDate) : new Date()),
+    () => (startDate ? parseISO(startDate) : new Date()),
     [startDate]
   );
 
   const endDateObj = useMemo(() => {
-    if (endDate) return new Date(endDate);
+    if (endDate) return parseISO(endDate);
     if (startDate) {
-      const d = new Date(startDate);
+      const d = parseISO(startDate);
       d.setDate(d.getDate() + 5);
       return d;
     }
@@ -47,7 +55,7 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
   }, [endDate, startDate]);
 
   const minEnd = useMemo(() => {
-    const d = new Date(startDate ?? Date.now());
+    const d = startDate ? parseISO(startDate) : new Date();
     d.setDate(d.getDate() + 1);
     return d;
   }, [startDate]);
@@ -55,7 +63,7 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
   const nights =
     startDate && endDate
       ? Math.round(
-          (new Date(endDate).getTime() - new Date(startDate).getTime()) /
+          (parseISO(endDate).getTime() - parseISO(startDate).getTime()) /
             (1000 * 60 * 60 * 24)
         )
       : 0;
@@ -158,7 +166,7 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
                 if (activeField === "start") {
                   const iso = toISO(date);
                   let endIso = endDate;
-                  if (!endIso || new Date(endIso) <= date) {
+                  if (!endIso || parseISO(endIso) <= date) {
                     const e = new Date(date);
                     e.setDate(e.getDate() + 5);
                     endIso = toISO(e);

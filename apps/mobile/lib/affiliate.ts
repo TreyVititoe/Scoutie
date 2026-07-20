@@ -1,4 +1,4 @@
-import { Linking } from "react-native";
+import { Alert, Linking } from "react-native";
 import type { TripCartItem } from "@walter/shared";
 
 import { api } from "./apiClient";
@@ -38,7 +38,8 @@ export function affiliateUrl(item: TripCartItem): string | null {
       return url.toString();
     }
     if (item.type === "event" && TM_IMPACT_URL) {
-      return `${TM_IMPACT_URL}?u=${encodeURIComponent(raw)}`;
+      const sep = TM_IMPACT_URL.includes("?") ? "&" : "?";
+      return `${TM_IMPACT_URL}${sep}u=${encodeURIComponent(raw)}`;
     }
   } catch {
     return raw;
@@ -60,5 +61,10 @@ export function trackAndOpen(item: TripCartItem, destination: string) {
     itemType: item.type,
     destinationUrl: url,
   });
-  Linking.openURL(url).catch(() => {});
+  Linking.openURL(url).catch(() => {
+    Alert.alert(
+      "Couldn't open the booking page",
+      "Something blocked the link. Try again in a moment."
+    );
+  });
 }
