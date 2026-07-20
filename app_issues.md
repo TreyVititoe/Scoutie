@@ -65,7 +65,7 @@ Consequences:
 - [ ] **M14.** Zero `accessibilityLabel`/`accessibilityRole` in the app — icon-only buttons invisible to VoiceOver · touch targets under 44pt (trip Share ~20pt) · `ink-faint` 48%-alpha text ≈2.8:1 contrast on 10-13px labels · no `maxFontSizeMultiplier` anywhere, Dynamic Type breaks the fixed 64pt tab bar · raised Home tab's top ~30pt is a dead touch zone. (`theme/colors.ts:12`, `app/(tabs)/_layout.tsx:38-70`, `app/trip/index.tsx:109-132`)
 
 **Compliance hygiene**
-- [ ] **M15. Location permission string declared but location never used** (no expo-location, no user puck) — drop `NSLocationWhenInUseUsageDescription` or actually use it; privacy-label mismatch risk. Plan 1.4's "keep it, it's accurate" was wrong. (`app.json:21`)
+- [ ] **M15. Location permission string declared but location never used** (no expo-location, no user puck) — drop `NSLocationWhenInUseUsageDescription` or actually use it; privacy-label mismatch risk. Plan 1.4's "keep it, it's accurate" was wrong. (`app.json:21`) **Caution:** don't remove it blindly — Mapbox links CoreLocation, and Apple's upload validation (ITMS-90683) can reject binaries referencing location APIs without a purpose string. Test removal against a real EAS build/upload.
 - [x] **M16. Mapbox attribution and logo disabled** (`attributionEnabled={false}`, `logoEnabled={false}`) — violates Mapbox ToS on a production app. Re-enable. (`app/trip/index.tsx:184-185`)
 
 **M-AUTH (only matters under Option B / when accounts go live)**
