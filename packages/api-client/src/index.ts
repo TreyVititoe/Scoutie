@@ -38,15 +38,22 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     resp = await fetch(`${baseUrl}${path}`, { ...init, signal: controller.signal });
   } catch (err) {
     if (controller.signal.aborted) {
-      throw new Error(`${method} ${path} timed out`);
+      throw new Error("The search took too long. Check your connection and try again.");
     }
     throw err;
   } finally {
     clearTimeout(timer);
   }
   if (!resp.ok) {
+    /* Routes return { error: "friendly message" } on 4xx/429 — surface it
+     * instead of a raw status dump. */
     const text = await resp.text().catch(() => "");
-    throw new Error(`${method} ${path} failed: ${resp.status} ${text}`);
+    let friendly = "";
+    try {
+      const body = JSON.parse(text) as { error?: string; message?: string };
+      friendly = body.error ?? body.message ?? "";
+    } catch {}
+    throw new Error(friendly || `The request failed (HTTP ${resp.status}). Try again in a moment.`);
   }
   return resp.json() as Promise<T>;
 }

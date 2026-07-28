@@ -1,7 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { TripCartItem } from "@walter/shared";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
+import { safeStorage } from "./storage";
 
 type CartState = {
   items: TripCartItem[];
@@ -41,7 +42,10 @@ export const useTripCart = create<CartState>()(
     }),
     {
       name: "walter_cart",
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => safeStorage),
+      version: 1,
+      /* v0 → v1 changed nothing structural; stored shape passes through. */
+      migrate: (persisted) => persisted as CartState,
     }
   )
 );

@@ -54,9 +54,14 @@ export function lookupUrl(item: TripCartItem, destination: string): string {
   return `https://www.google.com/search?q=${q}`;
 }
 
-export function trackAndOpen(item: TripCartItem, destination: string) {
+export function trackAndOpen(
+  item: TripCartItem,
+  destination: string,
+  tripId?: string
+) {
   const url = affiliateUrl(item) ?? lookupUrl(item, destination);
   api.affiliate.click({
+    tripId,
     provider: providerLabel(item),
     itemType: item.type,
     destinationUrl: url,

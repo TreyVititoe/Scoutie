@@ -1,10 +1,11 @@
 import type { CuratedTrip } from "@walter/shared";
 import { api } from "@walter/api-client";
 import { Image } from "expo-image";
+import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
-import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { useSavedTrips } from "../lib/stores/savedTripsStore";
 import { colors } from "../theme/colors";
 
 type Props = {
@@ -19,7 +20,8 @@ type Props = {
  * with the title and price set in dark text below the image.
  */
 export function TripCard({ trip, onPress, width = 168 }: Props) {
-  const [saved, setSaved] = useState(false);
+  const savedId = `curated-${trip.id}`;
+  const saved = useSavedTrips((s) => s.trips.some((t) => t.id === savedId));
   const photoUrl =
     trip.image ?? api.photo.url(trip.photoQuery ?? trip.destination);
 
@@ -58,7 +60,29 @@ export function TripCard({ trip, onPress, width = 168 }: Props) {
         ) : null}
 
         <Pressable
-          onPress={() => setSaved((s) => !s)}
+          onPress={() => {
+            const store = useSavedTrips.getState();
+            if (saved) {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              store.remove(savedId);
+              return;
+            }
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            store.save({
+              id: savedId,
+              curatedId: trip.id,
+              name: trip.title,
+              destination: trip.destination,
+              items: [],
+              totalCost: trip.totalCost,
+              savedAt: new Date().toISOString(),
+              durationDays: trip.durationDays,
+            });
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={
+            saved ? `Remove ${trip.title} from your trips` : `Save ${trip.title}`
+          }
           hitSlop={10}
           className="absolute right-2 top-2"
           style={{

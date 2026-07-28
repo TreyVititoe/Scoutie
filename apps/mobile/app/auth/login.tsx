@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 
+import { LegalLinks } from "../../components/LegalLinks";
 import { supabase } from "../../lib/supabase";
 import { colors } from "../../theme/colors";
 
@@ -196,6 +197,9 @@ export default function LoginScreen() {
             </Pressable>
           </>
         )}
+        <View className="mt-8">
+          <LegalLinks />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

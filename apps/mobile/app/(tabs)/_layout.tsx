@@ -22,6 +22,24 @@ function FloatingTabBar({ state, navigation }: any) {
     state.routes.find((r: any) => r.name === name)
   ).filter(Boolean);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pressHandler = (route: any, focused: boolean) => () => {
+    const event = navigation.emit({
+      type: "tabPress",
+      target: route.key,
+      canPreventDefault: true,
+    });
+    if (!focused && !event.defaultPrevented) {
+      navigation.navigate(route.name);
+    }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const homeRoute = routes.find((r: any) => r.name === "index");
+  const homeFocused = homeRoute
+    ? state.index === state.routes.indexOf(homeRoute)
+    : false;
+
   return (
     <View
       pointerEvents="box-none"
@@ -32,10 +50,14 @@ function FloatingTabBar({ state, navigation }: any) {
         bottom: insets.bottom + 6,
       }}
     >
+      {/* The bar sits 30pt down so the raised Home circle (a sibling, not a
+       * child — children can't receive touches outside the bar's bounds)
+       * pokes above it and stays fully tappable. */}
       <View
         className="flex-row items-center justify-around bg-card rounded-full border border-line"
         style={{
           height: 64,
+          marginTop: 30,
           shadowColor: colors.shadow,
           shadowOpacity: 0.16,
           shadowRadius: 22,
@@ -44,65 +66,21 @@ function FloatingTabBar({ state, navigation }: any) {
       >
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {routes.map((route: any) => {
-          const focused = state.index === state.routes.indexOf(route);
-          const meta = TAB_META[route.name];
-          const onPress = () => {
-            const event = navigation.emit({
-              type: "tabPress",
-              target: route.key,
-              canPreventDefault: true,
-            });
-            if (!focused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          };
-
           if (route.name === "index") {
+            /* Spacer keeps quick/saved in place; Home renders above. */
             return (
-              <Pressable
-                key={route.key}
-                onPress={onPress}
-                style={{ alignItems: "center", marginTop: -30 }}
-              >
-                <View
-                  style={{
-                    width: 58,
-                    height: 58,
-                    borderRadius: 29,
-                    backgroundColor: colors.accent,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    shadowColor: colors.accent,
-                    shadowOpacity: 0.45,
-                    shadowRadius: 12,
-                    shadowOffset: { width: 0, height: 5 },
-                  }}
-                >
-                  <SymbolView
-                    name="house.fill"
-                    tintColor="white"
-                    size={24}
-                    fallback={null}
-                  />
-                </View>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    fontWeight: "600",
-                    marginTop: 4,
-                    color: focused ? colors.accent : colors.textTertiary,
-                  }}
-                >
-                  Home
-                </Text>
-              </Pressable>
+              <View key={route.key} pointerEvents="none" style={{ width: 72 }} />
             );
           }
-
+          const focused = state.index === state.routes.indexOf(route);
+          const meta = TAB_META[route.name];
           return (
             <Pressable
               key={route.key}
-              onPress={onPress}
+              onPress={pressHandler(route, focused)}
+              accessibilityRole="tab"
+              accessibilityLabel={meta.label}
+              accessibilityState={{ selected: focused }}
               style={{
                 alignItems: "center",
                 justifyContent: "center",
@@ -117,6 +95,7 @@ function FloatingTabBar({ state, navigation }: any) {
                 fallback={null}
               />
               <Text
+                maxFontSizeMultiplier={1.2}
                 style={{
                   fontSize: 11,
                   fontWeight: "500",
@@ -130,6 +109,60 @@ function FloatingTabBar({ state, navigation }: any) {
           );
         })}
       </View>
+
+      {homeRoute ? (
+        <View
+          pointerEvents="box-none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            alignItems: "center",
+          }}
+        >
+          <Pressable
+            onPress={pressHandler(homeRoute, homeFocused)}
+            accessibilityRole="tab"
+            accessibilityLabel="Home"
+            accessibilityState={{ selected: homeFocused }}
+            style={{ alignItems: "center" }}
+          >
+            <View
+              style={{
+                width: 58,
+                height: 58,
+                borderRadius: 29,
+                backgroundColor: colors.accent,
+                alignItems: "center",
+                justifyContent: "center",
+                shadowColor: colors.accent,
+                shadowOpacity: 0.45,
+                shadowRadius: 12,
+                shadowOffset: { width: 0, height: 5 },
+              }}
+            >
+              <SymbolView
+                name="house.fill"
+                tintColor="white"
+                size={24}
+                fallback={null}
+              />
+            </View>
+            <Text
+              maxFontSizeMultiplier={1.2}
+              style={{
+                fontSize: 11,
+                fontWeight: "600",
+                marginTop: 4,
+                color: homeFocused ? colors.accent : colors.textTertiary,
+              }}
+            >
+              Home
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
     </View>
   );
 }

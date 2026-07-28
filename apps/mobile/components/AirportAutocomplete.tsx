@@ -1,6 +1,6 @@
 import { SymbolView } from "expo-symbols";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
 
 import { colors } from "../theme/colors";
 
@@ -93,48 +93,48 @@ export function AirportAutocomplete({ value, onChange, placeholder }: Props) {
       </View>
 
       {focused && features.length > 0 ? (
+        /* Six rows at most — a plain map avoids the VirtualizedList-inside-
+         * ScrollView warning and its broken inner scroll. */
         <View className="bg-card mt-2 rounded-2xl border border-line overflow-hidden">
-          <FlatList
-            data={features}
-            keyExtractor={(f) => f.id}
-            keyboardShouldPersistTaps="handled"
-            renderItem={({ item }) => {
-              const isAirport = item.properties?.category?.includes("airport");
-              return (
-                <Pressable
-                  onPress={() => {
-                    setQuery(item.place_name);
-                    onChange(item.place_name);
-                    setFocused(false);
-                    setFeatures([]);
-                  }}
-                  className="px-4 py-3 flex-row items-center gap-3 border-b border-line"
-                >
-                  <SymbolView
-                    name={isAirport ? "airplane" : "mappin"}
-                    tintColor={colors.textSecondary}
-                    size={16}
-                    fallback={null}
-                  />
-                  <View className="flex-1">
-                    <Text className="text-ink text-[14px] font-medium">
-                      {item.text}
-                    </Text>
-                    <Text className="text-ink-faint text-[12px]" numberOfLines={1}>
-                      {item.place_name}
+          {features.map((item) => {
+            const isAirport = item.properties?.category?.includes("airport");
+            return (
+              <Pressable
+                key={item.id}
+                onPress={() => {
+                  setQuery(item.place_name);
+                  onChange(item.place_name);
+                  setFocused(false);
+                  setFeatures([]);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={item.place_name}
+                className="px-4 py-3 flex-row items-center gap-3 border-b border-line"
+              >
+                <SymbolView
+                  name={isAirport ? "airplane" : "mappin"}
+                  tintColor={colors.textSecondary}
+                  size={16}
+                  fallback={null}
+                />
+                <View className="flex-1">
+                  <Text className="text-ink text-[14px] font-medium">
+                    {item.text}
+                  </Text>
+                  <Text className="text-ink-faint text-[12px]" numberOfLines={1}>
+                    {item.place_name}
+                  </Text>
+                </View>
+                {isAirport ? (
+                  <View className="bg-accent/20 px-2 py-0.5 rounded">
+                    <Text className="text-accent text-[10px] font-semibold">
+                      Airport
                     </Text>
                   </View>
-                  {isAirport ? (
-                    <View className="bg-accent/20 px-2 py-0.5 rounded">
-                      <Text className="text-accent text-[10px] font-semibold">
-                        Airport
-                      </Text>
-                    </View>
-                  ) : null}
-                </Pressable>
-              );
-            }}
-          />
+                ) : null}
+              </Pressable>
+            );
+          })}
         </View>
       ) : null}
     </View>

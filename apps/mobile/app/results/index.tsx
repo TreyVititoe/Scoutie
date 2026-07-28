@@ -14,6 +14,7 @@ import {
   SuggestionCard,
 } from "../../components/results/ResultCards";
 import { AirportAutocomplete } from "../../components/AirportAutocomplete";
+import { DateRangePicker } from "../../components/DateRangePicker";
 import { SegmentedControl } from "../../components/SegmentedControl";
 import { SkeletonListItem } from "../../components/Skeleton";
 import { api } from "../../lib/apiClient";
@@ -38,6 +39,9 @@ export default function ResultsScreen() {
   const destPhoto = prefs.destination ? api.photo.url(prefs.destination) : undefined;
 
   const hasOrigin = !!(prefs.departureAirportCode || prefs.departureCity);
+  /* Quick and Compare can land here dateless; every search needs dates, so
+   * the screen prompts inline and holds the queries until they exist. */
+  const hasDates = !!(prefs.startDate && prefs.endDate);
   const flights = useQuery({
     queryKey: ["flights", prefs],
     queryFn: () =>
@@ -48,7 +52,7 @@ export default function ResultsScreen() {
         returnDate: prefs.endDate ?? "",
         adults: prefs.travelers ?? 2,
       }),
-    enabled: hasOrigin && !!prefs.destination && !!prefs.startDate && !!prefs.endDate,
+    enabled: hasOrigin && !!prefs.destination && hasDates,
   });
 
   const hotels = useQuery({
@@ -61,7 +65,7 @@ export default function ResultsScreen() {
         adults: prefs.travelers ?? 2,
         stayType,
       }),
-    enabled: section === "stay" || !!prefs.destination,
+    enabled: (section === "stay" || !!prefs.destination) && hasDates,
   });
 
   const events = useQuery({
@@ -74,7 +78,7 @@ export default function ResultsScreen() {
         vibes: prefs.vibes ?? [],
         description: prefs.description ?? "",
       }),
-    enabled: section === "events" || !!prefs.destination,
+    enabled: (section === "events" || !!prefs.destination) && hasDates,
   });
 
   const suggestions = useQuery({
@@ -89,7 +93,7 @@ export default function ResultsScreen() {
         travelerType: prefs.travelersType ?? "couple",
         description: prefs.description ?? "",
       }),
-    enabled: section === "do",
+    enabled: section === "do" && hasDates,
   });
 
   const itemCount = cart.items.length;
@@ -108,6 +112,17 @@ export default function ResultsScreen() {
                   : undefined,
               });
             }}
+          />
+        );
+      if (flights.isPaused)
+        return <ErrorCard what="flight" offline onRetry={() => flights.refetch()} />;
+      if (flights.isError)
+        return (
+          <ErrorCard
+            what="flight"
+            message={errText(flights.error)}
+            onRetry={() => flights.refetch()}
+            retrying={flights.isRefetching}
           />
         );
       if (flights.isLoading) return <Loading label="Searching flights…" photo={destPhoto} />;
@@ -165,6 +180,25 @@ export default function ResultsScreen() {
           ))}
         </View>
       );
+      if (hotels.isPaused)
+        return (
+          <View>
+            {pills}
+            <ErrorCard what="stay" offline onRetry={() => hotels.refetch()} />
+          </View>
+        );
+      if (hotels.isError)
+        return (
+          <View>
+            {pills}
+            <ErrorCard
+              what="stay"
+              message={errText(hotels.error)}
+              onRetry={() => hotels.refetch()}
+              retrying={hotels.isRefetching}
+            />
+          </View>
+        );
       if (hotels.isLoading)
         return (
           <View>
@@ -217,6 +251,17 @@ export default function ResultsScreen() {
       );
     }
     if (section === "events") {
+      if (events.isPaused)
+        return <ErrorCard what="event" offline onRetry={() => events.refetch()} />;
+      if (events.isError)
+        return (
+          <ErrorCard
+            what="event"
+            message={errText(events.error)}
+            onRetry={() => events.refetch()}
+            retrying={events.isRefetching}
+          />
+        );
       if (events.isLoading) return <Loading label="Searching events…" photo={destPhoto} />;
       const all = [
         ...(events.data?.exactMatches ?? []),
@@ -250,6 +295,17 @@ export default function ResultsScreen() {
       ));
     }
     if (section === "do") {
+      if (suggestions.isPaused)
+        return <ErrorCard what="picks" offline onRetry={() => suggestions.refetch()} />;
+      if (suggestions.isError)
+        return (
+          <ErrorCard
+            what="picks"
+            message={errText(suggestions.error)}
+            onRetry={() => suggestions.refetch()}
+            retrying={suggestions.isRefetching}
+          />
+        );
       if (suggestions.isLoading)
         return <Loading label="Walter is thinking…" photo={destPhoto} />;
       const s = suggestions.data?.suggestions ?? [];
@@ -289,6 +345,8 @@ export default function ResultsScreen() {
             itemCount > 0 ? (
               <Pressable
                 onPress={() => router.push("/trip")}
+                accessibilityRole="button"
+                accessibilityLabel={`View your trip, ${itemCount} ${itemCount === 1 ? "item" : "items"}`}
                 className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
                 style={{ backgroundColor: colors.accent }}
               >
@@ -327,22 +385,125 @@ export default function ResultsScreen() {
       ) : null}
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ padding: 16, paddingBottom: 180 }}
       >
-        <SegmentedControl<Section>
-          options={[
-            { value: "flights", label: "Flights" },
-            { value: "stay", label: "Stay" },
-            { value: "events", label: "Events" },
-            { value: "do", label: "Picks" },
-          ]}
-          value={section}
-          onChange={setSection}
-        />
+        {!hasDates ? (
+          <DatesPrompt
+            onSubmit={(start, end) =>
+              usePrefs.getState().patch({ startDate: start, endDate: end })
+            }
+          />
+        ) : (
+          <>
+            <SegmentedControl<Section>
+              options={[
+                { value: "flights", label: "Flights" },
+                { value: "stay", label: "Stay" },
+                { value: "events", label: "Events" },
+                { value: "do", label: "Picks" },
+              ]}
+              value={section}
+              onChange={setSection}
+            />
 
-        <View className="mt-4">{content}</View>
+            <View className="mt-4">{content}</View>
+          </>
+        )}
       </ScrollView>
 
+    </View>
+  );
+}
+
+function DatesPrompt({
+  onSubmit,
+}: {
+  onSubmit: (start: string, end: string) => void;
+}) {
+  const [start, setStart] = useState<string | undefined>();
+  const [end, setEnd] = useState<string | undefined>();
+  const ready = !!(start && end);
+  return (
+    <View className="bg-card rounded-2xl p-5 border border-line">
+      <Text className="text-ink text-[16px] font-semibold">
+        When are you going?
+      </Text>
+      <Text className="text-ink-faint text-[12px] mt-1 mb-3 leading-4">
+        Dates drive everything — fares, rooms, and what's on in town while
+        you're there.
+      </Text>
+      <DateRangePicker
+        startDate={start}
+        endDate={end}
+        onChange={(s, e) => {
+          setStart(s);
+          setEnd(e);
+        }}
+      />
+      <Pressable
+        disabled={!ready}
+        onPress={() => ready && onSubmit(start, end)}
+        accessibilityRole="button"
+        accessibilityLabel="Search with these dates"
+        className="mt-3 py-3 rounded-full items-center"
+        style={{ backgroundColor: ready ? colors.accent : colors.surface2 }}
+      >
+        <Text
+          className="text-[14px] font-semibold"
+          style={{ color: ready ? "white" : colors.textTertiary }}
+        >
+          Search these dates
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function errText(error: unknown): string | undefined {
+  return error instanceof Error ? error.message : undefined;
+}
+
+function ErrorCard({
+  what,
+  message,
+  onRetry,
+  retrying,
+  offline,
+}: {
+  what: string;
+  message?: string;
+  onRetry: () => void;
+  retrying?: boolean;
+  offline?: boolean;
+}) {
+  return (
+    <View className="bg-card rounded-2xl p-5 border border-line items-center">
+      <SymbolView
+        name={offline ? "wifi.slash" : "exclamationmark.triangle"}
+        tintColor={colors.textTertiary}
+        size={28}
+        fallback={null}
+      />
+      <Text className="text-ink text-[15px] font-semibold mt-3 text-center">
+        {offline ? "You're offline" : "That search hit a snag"}
+      </Text>
+      <Text className="text-ink-soft text-[13px] mt-1 text-center leading-5">
+        {offline
+          ? "Reconnect and Walter picks up where he left off."
+          : message || "Give it another try in a moment."}
+      </Text>
+      <Pressable
+        onPress={onRetry}
+        accessibilityRole="button"
+        accessibilityLabel={`Retry the ${what} search`}
+        className="mt-4 px-6 py-2.5 rounded-full"
+        style={{ backgroundColor: colors.surface2 }}
+      >
+        <Text className="text-ink text-[13px] font-semibold">
+          {retrying ? "Trying…" : "Try again"}
+        </Text>
+      </Pressable>
     </View>
   );
 }

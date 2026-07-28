@@ -6,6 +6,7 @@ import * as Haptics from "expo-haptics";
 import { useMemo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { LegalLinks } from "../components/LegalLinks";
 import { providerLabel, trackAndOpen } from "../lib/affiliate";
 import { api } from "../lib/apiClient";
 import { selectTotalPrice, useTripCart } from "../lib/stores/tripCartStore";
@@ -20,6 +21,9 @@ const TYPE_LABELS: Record<string, string> = {
   restaurant: "Restaurants",
   site: "Sites",
 };
+
+/* Journey order: get there, sleep there, then the days themselves. */
+const TYPE_ORDER = ["flight", "hotel", "event", "activity", "restaurant", "site"];
 
 export default function CheckoutScreen() {
   const prefs = usePrefs((s) => s.prefs);
@@ -37,8 +41,51 @@ export default function CheckoutScreen() {
     for (const i of items) {
       (g[i.type] = g[i.type] ?? []).push(i);
     }
-    return g;
+    return Object.entries(g).sort(
+      ([a], [b]) => TYPE_ORDER.indexOf(a) - TYPE_ORDER.indexOf(b)
+    );
   }, [items]);
+
+  /* Attribution: one trip = one id, same recipe as the saved-trip slot. */
+  const tripId = `trip-${(destination || "somewhere")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")}-${prefs.startDate || "tbd"}`;
+
+  if (items.length === 0) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "Book your trip" }} />
+        <View className="flex-1 bg-page-bg items-center justify-center px-8">
+          <SymbolView
+            name="cart"
+            tintColor={colors.textTertiary}
+            size={44}
+            fallback={null}
+          />
+          <Text className="text-ink text-[18px] font-semibold mt-4 text-center">
+            Nothing to book yet
+          </Text>
+          <Text className="text-ink-soft text-[13px] text-center mt-2 leading-5">
+            Add flights, stays, or things to do and Walter lines them up for
+            booking here.
+          </Text>
+          <Pressable
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace("/search")
+            }
+            accessibilityRole="button"
+            className="mt-6 px-6 py-3 rounded-full"
+            style={{ backgroundColor: colors.accent }}
+          >
+            <Text className="text-white text-[14px] font-semibold">
+              Build your trip
+            </Text>
+          </Pressable>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
@@ -110,7 +157,7 @@ export default function CheckoutScreen() {
         </View>
 
         {/* Checklist */}
-        {Object.entries(grouped).map(([type, list]) => (
+        {grouped.map(([type, list]) => (
           <View key={type} className="mt-6">
             <Text className="text-ink text-[18px] font-bold tracking-tight mb-3">
               {TYPE_LABELS[type] ?? type}
@@ -128,7 +175,12 @@ export default function CheckoutScreen() {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                         toggleBooked(item.id);
                       }}
-                      hitSlop={8}
+                      hitSlop={10}
+                      accessibilityRole="checkbox"
+                      accessibilityState={{ checked: isBooked }}
+                      accessibilityLabel={`${item.title}, ${
+                        isBooked ? "booked" : "not booked yet"
+                      }`}
                       className="mr-3"
                     >
                       <SymbolView
@@ -161,17 +213,20 @@ export default function CheckoutScreen() {
                       ) : null}
                     </View>
                     <Text className="text-ink text-[15px] font-bold mr-3">
-                      ${item.price.toLocaleString()}
+                      {item.price ? `$${item.price.toLocaleString()}` : "Free"}
                     </Text>
                   </View>
                   {!isBooked ? (
                     <Pressable
-                      onPress={() => trackAndOpen(item, destination)}
+                      onPress={() => trackAndOpen(item, destination, tripId)}
+                      accessibilityRole="link"
                       className="mt-3 py-2.5 rounded-full items-center flex-row justify-center gap-1.5"
                       style={{ backgroundColor: colors.accent }}
                     >
                       <Text className="text-white text-[13px] font-semibold">
-                        {item.bookingUrl
+                        {/* AI picks carry a search URL, not a booking page —
+                         * don't promise "Book on the web". */}
+                        {item.bookingUrl && providerLabel(item) !== "the web"
                           ? `Book on ${providerLabel(item)}`
                           : "Find online"}
                       </Text>
@@ -211,9 +266,12 @@ export default function CheckoutScreen() {
         ) : null}
 
         <Text className="text-ink-faint text-[11px] text-center mt-6 leading-4 px-6">
-          Walter earns a commission when you book through our links at no extra
-          cost to you.
+          Each booking is completed on the provider's own site. Providers
+          handle payment and confirmations; Walter keeps the itinerary.
         </Text>
+        <View className="mt-4">
+          <LegalLinks />
+        </View>
       </ScrollView>
     </>
   );

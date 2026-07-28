@@ -76,6 +76,8 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
             Haptics.selectionAsync();
             setActiveField("start");
           }}
+          accessibilityRole="button"
+          accessibilityLabel={`Start date, ${fmtDate(startDate)}`}
           className="flex-1 bg-card rounded-2xl border border-line p-4"
           style={
             activeField === "start"
@@ -103,6 +105,8 @@ export function DateRangePicker({ startDate, endDate, onChange }: Props) {
             Haptics.selectionAsync();
             setActiveField("end");
           }}
+          accessibilityRole="button"
+          accessibilityLabel={`End date, ${fmtDate(endDate)}`}
           className="flex-1 bg-card rounded-2xl border border-line p-4"
           style={
             activeField === "end"

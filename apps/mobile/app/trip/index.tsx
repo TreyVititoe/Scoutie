@@ -37,6 +37,16 @@ const GROUP_LABELS: Record<string, string> = {
   site: "Sites",
 };
 
+/* One trip = one saved slot: repeated bookmark taps re-save in place
+ * instead of stacking `trip-<timestamp>` duplicates. */
+function savedTripId(destination?: string, startDate?: string): string {
+  const slug = (destination ?? "somewhere")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `trip-${slug}-${startDate || "tbd"}`;
+}
+
 export default function TripScreen() {
   const [packCollapsed, setPackCollapsed] = useState(false);
   const prefs = usePrefs((s) => s.prefs);
@@ -44,6 +54,9 @@ export default function TripScreen() {
   const bookedIds = useTripCart((s) => s.bookedIds);
   const clear = useTripCart((s) => s.clear);
   const total = useTripCart(selectTotalPrice);
+
+  const saveId = savedTripId(prefs.destination, prefs.startDate);
+  const isSaved = useSavedTrips((s) => s.trips.some((t) => t.id === saveId));
 
   const bookedCount = items.filter((i) => bookedIds.includes(i.id)).length;
 
@@ -68,7 +81,11 @@ export default function TripScreen() {
     for (const i of items) {
       (g[i.type] = g[i.type] ?? []).push(i);
     }
-    return g;
+    /* Journey order, matching checkout: get there, sleep there, the days. */
+    const order = ["flight", "hotel", "event", "activity", "restaurant", "site"];
+    return Object.entries(g).sort(
+      ([a], [b]) => order.indexOf(a) - order.indexOf(b)
+    );
   }, [items]);
 
   const packing = useQuery({
@@ -93,11 +110,20 @@ export default function TripScreen() {
             items.length > 0 ? (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 18 }}>
               <Pressable
-                hitSlop={6}
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  isSaved ? "Remove this trip from your Trips tab" : "Save this trip"
+                }
                 onPress={() => {
+                  if (isSaved) {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    useSavedTrips.getState().remove(saveId);
+                    return;
+                  }
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                   useSavedTrips.getState().save({
-                    id: `trip-${Date.now()}`,
+                    id: saveId,
                     name: `Trip to ${prefs.destination?.split(",")[0] ?? "somewhere good"}`,
                     destination: prefs.destination ?? "",
                     items,
@@ -105,18 +131,22 @@ export default function TripScreen() {
                     savedAt: new Date().toISOString(),
                     startDate: prefs.startDate,
                     endDate: prefs.endDate,
+                    bookedIds,
                   });
                   Alert.alert("Saved", "This trip now lives in your Trips tab.");
                 }}
               >
                 <SymbolView
-                  name="bookmark"
+                  name={isSaved ? "bookmark.fill" : "bookmark"}
                   tintColor={colors.accent}
                   size={19}
                   fallback={null}
                 />
               </Pressable>
               <Pressable
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel="Share this trip"
                 onPress={async () => {
                   const where = prefs.destination?.split(",")[0] || "somewhere good";
                   const summary = `My ${where} trip on Walter: $${total.toLocaleString()} for ${items.length} items.`;
@@ -162,9 +192,21 @@ export default function TripScreen() {
               Nothing in this trip yet
             </Text>
             <Text className="text-ink-soft text-[13px] text-center mt-2 leading-5">
-              Build a trip from the search above to see flights, hotels, and
-              activities here.
+              Find flights, stays, and things to do, then add them here. Walter
+              handles the rest.
             </Text>
+            <Pressable
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/search")
+              }
+              accessibilityRole="button"
+              className="mt-6 px-6 py-3 rounded-full"
+              style={{ backgroundColor: colors.accent }}
+            >
+              <Text className="text-white text-[14px] font-semibold">
+                Go exploring
+              </Text>
+            </Pressable>
           </View>
         ) : (
           <>
@@ -177,8 +219,7 @@ export default function TripScreen() {
                 ${total.toLocaleString()}
               </Text>
               <Text className="text-ink-soft text-[13px] mt-1">
-                {items.length} items across {Object.keys(grouped).length}{" "}
-                categories
+                {items.length} items across {grouped.length} categories
               </Text>
             </View>
 
@@ -188,10 +229,16 @@ export default function TripScreen() {
                 className="mx-4 mt-4 rounded-2xl overflow-hidden border border-line"
                 style={{ height: 240 }}
               >
+                {/* Static preview: gestures off so drags scroll the page,
+                 * not the map. */}
                 <Mapbox.MapView
                   styleURL={Mapbox.StyleURL.Light}
                   style={{ flex: 1 }}
                   scaleBarEnabled={false}
+                  scrollEnabled={false}
+                  zoomEnabled={false}
+                  rotateEnabled={false}
+                  pitchEnabled={false}
                 >
                   <Mapbox.Camera zoomLevel={9} centerCoordinate={geo.data} animationMode="flyTo" />
                 </Mapbox.MapView>
@@ -199,7 +246,7 @@ export default function TripScreen() {
             ) : null}
 
             {/* Items grouped by type */}
-            {Object.entries(grouped).map(([type, list]) => (
+            {grouped.map(([type, list]) => (
               <View key={type} className="mt-6 px-4">
                 <Text className="text-ink text-[18px] font-bold tracking-tight mb-3">
                   {GROUP_LABELS[type] ?? type}
@@ -221,7 +268,7 @@ export default function TripScreen() {
                         ) : null}
                       </View>
                       <Text className="text-ink text-[15px] font-bold">
-                        ${i.price.toLocaleString()}
+                        {i.price ? `$${i.price.toLocaleString()}` : "Free"}
                       </Text>
                     </View>
                   </View>

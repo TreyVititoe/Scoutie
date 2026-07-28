@@ -53,8 +53,20 @@ export default function TripsScreen() {
         <Pressable
           key={trip.id}
           onPress={() => {
-            /* Reopen the trip: its items become the active cart. */
-            useTripCart.setState({ items: trip.items, bookedIds: [] });
+            /* A hearted curated trip has no cart yet — resume planning it. */
+            if (trip.curatedId || trip.items.length === 0) {
+              usePrefs.getState().patch({
+                destination: trip.destination,
+                durationDays: trip.durationDays,
+              });
+              router.push("/clarify");
+              return;
+            }
+            /* Reopen the trip: items and booked progress become the active cart. */
+            useTripCart.setState({
+              items: trip.items,
+              bookedIds: trip.bookedIds ?? [],
+            });
             usePrefs.getState().patch({
               destination: trip.destination,
               startDate: trip.startDate ?? "",
@@ -76,8 +88,12 @@ export default function TripsScreen() {
                 {trip.name}
               </Text>
               <Text className="text-ink-soft text-[13px] mt-0.5" numberOfLines={1}>
-                ${trip.totalCost.toLocaleString()} · {trip.items.length}{" "}
-                {trip.items.length === 1 ? "item" : "items"} · saved{" "}
+                {trip.curatedId || trip.items.length === 0
+                  ? `From $${trip.totalCost.toLocaleString()} · tap to plan`
+                  : `$${trip.totalCost.toLocaleString()} · ${trip.items.length} ${
+                      trip.items.length === 1 ? "item" : "items"
+                    }`}{" "}
+                · saved{" "}
                 {new Date(trip.savedAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -85,7 +101,9 @@ export default function TripsScreen() {
               </Text>
             </View>
             <Pressable
-              hitSlop={8}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel={`Remove ${trip.name}`}
               onPress={() =>
                 Alert.alert("Remove this trip?", trip.name, [
                   { text: "Cancel", style: "cancel" },

@@ -277,3 +277,21 @@ Mobile:
 - `app/auth-callback.tsx` (NEW): handles `walter://auth-callback` magic links (setSession or verifyOtp) - email sign-in now completes in production builds.
 - Checkout parity: `TripCartItem` gained `bookingUrl`/`provider` (results screens now populate them), cart store gained `bookedIds`/`toggleBooked`, `app/checkout.tsx` (NEW) is the booking checklist, trip screen gained the "Book your trip" CTA.
 - Trip map now geocodes the destination (was centered on [0,0]); packing list got an error+retry state; fixed pre-existing invalid header props in the tabs layout.
+
+---
+
+# Session changes - 2026-07-28
+
+## app_issues.md register cleared (mobile pre-store audit)
+
+Decisions locked with the user: **Section 0 = Option A** (accounts stay parked for v1), H3 = inline date prompt, H6 = wire the heart, M1 = soften the commission copy until affiliate IDs exist.
+
+- **H3**: Results shows an inline `DatesPrompt` card (DateRangePicker) and holds all four searches until dates exist — catches the Quick tab and Compare "Build this" dateless paths.
+- **H4 + M4**: NetInfo installed and react-query `onlineManager` wired at module scope; Results has isPaused ("You're offline") and isError retry cards on flights/stay/events/picks. `packages/api-client` now surfaces the route's friendly `{ error }` body (429 included) and a human timeout message — upgrades web error text too.
+- **H6 + M9 + M10**: TripCard heart toggles savedTripsStore (`curated-` ids reopen into clarify); trip bookmark uses a stable destination+dates id, re-saves in place, fills when saved; bookedIds persist on SavedTrip and restore on reopen.
+- **H7**: clarify gets KeyboardAvoidingView + `keyboardShouldPersistTaps="handled"`; same persist-taps on Results.
+- **H8 + M1**: new `LegalLinks` (privacy/terms, env-driven base) on Home footer, checkout, Profile, login; checkout disclosure now the neutral provider-handoff line.
+- **Mediums**: M3 empty-cart checkout guard, M5 persist version/migrate on all stores, M6 Compare snapshots prefs at mount (no silent regen), M11 Compare empty state, M12 map gestures off, M13 empty-trip copy + action, M14 full a11y pass (labels/roles, hitSlop, ink-soft/faint darkened to 0.78/0.62, tab-bar Dynamic Type caps, raised Home rebuilt as a sibling so its top half is tappable), M15 resolved-by-decision (keep the location string; never declare location in ASC labels).
+- **Lows**: "Find online" label for web-provider items, affiliate click tripId, journey-order groups + "Free" for $0, AirportAutocomplete FlatList → plain map, dead rail chip removed, safeStorage wrapper, splash key → expo-splash-screen plugin, Android package aligned to `com.walterus.app`, 11 Expo packages bumped (`expo install --check` clean).
+
+Verified: `apps/mobile` tsc clean, `apps/web` tsc clean, web vitest 12/12. **Native modules changed (netinfo) + app.json changed → `expo prebuild -p ios` before the next build.** Remaining in register: M1 env vars (user signups), B1/B2/B3, ASC privacy labels.

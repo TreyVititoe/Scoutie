@@ -1,4 +1,5 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, onlineManager } from "@tanstack/react-query";
+import NetInfo from "@react-native-community/netinfo";
 import Mapbox from "@rnmapbox/maps";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -94,6 +95,12 @@ SystemUI.setBackgroundColorAsync(colors.pageBg);
 /* Module scope, not an effect: child screens' first-render queries fire
  * before the parent layout's useEffect runs. */
 bootApiClient();
+
+/* React Native has no `online` event — react-query's onlineManager must be
+ * wired by hand or queries never pause offline nor refetch on reconnect. */
+onlineManager.setEventListener((setOnline) =>
+  NetInfo.addEventListener((state) => setOnline(!!state.isConnected))
+);
 
 export default function RootLayout() {
   const queryClient = useMemo(

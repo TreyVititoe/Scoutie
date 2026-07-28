@@ -13,8 +13,10 @@ module.exports = {
         card: "#FCFCFE",
         ink: {
           DEFAULT: "#232B3F",
-          soft: "rgba(35, 43, 63, 0.72)",
-          faint: "rgba(35, 43, 63, 0.48)",
+          // 0.78/0.62 keep small labels near WCAG AA on paper; the old
+          // 0.48 faint measured ~2.8:1 at 10-13px.
+          soft: "rgba(35, 43, 63, 0.78)",
+          faint: "rgba(35, 43, 63, 0.62)",
         },
         line: {
           DEFAULT: "rgba(35, 43, 63, 0.10)",

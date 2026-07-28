@@ -45,7 +45,10 @@ function WorkingPhrases() {
 }
 
 export default function CompareScreen() {
-  const prefs = usePrefs((s) => s.prefs);
+  /* Snapshot at mount: "Build this" patches prefs for the Results screen,
+   * and a live subscription would change the queryKey and silently
+   * regenerate all three trips behind the user's back. */
+  const [prefs] = useState(() => usePrefs.getState().prefs);
 
   const { data, isLoading, error, refetch, isRefetching } = useQuery({
     queryKey: ["compare", prefs],
@@ -115,6 +118,35 @@ export default function CompareScreen() {
         >
           <Text className="text-white text-[14px] font-semibold">
             {isRefetching ? "Retrying…" : "Try again"}
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  if (!data?.trips?.length) {
+    return (
+      <View className="flex-1 bg-page-bg items-center justify-center px-8">
+        <SymbolView
+          name="map"
+          tintColor={colors.textTertiary}
+          size={36}
+          fallback={null}
+        />
+        <Text className="text-ink text-[16px] font-semibold mt-4 text-center">
+          Walter came back empty-handed
+        </Text>
+        <Text className="text-ink-soft text-[13px] mt-2 text-center leading-5">
+          No trips fit this ask. Try again, or loosen the brief a little.
+        </Text>
+        <Pressable
+          onPress={() => refetch()}
+          accessibilityRole="button"
+          className="mt-5 px-6 py-3 rounded-full"
+          style={{ backgroundColor: colors.accent }}
+        >
+          <Text className="text-white text-[14px] font-semibold">
+            {isRefetching ? "Trying…" : "Try again"}
           </Text>
         </Pressable>
       </View>

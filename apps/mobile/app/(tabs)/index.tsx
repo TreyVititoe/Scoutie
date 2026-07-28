@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { LegalLinks } from "../../components/LegalLinks";
 import { TripCard } from "../../components/TripCard";
 import { usePrefs } from "../../lib/stores/walterPrefsStore";
 import { colors } from "../../theme/colors";
@@ -223,17 +224,6 @@ export default function HomeScreen() {
                 >
                   {rail.label}
                 </Text>
-                <View
-                  className="w-8 h-8 rounded-full items-center justify-center"
-                  style={{ backgroundColor: colors.surface2 }}
-                >
-                  <SymbolView
-                    name="arrow.right"
-                    tintColor={colors.text}
-                    size={15}
-                    fallback={null}
-                  />
-                </View>
               </View>
               <FlatList
                 data={rail.trips}
@@ -257,6 +247,9 @@ export default function HomeScreen() {
               />
             </View>
           ))}
+          <View className="mt-2 mb-4">
+            <LegalLinks />
+          </View>
         </View>
       </Animated.ScrollView>
     </View>

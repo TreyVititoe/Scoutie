@@ -7,11 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FFFFFF"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.walterus.app",
@@ -42,7 +37,7 @@
       }
     },
     "android": {
-      "package": "com.walter.app",
+      "package": "com.walterus.app",
       "adaptiveIcon": {
         "backgroundColor": "#404042",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -59,6 +54,14 @@
         "expo-router",
         {
           "root": "./app"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#FFFFFF"
         }
       ],
       [

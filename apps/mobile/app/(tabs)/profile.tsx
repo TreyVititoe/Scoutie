@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
+import { LegalLinks } from "../../components/LegalLinks";
 import { useSession } from "../../lib/hooks/useSession";
 import { supabase } from "../../lib/supabase";
 import { colors } from "../../theme/colors";
@@ -38,6 +39,9 @@ export default function ProfileScreen() {
             Continue
           </Text>
         </Pressable>
+        <View className="mt-8">
+          <LegalLinks />
+        </View>
       </View>
     );
   }
@@ -72,6 +76,10 @@ export default function ProfileScreen() {
           fallback={null}
         />
       </Pressable>
+
+      <View className="mt-8">
+        <LegalLinks />
+      </View>
     </ScrollView>
   );
 }

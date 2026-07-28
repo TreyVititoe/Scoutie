@@ -2,7 +2,14 @@ import { router } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 import { AirportAutocomplete } from "../components/AirportAutocomplete";
 import { DateRangePicker } from "../components/DateRangePicker";
@@ -29,9 +36,14 @@ export default function ClarifyScreen() {
   const continueDisabled = !departure.trim() || !startDate || !endDate;
 
   return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={{ flex: 1 }}
+    >
     <ScrollView
       className="flex-1 bg-page-bg"
       contentInsetAdjustmentBehavior="automatic"
+      keyboardShouldPersistTaps="handled"
       contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
     >
       <Text className="text-ink-soft text-[13px] mb-6 leading-5">
@@ -62,6 +74,7 @@ export default function ClarifyScreen() {
                 setTravelers((n) => Math.max(1, n - 1));
               }}
               icon="minus"
+              label="Fewer travelers"
               disabled={travelers <= 1}
             />
             <Text className="text-ink text-[20px] font-bold min-w-[24px] text-center">
@@ -73,6 +86,7 @@ export default function ClarifyScreen() {
                 setTravelers((n) => Math.min(12, n + 1));
               }}
               icon="plus"
+              label="More travelers"
               disabled={travelers >= 12}
             />
           </View>
@@ -158,6 +172,7 @@ export default function ClarifyScreen() {
         </Text>
       </Pressable>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -188,16 +203,22 @@ function Section({
 function StepperBtn({
   onPress,
   icon,
+  label,
   disabled,
 }: {
   onPress: () => void;
   icon: string;
+  label: string;
   disabled?: boolean;
 }) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: !!disabled }}
+      hitSlop={8}
       className="w-9 h-9 rounded-full items-center justify-center"
       style={{
         backgroundColor: colors.surface2,
