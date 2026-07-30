@@ -5,7 +5,7 @@ import Link from "next/link";
 const steps = [
   {
     num: "01",
-    title: "Take the quiz",
+    title: "Tell Walter the trip",
     desc: "Tell us where you want to go, when, how you travel, and what you love. It takes about 2 minutes.",
   },
   {
@@ -23,7 +23,7 @@ const steps = [
 const values = [
   {
     title: "No subscriptions",
-    desc: "Walter is free to use. We earn commissions when you book, not from your wallet.",
+    desc: "Walter is free to use. You book on the provider's own site, at the provider's own price.",
   },
   {
     title: "Real prices, real availability",
@@ -73,13 +73,13 @@ export default function AboutPage() {
             </span>
 
             <h1 className="text-ink text-[56px] font-semibold leading-display tracking-display mb-6">
-              One quiz.
+              One search.
               <br />
               Your whole trip.
             </h1>
 
             <p className="text-xl sm:text-2xl text-ink-soft leading-relaxed max-w-2xl mx-auto">
-              Walter is an AI-powered travel planner that turns a short quiz
+              Walter is an AI-powered travel planner that turns a short search
               into a complete, bookable itinerary -- flights, hotels,
               activities, restaurants, and more.
             </p>
@@ -111,10 +111,10 @@ export default function AboutPage() {
                 restaurants and activities you will actually enjoy.
               </p>
               <p>
-                No subscriptions. No sign-up walls. No ads. Walter earns a
-                commission when you book through our partner links, which means
-                the service stays free and our incentives stay aligned with
-                yours: help you book a great trip.
+                No subscriptions. No sign-up walls. No ads. When you are ready to
+                book, Walter hands you off to the provider&apos;s own site, where
+                you pay their price directly. We keep the itinerary; they keep
+                the transaction.
               </p>
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function AboutPage() {
               Ready to plan your next adventure?
             </h2>
             <p className="text-ink-soft text-lg mb-10 max-w-xl mx-auto">
-              No sign-up required. Take the quiz, get your trip, book when
+              No sign-up required. Describe the trip, get your itinerary, book when
               you are ready.
             </p>
             <Link

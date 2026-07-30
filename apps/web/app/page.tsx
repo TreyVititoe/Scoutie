@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
 import { SearchBar, type SearchValue } from "@/components/quiz/SearchBar";
+import { formatYMD } from "@/lib/dates";
 import {
   CURATED_TRIPS,
   CATEGORY_LABELS,
@@ -395,7 +396,7 @@ function CuratedTripCard({
     start.setDate(start.getDate() + 21); // default: in 3 weeks
     const end = new Date(start);
     end.setDate(end.getDate() + trip.durationDays);
-    const fmt = (d: Date) => d.toISOString().split("T")[0];
+    const fmt = formatYMD;
 
     useTripCartStore.getState().clearCart();
     localStorage.removeItem("walter_trip"); // fresh journey, no stale chosen trip

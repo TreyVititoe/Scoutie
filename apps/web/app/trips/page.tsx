@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { getDestinationImage } from "@/lib/destinationImages";
 import { CURATED_TRIPS, type CuratedTrip } from "@/lib/curatedTrips";
 import PlaneLoader from "@/components/PlaneLoader";
+import { prefInterests } from "@/lib/prefs";
 
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 
@@ -75,12 +76,6 @@ function formatDay(iso: string): string {
     month: "short",
     day: "numeric",
   });
-}
-
-function prefInterests(prefs: Prefs): string[] {
-  if (prefs.activityInterests?.length) return prefs.activityInterests;
-  if (prefs.vibes?.length) return prefs.vibes;
-  return [];
 }
 
 /** One line that echoes what the user typed: budget, dates, interests. */

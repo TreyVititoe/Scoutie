@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[/api/suggestions]", message);
     return NextResponse.json(
-      { error: `Suggestion generation failed: ${message}` },
+      { error: "Walter could not gather picks right now. Try again in a moment." },
       { status: 500 }
     );
   }

@@ -9,7 +9,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing slug or id" }, { status: 400 });
   }
 
-  // Use admin client to bypass RLS -- shared trips should be readable by anyone with the link
+  // Admin client bypasses RLS, so is_public is the ONLY thing standing between
+  // a link and someone's private trip -- it must be filtered on, not just
+  // selected. Without it every saved trip was world-readable by slug or uuid.
   let query = supabaseAdmin
     .from("trips")
     .select(`
@@ -25,6 +27,8 @@ export async function GET(req: NextRequest) {
         )
       )
     `);
+
+  query = query.eq("is_public", true);
 
   if (id) {
     query = query.eq("id", id);

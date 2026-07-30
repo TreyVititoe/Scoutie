@@ -12,6 +12,8 @@ import {
   type CartItemType,
 } from "@/lib/stores/tripCartStore";
 import { trackAndOpen } from "@/lib/affiliate";
+import { formatYMDShort } from "@/lib/dates";
+import { prefInterests } from "@/lib/prefs";
 import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
 import PackingList from "@/components/trip/PackingList";
 import type { MapItem } from "@/components/trip/TripMap";
@@ -85,8 +87,7 @@ function TripPage() {
   const endDate = (prefs.endDate as string) || "";
   const travelers =
     (prefs.travelersCount as number) || (prefs.travelers as number) || 1;
-  const activities =
-    (prefs.activityInterests as string[]) || (prefs.vibes as string[]) || [];
+  const activities = prefInterests(prefs);
   const pace = (prefs.pace as string) || "moderate";
 
   /* Group items by type, merging activity + site */
@@ -147,18 +148,8 @@ function TripPage() {
   }, [items]);
 
   /* Date formatting */
-  const formatDate = (d: string) => {
-    if (!d) return "";
-    try {
-      return new Date(d).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    } catch {
-      return d;
-    }
-  };
+  const formatDate = (d: string) =>
+    formatYMDShort(d, { month: "short", day: "numeric", year: "numeric" }) || d;
 
   const dateRange =
     startDate && endDate

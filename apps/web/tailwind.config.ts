@@ -12,7 +12,11 @@ const config: Config = {
         ink: {
           DEFAULT: "oklch(0.25 0.02 258)",
           soft: "oklch(0.25 0.02 258 / 0.72)",
-          faint: "oklch(0.25 0.02 258 / 0.48)",
+          /* 0.62, not 0.48: this token carries real reading text (prices,
+           * taglines, form headings, the footer), and at 0.48 it measured
+           * ~2.7:1 on paper -- under the 4.5:1 floor. Mobile made the same
+           * correction on 07-28. */
+          faint: "oklch(0.25 0.02 258 / 0.62)",
         },
         paper: "oklch(0.975 0.004 250)",
         card: "oklch(0.99 0.002 250)",
@@ -35,7 +39,7 @@ const config: Config = {
         "on-dark-secondary": "rgba(255,255,255,0.7)",
         "on-dark-tertiary": "rgba(255,255,255,0.4)",
         "on-light-secondary": "oklch(0.25 0.02 258 / 0.72)",
-        "on-light-tertiary": "oklch(0.25 0.02 258 / 0.48)",
+        "on-light-tertiary": "oklch(0.25 0.02 258 / 0.62)",
         "surface-dark": {
           1: "oklch(0.34 0.005 250)",
           2: "oklch(0.39 0.005 250)",

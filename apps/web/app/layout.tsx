@@ -23,13 +23,13 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Walter",
     type: "website",
-    images: [{ url: "/new_walter_hero.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/og.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/new_walter_hero.jpg"],
+    images: ["/og.jpg"],
   },
 };
 

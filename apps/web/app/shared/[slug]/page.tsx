@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useTripCartStore, type CartItemType } from "@/lib/stores/tripCartStore";
+import { formatYMDShort } from "@/lib/dates";
 
 type TripItem = {
   id: string;
@@ -244,7 +245,7 @@ export default function SharedTripPage() {
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-accent text-[18px]">calendar_today</span>
                 <span className="font-semibold text-ink text-sm">
-                  {new Date(trip.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(trip.end_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  {formatYMDShort(trip.start_date)} - {formatYMDShort(trip.end_date)}
                 </span>
               </div>
             )}

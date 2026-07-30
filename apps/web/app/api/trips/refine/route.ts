@@ -1,15 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { cleanString, rateLimit, readJsonCapped } from "@/lib/apiGuard";
 
 export const maxDuration = 120;
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
-export async function POST(req: NextRequest) {
-  try {
-    const { message, trip, quizData } = await req.json();
+// A trip with days and items is the bulk of the payload; 32KB fits a long
+// itinerary and still caps what can be stuffed into the prompt.
+const MAX_BODY = 32 * 1024;
 
-    if (!message || !trip) {
+export async function POST(req: NextRequest) {
+  const limited = rateLimit(req, { name: "refine", limit: 15 });
+  if (limited) return limited;
+
+  try {
+    const parsed = await readJsonCapped(req, MAX_BODY);
+    if ("errorResponse" in parsed) return parsed.errorResponse;
+    const { message: rawMessage, trip, quizData } = (parsed.body ?? {}) as {
+      message?: unknown;
+      trip?: unknown;
+      quizData?: unknown;
+    };
+
+    const message = cleanString(rawMessage, 1000);
+    if (!message || !trip || typeof trip !== "object") {
       return NextResponse.json({ error: "Missing message or trip" }, { status: 400 });
     }
 
@@ -50,11 +65,11 @@ Rules:
 
     // Parse the JSON response
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-    const parsed = JSON.parse(cleaned);
+    const result = JSON.parse(cleaned);
 
     // Support both formats: { message, trip } wrapper or raw trip object
-    const updatedTrip = parsed.trip || parsed;
-    const walterMessage = parsed.message || null;
+    const updatedTrip = result.trip || result;
+    const walterMessage = result.message || null;
 
     return NextResponse.json({ trip: updatedTrip, message: walterMessage });
   } catch (err) {

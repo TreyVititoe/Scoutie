@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { nanoid } from "@/lib/utils";
+import { clampInt, cleanString, rateLimit, readJsonCapped } from "@/lib/apiGuard";
 
 // Schema CHECK constraint allows only these item_type values
 const VALID_ITEM_TYPES = new Set(["flight", "hotel", "rental", "activity", "restaurant", "event", "transport", "note"]);
@@ -12,13 +13,70 @@ function normalizeItemType(t: unknown): string {
   return VALID_ITEM_TYPES.has(s) ? s : "activity";
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const { title, destination, totalCost, items } = await req.json();
+// This route writes with the service role and needs no auth, so every page it
+// mints is public and permanent. Caps below are what keeps it from being a
+// free hosting surface for phishing links and arbitrary images.
+const MAX_BODY = 64 * 1024;
+const MAX_ITEMS = 60;
+const MAX_COST = 10_000_000;
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
+/** Only real http(s) URLs survive -- blocks javascript:, data:, and friends. */
+function safeUrl(value: unknown): string | null {
+  const s = cleanString(value, 2000);
+  if (!s) return null;
+  try {
+    const u = new URL(s);
+    return u.protocol === "http:" || u.protocol === "https:" ? u.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** One sanitized trip_items row. Both the multi-day and single-day paths use
+ *  this so neither can drift back to inserting raw client fields. */
+function itemRow(
+  item: Record<string, unknown>,
+  idx: number,
+  tripId: string,
+  tripDayId: string
+) {
+  return {
+    trip_day_id: tripDayId,
+    trip_id: tripId,
+    item_type: normalizeItemType(item.type),
+    title: cleanString(item.title, 200) ?? "Untitled",
+    description: cleanString(item.subtitle, 1000) ?? "",
+    estimated_cost: clampInt(item.price, 0, MAX_COST, 0),
+    location_name:
+      cleanString((item.meta as Record<string, unknown>)?.locationName, 200) ?? "",
+    image_url: safeUrl(item.image),
+    booking_url: safeUrl(item.bookingUrl),
+    sort_order: idx,
+  };
+}
+
+export async function POST(req: NextRequest) {
+  const limited = rateLimit(req, { name: "trips-share", limit: 20 });
+  if (limited) return limited;
+
+  try {
+    const parsed = await readJsonCapped(req, MAX_BODY);
+    if ("errorResponse" in parsed) return parsed.errorResponse;
+    const {
+      title: rawTitle,
+      destination: rawDestination,
+      totalCost: rawTotalCost,
+      items: rawItems,
+    } = (parsed.body ?? {}) as Record<string, unknown>;
+
+    if (!rawItems || !Array.isArray(rawItems) || rawItems.length === 0) {
       return NextResponse.json({ error: "No items to share" }, { status: 400 });
     }
+
+    const title = cleanString(rawTitle, 200);
+    const destination = cleanString(rawDestination, 200);
+    const totalCost = clampInt(rawTotalCost, 0, MAX_COST, 0);
+    const items = rawItems.slice(0, MAX_ITEMS) as Record<string, unknown>[];
 
     const shareSlug = nanoid(10);
 
@@ -59,7 +117,13 @@ export async function POST(req: NextRequest) {
       // Group items by day number if available, otherwise all in day 1
       const dayGroups = new Map<number, typeof items>();
       items.forEach((item: Record<string, unknown>) => {
-        const dayNum = (item.meta as Record<string, unknown>)?.dayNumber as number || 1;
+        // Clamped: day_number lands in a DB column and orders the whole page.
+        const dayNum = clampInt(
+          (item.meta as Record<string, unknown>)?.dayNumber,
+          1,
+          365,
+          1
+        );
         if (!dayGroups.has(dayNum)) dayGroups.set(dayNum, []);
         dayGroups.get(dayNum)!.push(item);
       });
@@ -76,42 +140,28 @@ export async function POST(req: NextRequest) {
               trip_id: trip.id,
               day_number: dayNum,
               title: `Day ${dayNum}`,
-              estimated_cost: dayItems.reduce((sum: number, i: Record<string, unknown>) => sum + ((i.price as number) || 0), 0),
+              estimated_cost: dayItems.reduce(
+                (sum: number, i: Record<string, unknown>) =>
+                  sum + clampInt(i.price, 0, MAX_COST, 0),
+                0
+              ),
             })
             .select("id")
             .single();
 
           if (newDay) {
-            const itemInserts = dayItems.map((item: Record<string, unknown>, idx: number) => ({
-              trip_day_id: newDay.id,
-              trip_id: trip.id,
-              item_type: normalizeItemType(item.type),
-              title: (item.title as string) || "Untitled",
-              description: (item.subtitle as string) || "",
-              estimated_cost: (item.price as number) || 0,
-              location_name: ((item.meta as Record<string, unknown>)?.locationName as string) || "",
-              image_url: (item.image as string) || null,
-              booking_url: (item.bookingUrl as string) || null,
-              sort_order: idx,
-            }));
+            const itemInserts = dayItems.map((item: Record<string, unknown>, idx: number) =>
+              itemRow(item, idx, trip.id, newDay.id)
+            );
             const { error: itemsErr } = await supabaseAdmin.from("trip_items").insert(itemInserts);
             if (itemsErr) console.error("[/api/trips/share] items insert (day", dayNum, ")", itemsErr);
           }
         }
       } else {
         // All items in the single day
-        const itemInserts = items.map((item: Record<string, unknown>, idx: number) => ({
-          trip_day_id: day.id,
-          trip_id: trip.id,
-          item_type: normalizeItemType(item.type),
-          title: (item.title as string) || "Untitled",
-          description: (item.subtitle as string) || "",
-          estimated_cost: (item.price as number) || 0,
-          location_name: ((item.meta as Record<string, unknown>)?.locationName as string) || "",
-          image_url: (item.image as string) || null,
-          booking_url: (item.bookingUrl as string) || null,
-          sort_order: idx,
-        }));
+        const itemInserts = items.map((item: Record<string, unknown>, idx: number) =>
+          itemRow(item, idx, trip.id, day.id)
+        );
         const { error: itemsErr } = await supabaseAdmin.from("trip_items").insert(itemInserts);
         if (itemsErr) console.error("[/api/trips/share] items insert", itemsErr);
       }

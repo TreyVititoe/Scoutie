@@ -54,10 +54,10 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  <strong className="text-ink">Quiz responses</strong> --
+                  <strong className="text-ink">Trip details</strong> --
                   Travel preferences, budget ranges, dates, destination
-                  interests, and activity preferences you submit through our trip
-                  planning quiz.
+                  interests, and activity preferences you submit through our
+                  search and planning flows.
                 </li>
                 <li>
                   <strong className="text-ink">Trip data</strong> -- Itinerary
@@ -70,9 +70,9 @@ export default function PrivacyPage() {
                   account to save your trips.
                 </li>
                 <li>
-                  <strong className="text-ink">Affiliate click data</strong> --
-                  When you click through to booking partners, we record the click
-                  for commission tracking purposes.
+                  <strong className="text-ink">Outbound click data</strong> --
+                  When you click through to a booking provider, we record the
+                  click to understand which recommendations are useful.
                 </li>
                 <li>
                   <strong className="text-ink">Usage data</strong> -- Browser
@@ -98,8 +98,8 @@ export default function PrivacyPage() {
                 <li>To save and manage your trips when you create an account.</li>
                 <li>To improve our AI models and service quality.</li>
                 <li>
-                  To track affiliate referrals and earn commissions that keep the
-                  service free.
+                  To understand which recommendations lead to bookings, so we can
+                  improve them.
                 </li>
                 <li>
                   To communicate service updates or respond to your inquiries.
@@ -131,9 +131,9 @@ export default function PrivacyPage() {
                   geolocation services for displaying trip locations and routes.
                 </li>
                 <li>
-                  <strong className="text-ink">Booking partners</strong> --
-                  Including Skyscanner, Booking.com, and other travel affiliates.
-                  When you click through to book, you are subject to their
+                  <strong className="text-ink">Booking providers</strong> --
+                  Airlines, hotels, ticket sellers, and the platforms that list
+                  them. When you click through to book, you are subject to their
                   respective privacy policies.
                 </li>
               </ul>
@@ -149,7 +149,7 @@ export default function PrivacyPage() {
               </h2>
               <p>
                 We use cookies and similar tracking technologies to maintain your
-                session, remember your preferences, and track affiliate referrals.
+                session, remember your preferences, and measure outbound clicks.
                 Essential cookies are required for the service to function.
                 Analytics cookies help us understand usage patterns. You can
                 configure your browser to refuse cookies, though this may limit
@@ -162,7 +162,7 @@ export default function PrivacyPage() {
                 6. Data Retention
               </h2>
               <p>
-                We retain your quiz responses and trip data for as long as your
+                We retain your trip details and itinerary data for as long as your
                 account is active or as needed to provide services. Anonymous,
                 aggregated data may be retained indefinitely to improve our AI
                 models. You may request deletion of your data at any time by
@@ -223,7 +223,7 @@ export default function PrivacyPage() {
               <p>
                 If you are located in the European Economic Area, you have rights
                 under the General Data Protection Regulation. Our legal basis for
-                processing your data includes your consent (for quiz responses),
+                processing your data includes your consent (for trip details),
                 contract performance (for trip generation), and legitimate
                 interests (for service improvement). You may withdraw consent at
                 any time and lodge a complaint with your local data protection
@@ -275,10 +275,10 @@ export default function PrivacyPage() {
                 If you have questions about this Privacy Policy or wish to
                 exercise your data rights, please contact us at{" "}
                 <a
-                  href="mailto:privacy@scoutie.com"
+                  href="mailto:me@treyvititoe.com"
                   className="text-accent hover:text-accent-dark"
                 >
-                  privacy@scoutie.com
+                  me@treyvititoe.com
                 </a>
                 .
               </p>

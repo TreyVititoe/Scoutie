@@ -104,6 +104,6 @@ Generate 3 diverse trip options as JSON. If the user specified dates or a durati
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[/api/quick]", message);
-    return NextResponse.json({ error: `Quick plan failed: ${message}` }, { status: 500 });
+    return NextResponse.json({ error: "Walter could not read that plan. Try rephrasing it." }, { status: 500 });
   }
 }

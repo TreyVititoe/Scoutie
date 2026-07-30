@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[/api/compare]", message);
     return NextResponse.json(
-      { error: `Comparison generation failed: ${message}` },
+      { error: "Walter could not compare those trips right now. Try again in a moment." },
       { status: 500 }
     );
   }

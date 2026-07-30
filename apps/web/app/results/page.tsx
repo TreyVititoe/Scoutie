@@ -12,6 +12,8 @@ import SuggestionCard from "@/components/results/SuggestionCard";
 import TripTracker from "@/components/results/TripTracker";
 import { useTripCartStore, selectItemCount } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
+import { formatYMD } from "@/lib/dates";
+import { prefInterests } from "@/lib/prefs";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
 import type { ScoredEvent, Suggestion } from "@/lib/types";
@@ -43,6 +45,18 @@ type ChosenTrip = {
   tier: string;
 };
 
+/* Rejects on transport failure, HTTP error, or an error field in the body --
+ * some routes still answer 200 with {error}. Without this every failure
+ * arrived as an empty array and rendered as "nothing found". */
+async function fetchJson(input: string, init: RequestInit): Promise<Record<string, unknown>> {
+  const res = await fetch(input, init);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || (data && typeof data === "object" && "error" in data)) {
+    throw new Error(String((data as { error?: string })?.error ?? res.status));
+  }
+  return data as Record<string, unknown>;
+}
+
 export default function ResultsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("flights");
@@ -62,6 +76,12 @@ export default function ResultsPage() {
   const [fetchKey, setFetchKey] = useState(0);
   const [stayType, setStayType] = useState<StayType>("hotel");
   const [hotelsUnavailable, setHotelsUnavailable] = useState(false);
+  /* A failed search must not read as "nothing found" -- each panel tracks its
+   * own failure so it can offer a retry instead of a confident empty state. */
+  const [flightsError, setFlightsError] = useState(false);
+  const [hotelsError, setHotelsError] = useState(false);
+  const [eventsError, setEventsError] = useState(false);
+  const [suggestionsError, setSuggestionsError] = useState(false);
   /* Lets the main fetch effect read the current stay type without
    * re-running everything when it changes. */
   const stayTypeRef = useRef<StayType>("hotel");
@@ -83,10 +103,35 @@ export default function ResultsPage() {
     setFlightsLoading(true);
     setHotelsLoading(true);
     setEventsLoading(true);
+    clearErrors();
+    setFetchKey((k) => k + 1);
+  };
+
+  function clearErrors() {
+    setFlightsError(false);
+    setHotelsError(false);
+    setEventsError(false);
+    setSuggestionsError(false);
+  }
+
+  /* Retry re-runs the whole fetch effect. Coarser than retrying one panel,
+   * but the searches are independent and cached upstream, so the cost is
+   * small and there is only one code path to get wrong. */
+  const handleRetry = () => {
+    setFlightsLoading(true);
+    setHotelsLoading(true);
+    setEventsLoading(true);
+    setSuggestionsLoading(true);
+    clearErrors();
     setFetchKey((k) => k + 1);
   };
 
   useEffect(() => {
+    /* Set when this effect run is superseded (retry, prefs change, unmount).
+     * Its cleanup aborts the in-flight fetches, and without this flag those
+     * aborts would land in the catch blocks and flag a failure on requests we
+     * cancelled ourselves. Timeout aborts still count -- those are real. */
+    let cancelled = false;
     let chosenTrip: ChosenTrip | null = null;
     try {
       const storedTrip = localStorage.getItem("walter_trip");
@@ -120,108 +165,129 @@ export default function ResultsPage() {
     const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
 
     if (destination) {
-      fetch("/api/suggestions", {
+      fetchJson("/api/suggestions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           destination,
           startDate,
           endDate,
-          interests: quizData.activityInterests || quizData.vibes || [],
+          interests: prefInterests(quizData),
           description: quizData.description || "",
           travelers: adults,
           travelerType: quizData.travelersType || quizData.travelerType || "",
         }),
         signal: suggestionsController.signal,
       })
-        .then((r) => r.json())
         .then((data) => {
           clearTimeout(suggestionsTimeout);
-          setSuggestions(data.suggestions || []);
+          if (cancelled) return;
+          setSuggestions((data.suggestions as Suggestion[]) || []);
+          setSuggestionsError(false);
         })
         .catch((err) => {
           clearTimeout(suggestionsTimeout);
+          if (cancelled) return;
           console.warn("[suggestions]", err);
+          setSuggestionsError(true);
         })
-        .finally(() => setSuggestionsLoading(false));
+        .finally(() => {
+          if (!cancelled) setSuggestionsLoading(false);
+        });
     } else {
       setSuggestionsLoading(false);
     }
 
     if (departureCity && destination && startDate && endDate) {
-      fetch("/api/flights", {
+      fetchJson("/api/flights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ origin: departureCity, destination, departDate: startDate, returnDate: endDate, adults, cabinClass }),
         signal: flightsController.signal,
       })
-        .then((r) => r.json())
         .then((data) => {
           clearTimeout(flightsTimeout);
-          setFlights(data.flights || []);
+          if (cancelled) return;
+          setFlights((data.flights as FlightResult[]) || []);
+          setFlightsError(false);
         })
         .catch((err) => {
           clearTimeout(flightsTimeout);
+          if (cancelled) return;
           console.warn("[flights]", err);
+          setFlightsError(true);
         })
-        .finally(() => setFlightsLoading(false));
+        .finally(() => {
+          if (!cancelled) setFlightsLoading(false);
+        });
     } else {
       setFlightsLoading(false);
     }
 
     if (destination && startDate && endDate && !quizData.noAccommodation) {
-      fetch("/api/hotels", {
+      fetchJson("/api/hotels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ destination, checkIn: startDate, checkOut: endDate, adults, stayType: stayTypeRef.current }),
         signal: hotelsController.signal,
       })
-        .then((r) => r.json())
         .then((data) => {
           clearTimeout(hotelsTimeout);
-          setHotels(data.hotels || []);
+          if (cancelled) return;
+          setHotels((data.hotels as HotelResult[]) || []);
           setHotelsUnavailable(!!data.unavailable);
+          setHotelsError(false);
         })
         .catch((err) => {
           clearTimeout(hotelsTimeout);
+          if (cancelled) return;
           console.warn("[hotels]", err);
+          setHotelsError(true);
         })
-        .finally(() => setHotelsLoading(false));
+        .finally(() => {
+          if (!cancelled) setHotelsLoading(false);
+        });
     } else {
       setHotelsLoading(false);
     }
 
     if (destination && startDate && endDate) {
-      fetch("/api/search", {
+      fetchJson("/api/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           destination,
           startDate,
           endDate,
-          vibes: quizData.activityInterests || quizData.vibes || [],
+          vibes: prefInterests(quizData),
           description: quizData.description || "",
           travelers: adults,
         }),
         signal: eventsController.signal,
       })
-        .then((r) => r.json())
         .then((data) => {
           clearTimeout(eventsTimeout);
-          setEvents(data.exactMatches || []);
-          setSimilarEvents(data.similarMatches || []);
-          setTopEvents(data.topInArea || []);
+          if (cancelled) return;
+          setEvents((data.exactMatches as ScoredEvent[]) || []);
+          setSimilarEvents((data.similarMatches as ScoredEvent[]) || []);
+          setTopEvents((data.topInArea as ScoredEvent[]) || []);
+          setEventsError(false);
         })
         .catch((err) => {
           clearTimeout(eventsTimeout);
+          if (cancelled) return;
           console.warn("[events]", err);
+          setEventsError(true);
         })
-        .finally(() => setEventsLoading(false));
+        .finally(() => {
+          if (!cancelled) setEventsLoading(false);
+        });
     } else {
       setEventsLoading(false);
     }
 
     return () => {
+      cancelled = true;
       clearTimeout(suggestionsTimeout);
       clearTimeout(flightsTimeout);
       clearTimeout(hotelsTimeout);
@@ -251,27 +317,35 @@ export default function ResultsPage() {
     const adults = (p?.travelersCount as number) || (p?.travelers as number) || 1;
     if (!dest || !startDate || !endDate) return;
 
+    let cancelled = false;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
     setHotels([]);
     setHotelsLoading(true);
-    fetch("/api/hotels", {
+    setHotelsError(false);
+    fetchJson("/api/hotels", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ destination: dest, checkIn: startDate, checkOut: endDate, adults, stayType }),
       signal: controller.signal,
     })
-      .then((r) => r.json())
       .then((data) => {
-        setHotels(data.hotels || []);
+        if (cancelled) return;
+        setHotels((data.hotels as HotelResult[]) || []);
         setHotelsUnavailable(!!data.unavailable);
+        setHotelsError(false);
       })
-      .catch((err) => console.warn("[hotels]", err))
+      .catch((err) => {
+        if (cancelled) return;
+        console.warn("[hotels]", err);
+        setHotelsError(true);
+      })
       .finally(() => {
         clearTimeout(timeout);
-        setHotelsLoading(false);
+        if (!cancelled) setHotelsLoading(false);
       });
     return () => {
+      cancelled = true;
       clearTimeout(timeout);
       controller.abort();
     };
@@ -472,7 +546,14 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {!flightsLoading && flights.length === 0 && (() => {
+              {!flightsLoading && flightsError && (
+                <ErrorState
+                  message="Flight search did not come back. That is on us, not your dates."
+                  onRetry={handleRetry}
+                />
+              )}
+
+              {!flightsLoading && !flightsError && flights.length === 0 && (() => {
                 const p = prefs as Record<string, unknown> | null;
                 const hasDeparture = !!(p?.departureCity || (p?.departureCities as string[])?.length);
                 const hasDates = !!(p?.startDate && p?.endDate);
@@ -535,7 +616,14 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {!hotelsLoading && hotels.length === 0 && (() => {
+              {!hotelsLoading && hotelsError && (
+                <ErrorState
+                  message="Stay search did not come back. The rest of your trip still works."
+                  onRetry={handleRetry}
+                />
+              )}
+
+              {!hotelsLoading && !hotelsError && hotels.length === 0 && (() => {
                 if (hotelsUnavailable) {
                   return <EmptyState icon="construction" message="Stay search is down on our end right now, not because the city is booked out. The rest of your trip still works." />;
                 }
@@ -577,7 +665,14 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {!eventsLoading && allEvents.length === 0 && (() => {
+              {!eventsLoading && eventsError && (
+                <ErrorState
+                  message="Event search did not come back. Your dates are fine; the lookup failed."
+                  onRetry={handleRetry}
+                />
+              )}
+
+              {!eventsLoading && !eventsError && allEvents.length === 0 && (() => {
                 const p = prefs as Record<string, unknown> | null;
                 const hasDates = !!(p?.startDate && p?.endDate);
                 if (!hasDates) {
@@ -608,7 +703,7 @@ export default function ResultsPage() {
 
               {suggestionsLoading && <LoadingBackdrop image={heroImage} caption="Walter is thinking…"><CardSkeletonGrid /></LoadingBackdrop>}
 
-              {!suggestionsLoading && suggestions.length > 0 && (
+              {!suggestionsLoading && !suggestionsError && suggestions.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {suggestions.map((s) => (
                     <SuggestionCard key={s.id} suggestion={s} />
@@ -616,7 +711,14 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {!suggestionsLoading && suggestions.length === 0 && (
+              {!suggestionsLoading && suggestionsError && (
+                <ErrorState
+                  message="Walter could not reach his picks for this destination."
+                  onRetry={handleRetry}
+                />
+              )}
+
+              {!suggestionsLoading && !suggestionsError && suggestions.length === 0 && (
                 <EmptyState icon="explore" message="No curated picks for this destination yet." />
               )}
             </motion.section>
@@ -626,7 +728,7 @@ export default function ResultsPage() {
         <TripTracker />
 
         <p className="text-[11px] text-ink-faint text-center mt-12">
-          Walter earns a commission when you book through our links at no extra cost to you.
+          Each booking is completed on the provider&apos;s own site. Providers handle payment and confirmations; Walter keeps the itinerary.
         </p>
       </div>
     </div>
@@ -653,6 +755,28 @@ function SectionHeading({ title }: { title: string }) {
     <h2 className="text-[22px] sm:text-[26px] font-semibold text-ink tracking-display leading-[1.1] mb-6">
       {title}
     </h2>
+  );
+}
+
+/* ── Error state ── */
+/* Distinct from EmptyState on purpose: "we could not look" is a different
+ * fact from "we looked and found nothing", and only one of them is worth
+ * retrying. */
+function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <div className="card-base p-10 text-center">
+      <span className="material-symbols-outlined text-ink-faint text-3xl mb-3 block" aria-hidden="true">
+        cloud_off
+      </span>
+      <p className="text-ink-soft text-sm max-w-[40ch] mx-auto">{message}</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="mt-5 bg-accent text-white rounded-[10px] px-5 py-2 text-sm font-semibold hover:bg-accent-light transition-colors"
+      >
+        Try again
+      </button>
+    </div>
   );
 }
 
@@ -914,7 +1038,7 @@ function InlineDepartureCity({ onSubmit }: { onSubmit: (city: string) => void })
 
 /* ── Inline Date Picker ── */
 function InlineDatePicker({ onSubmit, tripDays }: { onSubmit: (start: string, end: string) => void; tripDays: number }) {
-  const fmt = (d: Date) => d.toISOString().split("T")[0];
+  const fmt = formatYMD;
   const display = (d: Date) => d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   const now = new Date();
 

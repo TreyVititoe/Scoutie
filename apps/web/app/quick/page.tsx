@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import { formatYMD } from "@/lib/dates";
 
 type TripDay = {
   dayNumber: number;
@@ -104,8 +105,8 @@ export default function QuickPlanPage() {
         fallbackStart.setDate(fallbackStart.getDate() + 14);
         const fallbackEnd = new Date(fallbackStart);
         fallbackEnd.setDate(fallbackEnd.getDate() + 5);
-        const fallbackS = fallbackStart.toISOString().split("T")[0];
-        const fallbackE = fallbackEnd.toISOString().split("T")[0];
+        const fallbackS = formatYMD(fallbackStart);
+        const fallbackE = formatYMD(fallbackEnd);
 
         // Fetch flights + events for each destination — use trip dates if AI returned them
         tripList.forEach((trip: QuickTrip, idx: number) => {
