@@ -88,7 +88,14 @@ _All items below FIXED 07-30 except where noted._
 
 ---
 
-## 5. Verified clean (for the record)
+## 5. Open — found during the 07-30 fix pass, needs your call
+
+- [ ] **"Walter Travel, Inc." is named as the legal entity** in the terms' limitation-of-liability, indemnification, and IP-ownership clauses (`app/terms/page.tsx:176,208`, and section 6). If no such company is registered, those clauses protect nobody and the doc misstates who operates the service. Left untouched on purpose -- swapping in a personal name has real legal consequences and is your decision, not a code fix. Related: the legal contact is now me@treyvititoe.com (B2).
+- [x] **Legal doc dates were stale.** Both pages still said "Last updated: April 2, 2026" after a material rewrite, while the privacy policy itself promises to revise that date on change. Bumped to July 30, 2026.
+
+---
+
+## 6. Verified clean (for the record)
 
 - No secrets in git history (placeholder .env.example only); service-role key server-only; security headers (HSTS+preload, nosniff, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy) actually applied.
 - Core search/AI routes (flights, hotels, search, suggestions, quick, packing-list, generate, compare) all have rateLimit + real input validation (cleanString/clampInt/isReasonableDate) with 16KB body caps on generate/compare; all Claude calls have max_tokens caps; no URL-injection into providers; searchCache bounded + TTL'd, no poisoning vector; /api/photo is a redirect (no open-redirect, no hotlink proxy).

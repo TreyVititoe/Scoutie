@@ -27,7 +27,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-ink-faint text-sm mb-12">
-            Last updated: April 2, 2026
+            Last updated: July 30, 2026
           </p>
 
           <div className="space-y-10 text-ink-soft leading-relaxed">
