@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "../components/Footer";
+import MotionProvider from "../components/MotionProvider";
 import "./globals.css";
 
 const SITE_URL =
@@ -41,14 +42,51 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* The icon font was render-blocking with no preconnect: two round
+            trips to a third-party host before anything painted. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
         />
       </head>
       <body className="font-sans bg-page-bg text-ink antialiased">
-        {children}
-        <Footer />
+        {/* Organization + WebSite JSON-LD: lets search engines name the
+            product and wire up a sitelinks search box. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
+                  name: "Walter",
+                  url: SITE_URL,
+                  logo: `${SITE_URL}/walter-logo.png`,
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": `${SITE_URL}/#website`,
+                  url: SITE_URL,
+                  name: "Walter",
+                  description: DESCRIPTION,
+                  publisher: { "@id": `${SITE_URL}/#organization` },
+                },
+              ],
+            }),
+          }}
+        />
+        <MotionProvider>
+          {children}
+          <Footer />
+        </MotionProvider>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -8,6 +8,12 @@ export type SavedTrip = {
   totalCost: number;
   items: CartItem[];
   createdAt: string;
+  /* The search window this trip was built for. Optional because trips saved
+   * before this existed will not have it. Without it, reloading a saved trip
+   * left /results with no dates and nothing to search. */
+  startDate?: string;
+  endDate?: string;
+  travelers?: number;
 };
 
 export interface SavedTripsState {
@@ -15,7 +21,12 @@ export interface SavedTripsState {
 }
 
 export interface SavedTripsActions {
-  saveTrip: (name: string, destination: string, items: CartItem[]) => string;
+  saveTrip: (
+    name: string,
+    destination: string,
+    items: CartItem[],
+    window?: { startDate?: string; endDate?: string; travelers?: number }
+  ) => string;
   deleteTrip: (id: string) => void;
   renameTrip: (id: string, name: string) => void;
 }
@@ -28,7 +39,15 @@ export const useSavedTripsStore = create<SavedTripsState & SavedTripsActions>()(
   (set, get) => ({
     trips: [],
 
-    saveTrip: (name, destination, items) => {
+    saveTrip: (name, destination, items, window) => {
+      /* Replace a same-named trip rather than stacking duplicates: two
+       * entries called "Tokyo" tell the traveler nothing about which is which. */
+      const existing = get().trips.find(
+        (t) => t.name.trim().toLowerCase() === name.trim().toLowerCase()
+      );
+      if (existing) {
+        set((state) => ({ trips: state.trips.filter((t) => t.id !== existing.id) }));
+      }
       const id = generateId();
       const totalCost = items.reduce((sum, item) => sum + (item.price ?? 0), 0);
       const trip: SavedTrip = {
@@ -38,6 +57,9 @@ export const useSavedTripsStore = create<SavedTripsState & SavedTripsActions>()(
         totalCost,
         items,
         createdAt: new Date().toISOString(),
+        ...(window?.startDate ? { startDate: window.startDate } : {}),
+        ...(window?.endDate ? { endDate: window.endDate } : {}),
+        ...(window?.travelers ? { travelers: window.travelers } : {}),
       };
       set((state) => ({ trips: [trip, ...state.trips] }));
       return id;

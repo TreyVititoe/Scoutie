@@ -28,7 +28,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
         price: suggestion.estimatedCost,
         image: null,
         bookingUrl: `https://www.google.com/search?q=${encodeURIComponent(suggestion.title + " " + suggestion.locationName + " book")}`,
-        provider: "google",
+        provider: "Google",
         date: null,
         meta: suggestion as unknown as Record<string, unknown>,
       });

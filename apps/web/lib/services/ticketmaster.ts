@@ -1,5 +1,11 @@
 import type { ScoutEvent } from "@/lib/types";
 
+/* Every upstream call gets a deadline. Without one, a hung provider holds the
+ * function open to its maxDuration while mobile clients abort at 20s and
+ * retry -- we pay for both halves and the traveler sees neither. */
+const UPSTREAM_TIMEOUT_MS = 8000;
+
+
 const BASE_URL = "https://app.ticketmaster.com/discovery/v2";
 
 // Map our vibe keywords to Ticketmaster segment/genre names
@@ -89,7 +95,11 @@ function parseTMEvent(e: TMEvent): ScoutEvent {
 async function geocodeDestination(
   destination: string
 ): Promise<{ lat: number; lng: number } | null> {
-  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  /* Server-only token first. The public token is browser-exposed, so the
+   * moment it gets URL restrictions (the normal hardening step) server-side
+   * geocoding would break silently. MAPBOX_SERVER_TOKEN is optional -- the
+   * public one still works until it is set. */
+  const token = process.env.MAPBOX_SERVER_TOKEN || process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
   if (!token) return null;
 
   try {
@@ -97,6 +107,8 @@ async function geocodeDestination(
       `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
         destination
       )}.json?access_token=${token}&limit=1&types=place,locality`
+    ,
+      { signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }
     );
     if (!res.ok) return null;
     const data = await res.json();
@@ -150,7 +162,9 @@ export async function fetchEventsByKeyword(
   });
 
   try {
-    const res = await fetch(`${BASE_URL}/events.json?${params}`);
+    const res = await fetch(`${BASE_URL}/events.json?${params}`, {
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return (data._embedded?.events ?? []).map(parseTMEvent);
@@ -179,7 +193,9 @@ export async function fetchTopEventsInArea(
   });
 
   try {
-    const res = await fetch(`${BASE_URL}/events.json?${params}`);
+    const res = await fetch(`${BASE_URL}/events.json?${params}`, {
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return (data._embedded?.events ?? []).map(parseTMEvent);
@@ -209,7 +225,9 @@ async function fetchEventsByClassification(
   });
 
   try {
-    const res = await fetch(`${BASE_URL}/events.json?${params}`);
+    const res = await fetch(`${BASE_URL}/events.json?${params}`, {
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return (data._embedded?.events ?? []).map(parseTMEvent);

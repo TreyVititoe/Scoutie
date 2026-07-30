@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { readStored } from "@/lib/prefs";
 
 type TripItem = {
   item_type: string;
@@ -38,6 +39,7 @@ export default function CompareSavedPage() {
   const router = useRouter();
   const [trips, setTrips] = useState<SavedTrip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [expandedTrip, setExpandedTrip] = useState<number | null>(null);
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function CompareSavedPage() {
       return;
     }
 
-    const ids: string[] = JSON.parse(stored);
+    const ids = readStored<string[]>("walter_compare_ids", []);
     if (ids.length < 2) {
       router.push("/dashboard");
       return;
@@ -63,7 +65,11 @@ export default function CompareSavedPage() {
           .catch(() => null)
       )
     ).then((results) => {
-      setTrips(results.filter(Boolean) as SavedTrip[]);
+      const found = results.filter(Boolean) as SavedTrip[];
+      /* Distinguish "nothing to compare" from "we could not load them" --
+       * the old code rendered a confident comparison of zero trips. */
+      setLoadFailed(found.length === 0 && ids.length > 0);
+      setTrips(found);
       setLoading(false);
     });
   }, [router]);
@@ -103,10 +109,12 @@ export default function CompareSavedPage() {
           className="mb-10"
         >
           <h1 className="text-[28px] font-semibold text-ink leading-page mb-3">
-            Compare your saved trips
+            {loadFailed ? "Walter could not load those trips" : "Compare your saved trips"}
           </h1>
           <p className="text-ink-soft text-title">
-            Side-by-side comparison of {trips.length} trips. Pick the winner.
+            {loadFailed
+              ? "The trips you picked did not come back. They may have been unshared or deleted."
+              : `Side-by-side comparison of ${trips.length} trips. Pick the winner.`}
           </p>
         </motion.div>
 

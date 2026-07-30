@@ -45,28 +45,57 @@ function formatPrice(price: number | null): string {
 }
 
 /* ─── Share hook ─── */
+/* Mints a real shared-trip link. It used to copy window.location.href, which
+ * on /results is a page driven entirely by the copier's own localStorage --
+ * everyone else who opened it got bounced to "/". */
 function useShareTrip() {
   const [copied, setCopied] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
-  const share = useCallback(async () => {
+  const copyText = useCallback(async (text: string) => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(text);
     } catch {
       // Fallback for older browsers
       const textarea = document.createElement("textarea");
-      textarea.value = window.location.href;
+      textarea.value = text;
       document.body.appendChild(textarea);
       textarea.select();
       document.execCommand("copy");
       document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, []);
 
-  return { share, copied };
+  const share = useCallback(async () => {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      const { items } = useTripCartStore.getState();
+      const destination =
+        (items.find((i) => i.meta?.locationName)?.meta?.locationName as string) || "";
+      const res = await fetch("/api/trips/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination,
+          totalCost: items.reduce((sum, i) => sum + (i.price ?? 0), 0),
+          items,
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const { shareSlug } = await res.json();
+      if (!shareSlug) throw new Error("no slug");
+      await copyText(`${window.location.origin}/shared/${shareSlug}`);
+    } catch (err) {
+      console.warn("[share trip]", err);
+    } finally {
+      setSharing(false);
+    }
+  }, [sharing, copyText]);
+
+  return { share, copied, sharing };
 }
 
 /* ─── Desktop Sidebar ─── */
@@ -137,7 +166,10 @@ function DesktopSidebar() {
                         </span>
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-[8px] hover:bg-ink/10"
+                          /* opacity-0 until hover hid this from keyboard and
+                             touch entirely. Hover-capable pointers still get
+                             the reveal; everyone else always sees it. */
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-[8px] hover:bg-ink/10"
                           aria-label={`Remove ${item.title}`}
                         >
                           <span className="material-symbols-outlined text-ink-faint text-base">

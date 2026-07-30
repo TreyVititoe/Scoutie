@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSavedTripsStore, type SavedTrip } from "@/lib/stores/savedTripsStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import { mergePrefs, readStored } from "@/lib/prefs";
 
 export default function CompareLocalPage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function CompareLocalPage() {
       router.push("/saved");
       return;
     }
-    const ids: string[] = JSON.parse(stored);
+    const ids = readStored<string[]>("walter_compare_local", []);
     const matched = ids
       .map((id) => allTrips.find((t) => t.id === id))
       .filter(Boolean) as SavedTrip[];
@@ -41,10 +42,13 @@ export default function CompareLocalPage() {
     const cart = useTripCartStore.getState();
     cart.clearCart();
     trip.items.forEach((item) => cart.addItem(item));
-    localStorage.setItem(
-      "walter_prefs",
-      JSON.stringify({ destinations: [trip.destination], destination: trip.destination })
-    );
+    mergePrefs({
+      destinations: [trip.destination],
+      destination: trip.destination,
+      ...(trip.startDate ? { startDate: trip.startDate } : {}),
+      ...(trip.endDate ? { endDate: trip.endDate } : {}),
+      ...(trip.travelers ? { travelers: trip.travelers, travelersCount: trip.travelers } : {}),
+    });
     router.push("/trip");
   };
 

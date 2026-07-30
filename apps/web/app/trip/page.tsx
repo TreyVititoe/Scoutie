@@ -11,9 +11,10 @@ import {
   type CartItem,
   type CartItemType,
 } from "@/lib/stores/tripCartStore";
-import { trackAndOpen } from "@/lib/affiliate";
+import { affiliateUrl, trackAndOpen } from "@/lib/affiliate";
+import { createClient } from "@/lib/supabase/client";
 import { formatYMDShort } from "@/lib/dates";
-import { prefInterests } from "@/lib/prefs";
+import { prefInterests, readStored, type StoredPrefs } from "@/lib/prefs";
 import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
 import PackingList from "@/components/trip/PackingList";
 import type { MapItem } from "@/components/trip/TripMap";
@@ -72,7 +73,7 @@ function TripPage() {
     const stored = localStorage.getItem("walter_prefs");
     if (stored) {
       try {
-        setPrefs(JSON.parse(stored));
+        setPrefs(readStored<StoredPrefs>("walter_prefs", {}));
       } catch {
         /* ignore */
       }
@@ -196,12 +197,24 @@ function TripPage() {
     return lines.join("\n");
   };
 
-  const openShareEmail = (link: string | null) => {
+  const openShareEmail = async (link: string | null) => {
     const subject = `Your trip to ${destination || "somewhere good"}`;
     const intro = `Walter built this trip. ${items.length} ${items.length === 1 ? "item" : "items"}, $${totalPrice.toLocaleString()} all in.`;
     const body = link
       ? `${intro}\n\nSee everything here:\n${link}\n\nBook it when you're ready.`
       : `${intro}\n\n${serializeTrip()}\n\nBook it when you're ready.`;
+
+    /* Native share sheet where it exists -- setting window.location to a
+     * mailto: on a handset navigates the page away from the trip. Falls back
+     * to mailto: on desktop browsers without the API. */
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: subject, text: body, ...(link ? { url: link } : {}) });
+        return;
+      } catch {
+        /* dismissed, or unavailable: fall through to mail */
+      }
+    }
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
@@ -247,15 +260,65 @@ function TripPage() {
   };
 
   /* Save handler -- uses localStorage, no login required */
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!saveName.trim()) return;
     setSaving(true);
 
+    // Local save always happens -- it is what /saved reads, and it works
+    // logged out.
     useSavedTripsStore.getState().saveTrip(
       saveName.trim(),
       destination || "Custom Trip",
-      items
+      items,
+      { startDate, endDate, travelers }
     );
+
+    /* Signed-in travelers also get a server-side copy. Without this nothing
+     * ever wrote a trip with a user_id, so the dashboard's "Your Trips" was
+     * permanently empty and the community checkbox below did nothing at all. */
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        await fetch("/api/trips/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            isPublic: savePublic,
+            quizData: prefs,
+            trip: {
+              title: saveName.trim(),
+              destination: destination || "Custom Trip",
+              summary: `${items.length} items`,
+              tier: "balanced",
+              totalEstimatedCost: totalPrice,
+              // The cart is a flat list, so it saves as a single day.
+              days: [
+                {
+                  dayNumber: 1,
+                  title: destination || "Your Trip",
+                  estimatedCost: totalPrice,
+                  items: items.map((item) => ({
+                    itemType: item.type === "site" ? "activity" : item.type,
+                    title: item.title,
+                    description: item.subtitle,
+                    estimatedCost: item.price ?? 0,
+                    locationName:
+                      (item.meta?.locationName as string) ?? null,
+                  })),
+                },
+              ],
+            },
+          }),
+        });
+      }
+    } catch (err) {
+      // The local save already succeeded; a server failure must not eat it.
+      console.warn("[save trip] server copy failed", err);
+    }
 
     setSaved(true);
     setShowSaveModal(false);
@@ -278,12 +341,13 @@ function TripPage() {
             </Link>
             <Link
               href="/results"
+              aria-label="Back to results"
               className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                 arrow_back
               </span>
-              Back to results
+              <span className="hidden sm:inline">Back to results</span>
             </Link>
           </div>
         </header>
@@ -349,9 +413,10 @@ function TripPage() {
             </Link>
             <button
               onClick={() => setShowSaveModal(true)}
+              aria-label={saved ? "Trip saved" : "Save trip"}
               className="px-3 sm:px-5 py-2.5 rounded-[8px] border border-ink/20 text-ink text-sm font-semibold hover:bg-ink/5 transition-colors flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                 {saved ? "check" : "bookmark"}
               </span>
               <span className="hidden sm:inline">{saved ? "Saved!" : "Save trip"}</span>
@@ -359,18 +424,20 @@ function TripPage() {
             <motion.button
               onClick={handleShare}
               whileTap={{ scale: 0.95 }}
+              aria-label={sharing ? "Creating share link" : "Share this trip"}
               className="px-3 sm:px-5 py-2.5 rounded-[8px] border border-ink/20 text-ink text-sm font-semibold hover:bg-ink/5 transition-colors flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                 {shareUrl ? "check" : "mail"}
               </span>
               <span className="hidden sm:inline">{sharing ? "Creating link..." : "Share this trip"}</span>
             </motion.button>
             <Link
               href="/checkout"
+              aria-label="Book your trip"
               className="px-3 sm:px-5 py-2.5 rounded-[8px] bg-accent text-white text-sm font-semibold hover:bg-accent-light transition-colors flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                 credit_card
               </span>
               <span className="hidden sm:inline">Book your trip</span>
@@ -846,7 +913,9 @@ function ItemCard({
                 trackAndOpen({
                   provider: item.provider || "unknown",
                   itemType: item.type,
-                  destinationUrl: item.bookingUrl!,
+                  // affiliateUrl(), not the raw bookingUrl: this CTA was the
+                  // one path that would still ship untagged once IDs land.
+                  destinationUrl: affiliateUrl(item) ?? item.bookingUrl!,
                 })
               }
               className="bg-accent text-white rounded-[10px] px-4 py-1.5 text-[12px] font-semibold flex items-center gap-1.5 whitespace-nowrap hover:bg-accent-light transition-colors"

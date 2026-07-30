@@ -172,6 +172,8 @@ export default function ExplorePage() {
                 <img
                   src={dest.image}
                   alt={dest.city}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />

@@ -13,7 +13,7 @@ import TripTracker from "@/components/results/TripTracker";
 import { useTripCartStore, selectItemCount } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
 import { formatYMD } from "@/lib/dates";
-import { prefInterests } from "@/lib/prefs";
+import { prefInterests, readStored, type StoredPrefs } from "@/lib/prefs";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
 import type { ScoredEvent, Suggestion } from "@/lib/types";
@@ -90,7 +90,7 @@ export default function ResultsPage() {
   const handleInlineUpdate = (updates: Record<string, unknown>) => {
     const stored = localStorage.getItem("walter_prefs");
     if (stored) {
-      const p = JSON.parse(stored);
+      const p = readStored<StoredPrefs>("walter_prefs", {});
       Object.assign(p, updates);
       localStorage.setItem("walter_prefs", JSON.stringify(p));
       setPrefs(p);
@@ -132,11 +132,7 @@ export default function ResultsPage() {
      * aborts would land in the catch blocks and flag a failure on requests we
      * cancelled ourselves. Timeout aborts still count -- those are real. */
     let cancelled = false;
-    let chosenTrip: ChosenTrip | null = null;
-    try {
-      const storedTrip = localStorage.getItem("walter_trip");
-      if (storedTrip) chosenTrip = JSON.parse(storedTrip);
-    } catch {}
+    const chosenTrip = readStored<ChosenTrip | null>("walter_trip", null);
     setTrip(chosenTrip);
 
     const stored = localStorage.getItem("walter_prefs");
@@ -144,7 +140,7 @@ export default function ResultsPage() {
       router.push("/");
       return;
     }
-    const quizData = stored ? JSON.parse(stored) : {};
+    const quizData = readStored<StoredPrefs>("walter_prefs", {});
     setPrefs(quizData);
     setPageReady(true);
 

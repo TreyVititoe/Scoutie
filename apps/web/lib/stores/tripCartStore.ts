@@ -86,6 +86,24 @@ if (typeof window !== "undefined") {
       JSON.stringify({ items: state.items, bookedIds: state.bookedIds })
     );
   });
+
+  /* Adopt writes from other tabs. Without this the cart was last-write-wins:
+   * marking something booked in one tab, then touching the cart in a stale
+   * tab, silently reverted it. */
+  window.addEventListener("storage", (e) => {
+    if (e.key !== "walter_cart" || !e.newValue) return;
+    try {
+      const parsed = JSON.parse(e.newValue);
+      if (parsed && Array.isArray(parsed.items)) {
+        useTripCartStore.setState({
+          items: parsed.items,
+          bookedIds: Array.isArray(parsed.bookedIds) ? parsed.bookedIds : [],
+        });
+      }
+    } catch {
+      /* a corrupt write from another tab is ignored, not adopted */
+    }
+  });
 }
 
 // Computed selectors

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { readStored, type StoredPrefs } from "@/lib/prefs";
 
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 
@@ -41,7 +42,7 @@ export default function ClarifyPage() {
       router.push("/");
       return;
     }
-    const prefs = JSON.parse(stored);
+    const prefs = readStored<StoredPrefs>("walter_prefs", {});
     setDestination(prefs.destination || prefs.destinations?.[0] || "your trip");
     if (prefs.travelersCount) setTravelers(prefs.travelersCount);
     if (prefs.accommodationTypes?.[0]) setAccommodation(prefs.accommodationTypes[0]);
@@ -98,7 +99,7 @@ export default function ClarifyPage() {
   const handleSubmit = () => {
     if (!departureCity.trim()) return;
     const stored = localStorage.getItem("walter_prefs");
-    const prefs = stored ? JSON.parse(stored) : {};
+    const prefs = readStored<StoredPrefs>("walter_prefs", {});
     prefs.travelersCount = travelers;
     prefs.travelers = travelers;
     prefs.adults = travelers;

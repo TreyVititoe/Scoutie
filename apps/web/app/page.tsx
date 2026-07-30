@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
@@ -238,11 +239,13 @@ export default function LandingPage() {
           over the center with feathered edges so ink text reads on it. */}
       <section className="relative z-40">
         <div className="relative h-[520px] sm:h-[620px] overflow-hidden">
-          <img
+          <Image
             src="/hero-story.jpg"
             alt="A traveler on a cliff above a sea of clouds"
-            className="absolute inset-0 w-full h-full object-cover object-[center_72%]"
-            fetchPriority="high"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[center_72%]"
           />
 
           {/* Frosted panel: rounded top corners visible just inside the top
@@ -313,7 +316,7 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
                 {tripsInCat.map((trip) => (
                   <CuratedTripCard key={trip.id} trip={trip} router={router} />
                 ))}
@@ -333,7 +336,7 @@ export default function LandingPage() {
                 Built by other travelers, public for anyone to fork.
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
               {[...trips]
                 .sort((a, b) => b.upvote_count - a.upvote_count)
                 .slice(0, 14)
@@ -347,6 +350,8 @@ export default function LandingPage() {
                       <img
                         src={trip.cover_image_url || getDestinationImage(trip.destination)}
                         alt={trip.destination}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       {trip.tier && (

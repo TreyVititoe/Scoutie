@@ -32,7 +32,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  /* /api excluded: routes that need a session build their own client, and
+   * every other API call was paying for an auth round-trip it never read. */
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

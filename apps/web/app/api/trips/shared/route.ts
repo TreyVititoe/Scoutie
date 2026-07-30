@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { rateLimit } from "@/lib/apiGuard";
 
 export async function GET(req: NextRequest) {
+  const limited = rateLimit(req, { name: "trips-shared", limit: 120 });
+  if (limited) return limited;
+
   const slug = req.nextUrl.searchParams.get("slug");
   const id = req.nextUrl.searchParams.get("id");
 

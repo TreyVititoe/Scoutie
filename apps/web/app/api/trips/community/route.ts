@@ -1,7 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/apiGuard";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const limited = rateLimit(req, { name: "trips-community", limit: 120 });
+  if (limited) return limited;
+
   try {
     const supabase = await createClient();
 

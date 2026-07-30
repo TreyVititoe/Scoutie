@@ -18,6 +18,7 @@ import {
 } from "@/lib/affiliate";
 import AffiliateDisclosure from "@/components/AffiliateDisclosure";
 import { getDestinationImage } from "@/lib/destinationImages";
+import { formatYMDShort } from "@/lib/dates";
 
 /* ── Section config ── */
 const sectionConfig: Record<string, { label: string; icon: string }> = {
@@ -258,7 +259,12 @@ export default function CheckoutPage() {
                             )}
                             {item.date && (
                               <p className="text-ink-faint text-xs mt-0.5">
-                                {item.date}
+                                {/* Was printing raw "2026-08-14" at travelers. */}
+                                {formatYMDShort(item.date, {
+                                  weekday: "short",
+                                  month: "short",
+                                  day: "numeric",
+                                }) || item.date}
                               </p>
                             )}
                           </div>

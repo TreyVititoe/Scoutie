@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -9,9 +9,16 @@ import {
   type SavedTrip,
 } from "@/lib/stores/savedTripsStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import { mergePrefs } from "@/lib/prefs";
 
 export default function SavedTripsPage() {
   const router = useRouter();
+  /* The store hydrates from localStorage at module scope, so the server HTML
+   * and the first client render disagree whenever trips exist -- React logs a
+   * hydration error and the empty state flashes. Render nothing until
+   * mounted, the same guard /checkout already uses. */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const trips = useSavedTripsStore((s) => s.trips);
   const deleteTrip = useSavedTripsStore((s) => s.deleteTrip);
   const [compareMode, setCompareMode] = useState(false);
@@ -44,13 +51,23 @@ export default function SavedTripsPage() {
     cart.clearCart();
     trip.items.forEach((item) => cart.addItem(item));
 
-    // Set prefs so the trip page shows the right destination
-    const prefs = { destinations: [trip.destination], destination: trip.destination };
-    localStorage.setItem("walter_prefs", JSON.stringify(prefs));
+    // Merge, do not replace: dates and travelers must survive, or /results
+    // has nothing to search with.
+    mergePrefs({
+      destinations: [trip.destination],
+      destination: trip.destination,
+      ...(trip.startDate ? { startDate: trip.startDate } : {}),
+      ...(trip.endDate ? { endDate: trip.endDate } : {}),
+      ...(trip.travelers ? { travelers: trip.travelers, travelersCount: trip.travelers } : {}),
+    });
     localStorage.removeItem("walter_trip"); // no stale chosen trip downstream
 
     router.push("/trip");
   };
+
+  if (!mounted) {
+    return <div className="min-h-screen bg-product-bg" />;
+  }
 
   return (
     <div className="min-h-screen bg-product-bg">

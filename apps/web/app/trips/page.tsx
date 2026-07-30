@@ -208,6 +208,10 @@ export default function TripsPage() {
   const [prefs, setPrefs] = useState<Prefs | null>(null);
   const [missing, setMissing] = useState(false);
   const [options, setOptions] = useState<TripOption[] | null>(null);
+  /* True when the AI call failed and we are showing curated trips instead.
+   * Silently listing Lisbon under a "Tokyo" heading is worse than admitting
+   * the match could not be made. */
+  const [usedFallback, setUsedFallback] = useState(false);
 
   // Friendly redirect when there is no search to work from.
   useEffect(() => {
@@ -257,11 +261,15 @@ export default function TripsPage() {
             t.totalEstimatedCost > 0
         );
         if (data?.error || usable.length < 3) throw new Error("unusable response");
+        setUsedFallback(false);
         setOptions(usable.slice(0, 3).map((t, i) => apiTripToOption(t, i, parsed as Prefs)));
       })
       .catch(() => {
         // Silent fallback: score the curated trips against the prefs.
-        if (!cancelled) setOptions(curatedFallback(parsed as Prefs));
+        if (!cancelled) {
+          setUsedFallback(true);
+          setOptions(curatedFallback(parsed as Prefs));
+        }
       })
       .finally(() => clearTimeout(timer));
 
@@ -346,7 +354,11 @@ export default function TripsPage() {
           transition={{ duration: 0.5, ease: EASE }}
           className="text-accent text-[11px] uppercase tracking-[2.5px] font-semibold mb-3"
         >
-          {prefs?.surpriseMe ? "Surprise brief" : destinationLabel}
+          {usedFallback
+            ? "Trips Walter already knows"
+            : prefs?.surpriseMe
+              ? "Surprise brief"
+              : destinationLabel}
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -354,9 +366,11 @@ export default function TripsPage() {
           transition={{ delay: 0.05, duration: 0.6, ease: EASE }}
           className="text-ink text-[32px] sm:text-[42px] font-semibold tracking-display leading-[1.05] mb-3"
         >
-          {prefs?.surpriseMe
-            ? "Walter picked three places for you."
-            : "Walter found three ways to do this."}
+          {usedFallback
+            ? "Walter could not build this one."
+            : prefs?.surpriseMe
+              ? "Walter picked three places for you."
+              : "Walter found three ways to do this."}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -364,7 +378,13 @@ export default function TripsPage() {
           transition={{ delay: 0.1, duration: 0.6, ease: EASE }}
           className="text-ink-soft text-body sm:text-[16px] mb-12 max-w-[55ch]"
         >
-          Same brief, three cuts. Pick one and Walter builds it out.
+          {usedFallback
+            ? `Walter could not reach his planner just now, so these are trips he already knows${
+                destinationLabel && destinationLabel !== "your trip"
+                  ? ` rather than matches for ${destinationLabel}`
+                  : ""
+              }. Edit the search to try again.`
+            : "Same brief, three cuts. Pick one and Walter builds it out."}
         </motion.p>
 
         {loading && (

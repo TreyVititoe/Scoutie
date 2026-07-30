@@ -1,3 +1,9 @@
+
+/* Every upstream call gets a deadline. Without one, a hung provider holds the
+ * function open to its maxDuration while mobile clients abort at 20s and
+ * retry -- we pay for both halves and the traveler sees neither. */
+const UPSTREAM_TIMEOUT_MS = 8000;
+
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY!;
 const RAPIDAPI_HOST = process.env.RAPIDAPI_HOTELS_HOST || "booking-com15.p.rapidapi.com";
 
@@ -31,6 +37,7 @@ async function lookupDestination(query: string): Promise<string | null> {
         "x-rapidapi-key": RAPIDAPI_KEY,
         "x-rapidapi-host": RAPIDAPI_HOST,
       },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     }
   );
 
@@ -124,6 +131,7 @@ export async function searchHotels(params: {
       "x-rapidapi-key": RAPIDAPI_KEY,
       "x-rapidapi-host": RAPIDAPI_HOST,
     },
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
   });
 
   if (res.status === 401 || res.status === 403) {
@@ -201,6 +209,7 @@ export async function getHotelPhotos(hotelId: string): Promise<string[]> {
         "x-rapidapi-key": RAPIDAPI_KEY,
         "x-rapidapi-host": RAPIDAPI_HOST,
       },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     }
   );
   if (!res.ok) return [];

@@ -49,12 +49,12 @@ npm run android        # expo start --android
 
 | Route | Purpose |
 |-------|---------|
-| `/` | Landing page with the SearchBar pill: writes `walter_prefs`, routes to `/trips` |
+| `/` | Landing page with the SearchBar pill: writes `walter_prefs`; a complete brief routes to `/results`, otherwise `/trips` |
 | `/trips` | Three AI-matched trip cards via `POST /api/generate` (curated-trips fallback); choosing one writes `walter_trip` |
 | `/results` | Trip builder: browse flights, hotels, events, and AI suggestions; manual add to cart; `walter_trip` hero and sticky cart bar |
-| `/trip` | Cart-based trip view: items grouped by type, map, cost breakdown, packing list, share by email, Book everything CTA |
-| `/checkout` | Traveler form and one-button "Book it all" via `POST /api/checkout` |
-| `/checkout/confirmation` | End of journey: reads `walter_booking`, shows confirmation codes |
+| `/trip` | Cart-based trip view: items grouped by type, map, cost breakdown, packing list, share (native share sheet, mailto fallback), Book everything CTA |
+| `/checkout` | Booking checklist: each item deep-links to its provider; booked/unbooked progress lives in `bookedIds` |
+| `/checkout/confirmation` | Legacy route, redirects to `/checkout` |
 | `/clarify` | Conversational entry flow: refines `walter_prefs`, routes to `/results` |
 | `/quick` | Quick-plan entry flow: one-line prompt via `POST /api/quick`, routes to `/results` |
 | `/explore` | Browse destinations (`?destination=` links prefill the landing SearchBar) |
@@ -66,7 +66,6 @@ npm run android        # expo start --android
 
 - `POST /api/suggestions`: AI-curated activity/restaurant/site suggestions via Claude Haiku (main flow)
 - `POST /api/generate`: Generate full trip itineraries via Claude (streaming or non-streaming; powers `/trips`)
-- `POST /api/checkout`: Simulated booking agent; books the whole cart, returns the `walter_booking` payload with confirmation codes
 - `POST /api/flights`: Flight search via SerpAPI (Google Flights)
 - `POST /api/hotels`: Hotel search via RapidAPI (Booking.com)
 - `POST /api/search`: Event search (Ticketmaster + AI interest expansion)
@@ -77,6 +76,16 @@ npm run android        # expo start --android
 - `POST /api/trips/share`: Create shared trip link
 - `GET /api/trips/shared`: Fetch a shared trip by slug or id
 - `POST /api/trips/refine`: Refine generated trip
+- `GET /api/trips/community`: Public community trips for the landing page
+- `POST /api/trips/upvote`: Upvote a public community trip
+- `GET /api/photo`: 302 redirect to a destination photo (Unsplash, curated fallback)
+
+There is no `/api/checkout`. Booking is an affiliate handoff: the traveler
+completes each item on the provider's own site. See PURCHASE_AGENT.md.
+
+All routes carry `rateLimit` from `lib/apiGuard.ts`; the paid and
+service-role ones also carry `readJsonCapped` plus per-field clamps. The
+limiter is in-memory and per-instance -- best-effort, not billing-grade.
 
 ## Service Layer (`apps/web/lib/services/`)
 
@@ -88,28 +97,47 @@ npm run android        # expo start --android
 
 ## Journey
 
-The canonical chain: `/` to `/trips` to `/results` to `/trip` to `/checkout` to `/checkout/confirmation`.
+The canonical chain: `/` to `/results` to `/trip` to `/checkout`.
 
-1. **`/`**: The SearchBar pill (Where, When, Who, What) collects the trip facts, with validation and keyboard support. On search: prefs are serialized to `walter_prefs`, any stale `walter_trip` is cleared, user is routed to `/trips`.
-2. **`/trips`**: Three AI-matched trip cards via `POST /api/generate`, with a silent curated-trips fallback. Choosing one writes `walter_trip` and routes to `/results`.
-3. **`/results`**: Reads `walter_prefs` and `walter_trip`, fires parallel calls to `/api/flights`, `/api/hotels`, `/api/search`, and `/api/suggestions`. Manual add to cart only; chosen-trip hero and sticky cart bar.
-4. **`/trip`**: Cart-based trip view. Share by email (share link via `/api/trips/share`, then mailto) and a Book everything CTA into `/checkout`.
-5. **`/checkout`**: Traveler form, one-button "Book it all" posts the cart to `/api/checkout` (simulated booking agent), writes `walter_booking`.
-6. **`/checkout/confirmation`**: Reads `walter_booking`, shows per-item confirmation codes with a demo-checkout footnote.
+1. **`/`**: The SearchBar pill (Where, When, Who, What) collects the trip facts,
+   with validation and keyboard support. On search: prefs are serialized to
+   `walter_prefs`, any stale `walter_trip` is cleared. A **complete brief**
+   (destination + start date) routes straight to `/results`; an incomplete one
+   goes to `/trips` for three AI-matched options.
+2. **`/trips`**: Three AI-matched trip cards via `POST /api/generate`, with a
+   curated-trips fallback that **says so** when it cannot match the city.
+   Choosing one writes `walter_trip` and routes to `/results`.
+3. **`/results`**: Reads `walter_prefs` and `walter_trip`, fires parallel calls
+   to `/api/flights`, `/api/hotels`, `/api/search`, and `/api/suggestions`.
+   Each panel has its own error state with retry -- a failed search must never
+   render as an empty one. Manual add to cart only.
+4. **`/trip`**: Cart-based trip view. Save (local always; server copy too when
+   signed in, via `POST /api/trips/save`), share a real link via
+   `POST /api/trips/share`, and a Book everything CTA into `/checkout`.
+5. **`/checkout`**: The booking checklist. Every item deep-links to its
+   provider through `affiliateUrl()`; the traveler ticks items off as they
+   book. No payment is processed and no confirmation codes are minted.
 
-`/clarify` and `/quick` are alternate entry flows that refine `walter_prefs` and feed the same chain. The 7-step quiz no longer exists.
+`/clarify` and `/quick` are alternate entry flows that refine `walter_prefs`
+and feed the same chain. The 7-step quiz no longer exists.
 
 ### localStorage contracts
 
-- `walter_prefs`: search preferences from the entry flows
+- `walter_prefs`: search preferences from the entry flows. Read through
+  `readStored()` and updated through `mergePrefs()` (`lib/prefs.ts`) -- never
+  overwrite the whole object, or dates and travelers are lost.
 - `walter_trip`: the chosen trip, `{ id, title, destination, days, estTotal, summary, tier }`
-- `walter_cart`: cart items (synced by `tripCartStore`)
-- `walter_booking`: checkout result, read by `/checkout/confirmation`
+- `walter_cart`: `{ items, bookedIds }`, synced by `tripCartStore` and kept in
+  step across tabs by a `storage` listener
+- `walter_saved_trips`: locally saved trips (`savedTripsStore`)
+- `walter_compare_local` / `walter_compare_ids`: id lists for the two compare views
+
+`walter_booking` is gone along with the simulated checkout.
 
 ## State Management
 
 - **tripCartStore** (`lib/stores/tripCartStore.ts`): Shopping cart for trip items (flights, hotels, events, activities, restaurants, sites). Manual localStorage sync to `walter_cart`. Provides `addItem`, `removeItem`, `isInCart`, `clearCart`. Computed selectors: `selectTotalPrice`, `selectItemCount`, `getItemsByType`.
-- **savedTripsStore** (`lib/stores/savedTripsStore.ts`): Saved trips (`saveTrip`, `deleteTrip`, `renameTrip`).
+- **savedTripsStore** (`lib/stores/savedTripsStore.ts`): Saved trips (`saveTrip`, `deleteTrip`, `renameTrip`). `saveTrip` carries the trip window (start/end/travelers) so reloading a trip can restore a searchable state, and replaces a same-named trip instead of duplicating it.
 - `quizStore` was deleted along with the 7-step quiz. Entry-flow state lives in `walter_prefs` (plain localStorage), not in a Zustand store.
 
 ## Environment Variables
@@ -123,7 +151,13 @@ See `.env.example`. Required keys:
 - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon key
 - `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key
-- `NEXT_PUBLIC_MAPBOX_TOKEN` — Mapbox (maps + server-side geocoding)
+- `NEXT_PUBLIC_MAPBOX_TOKEN` — Mapbox (maps + server-side geocoding fallback)
+
+Optional:
+- `MAPBOX_SERVER_TOKEN` — server-only geocoding token. Set this before adding URL restrictions to the public token.
+- `NEXT_PUBLIC_SITE_URL` — canonical/OG/sitemap origin. Must be set in Vercel production.
+- `UNSPLASH_ACCESS_KEY` — destination photos for `/api/photo`.
+- `NEXT_PUBLIC_BOOKING_AFFILIATE_ID` / `NEXT_PUBLIC_TM_IMPACT_URL` — affiliate tags. Absent today, so every link ships untagged; see web_issues.md M1-web.
 
 ## Deployment
 

@@ -1,5 +1,16 @@
 import { MAJOR_AIRPORTS } from "../data/airports";
 
+/* Every upstream call gets a deadline. Without one, a hung provider holds the
+ * function open to its maxDuration while mobile clients abort at 20s and
+ * retry -- we pay for both halves and the traveler sees neither.
+ *
+ * SerpAPI's Google Flights engine is genuinely slow (it drives a real search),
+ * so it gets 15s where the geocoder gets 8s. Cutting flights at 8s would fail
+ * searches that were about to succeed. */
+const UPSTREAM_TIMEOUT_MS = 15000;
+const GEOCODE_TIMEOUT_MS = 8000;
+
+
 const SERPAPI_KEY = process.env.SERPAPI_KEY!;
 
 export type FlightLeg = {
@@ -151,13 +162,19 @@ function haversineKm(aLat: number, aLng: number, bLat: number, bLng: number): nu
  * "Waco" -> DAL. Returns null for unresolvable strings.
  */
 export async function nearestAirportCode(place: string): Promise<string | null> {
-  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  /* Server-only token first. The public token is browser-exposed, so the
+   * moment it gets URL restrictions (the normal hardening step) server-side
+   * geocoding would break silently. MAPBOX_SERVER_TOKEN is optional -- the
+   * public one still works until it is set. */
+  const token = process.env.MAPBOX_SERVER_TOKEN || process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
   if (!token || !place.trim()) return null;
   try {
     const res = await fetch(
       `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
         place
       )}.json?access_token=${token}&limit=1&types=place,locality,region,district`
+    ,
+      { signal: AbortSignal.timeout(GEOCODE_TIMEOUT_MS) }
     );
     if (!res.ok) return null;
     const data = await res.json();
@@ -249,7 +266,9 @@ async function fetchReturnJourney(
   const params = new URLSearchParams(baseParams);
   params.set("departure_token", departureToken);
   try {
-    const res = await fetch(`https://serpapi.com/search.json?${params}`);
+    const res = await fetch(`https://serpapi.com/search.json?${params}`, {
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     if (!res.ok) return null;
     const data = await res.json();
     if (data.error) return null;
@@ -312,7 +331,9 @@ export async function searchFlights(params: {
     api_key: SERPAPI_KEY,
   });
 
-  const res = await fetch(`https://serpapi.com/search.json?${searchParams}`);
+  const res = await fetch(`https://serpapi.com/search.json?${searchParams}`, {
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+  });
   if (!res.ok) {
     console.error("[flights] SerpAPI error:", res.status);
     return [];
@@ -329,9 +350,11 @@ export async function searchFlights(params: {
   const otherFlights = data.other_flights || [];
   const allFlights = [...bestFlights, ...otherFlights];
 
-  /* Each result costs one extra SerpAPI request for its return journey,
-   * so this cap is a spend guard, not a UI choice. */
-  const top = allFlights.slice(0, 16) as Array<Record<string, unknown>>;
+  /* Each result costs one extra SerpAPI request for its return journey, so
+   * this cap is a spend guard, not a UI choice. Six, not sixteen: one search
+   * was fanning out to 17 billable calls, and nobody scrolls past the first
+   * handful of flights anyway. */
+  const top = allFlights.slice(0, 6) as Array<Record<string, unknown>>;
 
   // Fetch return journey for each outbound in parallel
   const returnJourneys = await Promise.all(

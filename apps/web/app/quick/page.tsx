@@ -8,6 +8,10 @@ import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { formatYMD } from "@/lib/dates";
 
+/* Quick plan collects no departure city; flight prices are sampled from one
+ * airport so the numbers mean something, and the UI says so. */
+const QUICK_ORIGIN = "LAX";
+
 type TripDay = {
   dayNumber: number;
   title: string;
@@ -118,7 +122,10 @@ export default function QuickPlanPage() {
           fetch("/api/flights", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ origin: "LAX", destination: trip.destination, departDate: sDate, returnDate: eDate, adults: travelers, cabinClass: "economy" }),
+            /* Quick plan has no departure city, so prices are indicative from
+               a fixed origin. QUICK_ORIGIN is surfaced in the UI caveat below
+               rather than passed off as the traveler's own fare. */
+            body: JSON.stringify({ origin: QUICK_ORIGIN, destination: trip.destination, departDate: sDate, returnDate: eDate, adults: travelers, cabinClass: "economy" }),
           })
             .then((r) => r.json())
             .then((fData) => {
@@ -579,7 +586,13 @@ export default function QuickPlanPage() {
                         {flightData[i]?.loading ? (
                           <div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
                         ) : flightData[i]?.count > 0 ? (
-                          <p className="font-semibold text-accent text-sm">${flightData[i].min.toLocaleString()} - ${flightData[i].max.toLocaleString()}</p>
+                          <p className="font-semibold text-accent text-sm">
+                            ${flightData[i].min.toLocaleString()} - ${flightData[i].max.toLocaleString()}{" "}
+                            {/* These fares are from one fixed airport, not the
+                                traveler's. Saying so beats quoting a stranger's
+                                price as if it were theirs. */}
+                            <span className="text-ink-faint font-normal text-xs">from {QUICK_ORIGIN}</span>
+                          </p>
                         ) : (
                           <p className="text-accent text-sm font-semibold">~${trip.flightEstimate?.toLocaleString() || "N/A"} <span className="text-ink-faint font-normal text-xs">est.</span></p>
                         )}
