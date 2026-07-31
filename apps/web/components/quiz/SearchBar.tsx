@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 export type SearchValue = {
@@ -23,6 +24,9 @@ type Props = {
   onChange: (next: SearchValue) => void;
   /** Called only when the search is valid; receives the normalized value. */
   onSearch: (next: SearchValue) => void;
+  /** When flipped true, opens the search UI (sheet on mobile, Where popover
+   * on desktop) -- the "Edit trip" entry point. */
+  autoOpen?: boolean;
 };
 
 const SUGGESTED_DESTINATIONS: { name: string; tagline: string; icon: string }[] = [
@@ -211,9 +215,23 @@ export function normalizeSearch(v: SearchValue): SearchValue {
   return next;
 }
 
-export function SearchBar({ value, onChange, onSearch }: Props) {
+export function SearchBar({ value, onChange, onSearch, autoOpen }: Props) {
   const [active, setActive] = useState<Section>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  // Portal target for the mobile sheet: escapes the sticky z-[45] stacking
+  // context on the landing page, which otherwise traps the sheet under the
+  // z-50 site header.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    if (!autoOpen) return;
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      setSheetOpen(true);
+    } else {
+      setActive("where");
+      wrapRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [autoOpen]);
   // +1 when the newly opened tab is to the right of the current one, -1 to the
   // left; drives the directional slide between popovers.
   const [direction, setDirection] = useState(1);
@@ -327,21 +345,25 @@ export function SearchBar({ value, onChange, onSearch }: Props) {
           </span>
         </span>
       </button>
-      <AnimatePresence>
-        {sheetOpen && (
-          <MobileSearchSheet
-            value={value}
-            onChange={onChange}
-            onClose={() => setSheetOpen(false)}
-            onSearch={() => {
-              const next = normalizeSearch(value);
-              onChange(next);
-              setSheetOpen(false);
-              onSearch(next);
-            }}
-          />
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {sheetOpen && (
+              <MobileSearchSheet
+                value={value}
+                onChange={onChange}
+                onClose={() => setSheetOpen(false)}
+                onSearch={() => {
+                  const next = normalizeSearch(value);
+                  onChange(next);
+                  setSheetOpen(false);
+                  onSearch(next);
+                }}
+              />
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
 
       <div
         className="hidden md:block relative"

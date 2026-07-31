@@ -336,6 +336,10 @@ export async function searchFlights(params: {
   });
   if (!res.ok) {
     console.error("[flights] SerpAPI error:", res.status);
+    /* 429 means the SerpAPI quota is spent. Returning [] here would render
+     * as a confident "no flights found" -- throw so the route answers 503
+     * and the client shows its retryable error card instead. */
+    if (res.status === 429) throw new Error("flight provider quota exceeded");
     return [];
   }
 

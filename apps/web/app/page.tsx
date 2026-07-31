@@ -101,6 +101,41 @@ export default function LandingPage() {
     if (dest) setSearch((s) => ({ ...s, destination: dest }));
   }, []);
 
+  /* "Edit trip" entry point: /?edit=1 restores the current trip facts from
+   * walter_prefs and opens the search UI so the traveler adjusts instead of
+   * retyping. */
+  const [editOpen, setEditOpen] = useState(false);
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).get("edit")) return;
+    try {
+      const raw = localStorage.getItem("walter_prefs");
+      if (raw) {
+        const p = JSON.parse(raw) as Record<string, unknown>;
+        setSearch((s) => ({
+          ...s,
+          destination:
+            (typeof p.destination === "string" && p.destination) ||
+            (Array.isArray(p.destinations) && typeof p.destinations[0] === "string"
+              ? p.destinations[0]
+              : "") ||
+            "",
+          startDate: typeof p.startDate === "string" ? p.startDate : "",
+          endDate: typeof p.endDate === "string" ? p.endDate : "",
+          exactDates: p.exactDates !== false,
+          flexDays: typeof p.flexDays === "number" ? p.flexDays : 0,
+          adults: typeof p.adults === "number" ? p.adults : s.adults,
+          children: typeof p.children === "number" ? p.children : s.children,
+          infants: typeof p.infants === "number" ? p.infants : s.infants,
+          pets: typeof p.pets === "number" ? p.pets : s.pets,
+          description: typeof p.description === "string" ? p.description : "",
+        }));
+      }
+    } catch {
+      /* unreadable prefs: open the search empty rather than not at all */
+    }
+    setEditOpen(true);
+  }, []);
+
   useEffect(() => {
     fetch("/api/trips/community")
       .then((r) => r.json())
@@ -295,7 +330,7 @@ export default function LandingPage() {
         className="sticky top-[80px] z-[45] -mt-[52px]"
       >
         <div className="max-w-6xl mx-auto px-5 sm:px-12">
-          <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+          <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} autoOpen={editOpen} />
         </div>
       </motion.div>
 

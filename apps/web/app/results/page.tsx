@@ -82,6 +82,21 @@ export default function ResultsPage() {
   const [hotelsError, setHotelsError] = useState(false);
   const [eventsError, setEventsError] = useState(false);
   const [suggestionsError, setSuggestionsError] = useState(false);
+  /* On narrow screens the fourth tab sits off-screen with no hint that the
+   * strip scrolls -- show a fade + chevron until the strip is scrolled to
+   * its end. */
+  const tabStripRef = useRef<HTMLDivElement | null>(null);
+  const [tabsClipped, setTabsClipped] = useState(false);
+  const updateTabsClipped = useCallback(() => {
+    const el = tabStripRef.current;
+    if (!el) return;
+    setTabsClipped(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+  }, []);
+  useEffect(() => {
+    updateTabsClipped();
+    window.addEventListener("resize", updateTabsClipped);
+    return () => window.removeEventListener("resize", updateTabsClipped);
+  }, [updateTabsClipped]);
   /* Lets the main fetch effect read the current stay type without
    * re-running everything when it changes. */
   const stayTypeRef = useRef<StayType>("hotel");
@@ -392,7 +407,7 @@ export default function ResultsPage() {
             <span className="text-ink text-[16px] font-semibold tracking-tight">Walter</span>
           </Link>
           <Link
-            href="/"
+            href="/?edit=1"
             className="text-ink-soft hover:text-ink text-label font-medium px-3.5 py-1.5 rounded-pill hover:bg-ink/5 transition-colors flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">edit</span>
@@ -457,8 +472,12 @@ export default function ResultsPage() {
 
       {/* Flat tab bar */}
       <div className="sticky top-[56px] z-20 bg-page-bg/85 backdrop-blur-md border-y border-line">
-        <div className="max-w-content mx-auto px-5 lg:px-8 py-3">
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+        <div className="max-w-content mx-auto px-5 lg:px-8 py-3 relative">
+          <div
+            ref={tabStripRef}
+            onScroll={updateTabsClipped}
+            className="flex items-center gap-1 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+          >
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               const isLoading =
@@ -496,6 +515,20 @@ export default function ResultsPage() {
               );
             })}
           </div>
+          {tabsClipped && (
+            <button
+              type="button"
+              aria-label="More tabs"
+              onClick={() =>
+                tabStripRef.current?.scrollBy({ left: 160, behavior: "smooth" })
+              }
+              className="absolute inset-y-0 right-0 w-14 flex items-center justify-end pr-4 bg-gradient-to-l from-page-bg via-page-bg/80 to-transparent md:hidden"
+            >
+              <span className="material-symbols-outlined text-ink-soft text-[20px]">
+                chevron_right
+              </span>
+            </button>
+          )}
         </div>
       </div>
 

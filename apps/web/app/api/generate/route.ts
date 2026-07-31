@@ -25,7 +25,11 @@ export async function POST(req: NextRequest) {
           if (!dest) return;
           try {
             const evs = await fetchTopEventsInArea(dest, quizData.startDate!, quizData.endDate!, 8);
-            t.liveEvents = [...new Set(evs.map((e) => e.name))].slice(0, 3);
+            const seen = new Set<string>();
+            t.liveEvents = evs
+              .filter((e) => (seen.has(e.name) ? false : (seen.add(e.name), true)))
+              .slice(0, 3)
+              .map((e) => ({ name: e.name, image: e.image ?? null }));
           } catch {
             /* the card just goes without */
           }

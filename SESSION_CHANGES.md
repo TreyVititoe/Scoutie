@@ -1,3 +1,22 @@
+# Session changes - 2026-07-31
+
+This file is the running changelog. Each session adds a dated section at the
+top. Log every user-visible or structural change here before it is pushed.
+
+## Legal + verification
+
+- Legal entity renamed to "Walter, Inc." in `terms/page.tsx` (IP, liability, indemnification) and the `Footer.tsx` copyright. The entity is registered as Walter, Inc.
+- Live Supabase schema verified against project `gwuddjtqxmhewkfzjcos` via the Management API: `trip_days`/`trip_items` are SELECT-only (the admin-client write path is required), `affiliate_clicks.click_url` exists, `trips.is_public` + `share_slug` exist. No code changes needed.
+- A read-only `supabase-walter` MCP server was added to the user config for future DB checks.
+
+## Fixes from the first visual pass (mobile)
+
+- Mobile search sheet: rendered through a portal to `document.body`. It was trapped in the landing page's sticky `z-[45]` stacking context, so the `z-50` site header overlapped its close button (`SearchBar.tsx`).
+- `/trips` event previews: `/api/generate` now returns `liveEvents` as `{name, image}` (Ticketmaster hero image) and the cards render a 36px thumbnail per event, falling back to the ticket icon when there is no image.
+- `/results` tab bar: on narrow screens a right-edge fade + chevron shows while more tabs sit off-screen; tapping it scrolls the strip. Hidden once scrolled to the end and on `md+`.
+- Flights: diagnosed empty results as SerpAPI HTTP 429 -- the account quota is spent (each search costs up to 7 SerpAPI calls). `searchFlights` now throws on 429 so `/api/flights` answers 502 and the client shows its retryable error card instead of a confident empty state. Restoring flights needs the SerpAPI plan topped up.
+- "Edit trip" on `/results` now links to `/?edit=1`: the landing page restores the trip facts from `walter_prefs` into the SearchBar and auto-opens it (sheet on mobile, Where popover on desktop) instead of dumping the traveler on a blank home page.
+
 # Session changes - 2026-06-10
 
 ## Theme: dark to bright "daylight field"

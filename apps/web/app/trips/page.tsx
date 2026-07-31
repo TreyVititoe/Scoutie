@@ -41,8 +41,10 @@ type ApiTrip = {
   days?: unknown[];
   topEvents?: string[];
   highlights?: string[];
-  liveEvents?: string[];
+  liveEvents?: { name: string; image: string | null }[];
 };
+
+type LiveEvent = { name: string; image: string | null };
 
 type TripOption = {
   id: string;
@@ -57,7 +59,7 @@ type TripOption = {
   /** Suggested items for the trip: events first, then highlights. */
   list: string[];
   /** Real events happening there during the dates. */
-  events: string[];
+  events: LiveEvent[];
 };
 
 function prefDays(prefs: Prefs): number {
@@ -199,7 +201,11 @@ function apiTripToOption(trip: ApiTrip, index: number, prefs: Prefs): TripOption
           : []),
       ]),
     ].slice(0, 4),
-    events: (trip.liveEvents || []).slice(0, 3),
+    events: (trip.liveEvents || [])
+      .map((ev) =>
+        typeof ev === "string" ? { name: ev, image: null } : ev
+      )
+      .slice(0, 3),
   };
 }
 
@@ -481,11 +487,24 @@ function TripCard({
               Happening while you&apos;re there
             </p>
             {option.events.map((ev) => (
-              <div key={ev} className="flex items-start gap-1.5 py-0.5">
-                <span className="material-symbols-outlined text-accent text-[14px] mt-px">
-                  confirmation_number
-                </span>
-                <p className="text-ink-soft text-[12.5px] leading-snug">{ev}</p>
+              <div key={ev.name} className="flex items-center gap-2 py-1">
+                {ev.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- remote
+                  // Ticketmaster CDN URL; next/image cannot optimize these hosts
+                  <img
+                    src={ev.image}
+                    alt=""
+                    loading="lazy"
+                    className="w-9 h-9 rounded-[8px] object-cover shrink-0 bg-surface-2"
+                  />
+                ) : (
+                  <span className="w-9 h-9 rounded-[8px] bg-surface-2 shrink-0 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-accent text-[16px]">
+                      confirmation_number
+                    </span>
+                  </span>
+                )}
+                <p className="text-ink-soft text-[12.5px] leading-snug">{ev.name}</p>
               </div>
             ))}
           </div>
