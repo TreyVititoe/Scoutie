@@ -34,7 +34,7 @@ export default function Footer() {
         <div className="border-t border-line mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <AffiliateDisclosure />
           <p className="text-[12px] text-ink-faint tabular-nums">
-            &copy; {new Date().getFullYear()} Walter Travel, Inc.
+            &copy; {new Date().getFullYear()} Walter, Inc.
           </p>
         </div>
       </div>

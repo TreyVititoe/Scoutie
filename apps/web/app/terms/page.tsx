@@ -131,8 +131,8 @@ export default function TermsPage() {
               <p>
                 All content, features, and functionality of the Service --
                 including text, graphics, logos, icons, the Walter brand, AI
-                models, and software -- are the exclusive property of Walter
-                Travel, Inc. and are protected by copyright, trademark, and other
+                models, and software -- are the exclusive property of Walter,
+                Inc. and are protected by copyright, trademark, and other
                 intellectual property laws. You may share generated itineraries
                 for personal use but may not reproduce, distribute, or create
                 derivative works from the Service for commercial purposes without
@@ -173,7 +173,7 @@ export default function TermsPage() {
                 9. Limitation of Liability
               </h2>
               <p>
-                To the maximum extent permitted by law, Walter Travel, Inc. and
+                To the maximum extent permitted by law, Walter, Inc. and
                 its officers, directors, employees, and agents shall not be liable
                 for any indirect, incidental, special, consequential, or punitive
                 damages arising from your use of the Service. This includes, but
@@ -205,7 +205,7 @@ export default function TermsPage() {
                 11. Indemnification
               </h2>
               <p>
-                You agree to indemnify and hold harmless Walter Travel, Inc. from
+                You agree to indemnify and hold harmless Walter, Inc. from
                 any claims, damages, losses, or expenses (including reasonable
                 attorney fees) arising from your use of the Service, your
                 violation of these Terms, or your violation of any rights of a
