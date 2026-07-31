@@ -15,6 +15,8 @@ top. Log every user-visible or structural change here before it is pushed.
 - `/trips` event previews: `/api/generate` now returns `liveEvents` as `{name, image}` (Ticketmaster hero image) and the cards render a 36px thumbnail per event, falling back to the ticket icon when there is no image.
 - `/results` tab bar: on narrow screens a right-edge fade + chevron shows while more tabs sit off-screen; tapping it scrolls the strip. Hidden once scrolled to the end and on `md+`.
 - Flights: diagnosed empty results as SerpAPI HTTP 429 -- the account quota is spent (each search costs up to 7 SerpAPI calls). `searchFlights` now throws on 429 so `/api/flights` answers 502 and the client shows its retryable error card instead of a confident empty state. Restoring flights needs the SerpAPI plan topped up.
+- Landing hero copy: "your AI travel companion" -> "your travel companion". Decision: AI is not brand language on the front page.
+- SerpAPI plan upgraded by Trey to 1,000 searches/month ($25/mo); new API key set in Vercel.
 - "Edit trip" on `/results` now links to `/?edit=1`: the landing page restores the trip facts from `walter_prefs` into the SearchBar and auto-opens it (sheet on mobile, Where popover on desktop) instead of dumping the traveler on a blank home page.
 
 # Session changes - 2026-06-10

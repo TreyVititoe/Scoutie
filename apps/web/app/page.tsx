@@ -315,7 +315,7 @@ export default function LandingPage() {
               transition={{ delay: 0.12, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
               className="text-ink-soft text-body sm:text-title max-w-[48ch] mt-4"
             >
-              Walter is your AI travel companion that plans complete trips
+              Walter is your travel companion that plans complete trips
               around your interests, schedule, and travel style.
             </motion.p>
           </div>
