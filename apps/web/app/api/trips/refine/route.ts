@@ -11,7 +11,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 const MAX_BODY = 32 * 1024;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "refine", limit: 15 });
+  const limited = await rateLimit(req, { name: "refine", limit: 15 });
   if (limited) return limited;
 
   try {

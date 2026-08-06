@@ -61,7 +61,7 @@ If the user mentioned specific dates or a date range, set startDate and endDate 
 Generate EXACTLY 3 trips. Each should interpret the keywords differently — different destinations, different angles on the same interests.`;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "quick", limit: 20 });
+  const limited = await rateLimit(req, { name: "quick", limit: 20 });
   if (limited) return limited;
 
   try {

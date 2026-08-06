@@ -11,7 +11,7 @@ import {
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "suggestions", limit: 30 });
+  const limited = await rateLimit(req, { name: "suggestions", limit: 30 });
   if (limited) return limited;
 
   try {

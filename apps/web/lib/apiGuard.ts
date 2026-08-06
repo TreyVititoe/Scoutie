@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
 
 /*
- * Per-IP sliding-window rate limiter for the paid API routes (Claude,
- * SerpAPI, RapidAPI, Ticketmaster). In-memory, so limits apply per
- * serverless instance -- best-effort abuse protection, not billing-grade
- * quota. Swap the Map for Upstash Redis if precision starts to matter.
+ * Per-IP fixed-window rate limiter for the paid API routes (Claude,
+ * SerpAPI, RapidAPI, Ticketmaster). Counters live in Upstash Redis
+ * (KV_REST_API_URL/KV_REST_API_TOKEN, injected by the Vercel Upstash
+ * integration) so limits hold across serverless instances and cold
+ * starts. When those vars are absent -- local dev, CI -- it falls back
+ * to the old in-memory Map, and it also falls back per-request if Redis
+ * errors, so a Redis outage can never take the API down.
  */
+
+const redis =
+  process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
+    ? new Redis({
+        url: process.env.KV_REST_API_URL,
+        token: process.env.KV_REST_API_TOKEN,
+      })
+    : null;
 
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
@@ -17,12 +29,40 @@ function clientIp(req: NextRequest): string {
   return req.headers.get("x-real-ip") ?? "anon";
 }
 
-export function rateLimit(
-  req: NextRequest,
-  opts: { name: string; limit: number; windowMs?: number }
+function tooMany(retryAfterSec: number): NextResponse {
+  return NextResponse.json(
+    { error: "Too many requests. Give Walter a minute." },
+    {
+      status: 429,
+      headers: { "Retry-After": String(Math.max(1, retryAfterSec)) },
+    }
+  );
+}
+
+async function redisRateLimit(
+  client: Redis,
+  key: string,
+  limit: number,
+  windowMs: number
+): Promise<NextResponse | null> {
+  const pipeline = client.pipeline();
+  pipeline.incr(key);
+  // NX: only set the expiry when the key has none, i.e. the window's
+  // first request. Pipelined, so this stays one round trip.
+  pipeline.pexpire(key, windowMs, "NX");
+  pipeline.pttl(key);
+  const [count, , ttlMs] = await pipeline.exec<[number, number, number]>();
+
+  if (count <= limit) return null;
+  const retryMs = ttlMs > 0 ? ttlMs : windowMs;
+  return tooMany(Math.ceil(retryMs / 1000));
+}
+
+function memoryRateLimit(
+  key: string,
+  limit: number,
+  windowMs: number
 ): NextResponse | null {
-  const windowMs = opts.windowMs ?? 10 * 60 * 1000;
-  const key = `${opts.name}:${clientIp(req)}`;
   const now = Date.now();
 
   if (buckets.size > MAX_BUCKETS) {
@@ -38,13 +78,25 @@ export function rateLimit(
   }
 
   bucket.count += 1;
-  if (bucket.count <= opts.limit) return null;
+  if (bucket.count <= limit) return null;
+  return tooMany(Math.ceil((bucket.resetAt - now) / 1000));
+}
 
-  const retryAfter = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
-  return NextResponse.json(
-    { error: "Too many requests. Give Walter a minute." },
-    { status: 429, headers: { "Retry-After": String(retryAfter) } }
-  );
+export async function rateLimit(
+  req: NextRequest,
+  opts: { name: string; limit: number; windowMs?: number }
+): Promise<NextResponse | null> {
+  const windowMs = opts.windowMs ?? 10 * 60 * 1000;
+  const key = `${opts.name}:${clientIp(req)}`;
+
+  if (redis) {
+    try {
+      return await redisRateLimit(redis, `rl:${key}`, opts.limit, windowMs);
+    } catch (err) {
+      console.error("rateLimit: redis unavailable, using memory", err);
+    }
+  }
+  return memoryRateLimit(key, opts.limit, windowMs);
 }
 
 /* ── Input clamps ── */

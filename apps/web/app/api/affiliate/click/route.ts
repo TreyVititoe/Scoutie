@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { cleanString, rateLimit, readJsonCapped } from "@/lib/apiGuard";
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "affiliate-click", limit: 120 });
+  const limited = await rateLimit(req, { name: "affiliate-click", limit: 120 });
   if (limited) return limited;
 
   try {

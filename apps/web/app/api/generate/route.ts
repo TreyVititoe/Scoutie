@@ -6,7 +6,7 @@ import { fetchTopEventsInArea } from "@/lib/services/ticketmaster";
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "generate", limit: 10 });
+  const limited = await rateLimit(req, { name: "generate", limit: 10 });
   if (limited) return limited;
 
   try {

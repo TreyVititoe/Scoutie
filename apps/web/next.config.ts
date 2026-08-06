@@ -1,18 +1,14 @@
 import type { NextConfig } from "next";
 
-/* Content-Security-Policy ships REPORT-ONLY first, on purpose. Mapbox GL,
- * Google Fonts, Unsplash, Supabase, and Vercel Analytics each need their own
- * allowance, and a wrong value breaks production silently. Report-Only
- * enforces nothing -- it only logs violations to the browser console, so the
- * policy can be verified against real traffic before it is switched to the
- * enforcing `Content-Security-Policy` header.
- *
- * TO ENFORCE: browse the whole journey with the console open, confirm zero
- * violation reports, then rename the header key below. Do not flip it blind.
+/* Content-Security-Policy, ENFORCING since 2026-08-01 after the full journey
+ * was browsed with the console open and produced zero violation reports.
+ * Mapbox GL, Google Fonts, Unsplash, Supabase, and Vercel Analytics each need
+ * their own allowance. If a new third-party origin is added, extend the
+ * matching directive here or the browser blocks it silently in production.
  *
  * img-src stays wide (https:) because shared trip pages render image URLs
  * supplied by whoever built the trip. */
-const cspReportOnly = [
+const csp = [
   "default-src 'self'",
   // 'unsafe-inline'/'unsafe-eval': Next's hydration bootstrap and Mapbox GL.
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
@@ -37,7 +33,7 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), payment=()",
   },
-  { key: "Content-Security-Policy-Report-Only", value: cspReportOnly },
+  { key: "Content-Security-Policy", value: csp },
 ];
 
 const nextConfig: NextConfig = {

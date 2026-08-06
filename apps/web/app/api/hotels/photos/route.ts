@@ -4,7 +4,7 @@ import { rateLimit, cleanString } from "@/lib/apiGuard";
 import { cacheGet, cacheSet } from "@/lib/searchCache";
 
 export async function GET(req: NextRequest) {
-  const limited = rateLimit(req, { name: "hotel-photos", limit: 60 });
+  const limited = await rateLimit(req, { name: "hotel-photos", limit: 60 });
   if (limited) return limited;
 
   const hotelId = cleanString(req.nextUrl.searchParams.get("hotelId"), 20);

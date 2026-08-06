@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/apiGuard";
 
 export async function GET(req: NextRequest) {
-  const limited = rateLimit(req, { name: "trips-community", limit: 120 });
+  const limited = await rateLimit(req, { name: "trips-community", limit: 120 });
   if (limited) return limited;
 
   try {

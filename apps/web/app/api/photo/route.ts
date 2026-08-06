@@ -60,7 +60,7 @@ async function searchUnsplash(query: string): Promise<string | null> {
 }
 
 export async function GET(req: NextRequest) {
-  const limited = rateLimit(req, { name: "photo", limit: 300 });
+  const limited = await rateLimit(req, { name: "photo", limit: 300 });
   if (limited) return limited;
 
   const raw = req.nextUrl.searchParams.get("query")?.trim();

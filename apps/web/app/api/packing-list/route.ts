@@ -54,7 +54,7 @@ Categories must be exactly these six, in this order:
 Keep each category to 5-10 items. Be practical, not exhaustive.`;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "packing", limit: 15 });
+  const limited = await rateLimit(req, { name: "packing", limit: 15 });
   if (limited) return limited;
 
   try {

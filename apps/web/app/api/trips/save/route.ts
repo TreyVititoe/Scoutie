@@ -11,7 +11,7 @@ const MAX_ITEMS_PER_DAY = 40;
 const MAX_COST = 10_000_000;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "trips-save", limit: 30 });
+  const limited = await rateLimit(req, { name: "trips-save", limit: 30 });
   if (limited) return limited;
 
   try {

@@ -3,7 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { cleanString, rateLimit } from "@/lib/apiGuard";
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "upvote", limit: 60 });
+  const limited = await rateLimit(req, { name: "upvote", limit: 60 });
   if (limited) return limited;
 
   try {
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
      * at all would make community trips freely re-votable by anyone. Shares
      * the rate limiter's bounded store, so it is per-instance and
      * best-effort -- the same caveat that applies to every limit here. */
-    const duplicate = rateLimit(req, {
+    const duplicate = await rateLimit(req, {
       name: `upvote:${tripId}`,
       limit: 1,
       windowMs: 24 * 60 * 60 * 1000,

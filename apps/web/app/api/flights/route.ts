@@ -11,7 +11,7 @@ import { cacheKey, cacheGet, cacheSet } from "@/lib/searchCache";
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "flights", limit: 30 });
+  const limited = await rateLimit(req, { name: "flights", limit: 30 });
   if (limited) return limited;
 
   try {

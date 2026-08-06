@@ -16,22 +16,24 @@ function reqFrom(ip: string) {
 }
 
 describe("rateLimit", () => {
-  it("allows requests under the limit and blocks over it", () => {
+  // No KV_REST_API_* vars in the test env, so these exercise the
+  // in-memory fallback path.
+  it("allows requests under the limit and blocks over it", async () => {
     const opts = { name: "test-a", limit: 3 };
     const req = reqFrom("10.0.0.1");
-    expect(rateLimit(req, opts)).toBeNull();
-    expect(rateLimit(req, opts)).toBeNull();
-    expect(rateLimit(req, opts)).toBeNull();
-    const blocked = rateLimit(req, opts);
+    expect(await rateLimit(req, opts)).toBeNull();
+    expect(await rateLimit(req, opts)).toBeNull();
+    expect(await rateLimit(req, opts)).toBeNull();
+    const blocked = await rateLimit(req, opts);
     expect(blocked?.status).toBe(429);
     expect(blocked?.headers.get("Retry-After")).toBeTruthy();
   });
 
-  it("tracks IPs independently", () => {
+  it("tracks IPs independently", async () => {
     const opts = { name: "test-b", limit: 1 };
-    expect(rateLimit(reqFrom("10.0.0.2"), opts)).toBeNull();
-    expect(rateLimit(reqFrom("10.0.0.3"), opts)).toBeNull();
-    expect(rateLimit(reqFrom("10.0.0.2"), opts)?.status).toBe(429);
+    expect(await rateLimit(reqFrom("10.0.0.2"), opts)).toBeNull();
+    expect(await rateLimit(reqFrom("10.0.0.3"), opts)).toBeNull();
+    expect((await rateLimit(reqFrom("10.0.0.2"), opts))?.status).toBe(429);
   });
 });
 

@@ -56,7 +56,7 @@ function itemRow(
 }
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { name: "trips-share", limit: 20 });
+  const limited = await rateLimit(req, { name: "trips-share", limit: 20 });
   if (limited) return limited;
 
   try {
