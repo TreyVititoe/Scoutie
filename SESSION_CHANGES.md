@@ -1,3 +1,22 @@
+# Session changes - 2026-08-06
+
+## Hardening: CSP enforced + durable rate limiting (commit be97cd1)
+
+- CSP flipped from `Content-Security-Policy-Report-Only` to enforcing
+  `Content-Security-Policy` in `next.config.ts`, after Trey browsed the full
+  journey with the console open and saw zero violation reports. New
+  third-party origins must be added to the policy or the browser blocks them
+  silently.
+- Rate limiter moved to Upstash Redis: Trey provisioned "Upstash for Redis"
+  through the Vercel Marketplace (`upstash-kv-aquamarine-drum`, free plan)
+  and connected it to the project, which injects `KV_REST_API_URL` +
+  `KV_REST_API_TOKEN`. `rateLimit()` in `lib/apiGuard.ts` is now async and
+  counts in Redis (INCR + PEXPIRE NX + PTTL in one pipelined round trip),
+  so limits hold across serverless instances and cold starts. The old
+  in-memory Map remains as the fallback when the vars are absent (local
+  dev, CI) or Redis errors. All 18 route call sites now `await rateLimit()`.
+- Verified: web tsc clean, vitest 12/12, `next build` passes.
+
 # Session changes - 2026-07-31
 
 This file is the running changelog. Each session adds a dated section at the
