@@ -16,6 +16,10 @@
   "dependencies": {
     "next": "^16.2.1"
   },
+  "overrides": {
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
   "devDependencies": {
     "turbo": "^2.0.0"
   }
