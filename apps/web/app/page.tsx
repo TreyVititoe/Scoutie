@@ -323,11 +323,46 @@ export default function LandingPage() {
               <path d="M12 3 V21 M3 12 H21" stroke="oklch(0.45 0.09 262 / 0.35)" strokeWidth="3" strokeLinecap="round" />
             </svg>
 
+            {/* solid circles */}
+            <div className="hero-drift-a absolute left-[13%] top-[54%] w-16 h-16 rounded-full bg-[oklch(0.65_0.135_263_/_0.30)]" style={{ animationDelay: "-10s" }} />
+            <div className="hero-drift-b absolute right-[10%] top-[10%] w-10 h-10 rounded-full bg-[oklch(0.78_0.13_230_/_0.35)]" style={{ animationDelay: "-3s" }} />
+            <div className="hero-drift-c absolute left-[35%] bottom-[8%] w-12 h-12 rounded-full bg-[oklch(0.55_0.12_262_/_0.26)]" style={{ animationDelay: "-16s" }} />
+            <div className="hero-drift-a absolute right-[24%] top-[20%] w-7 h-7 rounded-full bg-[oklch(0.72_0.11_261_/_0.38)]" style={{ animationDelay: "-6s" }} />
+            <div className="hero-drift-b absolute left-[3%] top-[10%] w-14 h-14 rounded-full bg-[oklch(0.85_0.07_248_/_0.5)]" style={{ animationDelay: "-12s" }} />
+
+            {/* solid squares and diamonds */}
+            <div className="hero-drift-c absolute right-[4%] top-[46%]" style={{ animationDelay: "-2s" }}>
+              <div className="w-11 h-11 rotate-[30deg] bg-[oklch(0.65_0.135_263_/_0.24)] rounded-[7px]" />
+            </div>
+            <div className="hero-drift-a absolute left-[20%] top-[8%]" style={{ animationDelay: "-14s" }}>
+              <div className="w-9 h-9 rotate-[14deg] bg-[oklch(0.72_0.11_261_/_0.28)] rounded-[6px]" />
+            </div>
+            <div className="hero-drift-b absolute left-[45%] top-[16%]" style={{ animationDelay: "-7s" }}>
+              <div className="w-6 h-6 rotate-45 bg-[oklch(0.78_0.13_230_/_0.32)] rounded-[4px]" />
+            </div>
+
+            {/* solid pills */}
+            <div className="hero-drift-a absolute right-[18%] bottom-[8%] w-20 h-7 rounded-pill bg-[oklch(0.65_0.135_263_/_0.22)] rotate-[-14deg]" style={{ animationDelay: "-5s" }} />
+            <div className="hero-drift-c absolute left-[8%] bottom-[34%] w-14 h-5 rounded-pill bg-[oklch(0.85_0.07_248_/_0.55)] rotate-[20deg]" style={{ animationDelay: "-9s" }} />
+
+            {/* solid half-circle */}
+            <div className="hero-drift-b absolute right-[34%] top-[6%] w-14 h-7 rounded-t-full bg-[oklch(0.55_0.12_262_/_0.22)] rotate-[8deg]" style={{ animationDelay: "-11s" }} />
+
+            {/* solid triangles */}
+            <svg className="hero-drift-a absolute left-[28%] bottom-[20%] w-8 h-8 rotate-[-10deg]" viewBox="0 0 36 36" fill="none" style={{ animationDelay: "-4s" }}>
+              <path d="M18 4 L33 30 L3 30 Z" fill="oklch(0.72 0.11 261 / 0.3)" />
+            </svg>
+            <svg className="hero-drift-c absolute right-[42%] top-[30%] w-5 h-5 rotate-[40deg]" viewBox="0 0 36 36" fill="none" style={{ animationDelay: "-18s" }}>
+              <path d="M18 4 L33 30 L3 30 Z" fill="oklch(0.78 0.13 230 / 0.36)" />
+            </svg>
+
             {/* dots */}
             <div className="hero-drift-c absolute left-[42%] top-[24%] w-2.5 h-2.5 rounded-full bg-[oklch(0.65_0.135_263_/_0.45)]" style={{ animationDelay: "-3s" }} />
             <div className="hero-drift-a absolute right-[32%] top-[40%] w-2 h-2 rounded-full bg-[oklch(0.78_0.13_230_/_0.5)]" style={{ animationDelay: "-8s" }} />
             <div className="hero-drift-b absolute left-[26%] bottom-[12%] w-3 h-3 rounded-full bg-[oklch(0.55_0.12_262_/_0.35)]" style={{ animationDelay: "-6s" }} />
             <div className="hero-drift-c absolute right-[44%] top-[12%] w-2 h-2 rounded-full bg-[oklch(0.72_0.11_261_/_0.4)]" style={{ animationDelay: "-17s" }} />
+            <div className="hero-drift-a absolute left-[52%] bottom-[16%] w-2.5 h-2.5 rounded-full bg-[oklch(0.45_0.09_262_/_0.4)]" style={{ animationDelay: "-13s" }} />
+            <div className="hero-drift-b absolute right-[8%] top-[28%] w-3 h-3 rounded-full bg-[oklch(0.65_0.135_263_/_0.4)]" style={{ animationDelay: "-19s" }} />
           </div>
           <div className="relative flex flex-col items-center text-center px-5">
             <motion.h1
