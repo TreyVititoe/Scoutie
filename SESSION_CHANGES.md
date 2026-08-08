@@ -1,3 +1,25 @@
+# Session changes - 2026-08-07
+
+## App Store: production build #2 built and uploaded to TestFlight
+
+- Root cause of the failed EAS build: apps/web resolved React 19.2.5 while
+  React Native requires exactly 19.2.0, so npm nested react/expo-router/
+  expo-font under apps/mobile and babel-preset-expo (hoisted to the root)
+  could no longer resolve expo-router -- its router plugin silently never
+  ran and bundling died on EXPO_ROUTER_APP_ROOT. Fixed with a root
+  package.json `overrides` pinning react/react-dom to 19.2.0 so everything
+  hoists again. Also added the missing @expo/metro-runtime dependency.
+- `expo prebuild -p ios --clean` regenerated the native project (required
+  by the July NetInfo/app.json changes), production build #2 compiled on
+  EAS and was submitted to App Store Connect (Apple ID 6790163527, now
+  pinned as ascAppId in eas.json for non-interactive submits).
+- ASC listing draft (name, description, keywords, privacy labels, review
+  notes, screenshot plan) written at docs/asc_listing.md.
+- Verified after the React pin: web tsc, vitest 12/12, next build, and
+  expo export all pass.
+- Note: a full disk corrupted node_modules mid-session and masked the
+  real error for a while; Trey freed space.
+
 # Session changes - 2026-08-06
 
 ## Hardening: CSP enforced + durable rate limiting (commit be97cd1)
