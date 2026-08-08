@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { getDestinationImage } from "@/lib/destinationImages";
@@ -270,37 +269,11 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero: full-bleed story cliff; a bright liquid-glass panel floats
-          over the center with feathered edges so ink text reads on it. */}
+      {/* Hero: plain daylight field. The cornflower radial is the only
+          color up here; photography lives in the trip cards below. */}
       <section className="relative z-40">
-        <div className="relative h-[520px] sm:h-[620px] overflow-hidden">
-          <Image
-            src="/hero-story.jpg"
-            alt="A traveler on a cliff above a sea of clouds"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[center_72%]"
-          />
-
-          {/* Frosted panel: rounded top corners visible just inside the top
-              of the page (the navbar rides on it); the bottom dissolves
-              into the page instead. */}
-          <div
-            aria-hidden
-            className="absolute left-1/2 -translate-x-1/2 top-2.5 h-[96%] w-[98%] max-w-[1320px] rounded-[44px] bg-white/30 backdrop-blur-[3.5px] backdrop-saturate-[1.08] border-[1.5px] border-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] pointer-events-none"
-            style={{
-              WebkitMaskImage:
-                "linear-gradient(to bottom, black 58%, transparent 100%)",
-              maskImage:
-                "linear-gradient(to bottom, black 58%, transparent 100%)",
-            }}
-          />
-
-          {/* Dissolve into the page below */}
-          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-page-bg to-transparent pointer-events-none" />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-5 pt-16 pb-14">
+        <div className="hero-radial bg-page-bg pt-32 sm:pt-40 pb-24 sm:pb-28">
+          <div className="flex flex-col items-center text-center px-5">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

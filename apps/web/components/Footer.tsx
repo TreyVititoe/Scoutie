@@ -1,41 +1,39 @@
 import Link from "next/link";
 import AffiliateDisclosure from "./AffiliateDisclosure";
 
+const LINKS = [
+  { href: "/", label: "Plan a trip" },
+  { href: "/explore", label: "Explore" },
+  { href: "/about", label: "About" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+];
+
 export default function Footer() {
   return (
     <footer className="bg-page-bg border-t border-line">
-      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12">
-        <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
-          <div className="max-w-xs">
-            <Link href="/" className="text-title font-semibold text-ink">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-x-6 gap-y-3">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-label">
+            <Link href="/" className="font-semibold text-ink">
               Walter
             </Link>
-            <p className="text-label text-ink-faint mt-2 leading-[1.55]">
-              The world is wasted on people who stay home.
-            </p>
+            {LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-ink-soft hover:text-ink transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
           </div>
-          <div className="flex flex-wrap gap-x-8 gap-y-6 sm:gap-10 text-label">
-            <div className="flex flex-col gap-2">
-              <span className="text-ink-faint font-medium">Product</span>
-              <Link href="/" className="text-ink-soft hover:text-ink transition-colors">Plan a trip</Link>
-              <Link href="/explore" className="text-ink-soft hover:text-ink transition-colors">Explore</Link>
-            </div>
-            <div className="flex flex-col gap-2">
-              <span className="text-ink-faint font-medium">Company</span>
-              <Link href="/about" className="text-ink-soft hover:text-ink transition-colors">About</Link>
-            </div>
-            <div className="flex flex-col gap-2">
-              <span className="text-ink-faint font-medium">Legal</span>
-              <Link href="/privacy" className="text-ink-soft hover:text-ink transition-colors">Privacy</Link>
-              <Link href="/terms" className="text-ink-soft hover:text-ink transition-colors">Terms</Link>
-            </div>
-          </div>
-        </div>
-        <div className="border-t border-line mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <AffiliateDisclosure />
-          <p className="text-[12px] text-ink-faint tabular-nums">
+          <p className="text-[12px] text-ink-faint tabular-nums shrink-0">
             &copy; {new Date().getFullYear()} Walter, Inc.
           </p>
+        </div>
+        <div className="mt-2">
+          <AffiliateDisclosure />
         </div>
       </div>
     </footer>

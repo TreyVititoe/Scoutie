@@ -1,7 +1,8 @@
 "use client";
 
 import type { ScoredEvent } from "@/lib/types";
-import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import { useTripCartStore, type CartItem } from "@/lib/stores/tripCartStore";
+import { affiliateUrl, trackAndOpen } from "@/lib/affiliate";
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return "Date TBD";
@@ -111,8 +112,29 @@ export default function EventCard({
                 </p>
                 <p className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold">per ticket</p>
               </>
+            ) : event.url ? (
+              <button
+                onClick={() => {
+                  const url = affiliateUrl({
+                    type: "event",
+                    bookingUrl: event.url,
+                  } as CartItem);
+                  if (url)
+                    trackAndOpen({
+                      provider: "ticketmaster",
+                      itemType: "event",
+                      destinationUrl: url,
+                    });
+                }}
+                className="text-sm font-semibold text-ink hover:text-accent inline-flex items-center gap-1 transition-colors"
+              >
+                View tickets
+                <span className="material-symbols-outlined text-[15px]" aria-hidden>
+                  arrow_outward
+                </span>
+              </button>
             ) : (
-              <p className="text-sm font-semibold text-ink">View tickets</p>
+              <p className="text-sm font-semibold text-ink-faint">Price at box office</p>
             )}
           </div>
           <button
