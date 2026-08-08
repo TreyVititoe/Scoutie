@@ -273,37 +273,61 @@ export default function LandingPage() {
           color up here; photography lives in the trip cards below. */}
       <section className="relative z-40">
         <div className="hero-radial bg-page-bg relative overflow-hidden pt-32 sm:pt-40 pb-24 sm:pb-28">
-          {/* Quiet decoration: a dashed flight path arcing under the type,
-              and thin waypoint rings drifting on the existing float cycle.
-              Whisper opacity, no fills; they stay wallpaper. */}
+          {/* Shape field: a slow weather system of blues drifting behind
+              the type. Soft blurred masses at the back, crisp geometry
+              (rings, diamonds, triangles, dots) in front of them. All
+              motion stops under prefers-reduced-motion. */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none select-none"
           >
-            <svg
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[46%] w-[1100px] max-w-none"
-              viewBox="0 0 1100 420"
-              fill="none"
-            >
-              <path
-                d="M40 330 C 320 120, 780 90, 1052 206"
-                stroke="oklch(0.65 0.135 263 / 0.22)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeDasharray="1 12"
-              />
-              <circle cx="40" cy="330" r="3.5" fill="oklch(0.65 0.135 263 / 0.35)" />
-              <circle cx="40" cy="330" r="9" stroke="oklch(0.65 0.135 263 / 0.18)" />
-              <g transform="translate(1056 208) rotate(23)">
-                <path
-                  d="M0 0 L-17 6.5 L-5 0 L-17 -6.5 Z"
-                  fill="oklch(0.65 0.135 263 / 0.4)"
-                />
-              </g>
+            {/* soft color masses */}
+            <div className="hero-drift-b absolute -left-24 top-[6%] w-96 h-96 rounded-full bg-[oklch(0.78_0.13_230_/_0.14)] blur-3xl" />
+            <div className="hero-drift-c absolute -right-20 top-[22%] w-[420px] h-[420px] rounded-full bg-[oklch(0.65_0.135_263_/_0.12)] blur-3xl" />
+            <div className="hero-drift-a absolute left-[34%] -bottom-32 w-[380px] h-[380px] rounded-full bg-[oklch(0.72_0.11_261_/_0.10)] blur-3xl" />
+
+            {/* rings */}
+            <div className="hero-drift-a absolute right-[8%] top-[14%] w-44 h-44 rounded-full border-2 border-[oklch(0.65_0.135_263_/_0.25)]" />
+            <div className="hero-drift-c absolute right-[15%] top-[34%] w-16 h-16 rounded-full border border-[oklch(0.72_0.11_261_/_0.35)]" style={{ animationDelay: "-7s" }} />
+            <div className="hero-drift-b absolute left-[7%] bottom-[16%] w-28 h-28 rounded-full border-2 border-[oklch(0.78_0.13_230_/_0.3)]" />
+            <div className="hero-spin-slow absolute left-[22%] top-[18%] w-24 h-24 rounded-full border-2 border-dashed border-[oklch(0.55_0.12_262_/_0.3)]" />
+            <div className="hero-drift-a absolute left-[4%] top-[38%] w-10 h-10 rounded-full border-[3px] border-[oklch(0.45_0.09_262_/_0.28)]" style={{ animationDelay: "-4s" }} />
+
+            {/* half ring */}
+            <div className="hero-spin-slower absolute right-[28%] top-[8%] w-20 h-20 rounded-full border-2 border-transparent border-t-[oklch(0.65_0.135_263_/_0.4)] border-r-[oklch(0.65_0.135_263_/_0.4)]" />
+
+            {/* diamonds and squares */}
+            <div className="hero-drift-c absolute left-[16%] bottom-[28%]">
+              <div className="hero-spin-slower w-12 h-12 border-2 border-[oklch(0.65_0.135_263_/_0.32)] rounded-[6px]" />
+            </div>
+            <div className="hero-drift-b absolute right-[6%] bottom-[18%]" style={{ animationDelay: "-9s" }}>
+              <div className="w-8 h-8 rotate-45 bg-[oklch(0.72_0.11_261_/_0.22)] rounded-[4px]" />
+            </div>
+            <div className="hero-drift-a absolute right-[38%] bottom-[10%]" style={{ animationDelay: "-11s" }}>
+              <div className="w-5 h-5 rotate-12 border-2 border-[oklch(0.78_0.13_230_/_0.4)] rounded-[3px]" />
+            </div>
+
+            {/* triangles */}
+            <svg className="hero-drift-b absolute left-[30%] top-[10%] w-9 h-9" viewBox="0 0 36 36" fill="none" style={{ animationDelay: "-5s" }}>
+              <path d="M18 4 L33 30 L3 30 Z" stroke="oklch(0.65 0.135 263 / 0.38)" strokeWidth="2" strokeLinejoin="round" />
             </svg>
-            <div className="absolute right-[7%] top-[16%] w-40 h-40 rounded-full border border-accent/15 float-anim hidden sm:block" />
-            <div className="absolute right-[13%] top-[30%] w-14 h-14 rounded-full border border-accent/10 float-anim-2 hidden sm:block" />
-            <div className="absolute left-[9%] bottom-[14%] w-24 h-24 rounded-full border border-[oklch(0.78_0.13_230_/_0.16)] float-anim-1 hidden md:block" />
+            <svg className="hero-drift-c absolute right-[22%] bottom-[30%] w-6 h-6 rotate-[24deg]" viewBox="0 0 36 36" fill="none" style={{ animationDelay: "-13s" }}>
+              <path d="M18 4 L33 30 L3 30 Z" fill="oklch(0.55 0.12 262 / 0.24)" />
+            </svg>
+
+            {/* plus signs */}
+            <svg className="hero-drift-a absolute left-[11%] top-[20%] w-6 h-6" viewBox="0 0 24 24" fill="none" style={{ animationDelay: "-2s" }}>
+              <path d="M12 3 V21 M3 12 H21" stroke="oklch(0.72 0.11 261 / 0.4)" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+            <svg className="hero-drift-b absolute right-[12%] top-[52%] w-4 h-4 rotate-[18deg]" viewBox="0 0 24 24" fill="none" style={{ animationDelay: "-15s" }}>
+              <path d="M12 3 V21 M3 12 H21" stroke="oklch(0.45 0.09 262 / 0.35)" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+
+            {/* dots */}
+            <div className="hero-drift-c absolute left-[42%] top-[24%] w-2.5 h-2.5 rounded-full bg-[oklch(0.65_0.135_263_/_0.45)]" style={{ animationDelay: "-3s" }} />
+            <div className="hero-drift-a absolute right-[32%] top-[40%] w-2 h-2 rounded-full bg-[oklch(0.78_0.13_230_/_0.5)]" style={{ animationDelay: "-8s" }} />
+            <div className="hero-drift-b absolute left-[26%] bottom-[12%] w-3 h-3 rounded-full bg-[oklch(0.55_0.12_262_/_0.35)]" style={{ animationDelay: "-6s" }} />
+            <div className="hero-drift-c absolute right-[44%] top-[12%] w-2 h-2 rounded-full bg-[oklch(0.72_0.11_261_/_0.4)]" style={{ animationDelay: "-17s" }} />
           </div>
           <div className="relative flex flex-col items-center text-center px-5">
             <motion.h1
