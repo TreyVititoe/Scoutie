@@ -1,5 +1,21 @@
 # Session changes - 2026-08-07
 
+## Landing + results polish (commits cb7dce7, 2796cbd, 4edeafd, d2b4ac2)
+
+- Footer condensed from three link columns plus a second tier to one
+  compact band: inline links, copyright, affiliate disclosure below.
+- Hero photo and frosted-glass panel removed ("too loud"); replaced
+  with the plain daylight field, then built up an animated shape field
+  behind the type: ~35 shapes in five shades of blue (blurred color
+  masses, rings, dashed/half rings, solid circles, diamonds, pills,
+  triangles, plus signs, dots) on three drift cycles plus two spin
+  speeds, all frozen under prefers-reduced-motion. Direction: "lots of
+  different shapes, all shades of blue, moving," with solid fills.
+- "View tickets" on priceless /results event cards was a styled <p>
+  pretending to be a button; now a real tracked affiliate link
+  (trackAndOpen + affiliateUrl) opening Ticketmaster in a new tab.
+  Events with no URL say "Price at box office."
+
 ## App Store: production build #2 built and uploaded to TestFlight
 
 - Root cause of the failed EAS build: apps/web resolved React 19.2.5 while
