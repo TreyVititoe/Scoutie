@@ -272,8 +272,40 @@ export default function LandingPage() {
       {/* Hero: plain daylight field. The cornflower radial is the only
           color up here; photography lives in the trip cards below. */}
       <section className="relative z-40">
-        <div className="hero-radial bg-page-bg pt-32 sm:pt-40 pb-24 sm:pb-28">
-          <div className="flex flex-col items-center text-center px-5">
+        <div className="hero-radial bg-page-bg relative overflow-hidden pt-32 sm:pt-40 pb-24 sm:pb-28">
+          {/* Quiet decoration: a dashed flight path arcing under the type,
+              and thin waypoint rings drifting on the existing float cycle.
+              Whisper opacity, no fills; they stay wallpaper. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none select-none"
+          >
+            <svg
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[46%] w-[1100px] max-w-none"
+              viewBox="0 0 1100 420"
+              fill="none"
+            >
+              <path
+                d="M40 330 C 320 120, 780 90, 1052 206"
+                stroke="oklch(0.65 0.135 263 / 0.22)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeDasharray="1 12"
+              />
+              <circle cx="40" cy="330" r="3.5" fill="oklch(0.65 0.135 263 / 0.35)" />
+              <circle cx="40" cy="330" r="9" stroke="oklch(0.65 0.135 263 / 0.18)" />
+              <g transform="translate(1056 208) rotate(23)">
+                <path
+                  d="M0 0 L-17 6.5 L-5 0 L-17 -6.5 Z"
+                  fill="oklch(0.65 0.135 263 / 0.4)"
+                />
+              </g>
+            </svg>
+            <div className="absolute right-[7%] top-[16%] w-40 h-40 rounded-full border border-accent/15 float-anim hidden sm:block" />
+            <div className="absolute right-[13%] top-[30%] w-14 h-14 rounded-full border border-accent/10 float-anim-2 hidden sm:block" />
+            <div className="absolute left-[9%] bottom-[14%] w-24 h-24 rounded-full border border-[oklch(0.78_0.13_230_/_0.16)] float-anim-1 hidden md:block" />
+          </div>
+          <div className="relative flex flex-col items-center text-center px-5">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
