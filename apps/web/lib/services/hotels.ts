@@ -82,10 +82,13 @@ async function getDestinationId(city: string): Promise<string | null> {
 export type StayType = "hotel" | "vacation_rental" | "hostel";
 
 /* Booking.com property-type facet ids: 204 hotels, 201 apartments,
- * 220 holiday homes, 222 villas, 203 hostels. */
+ * 220 holiday homes, 222 villas, 203 hostels. Facet 201 is deliberately
+ * NOT in vacation_rental: Booking files aparthotels and hotel-branded
+ * serviced apartments under it and ranks them first, so the page reads
+ * as all hotels. 220+222 alone return true Airbnb/VRBO-style homes. */
 const STAY_TYPE_FILTERS: Record<StayType, string> = {
   hotel: "property_type::204",
-  vacation_rental: "property_type::220,property_type::201,property_type::222",
+  vacation_rental: "property_type::220,property_type::222",
   hostel: "property_type::203",
 };
 
