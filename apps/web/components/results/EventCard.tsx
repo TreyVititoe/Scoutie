@@ -21,9 +21,11 @@ function formatTime(timeStr: string | null): string {
 export default function EventCard({
   event,
   featured = false,
+  travelers = 1,
 }: {
   event: ScoredEvent;
   featured?: boolean;
+  travelers?: number;
 }) {
   const addItem = useTripCartStore((s) => s.addItem);
   const removeItem = useTripCartStore((s) => s.removeItem);
@@ -33,12 +35,14 @@ export default function EventCard({
     if (added) {
       removeItem(event.id);
     } else {
+      /* Ticketmaster prices are per ticket; the cart carries what the whole
+       * group pays, matching flights and hotels. */
       addItem({
         id: event.id,
         type: "event",
         title: event.name,
-        subtitle: event.venueName,
-        price: event.priceMin,
+        subtitle: travelers > 1 ? `${event.venueName} · ${travelers} tickets` : event.venueName,
+        price: event.priceMin != null ? event.priceMin * travelers : event.priceMin,
         image: event.image,
         bookingUrl: event.url,
         provider: "ticketmaster",

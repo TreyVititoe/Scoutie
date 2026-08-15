@@ -585,7 +585,7 @@ export function SuggestionCard({
         <InfoRow icon="mappin">{suggestion.locationName}</InfoRow>
         <CardFooter
           amount={hasCost ? `$${suggestion.estimatedCost!.toLocaleString()}` : "Free or varies"}
-          caption={hasCost ? "estimated" : suggestion.bestTime || "anytime"}
+          caption={hasCost ? "est. per person" : suggestion.bestTime || "anytime"}
           added={added}
           onToggle={onToggle}
         />

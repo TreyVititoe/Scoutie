@@ -38,6 +38,7 @@ export default function ResultsScreen() {
   const [stayType, setStayType] = useState<StayType>("hotel");
   const destPhoto = prefs.destination ? api.photo.url(prefs.destination) : undefined;
 
+  const travelers = prefs.travelers ?? 2;
   const hasOrigin = !!(prefs.departureAirportCode || prefs.departureCity);
   /* Quick and Compare can land here dateless; every search needs dates, so
    * the screen prompts inline and holds the queries until they exist. */
@@ -279,12 +280,14 @@ export default function ResultsScreen() {
           onToggle={() => {
             if (cart.has(e.id)) return cart.remove(e.id);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            /* Ticketmaster prices are per ticket; the cart carries what the
+             * whole group pays, matching flights and hotels. */
             cart.add({
               id: e.id,
               type: "event",
               title: e.name,
-              subtitle: e.venueName,
-              price: e.priceMin ?? 0,
+              subtitle: travelers > 1 ? `${e.venueName} · ${travelers} tickets` : e.venueName,
+              price: (e.priceMin ?? 0) * travelers,
               image: e.image,
               bookingUrl: e.url ?? null,
               provider: "Ticketmaster",
@@ -319,12 +322,14 @@ export default function ResultsScreen() {
           onToggle={() => {
             if (cart.has(sug.id)) return cart.remove(sug.id);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            /* estimatedCost is per person by prompt contract; the cart
+             * carries what the whole group pays. */
             cart.add({
               id: sug.id,
               type: sug.type,
               title: sug.title,
-              subtitle: sug.locationName,
-              price: sug.estimatedCost ?? 0,
+              subtitle: travelers > 1 ? `${sug.locationName} · for ${travelers}` : sug.locationName,
+              price: (sug.estimatedCost ?? 0) * travelers,
               bookingUrl: `https://www.google.com/search?q=${encodeURIComponent(
                 sug.bookingSearchQuery || `${sug.title} ${sug.locationName}`
               )}`,
@@ -335,7 +340,7 @@ export default function ResultsScreen() {
       ));
     }
     return null;
-  }, [section, flights, hotels, events, suggestions, cart, stayType, hasOrigin, destPhoto]);
+  }, [section, flights, hotels, events, suggestions, cart, stayType, hasOrigin, destPhoto, travelers]);
 
   return (
     <View className="flex-1 bg-page-bg">

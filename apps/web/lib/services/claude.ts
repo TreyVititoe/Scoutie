@@ -23,6 +23,10 @@ CRITICAL OUTPUT RULES:
 RESPONSE FORMAT:
 {"trips":[{"tier":"budget","title":"...","summary":"...","destination":"...","totalEstimatedCost":0,"days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}
 
+PRICE BASIS (strict):
+- totalEstimatedCost = full trip cost in USD for ALL travelers combined: roundtrip flights + accommodation for every night + food + activities
+- each item's estimatedCost = per person in USD
+
 Generate EXACTLY 3 trips: budget, balanced, premium.`;
 
 type QuizData = {
@@ -344,7 +348,13 @@ CRITICAL OUTPUT RULES:
 - The ENTIRE response must be valid JSON — do not truncate
 
 RESPONSE FORMAT:
-{"trips":[{"destination":"City, Country","title":"...","summary":"One compelling sentence about why this trip","totalEstimatedCost":0,"flightEstimate":0,"hotelEstimatePerNight":0,"topEvents":["Event 1","Event 2","Event 3"],"highlights":["Highlight 1","Highlight 2","Highlight 3"],"bestTimeToVisit":"...","days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}`;
+{"trips":[{"destination":"City, Country","title":"...","summary":"One compelling sentence about why this trip","totalEstimatedCost":0,"flightEstimate":0,"hotelEstimatePerNight":0,"topEvents":["Event 1","Event 2","Event 3"],"highlights":["Highlight 1","Highlight 2","Highlight 3"],"bestTimeToVisit":"...","days":[{"dayNumber":1,"title":"...","items":[{"itemType":"activity","title":"...","description":"...","startTime":"09:00","estimatedCost":0,"locationName":"..."}]}]}]}
+
+PRICE BASIS (strict):
+- totalEstimatedCost = full trip cost in USD for ALL travelers combined: roundtrip flights + accommodation for every night + food + activities
+- flightEstimate = roundtrip flight cost in USD for ALL travelers combined
+- hotelEstimatePerNight = one room, one night, in USD
+- each item's estimatedCost = per person in USD`;
 
 export async function generateCompareTrips(quizData: QuizData) {
   const budget = quizData.budgetAmount || quizData.budget || 2000;

@@ -2,6 +2,21 @@
 
 Running log of work sessions. Newest entry first. Short summaries and key facts only.
 
+## 2026-08-15 — Pricing accuracy audit + fixes
+
+Trey reported inaccurate prices in app build 3. Audited every price path.
+
+**Verified correct (no change):**
+- Flights: SerpAPI Google Flights price is the roundtrip total for ALL passengers (tested live: $66 for 1 adult became $132 for 2). Both surfaces pass the traveler count. Cards say "Roundtrip total."
+- Hotels: cart stores the whole-stay total; card shows "per night · $X total."
+
+**Fixed (were undercounting group trips):**
+- Events: cart stored one ticket's price. Now stores priceMin x travelers, subtitle says "N tickets." Both surfaces.
+- AI suggestions: `estimatedCost` is per person by prompt contract but was added to the cart once. Now multiplied by travelers, subtitle says "for N." Card caption now reads "est. per person." Both surfaces.
+- AI trip estimates: the generate prompts never said whether `totalEstimatedCost` was per person or for the group, so Haiku picked a basis at random - this is the likely source of "inaccurate prices" on trip cards. Both prompts now pin a strict basis: totalEstimatedCost and flightEstimate = all travelers combined; hotelEstimatePerNight = one room one night; item estimatedCost = per person.
+
+**Build note: app build 3 still has the old client code.** The prompt fixes are server-side (live for the app after Vercel deploy), but the event/suggestion cart math is in the app bundle - it lands in the NEXT EAS build.
+
 ## 2026-08-15 — Vacation rentals fix + feature notes
 
 **Fixed: Vacation Rentals tab showed hotels.**

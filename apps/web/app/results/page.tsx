@@ -391,6 +391,11 @@ export default function ResultsPage() {
 
   const allEvents = [...events, ...(events.length < 3 ? similarEvents : []), ...topEvents];
 
+  const travelers = (() => {
+    const p = prefs as Record<string, unknown> | null;
+    return Number(p?.travelersCount) || Number(p?.travelers) || 1;
+  })();
+
   const heroImage = getDestinationImage(destination);
 
   const startDate = (prefs as { startDate?: string })?.startDate || "";
@@ -689,7 +694,7 @@ export default function ResultsPage() {
               {!eventsLoading && allEvents.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {allEvents.map((ev, i) => (
-                    <EventCard key={ev.id} event={ev} featured={i === 0 && events.length > 0} />
+                    <EventCard key={ev.id} event={ev} featured={i === 0 && events.length > 0} travelers={travelers} />
                   ))}
                 </div>
               )}
@@ -735,7 +740,7 @@ export default function ResultsPage() {
               {!suggestionsLoading && !suggestionsError && suggestions.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {suggestions.map((s) => (
-                    <SuggestionCard key={s.id} suggestion={s} />
+                    <SuggestionCard key={s.id} suggestion={s} travelers={travelers} />
                   ))}
                 </div>
               )}

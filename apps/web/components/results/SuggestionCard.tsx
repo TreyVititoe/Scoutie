@@ -9,7 +9,13 @@ const typeIcons: Record<string, string> = {
   site: "location_on",
 };
 
-export default function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
+export default function SuggestionCard({
+  suggestion,
+  travelers = 1,
+}: {
+  suggestion: Suggestion;
+  travelers?: number;
+}) {
   const addItem = useTripCartStore((s) => s.addItem);
   const removeItem = useTripCartStore((s) => s.removeItem);
   const added = useTripCartStore((s) => s.items.some((i) => i.id === suggestion.id));
@@ -20,12 +26,14 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
     if (added) {
       removeItem(suggestion.id);
     } else {
+      /* estimatedCost is per person by prompt contract; the cart carries
+       * what the whole group pays, matching flights and hotels. */
       addItem({
         id: suggestion.id,
         type: suggestion.type,
         title: suggestion.title,
-        subtitle: suggestion.locationName,
-        price: suggestion.estimatedCost,
+        subtitle: travelers > 1 ? `${suggestion.locationName} · for ${travelers}` : suggestion.locationName,
+        price: suggestion.estimatedCost != null ? suggestion.estimatedCost * travelers : suggestion.estimatedCost,
         image: null,
         bookingUrl: `https://www.google.com/search?q=${encodeURIComponent(suggestion.title + " " + suggestion.locationName + " book")}`,
         provider: "Google",
@@ -66,7 +74,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
               <p className="font-semibold text-ink text-[21px]">
                 ${suggestion.estimatedCost}
               </p>
-              <p className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold">estimated</p>
+              <p className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold">est. per person</p>
             </>
           ) : (
             <p className="text-sm font-semibold text-ink-soft">Free or varies</p>
