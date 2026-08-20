@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -213,17 +214,34 @@ export function WalterChat() {
       }
     }
     if (data.openSaved) {
+      /* Best match wins: exact name, then name prefix, then loose includes.
+       * The old both-ways includes() happily grabbed an ancient "New York"
+       * trip; loose matches now also prefer trips that actually have items. */
       const wanted = data.openSaved.toLowerCase();
-      const trip = useSavedTripsStore
-        .getState()
-        .trips.find(
-          (t) =>
-            t.name.toLowerCase().includes(wanted) ||
-            wanted.includes(t.name.toLowerCase()) ||
-            t.destination.toLowerCase().includes(wanted)
-        );
+      const score = (t: { name: string; destination: string; items: unknown[] }) => {
+        const name = t.name.toLowerCase();
+        const dest = t.destination.toLowerCase();
+        let s = 0;
+        if (name === wanted) s = 40;
+        else if (name.startsWith(wanted) || wanted.startsWith(name)) s = 30;
+        else if (name.includes(wanted) || wanted.includes(name)) s = 20;
+        else if (dest.includes(wanted) || wanted.includes(dest)) s = 10;
+        if (s > 0 && t.items.length > 0) s += 5;
+        return s;
+      };
+      type SavedTrip = ReturnType<
+        typeof useSavedTripsStore.getState
+      >["trips"][number];
+      let trip: SavedTrip | null = null;
+      let bestScore = 0;
+      for (const t of useSavedTripsStore.getState().trips) {
+        const s = score(t);
+        if (s > bestScore) {
+          trip = t;
+          bestScore = s;
+        }
+      }
       if (trip) {
-        useTripCartStore.setState({ items: trip.items, bookedIds: [] });
         try {
           localStorage.removeItem("walter_trip");
         } catch {}
@@ -234,7 +252,15 @@ export function WalterChat() {
           travelers: trip.travelers ?? 2,
         });
         setOpen(false);
-        router.push("/trip");
+        if (trip.items.length > 0) {
+          /* A built-out trip: restore its cart and show it. */
+          useTripCartStore.setState({ items: trip.items, bookedIds: [] });
+          router.push("/trip");
+        } else {
+          /* Saved from prefs only: an empty /trip cart helps nobody.
+           * Reopen the planner so the searches run again. */
+          router.push("/results");
+        }
       }
     }
     if (data.trip) return data.trip;
@@ -303,18 +329,36 @@ export function WalterChat() {
     <>
       {open ? (
         <div className="fixed bottom-24 right-4 z-50 flex h-[min(600px,calc(100dvh-8rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-line bg-card shadow-[0_24px_64px_-16px_rgba(20,30,60,0.35)]">
-          <div className="border-b border-line px-5 py-4">
-            <p className="text-[17px] font-semibold text-ink">Walter</p>
-            <p className="mt-0.5 text-[12px] text-ink-soft">
-              Your travel concierge. Ask him anything.
-            </p>
+          <div className="flex items-center gap-3 border-b border-line px-5 py-4">
+            <Image
+              src="/walter-face.png"
+              alt=""
+              width={40}
+              height={40}
+              className="h-10 w-10 shrink-0 rounded-full"
+            />
+            <div>
+              <p className="text-[17px] font-semibold text-ink">Walter</p>
+              <p className="mt-0.5 text-[12px] text-ink-soft">
+                Your travel concierge. Ask him anything.
+              </p>
+            </div>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4">
             {messages.length === 0 ? (
               <div>
-                <div className="max-w-[88%] rounded-2xl bg-[#E9E9EB] px-4 py-3 text-[14px] leading-relaxed text-ink">
-                  <Boldable text="Where are we headed? Tell me a **place**, a **month**, or just a mood — I will take it from there." />
+                <div className="flex items-end gap-2">
+                  <Image
+                    src="/walter-face.png"
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="h-7 w-7 shrink-0 rounded-full"
+                  />
+                  <div className="max-w-[82%] rounded-2xl bg-[#E9E9EB] px-4 py-3 text-[14px] leading-relaxed text-ink">
+                    <Boldable text="Where are we headed? Tell me a **place**, a **month**, or just a mood — I will take it from there." />
+                  </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {OPENERS.map((o) => (
@@ -332,20 +376,29 @@ export function WalterChat() {
             ) : (
               messages.map((m) => (
                 <div key={m.id} className="mb-3">
-                  <div
-                    className={
-                      m.role === "user"
-                        ? "ml-auto max-w-[88%] rounded-2xl bg-accent px-4 py-3 text-[14px] leading-relaxed text-white"
-                        : "max-w-[88%] rounded-2xl bg-[#E9E9EB] px-4 py-3 text-[14px] leading-relaxed text-ink"
-                    }
-                  >
-                    <Boldable text={m.content} />
-                  </div>
+                  {m.role === "user" ? (
+                    <div className="ml-auto max-w-[88%] rounded-2xl bg-accent px-4 py-3 text-[14px] leading-relaxed text-white">
+                      <Boldable text={m.content} />
+                    </div>
+                  ) : (
+                    <div className="flex items-end gap-2">
+                      <Image
+                        src="/walter-face.png"
+                        alt=""
+                        width={28}
+                        height={28}
+                        className="h-7 w-7 shrink-0 rounded-full"
+                      />
+                      <div className="max-w-[82%] rounded-2xl bg-[#E9E9EB] px-4 py-3 text-[14px] leading-relaxed text-ink">
+                        <Boldable text={m.content} />
+                      </div>
+                    </div>
+                  )}
                   <button
                     type="button"
                     onClick={() => void copy(m.id, plainText(m.content))}
                     className={`mt-1 text-[11px] font-medium text-ink-faint transition hover:text-ink ${
-                      m.role === "user" ? "ml-auto block text-right" : ""
+                      m.role === "user" ? "ml-auto block text-right" : "ml-9"
                     }`}
                   >
                     {copiedKey === m.id ? "Copied" : "Copy"}
@@ -444,9 +497,18 @@ export function WalterChat() {
               ))
             )}
             {busy ? (
-              <div className="inline-flex items-center gap-2 rounded-2xl bg-[#E9E9EB] px-4 py-2.5 text-[12px] text-ink-soft">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
-                Walter is thinking
+              <div className="flex items-end gap-2">
+                <Image
+                  src="/walter-face.png"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 shrink-0 rounded-full"
+                />
+                <div className="inline-flex items-center gap-2 rounded-2xl bg-[#E9E9EB] px-4 py-2.5 text-[12px] text-ink-soft">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
+                  Walter is thinking
+                </div>
               </div>
             ) : null}
             {error ? (
@@ -495,7 +557,7 @@ export function WalterChat() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close chat with Walter" : "Chat with Walter"}
-        className="fixed bottom-5 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#404042] text-white shadow-[0_16px_40px_-12px_rgba(20,30,60,0.5)] transition hover:scale-105"
+        className="fixed bottom-5 right-4 z-50 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#404042] text-white shadow-[0_16px_40px_-12px_rgba(20,30,60,0.5)] transition hover:scale-105"
       >
         {open ? (
           <svg
@@ -509,13 +571,13 @@ export function WalterChat() {
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
         ) : (
-          <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-6 w-6"
-          >
-            <path d="M12 3C6.99 3 3 6.58 3 11c0 2.2 1.02 4.19 2.68 5.64-.15 1.05-.6 2.14-1.51 3.04a.5.5 0 0 0 .33.86c1.9.09 3.49-.5 4.66-1.24.9.26 1.86.4 2.84.4 5.01 0 9-3.58 9-8s-3.99-8-9-8Z" />
-          </svg>
+          <Image
+            src="/walter-face.png"
+            alt=""
+            width={56}
+            height={56}
+            className="h-full w-full rounded-full object-cover"
+          />
         )}
       </button>
     </>

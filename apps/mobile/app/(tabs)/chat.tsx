@@ -469,16 +469,23 @@ export default function ChatScreen() {
         style={{ paddingTop: insets.top + 10 }}
       >
         <View className="flex-row items-end justify-between">
-          <View>
-            <Text
-              className="text-ink font-semibold"
-              style={{ fontSize: 28, letterSpacing: -0.3 }}
-            >
-              Walter
-            </Text>
-            <Text className="text-ink-soft text-[13px] mt-0.5">
-              Your travel concierge. Ask him anything.
-            </Text>
+          <View className="flex-row items-center gap-3">
+            <Image
+              source={require("../../assets/walter-face.png")}
+              style={{ width: 46, height: 46, borderRadius: 23 }}
+              contentFit="cover"
+            />
+            <View>
+              <Text
+                className="text-ink font-semibold"
+                style={{ fontSize: 28, letterSpacing: -0.3 }}
+              >
+                Walter
+              </Text>
+              <Text className="text-ink-soft text-[13px] mt-0.5">
+                Your travel concierge. Ask him anything.
+              </Text>
+            </View>
           </View>
           {/* Little conversation tabs: one dot per chat, plus a new-chat + */}
           <View className="flex-row items-center gap-1.5 pb-1">
@@ -537,16 +544,23 @@ export default function ChatScreen() {
         <Pressable onPress={Keyboard.dismiss} accessible={false}>
         {messages.length === 0 ? (
           <View>
-            <View
-              className="rounded-2xl p-4 self-start"
-              style={{ maxWidth: "88%", backgroundColor: WALTER_BUBBLE }}
-            >
-              <BoldableText
-                color={colors.text}
-                text={
-                  "Where are we headed? Tell me a **place**, a **month**, or just a mood — I will take it from there. When the trip sounds right, I will put the whole thing together for you."
-                }
+            <View className="flex-row items-end gap-2">
+              <Image
+                source={require("../../assets/walter-face.png")}
+                style={{ width: 26, height: 26, borderRadius: 13 }}
+                contentFit="cover"
               />
+              <View
+                className="rounded-2xl p-4"
+                style={{ maxWidth: "82%", backgroundColor: WALTER_BUBBLE }}
+              >
+                <BoldableText
+                  color={colors.text}
+                  text={
+                    "Where are we headed? Tell me a **place**, a **month**, or just a mood — I will take it from there. When the trip sounds right, I will put the whole thing together for you."
+                  }
+                />
+              </View>
             </View>
             <View className="flex-row flex-wrap gap-2 mt-4">
               {OPENERS.map((o) => (
@@ -563,29 +577,43 @@ export default function ChatScreen() {
         ) : (
           messages.map((m) => (
             <View key={m.id} className="mb-3">
-              <Pressable
-                onPress={Keyboard.dismiss}
-                onLongPress={() => void copyMessage(m)}
-                delayLongPress={350}
-                accessibilityHint="Long press to copy this message"
-                className="rounded-2xl p-3.5"
+              <View
+                className="flex-row items-end gap-2"
                 style={{
-                  maxWidth: "88%",
                   alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-                  backgroundColor:
-                    m.role === "user" ? colors.accent : WALTER_BUBBLE,
+                  maxWidth: "88%",
                 }}
               >
-                <BoldableText
-                  color={m.role === "user" ? "#FFFFFF" : colors.text}
-                  text={m.content}
-                />
-              </Pressable>
+                {m.role === "assistant" ? (
+                  <Image
+                    source={require("../../assets/walter-face.png")}
+                    style={{ width: 26, height: 26, borderRadius: 13 }}
+                    contentFit="cover"
+                  />
+                ) : null}
+                <Pressable
+                  onPress={Keyboard.dismiss}
+                  onLongPress={() => void copyMessage(m)}
+                  delayLongPress={350}
+                  accessibilityHint="Long press to copy this message"
+                  className="rounded-2xl p-3.5 shrink"
+                  style={{
+                    backgroundColor:
+                      m.role === "user" ? colors.accent : WALTER_BUBBLE,
+                  }}
+                >
+                  <BoldableText
+                    color={m.role === "user" ? "#FFFFFF" : colors.text}
+                    text={m.content}
+                  />
+                </Pressable>
+              </View>
               {copiedId === m.id ? (
                 <Text
                   className="text-ink-soft text-[11px] mt-1"
                   style={{
                     alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+                    marginLeft: m.role === "user" ? 0 : 34,
                   }}
                 >
                   Copied
@@ -596,14 +624,21 @@ export default function ChatScreen() {
           ))
         )}
         {busy ? (
-          <View
-            className="rounded-2xl px-4 py-3 self-start flex-row items-center gap-2.5"
-            style={{ backgroundColor: WALTER_BUBBLE }}
-          >
-            <ActivityIndicator size="small" color={colors.textTertiary} />
-            <Text className="text-ink-soft text-[13px]">
-              Walter is thinking
-            </Text>
+          <View className="flex-row items-end gap-2 self-start">
+            <Image
+              source={require("../../assets/walter-face.png")}
+              style={{ width: 26, height: 26, borderRadius: 13 }}
+              contentFit="cover"
+            />
+            <View
+              className="rounded-2xl px-4 py-3 flex-row items-center gap-2.5"
+              style={{ backgroundColor: WALTER_BUBBLE }}
+            >
+              <ActivityIndicator size="small" color={colors.textTertiary} />
+              <Text className="text-ink-soft text-[13px]">
+                Walter is thinking
+              </Text>
+            </View>
           </View>
         ) : null}
         {error ? (
