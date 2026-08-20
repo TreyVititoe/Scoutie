@@ -47,6 +47,7 @@ function buildChatContext() {
     "description",
     "departureCity",
     "departureAirportCode",
+    "legs",
   ] as const) {
     const v = p[key];
     if (v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0)) {
@@ -89,6 +90,7 @@ function applyChatActions(result: ChatResult) {
         description: result.builtTrip.description ?? "",
         departureCity: result.builtTrip.departureCity ?? "",
         departureAirportCode: result.builtTrip.departureAirportCode ?? "",
+        legs: result.builtTrip.legs ?? [],
       });
     }
     useTripCart.setState({
@@ -241,7 +243,15 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
         )
       : null;
 
-  const facts: { icon: string; label: string; value: string }[] = [
+  const facts: { icon: string; label: string; value: string }[] = [];
+  if (trip.legs && trip.legs.length >= 2) {
+    facts.push({
+      icon: "map",
+      label: "Stops",
+      value: trip.legs.map((l) => l.destination.split(",")[0]).join(" to "),
+    });
+  }
+  facts.push(
     {
       icon: "calendar",
       label: "When",
@@ -255,8 +265,8 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
       label: "Who",
       value:
         (trip.travelers ?? 0) > 1 ? `${trip.travelers} travelers` : "Solo trip",
-    },
-  ];
+    }
+  );
   if (trip.departureCity || trip.departureAirportCode) {
     facts.push({
       icon: "airplane.departure",
@@ -296,6 +306,7 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
       description: trip.description ?? "",
       departureCity: trip.departureCity ?? "",
       departureAirportCode: trip.departureAirportCode ?? "",
+      legs: trip.legs ?? [],
     });
     router.push("/results");
   };

@@ -18,6 +18,7 @@ type ChatTrip = {
   description?: string;
   departureCity?: string;
   departureAirportCode?: string;
+  legs?: { destination: string; startDate?: string; endDate?: string }[];
 } | null;
 
 type Message = {
@@ -52,6 +53,7 @@ function buildChatContext() {
     "description",
     "departureCity",
     "departureAirportCode",
+    "legs",
   ]) {
     const v = p[key];
     if (v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0)) {
@@ -179,6 +181,7 @@ export function WalterChat() {
       description: trip.description ?? "",
       departureCity: trip.departureCity ?? "",
       departureAirportCode: trip.departureAirportCode ?? "",
+      legs: trip.legs ?? [],
     });
     setOpen(false);
     router.push("/results");
@@ -210,6 +213,7 @@ export function WalterChat() {
           description: data.builtTrip.description ?? "",
           departureCity: data.builtTrip.departureCity ?? "",
           departureAirportCode: data.builtTrip.departureAirportCode ?? "",
+          legs: data.builtTrip.legs ?? [],
         });
       }
       useTripCartStore.setState({ items: data.cartItems, bookedIds: [] });
@@ -450,6 +454,16 @@ export function WalterChat() {
                         </div>
                       </div>
                       <div className="space-y-1 px-4 py-3 text-[12px]">
+                        {m.trip.legs && m.trip.legs.length >= 2 ? (
+                          <p className="text-ink">
+                            <span className="mr-2 font-semibold text-ink-soft">Stops</span>
+                            <span className="font-medium">
+                              {m.trip.legs
+                                .map((l) => l.destination.split(",")[0])
+                                .join(" to ")}
+                            </span>
+                          </p>
+                        ) : null}
                         <p className="text-ink">
                           <span className="mr-2 font-semibold text-ink-soft">When</span>
                           <span className="font-medium">

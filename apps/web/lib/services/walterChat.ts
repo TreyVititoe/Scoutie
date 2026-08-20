@@ -20,6 +20,7 @@ WHAT WALTER CAN DO IN THE APP:
 - The app builds real trips: live flights, hotels, events, and curated activities, gathered into one cart the traveler books through each provider's own site.
 - A TRAVELER CONTEXT block may follow this prompt with their current trip plan, their cart (each item flagged booked or not), and their saved trips. That is your working memory: answer questions about it directly ("what do I have saved?", "what's left to book?") and act on it with your tools. Reference items by name naturally.
 - NEW TRIP: when the conversation produces a concrete, plannable trip, call propose_trip with your best structured version. Fill in sensible specifics for anything unstated rather than interrogating; one short clarifying question is fine when the trip is genuinely ambiguous.
+- MULTI-CITY TRIPS: most real trips visit more than one place. When the traveler wants several stops (Rome then Florence, an island hop, a coast drive), fill the legs array with 2 to 5 ordered stops and give each its stay window; still set destination/startDate/endDate to the first leg and the overall window. Suggest a sensible split when they name places without nights.
 - BUILD THE WHOLE CART: ONLY when the traveler explicitly asks you to add the items yourself ("build it for me", "add it all to my cart", "put the whole thing together", "book it up"), call build_trip_cart. The app then runs the real searches, adds your picks (a flight, a stay, a couple of events) to their cart, and opens it. If they merely described a trip without asking you to fill the cart, use propose_trip instead and let them add items themselves. Never call build_trip_cart unprompted.
 - CHANGE THE CURRENT TRIP: when they want to shift dates, add travelers, change destination or budget on the trip already in progress, call update_trip with ONLY the changed fields, and confirm what changed in your reply.
 - MANAGE THEIR CART: when they booked something, want something dropped, or ask to un-mark an item, call manage_cart with one operation per item, matching by the item's name.
@@ -58,6 +59,23 @@ const tripFields = {
     type: "string",
     description:
       "Free-text preferences that matter to this traveler, including airline or hotel-brand preferences",
+  },
+  legs: {
+    type: "array",
+    description:
+      "Multi-city trips only: 2 to 5 ordered stops, each with its own stay window. Consecutive legs should share a boundary date (Rome ends the day Florence starts). Omit for single-city trips.",
+    items: {
+      type: "object",
+      properties: {
+        destination: {
+          type: "string",
+          description: "City and country/state for this stop",
+        },
+        startDate: { type: "string", description: "YYYY-MM-DD arrival" },
+        endDate: { type: "string", description: "YYYY-MM-DD departure" },
+      },
+      required: ["destination"],
+    },
   },
 } as const;
 
@@ -400,6 +418,32 @@ function cleanTrip(
   }
   if (typeof input.description === "string" && input.description.trim()) {
     trip.description = input.description.trim().slice(0, 500);
+  }
+
+  if (Array.isArray(input.legs)) {
+    const legs = input.legs
+      .slice(0, 5)
+      .map((raw) => {
+        if (!raw || typeof raw !== "object") return null;
+        const { destination: d, startDate: s, endDate: e } = raw as Record<string, unknown>;
+        if (typeof d !== "string" || !d.trim()) return null;
+        return {
+          destination: d.trim().slice(0, 120),
+          startDate: typeof s === "string" && iso.test(s) ? s : undefined,
+          endDate: typeof e === "string" && iso.test(e) ? e : undefined,
+        };
+      })
+      .filter((l): l is NonNullable<typeof l> => l !== null);
+    if (legs.length >= 2) {
+      trip.legs = legs;
+      /* The first leg is the trip single-city code sees. */
+      trip.destination = legs[0].destination;
+      if (legs[0].startDate) trip.startDate = legs[0].startDate;
+      const lastEnd = legs[legs.length - 1].endDate;
+      if (lastEnd && trip.startDate && lastEnd > trip.startDate) {
+        trip.endDate = lastEnd;
+      }
+    }
   }
 
   return Object.keys(trip).length ? trip : null;

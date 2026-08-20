@@ -69,6 +69,18 @@ type ChosenTrip = {
   tier: string;
 };
 
+type TripLeg = { destination: string; startDate?: string; endDate?: string };
+
+/* Stale legs from an earlier multi-city chat must not poison a new
+ * single-city search: legs only count when the first leg is the trip's
+ * current destination (the chat always mirrors them). */
+function activeLegs(prefs: Record<string, unknown> | null, destination: string): TripLeg[] {
+  const legs = Array.isArray(prefs?.legs) ? (prefs!.legs as TripLeg[]) : [];
+  if (legs.length < 2) return [];
+  if (!legs[0]?.destination || legs[0].destination !== destination) return [];
+  return legs.filter((l) => l && typeof l.destination === "string");
+}
+
 /* Rejects on transport failure, HTTP error, or an error field in the body --
  * some routes still answer 200 with {error}. Without this every failure
  * arrived as an empty array and rendered as "nothing found". */
@@ -111,6 +123,24 @@ export default function ResultsPage() {
     useState<PickFilters>(defaultPickFilters);
   /* Geocoded city center backs the distance filters. */
   const [center, setCenter] = useState<LatLng | null>(null);
+  /* Multi-city trips: which stop is showing. legs.length = the flight home. */
+  const [activeLeg, setActiveLeg] = useState(0);
+
+  const switchLeg = (i: number) => {
+    if (i === activeLeg) return;
+    setActiveLeg(i);
+    setFlights([]);
+    setHotels([]);
+    setEvents([]);
+    setSimilarEvents([]);
+    setTopEvents([]);
+    setSuggestions([]);
+    setFlightsLoading(true);
+    setHotelsLoading(true);
+    setEventsLoading(true);
+    setSuggestionsLoading(true);
+    clearErrors();
+  };
   /* A failed search must not read as "nothing found" -- each panel tracks its
    * own failure so it can offer a retry instead of a confident empty state. */
   const [flightsError, setFlightsError] = useState(false);
@@ -194,12 +224,40 @@ export default function ResultsPage() {
     setPrefs(quizData);
     setPageReady(true);
 
-    const destination = chosenTrip?.destination || quizData.destinations?.[0] || quizData.destination || "";
+    let destination = chosenTrip?.destination || quizData.destinations?.[0] || quizData.destination || "";
     const departureCity = quizData.departureCity || "";
-    const startDate = quizData.startDate || "";
-    const endDate = quizData.endDate || "";
+    let startDate = quizData.startDate || "";
+    let endDate = quizData.endDate || "";
     const adults = quizData.travelersCount || quizData.travelers || 1;
     const cabinClass = quizData.flightClass || "economy";
+
+    /* Multi-city: swap the search window to the active stop; the flight
+     * search becomes the one-way hop INTO that stop (or home after the
+     * last one). */
+    const legs = activeLegs(quizData, destination);
+    const multi = legs.length >= 2;
+    const returnLeg = multi && activeLeg >= legs.length;
+    let flightOrigin = departureCity;
+    let flightDest = destination;
+    let oneWay = false;
+    if (multi) {
+      oneWay = true;
+      if (returnLeg) {
+        flightOrigin = legs[legs.length - 1].destination;
+        flightDest = departureCity;
+        startDate = legs[legs.length - 1].endDate || endDate;
+        endDate = startDate;
+        destination = departureCity;
+      } else {
+        const leg = legs[Math.min(activeLeg, legs.length - 1)];
+        destination = leg.destination;
+        flightDest = leg.destination;
+        startDate = leg.startDate || startDate;
+        endDate = leg.endDate || endDate;
+        flightOrigin =
+          activeLeg === 0 ? departureCity : legs[activeLeg - 1].destination;
+      }
+    }
 
     const suggestionsController = new AbortController();
     const flightsController = new AbortController();
@@ -210,7 +268,7 @@ export default function ResultsPage() {
     const hotelsTimeout = setTimeout(() => hotelsController.abort(), 15000);
     const eventsTimeout = setTimeout(() => eventsController.abort(), 30000);
 
-    if (destination) {
+    if (destination && !returnLeg) {
       fetchJson("/api/suggestions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -244,11 +302,11 @@ export default function ResultsPage() {
       setSuggestionsLoading(false);
     }
 
-    if (departureCity && destination && startDate && endDate) {
+    if (flightOrigin && flightDest && startDate && (oneWay || endDate)) {
       fetchJson("/api/flights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ origin: departureCity, destination, departDate: startDate, returnDate: endDate, adults, cabinClass }),
+        body: JSON.stringify({ origin: flightOrigin, destination: flightDest, departDate: startDate, returnDate: endDate, adults, cabinClass, oneWay }),
         signal: flightsController.signal,
       })
         .then((data) => {
@@ -270,7 +328,7 @@ export default function ResultsPage() {
       setFlightsLoading(false);
     }
 
-    if (destination && startDate && endDate && !quizData.noAccommodation) {
+    if (destination && startDate && endDate && !quizData.noAccommodation && !returnLeg) {
       fetchJson("/api/hotels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -297,7 +355,7 @@ export default function ResultsPage() {
       setHotelsLoading(false);
     }
 
-    if (destination && startDate && endDate) {
+    if (destination && startDate && endDate && !returnLeg) {
       fetchJson("/api/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -343,7 +401,8 @@ export default function ResultsPage() {
       hotelsController.abort();
       eventsController.abort();
     };
-  }, [router, fetchKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, fetchKey, activeLeg]);
 
   /* Stay-type switches refetch hotels only; the other searches stand. */
   useEffect(() => {
@@ -398,11 +457,21 @@ export default function ResultsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stayType]);
 
-  const destination =
+  const baseDestination =
     trip?.destination ||
     (prefs as { destinations?: string[] })?.destinations?.[0] ||
     (prefs as { destination?: string })?.destination ||
     "your destination";
+  const legs = activeLegs(prefs as Record<string, unknown> | null, baseDestination);
+  const multi = legs.length >= 2;
+  const departureCityRender =
+    (prefs as { departureCity?: string })?.departureCity || "";
+  const returnLeg = multi && activeLeg >= legs.length;
+  const destination = multi
+    ? returnLeg
+      ? departureCityRender || baseDestination
+      : legs[Math.min(activeLeg, legs.length - 1)].destination
+    : baseDestination;
 
   /* City center for the distance filters. Best effort: filters that need
    * it simply stay inert until it resolves. */
@@ -502,9 +571,13 @@ export default function ResultsPage() {
               transition={{ duration: 0.5, ease: EASE }}
               className="text-ink-faint text-[11px] uppercase tracking-[2.5px] font-medium mb-3"
             >
-              {trip
-                ? [trip.destination, tripWindow || `${trip.days} days`].join("  |  ")
-                : tripWindow || "Your trip"}
+              {multi
+                ? returnLeg
+                  ? "The flight home"
+                  : `Stop ${activeLeg + 1} of ${legs.length}${tripWindow ? `  |  ${tripWindow}` : ""}`
+                : trip
+                  ? [trip.destination, tripWindow || `${trip.days} days`].join("  |  ")
+                  : tripWindow || "Your trip"}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -512,7 +585,7 @@ export default function ResultsPage() {
               transition={{ delay: 0.05, duration: 0.7, ease: EASE }}
               className="text-ink text-[36px] sm:text-[48px] font-semibold tracking-display leading-[1.02] mb-3 max-w-[20ch]"
             >
-              {trip?.title || destination}
+              {multi ? destination : trip?.title || destination}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -545,6 +618,50 @@ export default function ResultsPage() {
       <div className="max-w-content mx-auto px-5 lg:px-8 pt-10">
         <AiItineraryBanner />
       </div>
+
+      {/* Multi-city stop switcher */}
+      {multi && (
+        <div className="max-w-content mx-auto px-5 lg:px-8 pt-6">
+          <div className="flex items-center gap-2 flex-wrap">
+            {legs.map((l, i) => (
+              <button
+                key={`${l.destination}-${i}`}
+                type="button"
+                onClick={() => switchLeg(i)}
+                aria-pressed={activeLeg === i}
+                className={`px-4 py-2 rounded-pill text-label font-semibold border transition-colors ${
+                  activeLeg === i
+                    ? "bg-ink text-snow-off-glacier border-ink"
+                    : "border-line text-ink-soft hover:text-ink hover:border-ink/40"
+                }`}
+              >
+                {i + 1} · {l.destination.split(",")[0]}
+              </button>
+            ))}
+            {departureCityRender && (
+              <button
+                type="button"
+                onClick={() => switchLeg(legs.length)}
+                aria-pressed={returnLeg}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-pill text-label font-semibold border transition-colors ${
+                  returnLeg
+                    ? "bg-ink text-snow-off-glacier border-ink"
+                    : "border-line text-ink-soft hover:text-ink hover:border-ink/40"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[15px]">flight_land</span>
+                Flight home
+              </button>
+            )}
+          </div>
+          {returnLeg && (
+            <p className="text-ink-faint text-xs mt-2">
+              This stop is just the flight home. Stays and events live on the
+              city stops.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Flat tab bar */}
       <div className="sticky top-[56px] z-20 bg-page-bg/85 backdrop-blur-md border-y border-line">

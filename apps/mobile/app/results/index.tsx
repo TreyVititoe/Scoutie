@@ -65,62 +65,92 @@ export default function ResultsScreen() {
   const destPhoto = prefs.destination ? api.photo.url(prefs.destination) : undefined;
 
   const travelers = prefs.travelers ?? 2;
-  const hasOrigin = !!(prefs.departureAirportCode || prefs.departureCity);
   /* Quick and Compare can land here dateless; every search needs dates, so
    * the screen prompts inline and holds the queries until they exist. */
   const hasDates = !!(prefs.startDate && prefs.endDate);
+
+  /* Multi-city trips: legs only count when they match the current trip
+   * (stale legs from an old chat must not poison a new search). */
+  const legsAll = prefs.legs ?? [];
+  const legs =
+    legsAll.length >= 2 && legsAll[0]?.destination === prefs.destination
+      ? legsAll
+      : [];
+  const multi = legs.length >= 2;
+  const [activeLeg, setActiveLeg] = useState(0);
+  const returnLeg = multi && activeLeg >= legs.length;
+  const curLeg =
+    multi && !returnLeg ? legs[Math.min(activeLeg, legs.length - 1)] : null;
+  const effDestination = returnLeg
+    ? (prefs.departureCity ?? "")
+    : (curLeg?.destination ?? prefs.destination ?? "");
+  const effStart = returnLeg
+    ? (legs[legs.length - 1]?.endDate ?? prefs.endDate ?? "")
+    : (curLeg?.startDate ?? prefs.startDate ?? "");
+  const effEnd = returnLeg ? effStart : (curLeg?.endDate ?? prefs.endDate ?? "");
+  const flightOrigin = multi
+    ? returnLeg
+      ? legs[legs.length - 1].destination
+      : activeLeg === 0
+        ? prefs.departureAirportCode || prefs.departureCity || ""
+        : legs[activeLeg - 1].destination
+    : prefs.departureAirportCode || prefs.departureCity || "";
+  const oneWay = multi;
+  const hasOrigin = !!flightOrigin;
+
   const flights = useQuery({
-    queryKey: ["flights", prefs],
+    queryKey: ["flights", prefs, activeLeg],
     queryFn: () =>
       api.flights.search({
-        origin: prefs.departureAirportCode || prefs.departureCity || "",
-        destination: prefs.destination ?? "",
-        departDate: prefs.startDate ?? "",
-        returnDate: prefs.endDate ?? "",
+        origin: flightOrigin,
+        destination: effDestination,
+        departDate: effStart,
+        returnDate: effEnd,
         adults: prefs.travelers ?? 2,
+        oneWay,
       }),
-    enabled: hasOrigin && !!prefs.destination && hasDates,
+    enabled: hasOrigin && !!effDestination && (oneWay ? !!effStart : hasDates),
   });
 
   const hotels = useQuery({
-    queryKey: ["hotels", prefs, stayType],
+    queryKey: ["hotels", prefs, stayType, activeLeg],
     queryFn: () =>
       api.hotels.search({
-        destination: prefs.destination ?? "",
-        checkIn: prefs.startDate ?? "",
-        checkOut: prefs.endDate ?? "",
+        destination: effDestination,
+        checkIn: effStart,
+        checkOut: effEnd,
         adults: prefs.travelers ?? 2,
         stayType,
       }),
-    enabled: (section === "stay" || !!prefs.destination) && hasDates,
+    enabled: (section === "stay" || !!effDestination) && hasDates && !returnLeg,
   });
 
   const events = useQuery({
-    queryKey: ["events", prefs],
+    queryKey: ["events", prefs, activeLeg],
     queryFn: () =>
       api.events.search({
-        destination: prefs.destination ?? "",
-        startDate: prefs.startDate ?? "",
-        endDate: prefs.endDate ?? "",
+        destination: effDestination,
+        startDate: effStart,
+        endDate: effEnd,
         vibes: prefs.vibes ?? [],
         description: prefs.description ?? "",
       }),
-    enabled: (section === "events" || !!prefs.destination) && hasDates,
+    enabled: (section === "events" || !!effDestination) && hasDates && !returnLeg,
   });
 
   const suggestions = useQuery({
-    queryKey: ["suggestions", prefs],
+    queryKey: ["suggestions", prefs, activeLeg],
     queryFn: () =>
       api.suggestions.generate({
-        destination: prefs.destination ?? "",
-        startDate: prefs.startDate ?? "",
-        endDate: prefs.endDate ?? "",
+        destination: effDestination,
+        startDate: effStart,
+        endDate: effEnd,
         interests: prefs.vibes ?? [],
         travelers: prefs.travelers ?? 2,
         travelerType: prefs.travelersType ?? "couple",
         description: prefs.description ?? "",
       }),
-    enabled: section === "do" && hasDates,
+    enabled: section === "do" && hasDates && !returnLeg,
   });
 
   const itemCount = cart.items.length;
@@ -251,6 +281,13 @@ export default function ResultsScreen() {
       );
     }
     if (section === "stay") {
+      if (returnLeg)
+        return (
+          <Empty
+            icon="airplane"
+            label="This stop is the flight home. Stays live on the city stops."
+          />
+        );
       const pills = (
         <View className="flex-row gap-2 mb-4 flex-wrap">
           {STAY_TYPES.map((t) => (
@@ -394,6 +431,13 @@ export default function ResultsScreen() {
       );
     }
     if (section === "events") {
+      if (returnLeg)
+        return (
+          <Empty
+            icon="airplane"
+            label="This stop is the flight home. Events live on the city stops."
+          />
+        );
       if (events.isPaused)
         return <ErrorCard what="event" offline onRetry={() => events.refetch()} />;
       if (events.isError)
@@ -492,6 +536,13 @@ export default function ResultsScreen() {
       );
     }
     if (section === "do") {
+      if (returnLeg)
+        return (
+          <Empty
+            icon="airplane"
+            label="This stop is the flight home. Picks live on the city stops."
+          />
+        );
       if (suggestions.isPaused)
         return <ErrorCard what="picks" offline onRetry={() => suggestions.refetch()} />;
       if (suggestions.isError)
@@ -576,7 +627,7 @@ export default function ResultsScreen() {
       );
     }
     return null;
-  }, [section, flights, hotels, events, suggestions, cart, stayType, hasOrigin, destPhoto, travelers, flightF, hotelF, eventF, pickF]);
+  }, [section, flights, hotels, events, suggestions, cart, stayType, hasOrigin, destPhoto, travelers, flightF, hotelF, eventF, pickF, returnLeg]);
 
   return (
     <View className="flex-1 bg-page-bg">
@@ -615,7 +666,12 @@ export default function ResultsScreen() {
             style={{ fontSize: 26, lineHeight: 29, letterSpacing: -0.3 }}
             numberOfLines={1}
           >
-            {prefs.destination.split(",")[0]}
+            {(multi
+              ? returnLeg
+                ? "Flight home"
+                : effDestination
+              : prefs.destination
+            ).split(",")[0]}
           </Text>
           {prefs.startDate && prefs.endDate ? (
             <Text className="text-ink-faint text-[13px] mt-1">
@@ -641,6 +697,61 @@ export default function ResultsScreen() {
           />
         ) : (
           <>
+            {multi ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 6, paddingBottom: 12 }}
+              >
+                {legs.map((l, i) => (
+                  <Pressable
+                    key={`${l.destination}-${i}`}
+                    onPress={() => setActiveLeg(i)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: activeLeg === i }}
+                    className="px-3.5 py-2 rounded-full border"
+                    style={{
+                      backgroundColor:
+                        activeLeg === i ? colors.text : "transparent",
+                      borderColor:
+                        activeLeg === i ? colors.text : colors.hairlineStrong,
+                    }}
+                  >
+                    <Text
+                      className="text-[13px] font-semibold"
+                      style={{
+                        color: activeLeg === i ? "white" : colors.textSecondary,
+                      }}
+                    >
+                      {i + 1} · {l.destination.split(",")[0]}
+                    </Text>
+                  </Pressable>
+                ))}
+                {prefs.departureCity ? (
+                  <Pressable
+                    onPress={() => setActiveLeg(legs.length)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: returnLeg }}
+                    className="px-3.5 py-2 rounded-full border"
+                    style={{
+                      backgroundColor: returnLeg ? colors.text : "transparent",
+                      borderColor: returnLeg
+                        ? colors.text
+                        : colors.hairlineStrong,
+                    }}
+                  >
+                    <Text
+                      className="text-[13px] font-semibold"
+                      style={{
+                        color: returnLeg ? "white" : colors.textSecondary,
+                      }}
+                    >
+                      Flight home
+                    </Text>
+                  </Pressable>
+                ) : null}
+              </ScrollView>
+            ) : null}
             <SegmentedControl<Section>
               options={[
                 { value: "flights", label: "Flights" },

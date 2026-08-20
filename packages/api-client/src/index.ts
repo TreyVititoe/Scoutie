@@ -75,6 +75,8 @@ export type FlightSearchInput = {
   destination: string;
   departDate: string;
   returnDate: string;
+  /** One-way hop for multi-city legs. */
+  oneWay?: boolean;
   adults?: number;
   cabinClass?: "economy" | "premium_economy" | "business" | "first";
 };

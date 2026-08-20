@@ -1,7 +1,17 @@
+/** One stop of a multi-city trip. Dates are the stay window in that city. */
+export type TripLeg = {
+  destination: string;
+  startDate?: string;
+  endDate?: string;
+};
+
 export type TripPrefs = {
   destination: string;
   startDate: string;
   endDate: string;
+  /** Multi-city trips: 2+ ordered stops. When set, destination/startDate/
+   * endDate mirror the first leg so single-city code keeps working. */
+  legs?: TripLeg[];
   travelers: number;
   travelersType: string;
   budget: number;

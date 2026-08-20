@@ -29,7 +29,23 @@ function cleanContext(raw: unknown): WalterChatContext | undefined {
       if (prefs && Object.keys(prefs).length >= 16) break;
       if (typeof v === "string") prefs[k] = v.slice(0, 300);
       else if (typeof v === "number" || typeof v === "boolean") prefs[k] = v;
-      else if (Array.isArray(v))
+      else if (k === "legs" && Array.isArray(v)) {
+        /* Multi-city stops: small objects, clamped per field. */
+        const legs = v
+          .slice(0, 5)
+          .map((leg) => {
+            if (!leg || typeof leg !== "object") return null;
+            const { destination, startDate, endDate } = leg as Record<string, unknown>;
+            if (typeof destination !== "string" || !destination.trim()) return null;
+            return {
+              destination: destination.slice(0, 120),
+              startDate: typeof startDate === "string" ? startDate.slice(0, 10) : undefined,
+              endDate: typeof endDate === "string" ? endDate.slice(0, 10) : undefined,
+            };
+          })
+          .filter(Boolean);
+        if (legs.length) prefs[k] = legs;
+      } else if (Array.isArray(v))
         prefs[k] = v
           .filter((x): x is string => typeof x === "string")
           .slice(0, 8)

@@ -296,11 +296,14 @@ export async function searchFlights(params: {
   origin: string;
   destination: string;
   departDate: string;
+  /** Ignored when oneWay is true. */
   returnDate: string;
   adults?: number;
   cabinClass?: string;
+  /** One-way hop (multi-city legs); no return journey is searched. */
+  oneWay?: boolean;
 }): Promise<FlightResult[]> {
-  const { origin, destination, departDate, returnDate, adults = 1, cabinClass = "economy" } = params;
+  const { origin, destination, departDate, returnDate, adults = 1, cabinClass = "economy", oneWay = false } = params;
 
   const originCode = resolveIATA(origin) ?? (await nearestAirportCode(origin));
   const destCode = resolveIATA(destination) ?? (await nearestAirportCode(destination));
@@ -323,13 +326,17 @@ export async function searchFlights(params: {
     departure_id: originCode,
     arrival_id: destCode,
     outbound_date: departDate,
-    return_date: returnDate,
     currency: "USD",
     hl: "en",
     adults: String(adults),
     travel_class: String(cabinMap[cabinClass] || 1),
     api_key: SERPAPI_KEY,
   });
+  if (oneWay) {
+    searchParams.set("type", "2");
+  } else {
+    searchParams.set("return_date", returnDate);
+  }
 
   const res = await fetch(`https://serpapi.com/search.json?${searchParams}`, {
     signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),

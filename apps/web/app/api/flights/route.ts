@@ -21,12 +21,13 @@ export async function POST(req: NextRequest) {
     const { departDate, returnDate } = body ?? {};
     const adults = clampInt(body?.adults, 1, 10, 1);
     const cabinClass = cleanString(body?.cabinClass, 20) || "economy";
+    const oneWay = body?.oneWay === true;
 
     if (
       !origin ||
       !destination ||
       !isReasonableDate(departDate) ||
-      !isReasonableDate(returnDate)
+      (!oneWay && !isReasonableDate(returnDate))
     ) {
       // Detail stays in the server log; the body must not enumerate which
       // fields were missing back to the caller.
@@ -45,7 +46,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const params = { origin, destination, departDate, returnDate, adults, cabinClass };
+    const params = {
+      origin,
+      destination,
+      departDate,
+      returnDate: oneWay ? "" : returnDate,
+      adults,
+      cabinClass,
+      oneWay,
+    };
     const key = cacheKey("flights", params);
     const cached = cacheGet<{ flights: unknown[] }>(key);
     if (cached) return NextResponse.json(cached);
