@@ -1,13 +1,14 @@
 import { CATEGORY_LABELS, CATEGORY_ORDER, CURATED_TRIPS } from "@walter/shared";
+import { api } from "@walter/api-client";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import {
-  Animated,
   FlatList,
   Pressable,
+  ScrollView,
   Text,
   View,
   useWindowDimensions,
@@ -23,8 +24,14 @@ const SIDE = 20;
 const HERO_IMG = require("../../assets/home-hero.jpg");
 /* assets/home-hero.jpg is 853x1844 */
 const HERO_ASPECT = 1844 / 853;
-/* The scenery outruns the page: reverse parallax. */
-const PARALLAX = 1.35;
+
+/* Deterministic rotation: a different curated trip each clock hour. */
+function hourlyPick() {
+  const now = new Date();
+  const slot =
+    (now.getMonth() * 31 + now.getDate()) * 24 + now.getHours();
+  return CURATED_TRIPS[slot % CURATED_TRIPS.length];
+}
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -58,9 +65,10 @@ export default function HomeScreen() {
     []
   );
 
-  const scrollY = useRef(new Animated.Value(0)).current;
   const imgH = Math.round(width * HERO_ASPECT);
-  const translateY = Animated.multiply(scrollY, -PARALLAX);
+  const pick = useMemo(hourlyPick, []);
+  const pickPhoto =
+    pick.image ?? api.photo.url(pick.photoQuery ?? pick.destination);
 
   const whenValue =
     prefs.startDate && prefs.endDate
@@ -86,8 +94,8 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-page-bg">
-      {/* Parallax scenery: pinned behind the page, scrolling faster */}
-      <Animated.View
+      {/* Fixed scenery: pinned to the viewport; the page scrolls over it */}
+      <View
         pointerEvents="none"
         style={{
           position: "absolute",
@@ -95,7 +103,6 @@ export default function HomeScreen() {
           left: 0,
           right: 0,
           height: imgH,
-          transform: [{ translateY }],
         }}
       >
         <Image
@@ -108,15 +115,10 @@ export default function HomeScreen() {
           locations={[0.62, 0.96]}
           style={{ position: "absolute", inset: 0 }}
         />
-      </Animated.View>
+      </View>
 
-      <Animated.ScrollView
+      <ScrollView
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-        scrollEventThrottle={16}
         contentContainerStyle={{ paddingBottom: insets.bottom + 130 }}
       >
         <View style={{ paddingTop: insets.top + 10 }} className="px-5">
@@ -211,6 +213,80 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           </View>
+
+          {/* Walter's pick this hour: one big rotating recommendation */}
+          <Pressable
+            onPress={() => {
+              usePrefs.getState().patch({
+                destination: pick.destination,
+                durationDays: pick.durationDays,
+              });
+              router.push("/clarify");
+            }}
+            className="rounded-[28px] overflow-hidden mt-6"
+            style={{
+              shadowColor: colors.shadow,
+              shadowOpacity: 0.22,
+              shadowRadius: 24,
+              shadowOffset: { width: 0, height: 10 },
+            }}
+          >
+            <Image
+              source={{ uri: pickPhoto }}
+              contentFit="cover"
+              transition={250}
+              style={{ width: "100%", height: 340, backgroundColor: "#404042" }}
+            />
+            <LinearGradient
+              colors={["transparent", "rgba(10, 14, 24, 0.88)"]}
+              locations={[0.3, 1]}
+              style={{ position: "absolute", inset: 0 }}
+            />
+            <View
+              style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
+              className="p-5"
+            >
+              <Text className="text-white/80 text-[11px] font-semibold uppercase tracking-wider">
+                Walter&apos;s pick this hour
+              </Text>
+              <Text
+                className="text-white"
+                style={{
+                  fontFamily: "Georgia",
+                  fontSize: 30,
+                  lineHeight: 34,
+                  fontWeight: "600",
+                  marginTop: 4,
+                }}
+                numberOfLines={1}
+              >
+                {pick.destination.split(",")[0]}
+              </Text>
+              <Text
+                className="text-white/85 text-[14px] mt-1.5 leading-5"
+                numberOfLines={2}
+              >
+                {pick.description}
+              </Text>
+              <View className="flex-row items-center justify-between mt-3.5">
+                <Text className="text-white/90 text-[14px] font-semibold">
+                  From ${pick.totalCost.toLocaleString()} · {pick.durationDays}{" "}
+                  days
+                </Text>
+                <View className="flex-row items-center gap-1.5">
+                  <Text className="text-white text-[14px] font-semibold">
+                    Plan it
+                  </Text>
+                  <SymbolView
+                    name="arrow.right"
+                    tintColor="white"
+                    size={13}
+                    fallback={null}
+                  />
+                </View>
+              </View>
+            </View>
+          </Pressable>
         </View>
 
         {/* Rails on solid ground */}
@@ -251,7 +327,7 @@ export default function HomeScreen() {
             <LegalLinks />
           </View>
         </View>
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 }

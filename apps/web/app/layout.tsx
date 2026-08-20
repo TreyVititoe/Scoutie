@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "../components/Footer";
 import MotionProvider from "../components/MotionProvider";
+import { WalterChat } from "../components/WalterChat";
 import "./globals.css";
 
 const SITE_URL =
@@ -87,6 +88,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </MotionProvider>
+        <WalterChat />
         <Analytics />
         <SpeedInsights />
       </body>

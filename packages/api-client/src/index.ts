@@ -189,6 +189,17 @@ export const api = {
         ok: false,
       })),
   },
+  chat: {
+    /** Talk to Walter. Returns his reply and, when the conversation has
+     * produced a plannable trip, a structured trip to open. */
+    send: (input: {
+      messages: { role: "user" | "assistant"; content: string }[];
+    }) =>
+      post<{ reply: string; trip: Partial<TripPrefs> | null }>(
+        "/api/chat",
+        input
+      ),
+  },
 };
 
 export type WalterApi = typeof api;
