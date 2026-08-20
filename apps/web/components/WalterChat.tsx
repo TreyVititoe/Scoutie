@@ -48,6 +48,7 @@ export function WalterChat() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const seqRef = useRef(0);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -76,7 +77,7 @@ export function WalterChat() {
     setError(null);
     const next: Message[] = [
       ...messages,
-      { id: `u-${Date.now()}`, role: "user", content },
+      { id: `u-${++seqRef.current}`, role: "user", content },
     ];
     setMessages(next);
     setBusy(true);
@@ -101,7 +102,7 @@ export function WalterChat() {
       setMessages((cur) => [
         ...cur,
         {
-          id: `a-${Date.now()}`,
+          id: `a-${++seqRef.current}`,
           role: "assistant",
           content: data.reply as string,
           trip: data.trip ?? null,
