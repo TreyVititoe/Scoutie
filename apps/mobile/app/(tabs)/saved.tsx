@@ -43,12 +43,32 @@ export default function TripsScreen() {
     );
   }
 
+  const comparable = trips.filter((t) => t.items.length > 0).length;
+
   return (
     <ScrollView
       className="flex-1 bg-page-bg"
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
     >
+      {comparable >= 2 ? (
+        <Pressable
+          onPress={() => router.push("/compare")}
+          accessibilityRole="button"
+          className="flex-row items-center justify-center gap-2 py-3 rounded-full border mb-4"
+          style={{ borderColor: colors.hairlineStrong, backgroundColor: colors.surface1 }}
+        >
+          <SymbolView
+            name="rectangle.on.rectangle"
+            tintColor={colors.accent}
+            size={15}
+            fallback={null}
+          />
+          <Text className="text-ink text-[14px] font-semibold">
+            Compare your trips
+          </Text>
+        </Pressable>
+      ) : null}
       {trips.map((trip) => (
         <Pressable
           key={trip.id}

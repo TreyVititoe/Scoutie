@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useSavedTripsStore, type SavedTrip } from "@/lib/stores/savedTripsStore";
 import { useTripCartStore } from "@/lib/stores/tripCartStore";
 import { mergePrefs, readStored } from "@/lib/prefs";
+import { tripEconomics } from "@/lib/tripEconomics";
 
 export default function CompareLocalPage() {
   const router = useRouter();
@@ -37,6 +38,12 @@ export default function CompareLocalPage() {
       setTravelers(p.travelersCount || p.travelers || 1);
     }
   }, [allTrips, router]);
+
+  function parseDur(text: string): number {
+    const h = /(\d+)\s*h/.exec(text);
+    const m = /(\d+)\s*m/.exec(text);
+    return (h ? Number(h[1]) * 60 : 0) + (m ? Number(m[1]) : 0);
+  }
 
   const handleChoose = (trip: SavedTrip) => {
     const cart = useTripCartStore.getState();
@@ -88,24 +95,30 @@ export default function CompareLocalPage() {
 
         <div className={`grid gap-5 ${trips.length === 2 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1 lg:grid-cols-3"}`}>
           {trips.map((trip, i) => {
-            const flightItems = trip.items.filter((it) => it.type === "flight");
-            const hotelItems = trip.items.filter((it) => it.type === "hotel");
+            const eco = tripEconomics(trip, travelers);
+            const allEcos = trips.map((t) => tripEconomics(t, travelers));
+            const cheapestTotal = Math.min(
+              ...allEcos.filter((e) => e.total > 0).map((e) => e.total)
+            );
+            const badges: string[] = [];
+            if (eco.total > 0 && eco.total === cheapestTotal && trips.length > 1) {
+              badges.push("Cheapest overall");
+            }
+            const durations = allEcos
+              .map((e) => e.flightDuration)
+              .filter(Boolean) as string[];
+            if (
+              eco.flightDuration &&
+              durations.length > 1 &&
+              durations.every((d) => parseDur(eco.flightDuration!) <= parseDur(d))
+            ) {
+              badges.push("Shortest flight");
+            }
+
             const eventItems = trip.items.filter((it) => it.type === "event");
             const activityItems = trip.items.filter(
               (it) => it.type === "activity" || it.type === "restaurant" || it.type === "site"
             );
-
-            // Price ranges
-            const flightPrices = flightItems.map((f) => f.price || 0).filter((p) => p > 0);
-            const flightMin = flightPrices.length ? Math.min(...flightPrices) : 0;
-            const flightMax = flightPrices.length ? Math.max(...flightPrices) : 0;
-
-            const hotelPrices = hotelItems.map((h) => h.price || 0).filter((p) => p > 0);
-            const hotelMin = hotelPrices.length ? Math.min(...hotelPrices) : 0;
-            const hotelMax = hotelPrices.length ? Math.max(...hotelPrices) : 0;
-
-            const totalMin = (flightMin || 0) + (hotelMin || 0);
-            const totalMax = (flightMax || 0) + (hotelMax || 0);
 
             // Event categories
             const eventCategories = [...new Set(
@@ -126,7 +139,9 @@ export default function CompareLocalPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.1 }}
-                className="card-base overflow-hidden flex flex-col"
+                className={`card-base overflow-hidden flex flex-col ${
+                  badges.includes("Cheapest overall") ? "ring-2 ring-accent" : ""
+                }`}
               >
                 {/* Accent bar */}
                 <div className="h-1 bg-gradient-to-r from-accent to-cyan" />
@@ -150,62 +165,71 @@ export default function CompareLocalPage() {
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col">
-                  {/* Estimated Total */}
-                  <div className="mb-5 bg-[#DBEAFE]/30 rounded-[10px] p-4 -mx-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-ink-soft text-sm">Estimated Total</span>
-                      <span className="material-symbols-outlined text-accent text-[16px]">payments</span>
-                    </div>
-                    {totalMin > 0 ? (
-                      <div>
-                        <p className="font-semibold text-accent text-[24px]">
-                          {totalMin === totalMax
-                            ? `$${totalMin.toLocaleString()}`
-                            : `$${totalMin.toLocaleString()} - $${totalMax.toLocaleString()}`}
-                        </p>
-                        <p className="text-ink-faint text-xs">per person</p>
-                      </div>
-                    ) : trip.totalCost > 0 ? (
-                      <div>
-                        <p className="font-semibold text-accent text-[24px]">${trip.totalCost.toLocaleString()}</p>
-                        <p className="text-ink-faint text-xs">per person</p>
-                      </div>
-                    ) : (
-                      <p className="text-ink-faint text-sm">No pricing available</p>
-                    )}
+                  {/* Winner badges + affordability tier */}
+                  <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                    {badges.map((b) => (
+                      <span
+                        key={b}
+                        className="bg-accent text-white rounded-pill px-2.5 py-1 text-[11px] font-bold"
+                      >
+                        {b}
+                      </span>
+                    ))}
+                    <span className="bg-page-bg border border-line text-ink rounded-pill px-2.5 py-1 text-[11px] font-semibold">
+                      {eco.tier.label}
+                    </span>
                   </div>
 
-                  {/* Flights */}
+                  {/* The real cost of this trip */}
+                  <div className="mb-4 bg-[#DBEAFE]/30 rounded-[10px] p-4 -mx-1">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-ink-soft text-sm">True cost, all in</span>
+                      <p className="font-semibold text-accent text-[26px]">
+                        ${eco.total.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-ink-faint mt-0.5">
+                      <span>
+                        {eco.days
+                          ? `${eco.days} days · ${eco.travelers} traveler${eco.travelers !== 1 ? "s" : ""}`
+                          : `${eco.travelers} traveler${eco.travelers !== 1 ? "s" : ""}`}
+                      </span>
+                      <span>
+                        {eco.perPerson != null && `$${eco.perPerson.toLocaleString()}/person`}
+                        {eco.perDay != null && ` · $${eco.perDay.toLocaleString()}/day`}
+                      </span>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-[rgba(91,141,239,0.12)] space-y-1.5 text-sm">
+                      <CostRow label="Flights" value={eco.flights} />
+                      <CostRow label="Stay" value={eco.stay} />
+                      <CostRow label="Events and activities" value={eco.fun} />
+                      <CostRow
+                        label="Food and getting around (est.)"
+                        value={eco.extras}
+                        estimate
+                      />
+                    </div>
+                    <p className="text-[11px] text-ink-faint mt-2">{eco.tier.blurb}</p>
+                  </div>
+
+                  {/* Flight length */}
                   <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-accent text-[18px]">flight</span>
-                      <span className="text-ink text-sm font-semibold">Flights</span>
+                      <span className="text-ink text-sm font-semibold">Flight time</span>
                     </div>
-                    {flightItems.length > 0 ? (
-                      <p className="font-semibold text-accent text-sm">
-                        {flightMin === flightMax
-                          ? `$${flightMin.toLocaleString()}`
-                          : `$${flightMin.toLocaleString()} - $${flightMax.toLocaleString()}`}
+                    {eco.flightDuration ? (
+                      <p className="font-semibold text-ink text-sm">
+                        {eco.flightDuration}
+                        {eco.flightStops != null && (
+                          <span className="text-ink-faint font-medium">
+                            {" "}
+                            · {eco.flightStops === 0 ? "nonstop" : `${eco.flightStops} stop${eco.flightStops > 1 ? "s" : ""}`}
+                          </span>
+                        )}
                       </p>
                     ) : (
-                      <span className="text-ink-faint text-xs">None added</span>
-                    )}
-                  </div>
-
-                  {/* Hotels */}
-                  <div className="flex items-center justify-between py-3 border-t border-[rgba(91,141,239,0.06)]">
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-accent text-[18px]">hotel</span>
-                      <span className="text-ink text-sm font-semibold">Hotels</span>
-                    </div>
-                    {hotelItems.length > 0 ? (
-                      <p className="font-semibold text-accent text-sm">
-                        {hotelMin === hotelMax
-                          ? `$${hotelMin.toLocaleString()}`
-                          : `$${hotelMin.toLocaleString()} - $${hotelMax.toLocaleString()}`}
-                      </p>
-                    ) : (
-                      <span className="text-ink-faint text-xs">None added</span>
+                      <span className="text-ink-faint text-xs">No flight added</span>
                     )}
                   </div>
 
@@ -291,7 +315,31 @@ export default function CompareLocalPage() {
             );
           })}
         </div>
+        <p className="text-[11px] text-ink-faint text-center mt-8 max-w-[64ch] mx-auto">
+          Flight, stay, and ticket prices are the live prices these carts were
+          built from. The food and getting-around line is an estimate so the
+          totals reflect what the trip really costs, not just what is booked.
+        </p>
       </div>
+    </div>
+  );
+}
+
+function CostRow({
+  label,
+  value,
+  estimate = false,
+}: {
+  label: string;
+  value: number;
+  estimate?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className={estimate ? "text-ink-faint" : "text-ink-soft"}>{label}</span>
+      <span className={`font-semibold tabular-nums ${estimate ? "text-ink-faint" : "text-ink"}`}>
+        {value > 0 ? `$${value.toLocaleString()}` : "–"}
+      </span>
     </div>
   );
 }

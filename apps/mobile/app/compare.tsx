@@ -1,300 +1,226 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
-import { Animated } from "react-native";
-import { router } from "expo-router";
-import { Image } from "expo-image";
+import { router, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { PlaneLoader } from "../components/PlaneLoader";
-import { SkeletonCard } from "../components/Skeleton";
-import { api } from "../lib/apiClient";
+import { parseDurationMin, tripEconomics } from "../lib/tripEconomics";
+import { useSavedTrips, type SavedTrip } from "../lib/stores/savedTripsStore";
+import { useTripCart } from "../lib/stores/tripCartStore";
 import { usePrefs } from "../lib/stores/walterPrefsStore";
 import { colors } from "../theme/colors";
 
-const WORKING_PHRASES = [
-  "Analyzing your preferences…",
-  "Looking for the spots…",
-  "Checking the weather…",
-  "Pricing the three ways…",
-  "Reading the light…",
-];
+/* Saved trips side by side with the numbers that decide it: the true
+ * all-in cost, per person and per day, flight length, affordability. */
+export default function CompareScreen() {
+  const travelers = usePrefs((s) => s.prefs.travelers) ?? 2;
+  const trips = useSavedTrips((s) => s.trips).filter(
+    (t) => t.items.length > 0
+  );
 
-function WorkingPhrases() {
-  const [index, setIndex] = useState(0);
-  const opacity = useRef(new Animated.Value(1)).current;
+  const ecos = trips.map((t) => tripEconomics(t, travelers));
+  const cheapest = Math.min(
+    ...ecos.filter((e) => e.total > 0).map((e) => e.total)
+  );
+  const durations = ecos
+    .map((e) => e.flightDuration)
+    .filter(Boolean) as string[];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      Animated.timing(opacity, { toValue: 0, duration: 250, useNativeDriver: true }).start(() => {
-        setIndex((i) => (i + 1) % WORKING_PHRASES.length);
-        Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }).start();
-      });
-    }, 2400);
-    return () => clearInterval(interval);
-  }, [opacity]);
+  const open = (trip: SavedTrip) => {
+    useTripCart.setState({
+      items: trip.items,
+      bookedIds: trip.bookedIds ?? [],
+    });
+    usePrefs.getState().patch({
+      destination: trip.destination,
+      startDate: trip.startDate ?? "",
+      endDate: trip.endDate ?? "",
+    });
+    router.push("/trip");
+  };
 
   return (
-    <Animated.Text
-      style={{ opacity }}
-      className="text-ink-soft text-[13px] mb-5 leading-5 text-center"
-    >
-      {WORKING_PHRASES[index]}
-    </Animated.Text>
+    <>
+      <Stack.Screen options={{ title: "Compare trips" }} />
+      <ScrollView
+        className="flex-1 bg-page-bg"
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ padding: 16, paddingBottom: 60 }}
+      >
+        {trips.length < 2 ? (
+          <View className="items-center py-24 px-6">
+            <SymbolView
+              name="rectangle.on.rectangle"
+              tintColor={colors.textTertiary}
+              size={34}
+              fallback={null}
+            />
+            <Text className="text-ink text-[17px] font-semibold mt-4 text-center">
+              Save two built-out trips to compare them
+            </Text>
+            <Text className="text-ink-soft text-[13px] mt-2 text-center leading-5">
+              Build a cart, save it from the trip screen, and it shows up here
+              with the real numbers.
+            </Text>
+          </View>
+        ) : (
+          trips.map((trip, i) => {
+            const eco = ecos[i];
+            const badges: string[] = [];
+            if (eco.total > 0 && eco.total === cheapest) badges.push("Cheapest overall");
+            if (
+              eco.flightDuration &&
+              durations.length > 1 &&
+              durations.every(
+                (d) =>
+                  parseDurationMin(eco.flightDuration!) <= parseDurationMin(d)
+              )
+            ) {
+              badges.push("Shortest flight");
+            }
+            return (
+              <View
+                key={trip.id}
+                className="bg-card rounded-3xl border p-5 mb-4"
+                style={{
+                  borderColor: badges.includes("Cheapest overall")
+                    ? colors.accent
+                    : colors.hairline,
+                  borderWidth: badges.includes("Cheapest overall") ? 2 : 1,
+                }}
+              >
+                <Text className="text-ink text-[18px] font-bold tracking-tight">
+                  {trip.destination.split(",")[0]}
+                </Text>
+                <Text className="text-ink-soft text-[13px] mt-0.5" numberOfLines={1}>
+                  {trip.name}
+                  {eco.days ? ` · ${eco.days} days` : ""} · {eco.travelers}{" "}
+                  {eco.travelers === 1 ? "traveler" : "travelers"}
+                </Text>
+
+                <View className="flex-row flex-wrap gap-1.5 mt-3">
+                  {badges.map((b) => (
+                    <View
+                      key={b}
+                      className="rounded-full px-2.5 py-1"
+                      style={{ backgroundColor: colors.accent }}
+                    >
+                      <Text className="text-white text-[11px] font-bold">{b}</Text>
+                    </View>
+                  ))}
+                  <View
+                    className="rounded-full px-2.5 py-1 border"
+                    style={{ borderColor: colors.hairlineStrong }}
+                  >
+                    <Text className="text-ink text-[11px] font-semibold">
+                      {eco.tier.label}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* True cost */}
+                <View
+                  className="rounded-2xl p-4 mt-4"
+                  style={{ backgroundColor: colors.surface1 }}
+                >
+                  <View className="flex-row items-baseline justify-between">
+                    <Text className="text-ink-soft text-[13px]">True cost, all in</Text>
+                    <Text
+                      className="text-[24px] font-bold tabular-nums"
+                      style={{ color: colors.accent }}
+                    >
+                      ${eco.total.toLocaleString()}
+                    </Text>
+                  </View>
+                  <Text className="text-ink-faint text-[11px] mt-0.5">
+                    {eco.perPerson != null ? `$${eco.perPerson.toLocaleString()}/person` : ""}
+                    {eco.perDay != null ? ` · $${eco.perDay.toLocaleString()}/day` : ""}
+                  </Text>
+                  <View
+                    className="mt-3 pt-3 border-t"
+                    style={{ borderTopColor: colors.hairline }}
+                  >
+                    <Row label="Flights" value={eco.flights} />
+                    <Row label="Stay" value={eco.stay} />
+                    <Row label="Events and activities" value={eco.fun} />
+                    <Row label="Food and getting around (est.)" value={eco.extras} faint />
+                  </View>
+                  <Text className="text-ink-faint text-[11px] mt-2 leading-4">
+                    {eco.tier.blurb}
+                  </Text>
+                </View>
+
+                {/* Flight time */}
+                <View className="flex-row items-center justify-between mt-3.5">
+                  <View className="flex-row items-center gap-2">
+                    <SymbolView
+                      name="airplane"
+                      tintColor={colors.accent}
+                      size={14}
+                      fallback={null}
+                    />
+                    <Text className="text-ink text-[13px] font-semibold">Flight time</Text>
+                  </View>
+                  <Text className="text-ink text-[13px] font-semibold">
+                    {eco.flightDuration
+                      ? `${eco.flightDuration}${
+                          eco.flightStops != null
+                            ? eco.flightStops === 0
+                              ? " · nonstop"
+                              : ` · ${eco.flightStops} stop${eco.flightStops > 1 ? "s" : ""}`
+                            : ""
+                        }`
+                      : "No flight added"}
+                  </Text>
+                </View>
+
+                <Pressable
+                  onPress={() => open(trip)}
+                  accessibilityRole="button"
+                  className="mt-4 py-3 rounded-full items-center"
+                  style={{ backgroundColor: colors.accent }}
+                >
+                  <Text className="text-white text-[14px] font-semibold">
+                    Open this trip
+                  </Text>
+                </Pressable>
+              </View>
+            );
+          })
+        )}
+        {trips.length >= 2 ? (
+          <Text className="text-ink-faint text-[11px] text-center mt-2 leading-4 px-4">
+            Flight, stay, and ticket prices are the live prices these carts
+            were built from. The food line is an estimate so totals reflect
+            what the trip really costs.
+          </Text>
+        ) : null}
+      </ScrollView>
+    </>
   );
 }
 
-export default function CompareScreen() {
-  /* Snapshot at mount: "Build this" patches prefs for the Results screen,
-   * and a live subscription would change the queryKey and silently
-   * regenerate all three trips behind the user's back. */
-  const [prefs] = useState(() => usePrefs.getState().prefs);
-
-  const { data, isLoading, error, refetch, isRefetching } = useQuery({
-    queryKey: ["compare", prefs],
-    queryFn: () =>
-      api.compare.generate({
-        destination: prefs.destination ?? "",
-        startDate: prefs.startDate ?? "",
-        endDate: prefs.endDate ?? "",
-        travelers: prefs.travelers ?? 2,
-        travelersType: prefs.travelersType ?? "couple",
-        budget: prefs.budget ?? 0,
-        budgetType: prefs.budgetType ?? "total",
-        vibes: prefs.vibes ?? [],
-        stay: prefs.stay ?? [],
-        description: prefs.description ?? "",
-      }),
-    /* Reached only from search; a blank destination is surprise mode. */
-    enabled: true,
-    staleTime: 5 * 60_000,
-  });
-
-  if (isLoading) {
-    return (
-      <View className="flex-1 bg-page-bg">
-        {prefs.destination ? (
-          <Image
-            source={{ uri: api.photo.url(prefs.destination) }}
-            contentFit="cover"
-            style={{ position: "absolute", inset: 0, opacity: 0.08 }}
-          />
-        ) : null}
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
-        >
-          <View className="items-center py-5">
-            <PlaneLoader durationMs={22000} />
-          </View>
-          <WorkingPhrases />
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </ScrollView>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className="flex-1 bg-page-bg items-center justify-center px-8">
-        <SymbolView
-          name="exclamationmark.triangle.fill"
-          tintColor={colors.textTertiary}
-          size={36}
-          fallback={null}
-        />
-        <Text className="text-ink text-[16px] font-semibold mt-4 text-center">
-          Couldn't reach Walter
-        </Text>
-        <Text className="text-ink-soft text-[13px] mt-2 text-center">
-          {String((error as Error).message)}
-        </Text>
-        <Pressable
-          onPress={() => refetch()}
-          className="mt-5 px-6 py-3 rounded-full"
-          style={{ backgroundColor: colors.accent }}
-        >
-          <Text className="text-white text-[14px] font-semibold">
-            {isRefetching ? "Retrying…" : "Try again"}
-          </Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  if (!data?.trips?.length) {
-    return (
-      <View className="flex-1 bg-page-bg items-center justify-center px-8">
-        <SymbolView
-          name="map"
-          tintColor={colors.textTertiary}
-          size={36}
-          fallback={null}
-        />
-        <Text className="text-ink text-[16px] font-semibold mt-4 text-center">
-          Walter came back empty-handed
-        </Text>
-        <Text className="text-ink-soft text-[13px] mt-2 text-center leading-5">
-          No trips fit this ask. Try again, or loosen the brief a little.
-        </Text>
-        <Pressable
-          onPress={() => refetch()}
-          accessibilityRole="button"
-          className="mt-5 px-6 py-3 rounded-full"
-          style={{ backgroundColor: colors.accent }}
-        >
-          <Text className="text-white text-[14px] font-semibold">
-            {isRefetching ? "Trying…" : "Try again"}
-          </Text>
-        </Pressable>
-      </View>
-    );
-  }
-
+function Row({
+  label,
+  value,
+  faint = false,
+}: {
+  label: string;
+  value: number;
+  faint?: boolean;
+}) {
   return (
-    <ScrollView
-      className="flex-1 bg-page-bg"
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
-    >
+    <View className="flex-row items-center justify-between py-1">
       <Text
-        className="text-ink font-semibold"
-        style={{ fontSize: 30, lineHeight: 33, letterSpacing: -0.3 }}
+        className="text-[13px]"
+        style={{ color: faint ? colors.textTertiary : colors.textSecondary }}
       >
-        {prefs.destination
-          ? `Three takes on ${prefs.destination.split(",")[0]}.`
-          : "Three places that fit you."}
+        {label}
       </Text>
-      <Text className="text-ink-soft text-[13px] mt-2 mb-6 leading-5">
-        Pick one and Walter will lay out the rest.
+      <Text
+        className="text-[13px] font-semibold tabular-nums"
+        style={{ color: faint ? colors.textTertiary : colors.text }}
+      >
+        {value > 0 ? `$${value.toLocaleString()}` : "–"}
       </Text>
-
-      {(data?.trips ?? []).map((tier, i) => (
-        <Pressable
-          key={`${tier.tier}-${i}`}
-          onPress={() => {
-            usePrefs.getState().patch({
-              destination: tier.destination || prefs.destination,
-              devotion:
-                tier.tier === "ambitious"
-                  ? "ambitious"
-                  : tier.tier === "comfortable"
-                  ? "casual"
-                  : "balanced",
-              budget: tier.totalCost ?? 0,
-            });
-            router.push("/results");
-          }}
-          className="bg-card rounded-3xl overflow-hidden border border-line mb-4"
-        >
-          {tier.image || tier.destination ? (
-            <Image
-              source={{
-                uri: tier.image ?? api.photo.url(tier.destination),
-              }}
-              contentFit="cover"
-              style={{ width: "100%", height: 160 }}
-            />
-          ) : (
-            <View
-              style={{ height: 160, backgroundColor: colors.surface2 }}
-              className="items-center justify-center"
-            >
-              <SymbolView
-                name="photo"
-                tintColor={colors.textTertiary}
-                size={32}
-                fallback={null}
-              />
-            </View>
-          )}
-          <View className="p-5">
-            <Text className="text-accent text-[11px] font-bold uppercase tracking-wider">
-              {tier.tier}
-            </Text>
-            <Text className="text-ink text-[22px] font-bold tracking-tight mt-1">
-              {tier.title}
-            </Text>
-            {tier.destination ? (
-              <View className="flex-row items-center gap-1 mt-1">
-                <SymbolView
-                  name="mappin"
-                  tintColor={colors.textSecondary}
-                  size={12}
-                  fallback={null}
-                />
-                <Text className="text-ink-soft text-[13px] font-medium">
-                  {tier.destination}
-                </Text>
-              </View>
-            ) : null}
-            <Text className="text-ink-soft text-[14px] mt-2 leading-5">
-              {tier.summary}
-            </Text>
-            {tier.events?.length ? (
-              <View className="mt-3">
-                <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1">
-                  Happening while you're there
-                </Text>
-                {tier.events.slice(0, 3).map((ev, i) => (
-                  <View key={`${i}-${ev}`} className="flex-row items-start gap-1.5 py-0.5">
-                    <SymbolView
-                      name="ticket.fill"
-                      tintColor={colors.accent}
-                      size={11}
-                      fallback={null}
-                    />
-                    <Text className="text-ink-soft text-[13px] leading-4 flex-1">
-                      {ev}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            ) : null}
-            {tier.highlights?.length ? (
-              <View className="mt-3">
-                <Text className="text-ink-faint text-[10px] font-semibold uppercase tracking-widest mb-1">
-                  On the list
-                </Text>
-                {tier.highlights.slice(0, 4).map((h, i) => (
-                  <View key={`${i}-${h}`} className="flex-row items-start gap-1.5 py-0.5">
-                    <SymbolView
-                      name="arrow.right"
-                      tintColor={colors.accent}
-                      size={11}
-                      fallback={null}
-                    />
-                    <Text className="text-ink-soft text-[13px] leading-4 flex-1">
-                      {h}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            ) : null}
-            <View className="mt-4 flex-row items-center justify-between">
-              <Text className="text-ink text-[18px] font-bold">
-                ${(tier.totalCost ?? 0).toLocaleString()}
-              </Text>
-              <View
-                className="px-3.5 py-2 rounded-full flex-row items-center gap-1.5"
-                style={{ backgroundColor: colors.accent }}
-              >
-                <Text className="text-white text-[13px] font-semibold">
-                  Build this
-                </Text>
-                <SymbolView
-                  name="arrow.right"
-                  tintColor="white"
-                  size={12}
-                  fallback={null}
-                />
-              </View>
-            </View>
-          </View>
-        </Pressable>
-      ))}
-    </ScrollView>
+    </View>
   );
 }
