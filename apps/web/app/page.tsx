@@ -399,7 +399,7 @@ export default function LandingPage() {
           {/* Floating trip cards: the elaborate proposals Walter sends back
               in chat, drifting on either side of the headline */}
           <div aria-hidden className="absolute inset-0 pointer-events-none select-none hidden lg:block">
-            <div className="hero-drift-a absolute left-[3%] top-[10%]">
+            <div className="hero-drift-a absolute left-[3%] top-[28%]">
               <HeroFloatCard
                 trip={HERO_CARDS[0]}
                 facts={HERO_CARD_FACTS[0]}
@@ -450,7 +450,8 @@ export default function LandingPage() {
       </motion.div>
 
       {/* Curated trips grouped by category */}
-      <section className="bg-page-bg pb-16 pt-16 relative z-0">
+      {/* The trips shelf rides up over the dark hero like a massive card */}
+      <section className="bg-page-bg pb-16 pt-16 relative z-[41] -mt-12 rounded-t-[44px] shadow-[0_-18px_50px_-20px_rgba(0,0,0,0.45)]">
         {CATEGORY_ORDER.map((cat, idx) => {
           const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat);
           if (tripsInCat.length === 0) return null;

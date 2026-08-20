@@ -216,8 +216,18 @@ export default function HomeScreen() {
 
         </View>
 
-        {/* Rails on solid ground */}
-        <View className="bg-page-bg mt-10 pt-2">
+        {/* Rails on solid ground: a massive card sliding over the hero */}
+        <View
+          className="bg-page-bg mt-10 pt-7"
+          style={{
+            borderTopLeftRadius: 36,
+            borderTopRightRadius: 36,
+            shadowColor: colors.shadow,
+            shadowOpacity: 0.18,
+            shadowRadius: 24,
+            shadowOffset: { width: 0, height: -10 },
+          }}
+        >
           <View className="px-5 mb-8">
             {/* Walter's pick this hour: opens the solid ground below the hero */}
             <Pressable
