@@ -444,7 +444,7 @@ export default function LandingPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.18, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-        className="sticky top-[80px] z-[45] -mt-[52px]"
+        className="sticky top-[80px] z-[45] -mt-[110px] md:-mt-[150px]"
       >
         <div className="max-w-6xl mx-auto px-5 sm:px-12">
           <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} autoOpen={editOpen} />
@@ -453,7 +453,9 @@ export default function LandingPage() {
 
       {/* Curated trips grouped by category */}
       {/* The trips shelf rides up over the dark hero like a massive card */}
-      <section className="bg-page-bg pb-16 pt-16 relative z-[41] -mt-32 rounded-t-[44px] shadow-[0_-18px_50px_-20px_rgba(0,0,0,0.45)]">
+      {/* Pulled up just far enough that its rounded top edge cuts through
+          the middle of the search bar — the bar straddles navy and white */}
+      <section className="bg-page-bg pb-16 pt-16 relative z-[41] -mt-7 md:-mt-10 rounded-t-[44px] shadow-[0_-18px_50px_-20px_rgba(0,0,0,0.45)]">
         {CATEGORY_ORDER.map((cat, idx) => {
           const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat);
           if (tripsInCat.length === 0) return null;
