@@ -15,7 +15,9 @@ const TAB_META: Record<string, { icon: string; label: string }> = {
   chat: { icon: "message.fill", label: "Chat" },
 };
 
-const CIRCLE = 48;
+const BAR = 68;
+/* Circles fill the bar's height; the pill hugs them edge to edge. */
+const CIRCLE = 60;
 const CIRCLE_BG = "#404042";
 
 /* Untyped on purpose: BottomTabBarProps lives in a transitive dep. */
@@ -50,9 +52,10 @@ function FloatingTabBar({ state, navigation }: any) {
       }}
     >
       <View
-        className="flex-row items-center justify-evenly bg-card rounded-full border border-line"
+        className="flex-row items-center justify-between bg-card rounded-full border border-line"
         style={{
-          height: 68,
+          height: BAR,
+          paddingHorizontal: (BAR - CIRCLE) / 2,
           shadowColor: colors.shadow,
           shadowOpacity: 0.16,
           shadowRadius: 22,
@@ -73,8 +76,7 @@ function FloatingTabBar({ state, navigation }: any) {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
-                height: 68,
-                minWidth: 64,
+                height: BAR,
               }}
             >
               <View
@@ -98,7 +100,7 @@ function FloatingTabBar({ state, navigation }: any) {
                 <SymbolView
                   name={meta.icon as never}
                   tintColor="white"
-                  size={21}
+                  size={25}
                   fallback={null}
                 />
               </View>

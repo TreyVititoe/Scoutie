@@ -1,9 +1,11 @@
 import type { TripPrefs } from "@walter/shared";
 import { api } from "@walter/api-client";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -29,6 +31,9 @@ const OPENERS = [
   "Best month for Tokyo?",
 ];
 
+/* iMessage-familiar gray for Walter's side of the conversation. */
+const WALTER_BUBBLE = "#E9E9EB";
+
 function shortDate(iso?: string): string {
   if (!iso) return "";
   return new Date(iso + "T12:00:00").toLocaleDateString("en-US", {
@@ -37,13 +42,74 @@ function shortDate(iso?: string): string {
   });
 }
 
+/* Walter bolds key phrases with **double asterisks**; render them heavy. */
+function BoldableText({
+  text,
+  color,
+}: {
+  text: string;
+  color: string;
+}) {
+  const parts = text.split("**");
+  return (
+    <Text style={{ color, fontSize: 15, lineHeight: 21 }}>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <Text key={i} style={{ fontWeight: "800" }}>
+            {part}
+          </Text>
+        ) : (
+          part
+        )
+      )}
+    </Text>
+  );
+}
+
 function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
-  const when =
+  const photo = api.photo.url(trip.destination ?? "travel");
+  const nights =
     trip.startDate && trip.endDate
-      ? `${shortDate(trip.startDate)} to ${shortDate(trip.endDate)}`
-      : "Dates flexible";
-  const who =
-    (trip.travelers ?? 0) > 1 ? `${trip.travelers} travelers` : "Solo";
+      ? Math.max(
+          1,
+          Math.round(
+            (Date.parse(trip.endDate) - Date.parse(trip.startDate)) / 86400000
+          )
+        )
+      : null;
+
+  const facts: { icon: string; label: string; value: string }[] = [
+    {
+      icon: "calendar",
+      label: "When",
+      value:
+        trip.startDate && trip.endDate
+          ? `${shortDate(trip.startDate)} to ${shortDate(trip.endDate)}${nights ? ` · ${nights} nights` : ""}`
+          : "Dates flexible",
+    },
+    {
+      icon: "person.2.fill",
+      label: "Who",
+      value:
+        (trip.travelers ?? 0) > 1 ? `${trip.travelers} travelers` : "Solo trip",
+    },
+  ];
+  if (trip.departureCity || trip.departureAirportCode) {
+    facts.push({
+      icon: "airplane.departure",
+      label: "From",
+      value: trip.departureAirportCode
+        ? `${trip.departureCity ?? "Departure"} (${trip.departureAirportCode})`
+        : (trip.departureCity as string),
+    });
+  }
+  if ((trip.budget ?? 0) > 0) {
+    facts.push({
+      icon: "dollarsign.circle.fill",
+      label: "Budget",
+      value: `$${(trip.budget as number).toLocaleString()} for the group`,
+    });
+  }
 
   const open = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -64,31 +130,88 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
   return (
     <Pressable
       onPress={open}
-      className="bg-card rounded-2xl border border-line mt-2 overflow-hidden"
+      className="bg-card rounded-3xl mt-2 overflow-hidden"
       style={{
         shadowColor: colors.shadow,
-        shadowOpacity: 0.12,
-        shadowRadius: 14,
-        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.2,
+        shadowRadius: 18,
+        shadowOffset: { width: 0, height: 8 },
       }}
     >
-      <View className="p-4">
-        <Text className="text-ink-faint text-[11px] font-semibold uppercase tracking-wider">
-          Trip ready
-        </Text>
-        <Text className="text-ink text-[18px] font-bold mt-1" numberOfLines={1}>
-          {trip.destination}
-        </Text>
-        <Text className="text-ink-soft text-[13px] mt-1">
-          {when} · {who}
-        </Text>
+      <View style={{ height: 150 }}>
+        <Image
+          source={{ uri: photo }}
+          contentFit="cover"
+          transition={200}
+          style={{ width: "100%", height: "100%", backgroundColor: "#404042" }}
+        />
+        <LinearGradient
+          colors={["transparent", "rgba(10, 14, 24, 0.85)"]}
+          locations={[0.25, 1]}
+          style={{ position: "absolute", inset: 0 }}
+        />
+        <View
+          style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
+          className="px-4 pb-3"
+        >
+          <Text className="text-white/80 text-[10px] font-bold uppercase tracking-widest">
+            Your trip is ready
+          </Text>
+          <Text
+            className="text-white text-[24px] font-bold"
+            style={{ letterSpacing: -0.4 }}
+            numberOfLines={1}
+          >
+            {trip.destination}
+          </Text>
+        </View>
       </View>
+
+      <View className="px-4 pt-3 pb-1">
+        {facts.map((f) => (
+          <View key={f.label} className="flex-row items-center gap-2.5 py-1.5">
+            <SymbolView
+              name={f.icon as never}
+              tintColor={colors.accent}
+              size={15}
+              fallback={null}
+            />
+            <Text className="text-ink-soft text-[12px] font-semibold w-14">
+              {f.label}
+            </Text>
+            <Text className="text-ink text-[14px] font-medium flex-1" numberOfLines={1}>
+              {f.value}
+            </Text>
+          </View>
+        ))}
+        {trip.vibes?.length ? (
+          <View className="flex-row flex-wrap gap-1.5 mt-2">
+            {trip.vibes.slice(0, 4).map((v) => (
+              <View
+                key={v}
+                className="rounded-full px-3 py-1"
+                style={{ backgroundColor: colors.surface2 }}
+              >
+                <Text className="text-ink text-[11px] font-semibold capitalize">
+                  {v}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+        {trip.description ? (
+          <Text className="text-ink-faint text-[12px] mt-2" numberOfLines={2}>
+            {trip.description}
+          </Text>
+        ) : null}
+      </View>
+
       <View
-        className="flex-row items-center justify-center gap-2 py-3"
+        className="flex-row items-center justify-center gap-2 py-3.5 mx-4 mb-4 mt-2 rounded-full"
         style={{ backgroundColor: colors.accent }}
       >
-        <Text className="text-white text-[15px] font-semibold">
-          Open this trip
+        <Text className="text-white text-[15px] font-bold">
+          Open live flights and stays
         </Text>
         <SymbolView
           name="arrow.right"
@@ -108,6 +231,16 @@ export default function ChatScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
+
+  const scrollToEnd = (animated = true) =>
+    scrollRef.current?.scrollToEnd({ animated });
+
+  useEffect(() => {
+    /* New message, Walter typing, or images loading all grow the content;
+     * follow the bottom like a messages app. */
+    const t = setTimeout(() => scrollToEnd(), 60);
+    return () => clearTimeout(t);
+  }, [messages.length, busy]);
 
   const send = async (text: string) => {
     const content = text.trim();
@@ -169,18 +302,20 @@ export default function ChatScreen() {
         className="flex-1"
         contentContainerStyle={{ padding: 20, paddingBottom: 16 }}
         keyboardShouldPersistTaps="handled"
-        onContentSizeChange={() =>
-          scrollRef.current?.scrollToEnd({ animated: true })
-        }
+        onContentSizeChange={() => scrollToEnd(false)}
       >
         {messages.length === 0 ? (
           <View>
-            <View className="bg-card rounded-2xl border border-line p-4 self-start" style={{ maxWidth: "88%" }}>
-              <Text className="text-ink text-[15px] leading-[21px]">
-                Where are we headed? Tell me a place, a month, or just a mood
-                — I will take it from there. When the trip sounds right, I
-                will put the whole thing together for you.
-              </Text>
+            <View
+              className="rounded-2xl p-4 self-start"
+              style={{ maxWidth: "88%", backgroundColor: WALTER_BUBBLE }}
+            >
+              <BoldableText
+                color={colors.text}
+                text={
+                  "Where are we headed? Tell me a **place**, a **month**, or just a mood — I will take it from there. When the trip sounds right, I will put the whole thing together for you."
+                }
+              />
             </View>
             <View className="flex-row flex-wrap gap-2 mt-4">
               {OPENERS.map((o) => (
@@ -198,34 +333,28 @@ export default function ChatScreen() {
           messages.map((m) => (
             <View key={m.id} className="mb-3">
               <View
-                className={
-                  m.role === "user"
-                    ? "rounded-2xl p-3.5 self-end"
-                    : "bg-card rounded-2xl border border-line p-3.5 self-start"
-                }
+                className="rounded-2xl p-3.5"
                 style={{
                   maxWidth: "88%",
-                  ...(m.role === "user"
-                    ? { backgroundColor: colors.accent }
-                    : null),
+                  alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+                  backgroundColor:
+                    m.role === "user" ? colors.accent : WALTER_BUBBLE,
                 }}
               >
-                <Text
-                  className={
-                    m.role === "user"
-                      ? "text-white text-[15px] leading-[21px]"
-                      : "text-ink text-[15px] leading-[21px]"
-                  }
-                >
-                  {m.content}
-                </Text>
+                <BoldableText
+                  color={m.role === "user" ? "#FFFFFF" : colors.text}
+                  text={m.content}
+                />
               </View>
               {m.trip?.destination ? <TripProposalCard trip={m.trip} /> : null}
             </View>
           ))
         )}
         {busy ? (
-          <View className="bg-card rounded-2xl border border-line px-4 py-3 self-start flex-row items-center gap-2.5">
+          <View
+            className="rounded-2xl px-4 py-3 self-start flex-row items-center gap-2.5"
+            style={{ backgroundColor: WALTER_BUBBLE }}
+          >
             <ActivityIndicator size="small" color={colors.textTertiary} />
             <Text className="text-ink-soft text-[13px]">
               Walter is thinking
@@ -251,6 +380,7 @@ export default function ChatScreen() {
           placeholder="Message Walter"
           placeholderTextColor={colors.textTertiary}
           multiline
+          onFocus={() => setTimeout(() => scrollToEnd(), 250)}
           className="flex-1 bg-card border border-line rounded-3xl px-4 text-ink text-[15px]"
           style={{ maxHeight: 110, paddingTop: 12, paddingBottom: 12 }}
         />

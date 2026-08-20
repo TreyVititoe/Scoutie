@@ -38,6 +38,24 @@ function shortDate(iso?: string): string {
   });
 }
 
+/* Walter bolds key phrases with **double asterisks**. */
+function Boldable({ text }: { text: string }) {
+  const parts = text.split("**");
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <strong key={i} className="font-bold">
+            {part}
+          </strong>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
 /* Floating Walter concierge: a launcher bubble that opens a chat panel.
  * Mirrors the mobile Chat tab against the same /api/chat endpoint. */
 export function WalterChat() {
@@ -51,10 +69,18 @@ export function WalterChat() {
   const seqRef = useRef(0);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, busy, open]);
 
   const openTrip = (trip: NonNullable<ChatTrip>) => {
+    /* A stale chosen-trip from an earlier session would shadow these prefs
+     * on /results (the Jamaica-opens-as-New-York bug). Clear it first. */
+    try {
+      localStorage.removeItem("walter_trip");
+    } catch {}
     mergePrefs({
       destination: trip.destination ?? "",
       startDate: trip.startDate ?? "",
@@ -131,9 +157,8 @@ export function WalterChat() {
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4">
             {messages.length === 0 ? (
               <div>
-                <div className="max-w-[88%] rounded-2xl border border-line bg-paper px-4 py-3 text-[14px] leading-relaxed text-ink">
-                  Where are we headed? Tell me a place, a month, or just a
-                  mood — I will take it from there.
+                <div className="max-w-[88%] rounded-2xl bg-[#E9E9EB] px-4 py-3 text-[14px] leading-relaxed text-ink">
+                  <Boldable text="Where are we headed? Tell me a **place**, a **month**, or just a mood — I will take it from there." />
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {OPENERS.map((o) => (
@@ -155,44 +180,95 @@ export function WalterChat() {
                     className={
                       m.role === "user"
                         ? "ml-auto max-w-[88%] rounded-2xl bg-accent px-4 py-3 text-[14px] leading-relaxed text-white"
-                        : "max-w-[88%] rounded-2xl border border-line bg-paper px-4 py-3 text-[14px] leading-relaxed text-ink"
+                        : "max-w-[88%] rounded-2xl bg-[#E9E9EB] px-4 py-3 text-[14px] leading-relaxed text-ink"
                     }
                   >
-                    {m.content}
+                    <Boldable text={m.content} />
                   </div>
                   {m.trip?.destination ? (
-                    <div className="mt-2 max-w-[88%] overflow-hidden rounded-2xl border border-line bg-paper shadow-sm">
-                      <div className="px-4 py-3">
-                        <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-faint">
-                          Trip ready
-                        </p>
-                        <p className="mt-0.5 truncate text-[16px] font-bold text-ink">
-                          {m.trip.destination}
-                        </p>
-                        <p className="mt-0.5 text-[12px] text-ink-soft">
-                          {m.trip.startDate && m.trip.endDate
-                            ? `${shortDate(m.trip.startDate)} to ${shortDate(m.trip.endDate)}`
-                            : "Dates flexible"}
-                          {" · "}
-                          {(m.trip.travelers ?? 0) > 1
-                            ? `${m.trip.travelers} travelers`
-                            : "Solo"}
-                        </p>
+                    <div className="mt-2 overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_14px_36px_-14px_rgba(20,30,60,0.35)]">
+                      <div className="relative h-32">
+                        {/* eslint-disable-next-line @next/next/no-img-element -- /api/photo 302s to the provider; next/image can't follow it */}
+                        <img
+                          src={`/api/photo?query=${encodeURIComponent(m.trip.destination)}`}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,14,24,0.85)] via-transparent to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 px-4 pb-2.5">
+                          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/80">
+                            Your trip is ready
+                          </p>
+                          <p className="truncate text-[19px] font-bold tracking-tight text-white">
+                            {m.trip.destination}
+                          </p>
+                        </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => openTrip(m.trip!)}
-                        className="block w-full bg-accent py-2.5 text-center text-[13px] font-semibold text-white transition hover:bg-accent-light"
-                      >
-                        Open this trip
-                      </button>
+                      <div className="space-y-1 px-4 py-3 text-[12px]">
+                        <p className="text-ink">
+                          <span className="mr-2 font-semibold text-ink-soft">When</span>
+                          <span className="font-medium">
+                            {m.trip.startDate && m.trip.endDate
+                              ? `${shortDate(m.trip.startDate)} to ${shortDate(m.trip.endDate)}`
+                              : "Dates flexible"}
+                          </span>
+                        </p>
+                        <p className="text-ink">
+                          <span className="mr-2 font-semibold text-ink-soft">Who</span>
+                          <span className="font-medium">
+                            {(m.trip.travelers ?? 0) > 1
+                              ? `${m.trip.travelers} travelers`
+                              : "Solo trip"}
+                          </span>
+                        </p>
+                        {m.trip.departureCity || m.trip.departureAirportCode ? (
+                          <p className="text-ink">
+                            <span className="mr-2 font-semibold text-ink-soft">From</span>
+                            <span className="font-medium">
+                              {m.trip.departureCity ?? "Departure"}
+                              {m.trip.departureAirportCode
+                                ? ` (${m.trip.departureAirportCode})`
+                                : ""}
+                            </span>
+                          </p>
+                        ) : null}
+                        {(m.trip.budget ?? 0) > 0 ? (
+                          <p className="text-ink">
+                            <span className="mr-2 font-semibold text-ink-soft">Budget</span>
+                            <span className="font-medium">
+                              ${m.trip.budget!.toLocaleString()} for the group
+                            </span>
+                          </p>
+                        ) : null}
+                        {m.trip.vibes?.length ? (
+                          <div className="flex flex-wrap gap-1.5 pt-1.5">
+                            {m.trip.vibes.slice(0, 4).map((v) => (
+                              <span
+                                key={v}
+                                className="rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold capitalize text-ink"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="px-3 pb-3">
+                        <button
+                          type="button"
+                          onClick={() => openTrip(m.trip!)}
+                          className="block w-full rounded-full bg-accent py-2.5 text-center text-[13px] font-bold text-white transition hover:bg-accent-light"
+                        >
+                          Open live flights and stays
+                        </button>
+                      </div>
                     </div>
                   ) : null}
                 </div>
               ))
             )}
             {busy ? (
-              <div className="inline-flex items-center gap-2 rounded-2xl border border-line bg-paper px-4 py-2.5 text-[12px] text-ink-soft">
+              <div className="inline-flex items-center gap-2 rounded-2xl bg-[#E9E9EB] px-4 py-2.5 text-[12px] text-ink-soft">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
                 Walter is thinking
               </div>

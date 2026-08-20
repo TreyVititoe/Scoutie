@@ -463,7 +463,7 @@ function TripCard({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-tinted-pitch/60 to-transparent pointer-events-none" />
-        <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
+        <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-[#141926] rounded-pill px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide">
           {option.tier}
         </span>
         <span className="absolute bottom-3 left-3 text-snow-off-glacier text-label font-semibold drop-shadow">

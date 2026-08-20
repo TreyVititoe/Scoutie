@@ -346,22 +346,26 @@ export default function ResultsScreen() {
     <View className="flex-1 bg-page-bg">
       <Stack.Screen
         options={{
+          /* No background of our own: iOS wraps headerRight in its own
+           * capsule, and a filled pill inside it read as two circles. */
           headerRight: () =>
             itemCount > 0 ? (
               <Pressable
                 onPress={() => router.push("/trip")}
                 accessibilityRole="button"
                 accessibilityLabel={`View your trip, ${itemCount} ${itemCount === 1 ? "item" : "items"}`}
-                className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ backgroundColor: colors.accent }}
+                className="flex-row items-center gap-1.5 px-1.5 py-1.5"
               >
-                <Text className="text-white text-[13px] font-semibold">
+                <Text
+                  className="text-[15px] font-bold"
+                  style={{ color: colors.accent }}
+                >
                   {itemCount} {itemCount === 1 ? "item" : "items"}
                 </Text>
                 <SymbolView
                   name="arrow.right"
-                  tintColor="white"
-                  size={11}
+                  tintColor={colors.accent}
+                  size={13}
                   fallback={null}
                 />
               </Pressable>

@@ -15,13 +15,14 @@ import { colors } from "../../theme/colors";
  */
 
 function AddButton({ added, onPress }: { added: boolean; onPress: () => void }) {
-  /* Plain style objects only: mixing className with a style function
-   * dropped the class styles and left white-on-white buttons. */
+  /* A plain style OBJECT only — a style function on Pressable gets its
+   * result dropped under NativeWind's interop, which painted these
+   * buttons white-on-white (text rendered, background never did). */
   return (
     <Pressable
       onPress={onPress}
       hitSlop={6}
-      style={({ pressed }) => ({
+      style={{
         flexDirection: "row",
         alignItems: "center",
         gap: 6,
@@ -31,9 +32,7 @@ function AddButton({ added, onPress }: { added: boolean; onPress: () => void }) 
         borderWidth: 1,
         borderColor: colors.accent,
         backgroundColor: added ? "#FFFFFF" : colors.accent,
-        opacity: pressed ? 0.85 : 1,
-        transform: [{ scale: pressed ? 0.96 : 1 }],
-      })}
+      }}
     >
       <SymbolView
         name={added ? "checkmark" : "plus"}
