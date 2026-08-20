@@ -1,5 +1,28 @@
 # Session changes - 2026-08-20
 
+## Walter chat concierge + Trey's live punch list (same session, cont.)
+
+- Walter chat shipped on both surfaces: `POST /api/chat` (Claude Haiku,
+  persona prompt, propose_trip tool returning structured TripPrefs),
+  mobile Chat tab, web floating widget. Walter asks ONE bolded question
+  per message; clients render **bold** in iMessage-gray bubbles.
+- Trip proposal cards rebuilt: destination photo, when/who/budget/from
+  rows, vibe chips, preference note, CTA. Opening a chat trip on web now
+  clears stale `walter_trip` (the Jamaica-opened-as-New-York bug).
+- Mobile: four-circle tab bar (Home/Trips/Quick plan/Chat) with
+  full-height circles hugging the pill; hourly rotating Walter's pick
+  card on Home; hero backdrop fixed (page scrolls over it); Add to Trip
+  buttons were invisible because a Pressable style-FUNCTION gets dropped
+  under NativeWind interop — plain style objects only; results cart
+  pill un-doubled (iOS supplies the capsule).
+- Web: dark textured hero (#0C182E, grain + dot grid) with floating
+  trip cards left/right, white nav over it, 17px nav links, black
+  Walter's-pick badge.
+- Store screenshots refreshed: 01-home (new tab bar + pick card),
+  02-chat (Isla Holbox conversation). Builds #4/#5 sit in TestFlight
+  unused; build #6 is the submission candidate. DO NOT submit for
+  review without Trey.
+
 ## App Store submission run (pre-Brennan-meeting push)
 
 - EAS production build #4 (v1.0.0) built and uploaded to App Store
