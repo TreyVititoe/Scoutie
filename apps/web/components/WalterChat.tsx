@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { mergePrefs, readStored } from "@/lib/prefs";
 import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
-import { useTripCartStore } from "@/lib/stores/tripCartStore";
+import { useTripCartStore, type CartItem } from "@/lib/stores/tripCartStore";
 
 type ChatTrip = {
   destination?: string;
@@ -191,7 +191,32 @@ export function WalterChat() {
     update?: ChatTrip;
     cartOps?: CartOp[] | null;
     openSaved?: string | null;
+    cartItems?: CartItem[] | null;
+    builtTrip?: ChatTrip;
   }): ChatTrip => {
+    if (data.cartItems?.length) {
+      /* Walter built the cart himself: load it and go straight there. */
+      try {
+        localStorage.removeItem("walter_trip");
+      } catch {}
+      if (data.builtTrip) {
+        mergePrefs({
+          destination: data.builtTrip.destination ?? "",
+          startDate: data.builtTrip.startDate ?? "",
+          endDate: data.builtTrip.endDate ?? "",
+          travelers: data.builtTrip.travelers ?? 2,
+          budget: data.builtTrip.budget ?? 0,
+          vibes: data.builtTrip.vibes ?? [],
+          description: data.builtTrip.description ?? "",
+          departureCity: data.builtTrip.departureCity ?? "",
+          departureAirportCode: data.builtTrip.departureAirportCode ?? "",
+        });
+      }
+      useTripCartStore.setState({ items: data.cartItems, bookedIds: [] });
+      setOpen(false);
+      router.push("/trip");
+      return null;
+    }
     if (data.update) {
       try {
         localStorage.removeItem("walter_trip");
@@ -301,6 +326,8 @@ export function WalterChat() {
         update?: ChatTrip;
         cartOps?: CartOp[] | null;
         openSaved?: string | null;
+        cartItems?: CartItem[] | null;
+        builtTrip?: ChatTrip;
         error?: string;
       };
       if (!resp.ok || !data.reply) {

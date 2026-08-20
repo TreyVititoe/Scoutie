@@ -2,6 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 
 import type { TripPrefs } from "@walter/shared";
 
+import { buildTripCart, type BuiltCartItem } from "./tripBuilder";
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const WALTER_CHAT_SYSTEM = `You are Walter, a seasoned travel concierge. You speak as Walter — a person-like presence in a travel app called Walter — never as a product feature.
@@ -18,6 +20,7 @@ WHAT WALTER CAN DO IN THE APP:
 - The app builds real trips: live flights, hotels, events, and curated activities, gathered into one cart the traveler books through each provider's own site.
 - A TRAVELER CONTEXT block may follow this prompt with their current trip plan, their cart (each item flagged booked or not), and their saved trips. That is your working memory: answer questions about it directly ("what do I have saved?", "what's left to book?") and act on it with your tools. Reference items by name naturally.
 - NEW TRIP: when the conversation produces a concrete, plannable trip, call propose_trip with your best structured version. Fill in sensible specifics for anything unstated rather than interrogating; one short clarifying question is fine when the trip is genuinely ambiguous.
+- BUILD THE WHOLE CART: ONLY when the traveler explicitly asks you to add the items yourself ("build it for me", "add it all to my cart", "put the whole thing together", "book it up"), call build_trip_cart. The app then runs the real searches, adds your picks (a flight, a stay, a couple of events) to their cart, and opens it. If they merely described a trip without asking you to fill the cart, use propose_trip instead and let them add items themselves. Never call build_trip_cart unprompted.
 - CHANGE THE CURRENT TRIP: when they want to shift dates, add travelers, change destination or budget on the trip already in progress, call update_trip with ONLY the changed fields, and confirm what changed in your reply.
 - MANAGE THEIR CART: when they booked something, want something dropped, or ask to un-mark an item, call manage_cart with one operation per item, matching by the item's name.
 - REOPEN A SAVED TRIP: when they mention a past or saved trip, call open_saved_trip with its name so the app loads it.
@@ -62,6 +65,17 @@ const proposeTripTool: Anthropic.Tool = {
   name: "propose_trip",
   description:
     "Assemble a NEW trip discussed in this conversation so the app can open it as a real, bookable plan. The app uses these fields to run live flight, hotel, event, and activity searches.",
+  input_schema: {
+    type: "object",
+    properties: { ...tripFields },
+    required: ["destination", "startDate", "endDate", "travelers"],
+  },
+};
+
+const buildTripCartTool: Anthropic.Tool = {
+  name: "build_trip_cart",
+  description:
+    "Run the live flight, stay, and event searches for a trip and add Walter's picks straight to the traveler's cart. ONLY for an explicit ask ('build it for me', 'add it all'); propose_trip covers everything else.",
   input_schema: {
     type: "object",
     properties: { ...tripFields },
@@ -145,6 +159,9 @@ export type WalterChatResult = {
   update: Partial<TripPrefs> | null;
   cartOps: WalterCartOp[] | null;
   openSaved: string | null;
+  /* Set when Walter built the cart himself (explicit ask only). */
+  cartItems: BuiltCartItem[] | null;
+  builtTrip: Partial<TripPrefs> | null;
 };
 
 function contextBlock(context: WalterChatContext | undefined, today: string) {
@@ -197,7 +214,13 @@ export async function walterChat(
       { type: "text", text: WALTER_CHAT_SYSTEM },
       { type: "text", text: contextBlock(context, today) },
     ],
-    tools: [proposeTripTool, updateTripTool, manageCartTool, openSavedTripTool],
+    tools: [
+      proposeTripTool,
+      buildTripCartTool,
+      updateTripTool,
+      manageCartTool,
+      openSavedTripTool,
+    ],
     messages: turns,
   });
 
@@ -207,7 +230,11 @@ export async function walterChat(
     update: null,
     cartOps: null,
     openSaved: null,
+    cartItems: null,
+    builtTrip: null,
   };
+
+  let buildBlock: { id: string; trip: Partial<TripPrefs> } | null = null;
 
   for (const block of response.content) {
     if (block.type === "text") {
@@ -216,6 +243,9 @@ export async function walterChat(
       const input = block.input as Record<string, unknown>;
       if (block.name === "propose_trip") {
         result.trip = cleanTrip(input, true);
+      } else if (block.name === "build_trip_cart") {
+        const trip = cleanTrip(input, true);
+        if (trip) buildBlock = { id: block.id, trip };
       } else if (block.name === "update_trip") {
         result.update = cleanTrip(input, false);
       } else if (block.name === "manage_cart") {
@@ -223,6 +253,65 @@ export async function walterChat(
       } else if (block.name === "open_saved_trip" && typeof input.name === "string") {
         result.openSaved = input.name.trim().slice(0, 120) || null;
       }
+    }
+  }
+
+  if (buildBlock) {
+    /* Run the real searches, then hand the outcome back so Walter narrates
+     * what he actually picked instead of a canned line. */
+    const cart = await buildTripCart(buildBlock.trip);
+    const outcome = cart.items.length
+      ? `Cart built and the app is opening it now. ${cart.notes.join(". ")}. Estimated total: $${cart.total.toLocaleString()}. In one or two sentences, tell the traveler what you picked and that everything books through each provider. No question needed.`
+      : "Every search came back empty; nothing was added to the cart. Briefly say so and suggest opening the trip planner to search by hand.";
+    try {
+      const followup = await client.messages.create({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 512,
+        system: [
+          { type: "text", text: WALTER_CHAT_SYSTEM },
+          { type: "text", text: contextBlock(context, today) },
+        ],
+        tools: [
+          proposeTripTool,
+          buildTripCartTool,
+          updateTripTool,
+          manageCartTool,
+          openSavedTripTool,
+        ],
+        messages: [
+          ...turns,
+          { role: "assistant", content: response.content },
+          {
+            role: "user",
+            content: [
+              {
+                type: "tool_result",
+                tool_use_id: buildBlock.id,
+                content: outcome,
+              },
+            ],
+          },
+        ],
+      });
+      const text = followup.content
+        .filter((b): b is Anthropic.TextBlock => b.type === "text")
+        .map((b) => b.text)
+        .join("")
+        .trim();
+      if (text) result.reply = text;
+    } catch {
+      /* The cart still ships; only the narration falls back. */
+    }
+    if (cart.items.length) {
+      result.cartItems = cart.items;
+      result.builtTrip = buildBlock.trip;
+      result.trip = null;
+      if (!result.reply.trim()) {
+        result.reply = `Done — your ${buildBlock.trip.destination} trip is in the cart: ${cart.notes.join(". ")}.`;
+      }
+    } else if (!result.reply.trim()) {
+      result.reply =
+        "The live searches came up empty just now, so nothing went into your cart. Open the planner and I will keep helping from there.";
     }
   }
 

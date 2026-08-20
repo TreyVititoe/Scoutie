@@ -214,6 +214,22 @@ export const api = {
           | { match: string; action: "mark_booked" | "unmark_booked" | "remove" }[]
           | null;
         openSaved: string | null;
+        /* Set when Walter built the cart himself (explicit ask only). */
+        cartItems:
+          | {
+              id: string;
+              type: "flight" | "hotel" | "event";
+              title: string;
+              subtitle: string;
+              price: number | null;
+              image: string | null;
+              bookingUrl: string | null;
+              provider: string;
+              date: string | null;
+              meta: Record<string, unknown>;
+            }[]
+          | null;
+        builtTrip: Partial<TripPrefs> | null;
       }>("/api/chat", input),
   },
 };

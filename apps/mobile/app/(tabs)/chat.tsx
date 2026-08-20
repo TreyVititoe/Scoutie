@@ -76,6 +76,38 @@ type ChatResult = Awaited<ReturnType<typeof api.chat.send>>;
 /* Apply Walter's actions to the device stores; returns a trip to show as
  * an openable card when one makes sense. */
 function applyChatActions(result: ChatResult) {
+  if (result.cartItems?.length) {
+    /* Walter built the cart himself: load it and go straight there. */
+    if (result.builtTrip) {
+      usePrefs.getState().patch({
+        destination: result.builtTrip.destination ?? "",
+        startDate: result.builtTrip.startDate ?? "",
+        endDate: result.builtTrip.endDate ?? "",
+        travelers: result.builtTrip.travelers ?? 2,
+        budget: result.builtTrip.budget ?? 0,
+        vibes: result.builtTrip.vibes ?? [],
+        description: result.builtTrip.description ?? "",
+        departureCity: result.builtTrip.departureCity ?? "",
+        departureAirportCode: result.builtTrip.departureAirportCode ?? "",
+      });
+    }
+    useTripCart.setState({
+      items: result.cartItems.map((i) => ({
+        id: i.id,
+        type: i.type,
+        title: i.title,
+        subtitle: i.subtitle,
+        price: i.price ?? 0,
+        image: i.image,
+        bookingUrl: i.bookingUrl,
+        provider: i.provider,
+        meta: i.meta,
+      })),
+      bookedIds: [],
+    });
+    router.push("/trip");
+    return null;
+  }
   if (result.update) {
     usePrefs.getState().patch(result.update);
   }
