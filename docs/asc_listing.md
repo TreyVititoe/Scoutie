@@ -18,10 +18,12 @@ Paste-ready; edit freely. Companion: app_plan.md Phase 4.
 Walter takes you from "I should go somewhere" to "I'm booked" in one
 sitting.
 
-Tell Walter where you're headed — or let him make the case for
-somewhere new. He assembles the whole trip: real flights, real places
-to stay, and the things actually worth doing while you're there. One
-cart instead of eight open tabs.
+Tell Walter where you're headed — or just talk to him. Chat with
+Walter like you would a well-traveled friend: ask where to eat in
+Rome, when to see Tokyo, or say "book me a beach week in February"
+and watch him hand you the finished trip. He assembles the whole
+thing: real flights, real places to stay, and the things actually
+worth doing while you're there. One cart instead of eight open tabs.
 
 When the trip looks right, book it. Every item hands you off to the
 provider's own site — the airline, the hotel, the box office — so you
@@ -75,6 +77,13 @@ Required: 6.9" iPhone set (1320 × 2868). iPad not needed
 > system in this version — no reviewer credentials are needed. Trips
 > and carts are stored on the device.
 >
+> The Chat tab is an AI travel-planning assistant powered by a large
+> language model (Anthropic's Claude) via our own backend. It is
+> scoped to travel planning, uses the provider's safety systems, and
+> can only act on the user's own on-device trip data. Chat messages
+> are processed to generate the reply and are not stored server-side
+> or linked to any identity.
+>
 > The "Book on …" buttons are hand-off links that open the travel
 > provider's own website (airline, hotel, ticket seller) in a browser
 > sheet. Walter sells nothing in-app; bookings for physical travel
@@ -96,10 +105,12 @@ Required: 6.9" iPhone set (1320 × 2868). iPad not needed
 
 ## FINAL SUBMISSION CHECKLIST (2026-08-20 — everything below is Trey's)
 
-State: **build #4 (v1.0.0) uploaded and processing** — includes the
-group-price fix (7f3707f) that builds #2/#3 lack. Five screenshots at
-`docs/screenshots/01..05.png` (1320x2868, journey order: Home, Plan,
-Results, Trip, Checkout — real captures, live data).
+State: **build #7 (v1.0.0) is the submission candidate** — it carries
+the Walter chat concierge, the circle tab bar, the hourly pick,
+Trey's full punch list, and the group-price fix. Builds #2-#5 sit in
+TestFlight superseded; ignore them. Six screenshots at
+`docs/screenshots/01..06.png` (1320x2868: Home, Chat, Plan, Results,
+Trip, Checkout — real captures, live data).
 
 At https://appstoreconnect.apple.com/apps/6790163527 do, in order:
 
@@ -114,10 +125,11 @@ At https://appstoreconnect.apple.com/apps/6790163527 do, in order:
    unreachable in v1; no tracking, no ATT). Do NOT declare email or
    location.
 4. **1.0 version page:** paste description + keywords + URLs from the
-   sections above; upload the five screenshots from `docs/screenshots/`
-   in order; select **build 4** once processing finishes (email from
+   sections above; upload the six screenshots from `docs/screenshots/`
+   in order; select **build 7** once processing finishes (email from
    Apple, ~10 min); paste the App Review notes from this doc into
    Review Information; leave the sign-in fields OFF (no account needed).
-5. **Quick device QA first (recommended):** install build 4 from
-   TestFlight, run Home -> Plan -> Results -> Trip -> Checkout once.
+5. **Quick device QA first (recommended):** install build 7 from
+   TestFlight, run Home -> Chat (ask for a trip) -> Results -> Trip ->
+   Checkout once.
 6. Press **Submit for Review**.
