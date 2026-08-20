@@ -1,5 +1,45 @@
 # Session changes - 2026-08-20
 
+## Seven-feature evening batch (commits 6f49ce3..bdf3771)
+
+- FIX: web chat open_saved_trip scored matching + item-less saved trips
+  reopen /results instead of an empty /trip (the "empty cart in New
+  York" complaint).
+- Walter avatar on both chat surfaces: header, launcher, bubbles,
+  thinking row. Now a hand-drawn white line-figure on brand blue
+  (walter-face.png both apps) after Trey rejected the photoreal
+  illustration; the Higgsfield portrait (2 credits) was generated then
+  replaced -- do not regenerate.
+- Results filters, both surfaces: flights stops/airline/price/duration/
+  cabin(refetch)/sort; stays price/rating/center-distance/near-my-
+  events/sort (web geocodes the city center; distance filters are
+  web-only); events type/ticket/distance/sort; picks type/cost.
+  lib/resultsFilters.ts on each surface is pure logic.
+- Map feature: mobile Map tab (3rd circle) + web /map. Stays + events
+  as pins (gold ring = in cart), layer toggles, tap-a-pin add-to-trip
+  card. rnmapbox on mobile, mapbox-gl on web. Shared Hotel type gained
+  latitude/longitude.
+- Walter builds carts on EXPLICIT ask only (build_trip_cart tool +
+  lib/services/tripBuilder.ts): live searches server-side, value-first
+  picks, tool_result continuation so he narrates real picks, clients
+  load the cart and open /trip. Described-but-not-asked trips still go
+  through propose_trip.
+- Compare with real economics: web /compare/local rebuilt (old version
+  ignored events and mislabeled group prices as per-person), mobile
+  /compare screen + Trips-tab entry. True all-in cost incl. labeled
+  $60/person/day food+transit estimate, per-person/per-day, flight
+  length + stops, Budget-friendly/Comfortable/Premium tiers,
+  Cheapest-overall + Shortest-flight badges.
+- Multi-city trips: TripPrefs.legs[] (mirror leg 1 for compat), chat
+  proposes/builds them, results get stop-switcher chips + one-way hop
+  flights + Flight home chip (SerpAPI type=2 one-way plumbed through
+  service/route/api-client), tripBuilder builds hop-chain carts.
+  Stale-leg guard: legs count only when leg 1 matches the current
+  destination. Entry is via Walter chat; the landing SearchBar is
+  still single-city.
+- All verified per batch: web+mobile tsc, vitest 12/12, next build.
+  NOT in build 7 under review; ships v1.0.1/build 8.
+
 ## Chat usability + quick trips retired (evening, post-submission)
 
 - Mobile chat keyboard now gets out of the way: drag down on the
