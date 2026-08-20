@@ -89,6 +89,9 @@ export type Hotel = {
   pricePerNight: number;
   totalPrice: number;
   image: string | null;
+  /** Coordinates from Booking, when present; back the map pins. */
+  latitude?: number | null;
+  longitude?: number | null;
   /** Booking's real hotel id, for the lazy photo-carousel endpoint. */
   hotelId?: string;
   /** Photo set for the card carousel, main photo first. */
