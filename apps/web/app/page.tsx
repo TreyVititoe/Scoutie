@@ -457,7 +457,8 @@ export default function LandingPage() {
           the middle of the search bar — the bar straddles navy and white */}
       <section className="bg-page-bg pb-16 pt-16 relative z-[41] -mt-7 md:-mt-10 rounded-t-[44px] shadow-[0_-18px_50px_-20px_rgba(0,0,0,0.45)]">
         {CATEGORY_ORDER.map((cat, idx) => {
-          const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat);
+          /* Six per section: a seventh card overflows the typical screen. */
+          const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat).slice(0, 6);
           if (tripsInCat.length === 0) return null;
           return (
             <div key={cat} className={idx === 0 ? "" : "mt-9"}>
@@ -471,7 +472,7 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-4 sm:gap-5 px-5 sm:px-8">
                 {tripsInCat.map((trip) => (
                   <CuratedTripCard key={trip.id} trip={trip} router={router} />
                 ))}
@@ -491,7 +492,7 @@ export default function LandingPage() {
                 Built by other travelers, public for anyone to fork.
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 px-5 sm:px-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-4 sm:gap-5 px-5 sm:px-8">
               {[...trips]
                 .sort((a, b) => b.upvote_count - a.upvote_count)
                 .slice(0, 14)
