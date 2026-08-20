@@ -46,8 +46,8 @@ function FloatingTabBar({ state, navigation }: any) {
       pointerEvents="box-none"
       style={{
         position: "absolute",
-        left: 20,
-        right: 20,
+        left: 38,
+        right: 38,
         bottom: insets.bottom + 6,
       }}
     >

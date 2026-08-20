@@ -80,29 +80,78 @@ const HERO_CARDS: CuratedTrip[] = CATEGORY_ORDER.map((cat) =>
   CURATED_TRIPS.find((t) => t.category === cat)
 )
   .filter((t): t is CuratedTrip => Boolean(t))
-  .slice(0, 4);
+  .slice(0, 2);
 
-function HeroFloatCard({ trip, rotate }: { trip: CuratedTrip; rotate: string }) {
+/* Decorative sample facts so the floating cards read like the real,
+ * data-heavy proposals Walter sends back in chat. */
+const HERO_CARD_FACTS = [
+  { when: "Mar 5 to Mar 11 · 6 nights", who: "2 travelers", vibes: ["beach", "food"] },
+  { when: "Sep 12 to Sep 19 · 7 nights", who: "4 travelers", vibes: ["culture", "outdoors"] },
+];
+
+function HeroFloatCard({
+  trip,
+  facts,
+  rotate,
+}: {
+  trip: CuratedTrip;
+  facts: (typeof HERO_CARD_FACTS)[number];
+  rotate: string;
+}) {
   return (
     <div
-      className={`${rotate} w-[210px] overflow-hidden rounded-2xl bg-white/95 shadow-[0_24px_60px_-18px_rgba(0,0,0,0.6)] ring-1 ring-white/20`}
+      className={`${rotate} w-[260px] overflow-hidden rounded-3xl bg-white shadow-[0_30px_70px_-20px_rgba(0,0,0,0.65)] ring-1 ring-white/25`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- /api/photo 302s to the provider */}
-      <img
-        src={
-          trip.image ||
-          `/api/photo?query=${encodeURIComponent(trip.photoQuery || trip.destination)}`
-        }
-        alt=""
-        className="h-28 w-full object-cover"
-      />
-      <div className="px-3.5 py-2.5">
-        <p className="truncate text-[13px] font-bold text-[#141926]">
-          {trip.destination.split(",")[0]}
+      <div className="relative h-32">
+        {/* eslint-disable-next-line @next/next/no-img-element -- /api/photo 302s to the provider */}
+        <img
+          src={
+            trip.image ||
+            `/api/photo?query=${encodeURIComponent(trip.photoQuery || trip.destination)}`
+          }
+          alt=""
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,14,24,0.85)] via-transparent to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 px-4 pb-2.5">
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/80">
+            Your trip is ready
+          </p>
+          <p className="truncate text-[18px] font-bold tracking-tight text-white">
+            {trip.destination.split(",")[0]}
+          </p>
+        </div>
+      </div>
+      <div className="space-y-1 px-4 py-3 text-[12px]">
+        <p className="text-[#141926]">
+          <span className="mr-2 font-semibold text-[#5A6072]">When</span>
+          <span className="font-medium">{facts.when}</span>
         </p>
-        <p className="mt-0.5 text-[11px] font-medium text-[#5A6072]">
-          From ${trip.totalCost.toLocaleString()} · {trip.durationDays} days
+        <p className="text-[#141926]">
+          <span className="mr-2 font-semibold text-[#5A6072]">Who</span>
+          <span className="font-medium">{facts.who}</span>
         </p>
+        <p className="text-[#141926]">
+          <span className="mr-2 font-semibold text-[#5A6072]">Budget</span>
+          <span className="font-medium">
+            ${trip.totalCost.toLocaleString()} for the group
+          </span>
+        </p>
+        <div className="flex flex-wrap gap-1.5 pt-1.5">
+          {facts.vibes.map((v) => (
+            <span
+              key={v}
+              className="rounded-full bg-[#EFF1F5] px-2.5 py-1 text-[10px] font-semibold capitalize text-[#141926]"
+            >
+              {v}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="px-3 pb-3">
+        <div className="rounded-full bg-accent py-2.5 text-center text-[12px] font-bold text-white">
+          Open live flights and stays
+        </div>
       </div>
     </div>
   );
@@ -347,19 +396,22 @@ export default function LandingPage() {
             />
           </div>
 
-          {/* Floating trip cards: the product, drifting in the hero */}
+          {/* Floating trip cards: the elaborate proposals Walter sends back
+              in chat, drifting on either side of the headline */}
           <div aria-hidden className="absolute inset-0 pointer-events-none select-none hidden lg:block">
-            <div className="hero-drift-a absolute left-[4%] top-[16%]">
-              <HeroFloatCard trip={HERO_CARDS[0]} rotate="-rotate-6" />
+            <div className="hero-drift-a absolute left-[3%] top-[10%]">
+              <HeroFloatCard
+                trip={HERO_CARDS[0]}
+                facts={HERO_CARD_FACTS[0]}
+                rotate="-rotate-6"
+              />
             </div>
-            <div className="hero-drift-c absolute left-[10%] bottom-[4%]" style={{ animationDelay: "-9s" }}>
-              <HeroFloatCard trip={HERO_CARDS[1]} rotate="rotate-3" />
-            </div>
-            <div className="hero-drift-b absolute right-[4%] top-[14%]" style={{ animationDelay: "-5s" }}>
-              <HeroFloatCard trip={HERO_CARDS[2]} rotate="rotate-6" />
-            </div>
-            <div className="hero-drift-a absolute right-[9%] bottom-[6%]" style={{ animationDelay: "-13s" }}>
-              <HeroFloatCard trip={HERO_CARDS[3]} rotate="-rotate-3" />
+            <div className="hero-drift-b absolute right-[3%] top-[12%]" style={{ animationDelay: "-7s" }}>
+              <HeroFloatCard
+                trip={HERO_CARDS[1]}
+                facts={HERO_CARD_FACTS[1]}
+                rotate="rotate-6"
+              />
             </div>
           </div>
 
@@ -453,7 +505,7 @@ export default function LandingPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       {trip.tier && (
-                        <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
+                        <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-[#141926] rounded-pill px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide">
                           {trip.tier}
                         </span>
                       )}
@@ -538,7 +590,7 @@ function CuratedTripCard({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {trip.tier && (
-          <span className="absolute top-3 left-3 bg-tinted-pitch/85 backdrop-blur-sm text-reykjavik-sky rounded-pill px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-white/10">
+          <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-[#141926] rounded-pill px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide">
             {trip.tier}
           </span>
         )}

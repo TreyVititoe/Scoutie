@@ -20,6 +20,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { usePrefs } from "../../lib/stores/walterPrefsStore";
 import {
+  activeMessages,
+  threadLabel,
   useWalterChat,
   type ChatMessage,
 } from "../../lib/stores/walterChatStore";
@@ -226,7 +228,9 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets();
-  const messages = useWalterChat((s) => s.messages);
+  const threads = useWalterChat((s) => s.threads);
+  const activeId = useWalterChat((s) => s.activeId);
+  const messages = useWalterChat(activeMessages);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -256,7 +260,7 @@ export default function ChatScreen() {
     useWalterChat.getState().add(userMsg);
     setBusy(true);
     try {
-      const history = [...useWalterChat.getState().messages]
+      const history = activeMessages(useWalterChat.getState())
         .slice(-20)
         .map((m) => ({ role: m.role, content: m.content }));
       const result = await api.chat.send({ messages: history });
@@ -286,15 +290,61 @@ export default function ChatScreen() {
         className="px-5 pb-3 border-b border-line"
         style={{ paddingTop: insets.top + 10 }}
       >
-        <Text
-          className="text-ink font-semibold"
-          style={{ fontSize: 28, letterSpacing: -0.3 }}
-        >
-          Walter
-        </Text>
-        <Text className="text-ink-soft text-[13px] mt-0.5">
-          Your travel concierge. Ask him anything.
-        </Text>
+        <View className="flex-row items-end justify-between">
+          <View>
+            <Text
+              className="text-ink font-semibold"
+              style={{ fontSize: 28, letterSpacing: -0.3 }}
+            >
+              Walter
+            </Text>
+            <Text className="text-ink-soft text-[13px] mt-0.5">
+              Your travel concierge. Ask him anything.
+            </Text>
+          </View>
+          {/* Little conversation tabs: one dot per chat, plus a new-chat + */}
+          <View className="flex-row items-center gap-1.5 pb-1">
+            {threads.map((t, i) => {
+              const active = t.id === activeId;
+              return (
+                <Pressable
+                  key={t.id}
+                  onPress={() => useWalterChat.getState().setActive(t.id)}
+                  accessibilityRole="tab"
+                  accessibilityLabel={`Chat ${i + 1}`}
+                  accessibilityState={{ selected: active }}
+                  className="items-center justify-center rounded-full"
+                  style={{
+                    width: 30,
+                    height: 30,
+                    backgroundColor: active ? colors.accent : colors.surface3,
+                  }}
+                >
+                  <Text
+                    className="text-[11px] font-bold"
+                    style={{ color: active ? "#FFFFFF" : colors.text }}
+                  >
+                    {threadLabel(t, i)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+            <Pressable
+              onPress={() => useWalterChat.getState().newThread()}
+              accessibilityRole="button"
+              accessibilityLabel="New chat"
+              className="items-center justify-center rounded-full border border-line"
+              style={{ width: 30, height: 30 }}
+            >
+              <SymbolView
+                name="plus"
+                tintColor={colors.textTertiary}
+                size={13}
+                fallback={null}
+              />
+            </Pressable>
+          </View>
+        </View>
       </View>
 
       <ScrollView

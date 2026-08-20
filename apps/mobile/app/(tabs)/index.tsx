@@ -214,83 +214,86 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Walter's pick this hour: one big rotating recommendation */}
-          <Pressable
-            onPress={() => {
-              usePrefs.getState().patch({
-                destination: pick.destination,
-                durationDays: pick.durationDays,
-              });
-              router.push("/clarify");
-            }}
-            className="rounded-[28px] overflow-hidden mt-6"
-            style={{
-              shadowColor: colors.shadow,
-              shadowOpacity: 0.22,
-              shadowRadius: 24,
-              shadowOffset: { width: 0, height: 10 },
-            }}
-          >
-            <Image
-              source={{ uri: pickPhoto }}
-              contentFit="cover"
-              transition={250}
-              style={{ width: "100%", height: 340, backgroundColor: "#404042" }}
-            />
-            <LinearGradient
-              colors={["transparent", "rgba(10, 14, 24, 0.88)"]}
-              locations={[0.3, 1]}
-              style={{ position: "absolute", inset: 0 }}
-            />
-            <View
-              style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
-              className="p-5"
-            >
-              <Text className="text-white/80 text-[11px] font-semibold uppercase tracking-wider">
-                Walter&apos;s pick this hour
-              </Text>
-              <Text
-                className="text-white"
-                style={{
-                  fontFamily: "Georgia",
-                  fontSize: 30,
-                  lineHeight: 34,
-                  fontWeight: "600",
-                  marginTop: 4,
-                }}
-                numberOfLines={1}
-              >
-                {pick.destination.split(",")[0]}
-              </Text>
-              <Text
-                className="text-white/85 text-[14px] mt-1.5 leading-5"
-                numberOfLines={2}
-              >
-                {pick.description}
-              </Text>
-              <View className="flex-row items-center justify-between mt-3.5">
-                <Text className="text-white/90 text-[14px] font-semibold">
-                  From ${pick.totalCost.toLocaleString()} · {pick.durationDays}{" "}
-                  days
-                </Text>
-                <View className="flex-row items-center gap-1.5">
-                  <Text className="text-white text-[14px] font-semibold">
-                    Plan it
-                  </Text>
-                  <SymbolView
-                    name="arrow.right"
-                    tintColor="white"
-                    size={13}
-                    fallback={null}
-                  />
-                </View>
-              </View>
-            </View>
-          </Pressable>
         </View>
 
         {/* Rails on solid ground */}
         <View className="bg-page-bg mt-10 pt-2">
+          <View className="px-5 mb-8">
+            {/* Walter's pick this hour: opens the solid ground below the hero */}
+            <Pressable
+              onPress={() => {
+                usePrefs.getState().patch({
+                  destination: pick.destination,
+                  durationDays: pick.durationDays,
+                });
+                router.push("/clarify");
+              }}
+              className="rounded-[28px] overflow-hidden mt-6"
+              style={{
+                shadowColor: colors.shadow,
+                shadowOpacity: 0.22,
+                shadowRadius: 24,
+                shadowOffset: { width: 0, height: 10 },
+              }}
+            >
+              <Image
+                source={{ uri: pickPhoto }}
+                contentFit="cover"
+                transition={250}
+                style={{ width: "100%", height: 340, backgroundColor: "#404042" }}
+              />
+              <LinearGradient
+                colors={["transparent", "rgba(10, 14, 24, 0.88)"]}
+                locations={[0.3, 1]}
+                style={{ position: "absolute", inset: 0 }}
+              />
+              <View
+                style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
+                className="p-5"
+              >
+                <Text className="text-white/80 text-[11px] font-semibold uppercase tracking-wider">
+                  Walter&apos;s pick this hour
+                </Text>
+                <Text
+                  className="text-white"
+                  style={{
+                    fontFamily: "Georgia",
+                    fontSize: 30,
+                    lineHeight: 34,
+                    fontWeight: "600",
+                    marginTop: 4,
+                  }}
+                  numberOfLines={1}
+                >
+                  {pick.destination.split(",")[0]}
+                </Text>
+                <Text
+                  className="text-white/85 text-[14px] mt-1.5 leading-5"
+                  numberOfLines={2}
+                >
+                  {pick.description}
+                </Text>
+                <View className="flex-row items-center justify-between mt-3.5">
+                  <Text className="text-white/90 text-[14px] font-semibold">
+                    From ${pick.totalCost.toLocaleString()} · {pick.durationDays}{" "}
+                    days
+                  </Text>
+                  <View className="flex-row items-center gap-1.5">
+                    <Text className="text-white text-[14px] font-semibold">
+                      Plan it
+                    </Text>
+                    <SymbolView
+                      name="arrow.right"
+                      tintColor="white"
+                      size={13}
+                      fallback={null}
+                    />
+                  </View>
+                </View>
+              </View>
+            </Pressable>
+          </View>
+
           {rails.map((rail) => (
             <View key={rail.key} className="mb-7">
               <View className="px-5 mb-3 flex-row items-center justify-between">
