@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { mergePrefs } from "@/lib/prefs";
+import { mergePrefs, readStored } from "@/lib/prefs";
+import { useSavedTripsStore } from "@/lib/stores/savedTripsStore";
+import { useTripCartStore } from "@/lib/stores/tripCartStore";
 
 type ChatTrip = {
   destination?: string;
@@ -29,6 +31,51 @@ const OPENERS = [
   "Where should I eat in Rome?",
   "Best month for Tokyo?",
 ];
+
+type CartOp = {
+  match: string;
+  action: "mark_booked" | "unmark_booked" | "remove";
+};
+
+/* Walter sees the browser's trip state with every message. */
+function buildChatContext() {
+  const p = readStored<Record<string, unknown>>("walter_prefs", {});
+  const prefs: Record<string, unknown> = {};
+  for (const key of [
+    "destination",
+    "startDate",
+    "endDate",
+    "travelers",
+    "budget",
+    "vibes",
+    "description",
+    "departureCity",
+    "departureAirportCode",
+  ]) {
+    const v = p[key];
+    if (v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0)) {
+      prefs[key] = v;
+    }
+  }
+  const cart = useTripCartStore.getState();
+  const saved = useSavedTripsStore.getState().trips;
+  return {
+    prefs,
+    cart: cart.items.map((i) => ({
+      title: i.title,
+      type: i.type,
+      price: i.price,
+      booked: cart.bookedIds.includes(i.id),
+    })),
+    savedTrips: saved.map((t) => ({
+      name: t.name,
+      destination: t.destination,
+      when: t.startDate
+        ? `${t.startDate}${t.endDate ? ` to ${t.endDate}` : ""}`
+        : undefined,
+    })),
+  };
+}
 
 function shortDate(iso?: string): string {
   if (!iso) return "";
@@ -96,6 +143,70 @@ export function WalterChat() {
     router.push("/results");
   };
 
+  /* Apply Walter's actions to browser state; returns a trip to render as
+   * an openable card when one makes sense. */
+  const applyChatActions = (data: {
+    trip?: ChatTrip;
+    update?: ChatTrip;
+    cartOps?: CartOp[] | null;
+    openSaved?: string | null;
+  }): ChatTrip => {
+    if (data.update) {
+      try {
+        localStorage.removeItem("walter_trip");
+      } catch {}
+      mergePrefs(data.update as Record<string, unknown>);
+    }
+    if (data.cartOps) {
+      for (const op of data.cartOps) {
+        const cart = useTripCartStore.getState();
+        const item = cart.items.find((i) =>
+          i.title.toLowerCase().includes(op.match.toLowerCase())
+        );
+        if (!item) continue;
+        const booked = cart.bookedIds.includes(item.id);
+        if (op.action === "remove") cart.removeItem(item.id);
+        else if (op.action === "mark_booked" && !booked)
+          cart.toggleBooked(item.id);
+        else if (op.action === "unmark_booked" && booked)
+          cart.toggleBooked(item.id);
+      }
+    }
+    if (data.openSaved) {
+      const wanted = data.openSaved.toLowerCase();
+      const trip = useSavedTripsStore
+        .getState()
+        .trips.find(
+          (t) =>
+            t.name.toLowerCase().includes(wanted) ||
+            wanted.includes(t.name.toLowerCase()) ||
+            t.destination.toLowerCase().includes(wanted)
+        );
+      if (trip) {
+        useTripCartStore.setState({ items: trip.items, bookedIds: [] });
+        try {
+          localStorage.removeItem("walter_trip");
+        } catch {}
+        mergePrefs({
+          destination: trip.destination,
+          startDate: trip.startDate ?? "",
+          endDate: trip.endDate ?? "",
+          travelers: trip.travelers ?? 2,
+        });
+        setOpen(false);
+        router.push("/trip");
+      }
+    }
+    if (data.trip) return data.trip;
+    if (data.update) {
+      const p = readStored<Record<string, unknown>>("walter_prefs", {});
+      return typeof p.destination === "string" && p.destination
+        ? (p as ChatTrip)
+        : null;
+    }
+    return null;
+  };
+
   const send = async (text: string) => {
     const content = text.trim();
     if (!content || busy) return;
@@ -115,23 +226,28 @@ export function WalterChat() {
           messages: next
             .slice(-20)
             .map((m) => ({ role: m.role, content: m.content })),
+          context: buildChatContext(),
         }),
       });
       const data = (await resp.json()) as {
         reply?: string;
         trip?: ChatTrip;
+        update?: ChatTrip;
+        cartOps?: CartOp[] | null;
+        openSaved?: string | null;
         error?: string;
       };
       if (!resp.ok || !data.reply) {
         throw new Error(data.error || "Walter stepped away for a moment.");
       }
+      const cardTrip = applyChatActions(data);
       setMessages((cur) => [
         ...cur,
         {
           id: `a-${++seqRef.current}`,
           role: "assistant",
           content: data.reply as string,
-          trip: data.trip ?? null,
+          trip: cardTrip,
         },
       ]);
     } catch (err) {

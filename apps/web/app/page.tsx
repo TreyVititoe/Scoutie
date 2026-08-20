@@ -372,7 +372,9 @@ export default function LandingPage() {
       {/* Hero: plain daylight field. The cornflower radial is the only
           color up here; photography lives in the trip cards below. */}
       <section className="relative z-40">
-        <div className="relative overflow-hidden bg-[#0C182E] pt-32 sm:pt-40 pb-24 sm:pb-28">
+        {/* Extra bottom padding so the rounded trips shelf overlaps navy,
+            not the white page behind the hero's end */}
+        <div className="relative overflow-hidden bg-[#0C182E] pt-32 sm:pt-40 pb-44 sm:pb-52">
           {/* Dark-blue textured field: layered radials, grain, and a faint
               dot grid. Photography floats on top as real trip cards. */}
           <div aria-hidden className="absolute inset-0 pointer-events-none select-none">
@@ -451,7 +453,7 @@ export default function LandingPage() {
 
       {/* Curated trips grouped by category */}
       {/* The trips shelf rides up over the dark hero like a massive card */}
-      <section className="bg-page-bg pb-16 pt-16 relative z-[41] -mt-12 rounded-t-[44px] shadow-[0_-18px_50px_-20px_rgba(0,0,0,0.45)]">
+      <section className="bg-page-bg pb-16 pt-16 relative z-[41] -mt-32 rounded-t-[44px] shadow-[0_-18px_50px_-20px_rgba(0,0,0,0.45)]">
         {CATEGORY_ORDER.map((cat, idx) => {
           const tripsInCat = CURATED_TRIPS.filter((t) => t.category === cat);
           if (tripsInCat.length === 0) return null;

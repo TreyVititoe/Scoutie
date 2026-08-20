@@ -190,15 +190,31 @@ export const api = {
       })),
   },
   chat: {
-    /** Talk to Walter. Returns his reply and, when the conversation has
-     * produced a plannable trip, a structured trip to open. */
+    /** Talk to Walter. The optional context is the device's local trip
+     * state (plan, cart, saved trips) so he can see and act on it; the
+     * response may carry actions for the client to apply. */
     send: (input: {
       messages: { role: "user" | "assistant"; content: string }[];
+      context?: {
+        prefs?: Record<string, unknown>;
+        cart?: {
+          title: string;
+          type?: string;
+          price?: number;
+          booked?: boolean;
+        }[];
+        savedTrips?: { name: string; destination?: string; when?: string }[];
+      };
     }) =>
-      post<{ reply: string; trip: Partial<TripPrefs> | null }>(
-        "/api/chat",
-        input
-      ),
+      post<{
+        reply: string;
+        trip: Partial<TripPrefs> | null;
+        update: Partial<TripPrefs> | null;
+        cartOps:
+          | { match: string; action: "mark_booked" | "unmark_booked" | "remove" }[]
+          | null;
+        openSaved: string | null;
+      }>("/api/chat", input),
   },
 };
 

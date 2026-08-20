@@ -18,6 +18,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useSavedTrips } from "../../lib/stores/savedTripsStore";
+import { useTripCart } from "../../lib/stores/tripCartStore";
 import { usePrefs } from "../../lib/stores/walterPrefsStore";
 import {
   activeMessages,
@@ -26,6 +28,107 @@ import {
   type ChatMessage,
 } from "../../lib/stores/walterChatStore";
 import { colors } from "../../theme/colors";
+
+/* Walter sees the device's trip state with every message. */
+function buildChatContext() {
+  const p = usePrefs.getState().prefs;
+  const cart = useTripCart.getState();
+  const saved = useSavedTrips.getState().trips;
+  const prefs: Record<string, unknown> = {};
+  for (const key of [
+    "destination",
+    "startDate",
+    "endDate",
+    "travelers",
+    "budget",
+    "vibes",
+    "description",
+    "departureCity",
+    "departureAirportCode",
+  ] as const) {
+    const v = p[key];
+    if (v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0)) {
+      prefs[key] = v;
+    }
+  }
+  return {
+    prefs,
+    cart: cart.items.map((i) => ({
+      title: i.title,
+      type: i.type,
+      price: i.price,
+      booked: cart.bookedIds.includes(i.id),
+    })),
+    savedTrips: saved.map((t) => ({
+      name: t.name,
+      destination: t.destination,
+      when: t.startDate
+        ? `${t.startDate}${t.endDate ? ` to ${t.endDate}` : ""}`
+        : undefined,
+    })),
+  };
+}
+
+type ChatResult = Awaited<ReturnType<typeof api.chat.send>>;
+
+/* Apply Walter's actions to the device stores; returns a trip to show as
+ * an openable card when one makes sense. */
+function applyChatActions(result: ChatResult) {
+  if (result.update) {
+    usePrefs.getState().patch(result.update);
+  }
+  if (result.cartOps) {
+    for (const op of result.cartOps) {
+      const cart = useTripCart.getState();
+      const item = cart.items.find((i) =>
+        i.title.toLowerCase().includes(op.match.toLowerCase())
+      );
+      if (!item) continue;
+      const booked = cart.bookedIds.includes(item.id);
+      if (op.action === "remove") cart.remove(item.id);
+      else if (op.action === "mark_booked" && !booked) cart.toggleBooked(item.id);
+      else if (op.action === "unmark_booked" && booked) cart.toggleBooked(item.id);
+    }
+  }
+  if (result.openSaved) {
+    const wanted = result.openSaved.toLowerCase();
+    const trip = useSavedTrips
+      .getState()
+      .trips.find(
+        (t) =>
+          t.name.toLowerCase().includes(wanted) ||
+          wanted.includes(t.name.toLowerCase()) ||
+          t.destination.toLowerCase().includes(wanted)
+      );
+    if (trip) {
+      if (trip.curatedId || trip.items.length === 0) {
+        usePrefs.getState().patch({
+          destination: trip.destination,
+          durationDays: trip.durationDays,
+        });
+        router.push("/clarify");
+      } else {
+        useTripCart.setState({
+          items: trip.items,
+          bookedIds: trip.bookedIds ?? [],
+        });
+        usePrefs.getState().patch({
+          destination: trip.destination,
+          startDate: trip.startDate ?? "",
+          endDate: trip.endDate ?? "",
+        });
+        router.push("/trip");
+      }
+    }
+  }
+  if (result.trip) return result.trip;
+  if (result.update) {
+    /* Show the merged plan as an openable card. */
+    const p = usePrefs.getState().prefs;
+    return p.destination ? { ...p } : null;
+  }
+  return null;
+}
 
 const OPENERS = [
   "Plan me a beach week in March",
@@ -263,12 +366,16 @@ export default function ChatScreen() {
       const history = activeMessages(useWalterChat.getState())
         .slice(-20)
         .map((m) => ({ role: m.role, content: m.content }));
-      const result = await api.chat.send({ messages: history });
+      const result = await api.chat.send({
+        messages: history,
+        context: buildChatContext(),
+      });
+      const cardTrip = applyChatActions(result);
       useWalterChat.getState().add({
         id: `a-${Date.now()}`,
         role: "assistant",
         content: result.reply,
-        trip: result.trip,
+        trip: cardTrip,
       });
     } catch (err) {
       setError(

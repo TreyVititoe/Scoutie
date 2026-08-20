@@ -16,8 +16,12 @@ WHO WALTER IS:
 
 WHAT WALTER CAN DO IN THE APP:
 - The app builds real trips: live flights, hotels, events, and curated activities, gathered into one cart the traveler books through each provider's own site.
-- When the conversation produces a concrete, plannable trip — a destination plus at least a rough sense of when or how long — call the propose_trip tool with your best structured version of it. Fill in sensible specifics for anything unstated (dates a few weeks out, 2 travelers, hotel stay) rather than interrogating the user. One short clarifying question is fine when the trip is genuinely ambiguous; otherwise propose.
-- Always accompany a propose_trip call with a short text reply that sells the trip in Walter's voice and tells the user the plan is ready to open.
+- A TRAVELER CONTEXT block may follow this prompt with their current trip plan, their cart (each item flagged booked or not), and their saved trips. That is your working memory: answer questions about it directly ("what do I have saved?", "what's left to book?") and act on it with your tools. Reference items by name naturally.
+- NEW TRIP: when the conversation produces a concrete, plannable trip, call propose_trip with your best structured version. Fill in sensible specifics for anything unstated rather than interrogating; one short clarifying question is fine when the trip is genuinely ambiguous.
+- CHANGE THE CURRENT TRIP: when they want to shift dates, add travelers, change destination or budget on the trip already in progress, call update_trip with ONLY the changed fields, and confirm what changed in your reply.
+- MANAGE THEIR CART: when they booked something, want something dropped, or ask to un-mark an item, call manage_cart with one operation per item, matching by the item's name.
+- REOPEN A SAVED TRIP: when they mention a past or saved trip, call open_saved_trip with its name so the app loads it.
+- Always accompany a tool call with a short reply in Walter's voice saying what you did.
 - If the user mentions preferences the trip search cannot filter (a specific airline like Delta, a hotel brand, seat class), acknowledge it, fold it into the description field, and tell them where they will see those options (the Flights or Stay tab) once the trip opens.
 - Walter cannot complete purchases himself. Booking happens on the provider's site; the app tracks what is booked. Never claim a payment was made.
 
@@ -25,71 +29,164 @@ FACTS AND HONESTY:
 - Recommend only real places that exist. If unsure something is still open, say so.
 - You do not have live prices or availability in chat; the app fetches live data when the trip opens. Speak in typical ranges, not fake exact quotes.`;
 
+const tripFields = {
+  destination: {
+    type: "string",
+    description: "City and country/state, e.g. 'Barcelona, Spain'",
+  },
+  startDate: { type: "string", description: "YYYY-MM-DD" },
+  endDate: { type: "string", description: "YYYY-MM-DD" },
+  travelers: { type: "integer", description: "Number of adults" },
+  budget: {
+    type: "integer",
+    description: "Total trip budget in USD for the whole group, 0 if unknown",
+  },
+  departureCity: { type: "string", description: "Where they leave from" },
+  departureAirportCode: {
+    type: "string",
+    description: "IATA code for the departure airport",
+  },
+  vibes: {
+    type: "array",
+    items: { type: "string" },
+    description: "Trip interests, e.g. food, culture, nightlife, outdoors",
+  },
+  description: {
+    type: "string",
+    description:
+      "Free-text preferences that matter to this traveler, including airline or hotel-brand preferences",
+  },
+} as const;
+
 const proposeTripTool: Anthropic.Tool = {
   name: "propose_trip",
   description:
-    "Assemble the trip discussed in this conversation so the app can open it as a real, bookable plan. Call this whenever a concrete destination emerges. The app uses these fields to run live flight, hotel, event, and activity searches.",
+    "Assemble a NEW trip discussed in this conversation so the app can open it as a real, bookable plan. The app uses these fields to run live flight, hotel, event, and activity searches.",
+  input_schema: {
+    type: "object",
+    properties: { ...tripFields },
+    required: ["destination", "startDate", "endDate", "travelers"],
+  },
+};
+
+const updateTripTool: Anthropic.Tool = {
+  name: "update_trip",
+  description:
+    "Change fields on the trip currently in progress (the CURRENT TRIP PLAN in the traveler context). Send ONLY the fields that change; everything else is preserved. The app re-runs searches with the merged plan.",
+  input_schema: {
+    type: "object",
+    properties: { ...tripFields },
+    required: [],
+  },
+};
+
+const manageCartTool: Anthropic.Tool = {
+  name: "manage_cart",
+  description:
+    "Operate on items in the traveler's cart (listed in the traveler context). Use when they say they booked something, want an item removed, or want a booked mark undone. Match items by name.",
   input_schema: {
     type: "object",
     properties: {
-      destination: {
-        type: "string",
-        description: "City and country/state, e.g. 'Barcelona, Spain'",
-      },
-      startDate: { type: "string", description: "YYYY-MM-DD" },
-      endDate: { type: "string", description: "YYYY-MM-DD" },
-      travelers: { type: "integer", description: "Number of adults, default 2" },
-      budget: {
-        type: "integer",
-        description: "Total trip budget in USD for the whole group, 0 if unknown",
-      },
-      departureCity: {
-        type: "string",
-        description: "Where they leave from, empty string if unknown",
-      },
-      departureAirportCode: {
-        type: "string",
-        description: "IATA code for the departure airport, empty string if unknown",
-      },
-      vibes: {
+      operations: {
         type: "array",
-        items: { type: "string" },
-        description: "Trip interests, e.g. food, culture, nightlife, outdoors",
-      },
-      description: {
-        type: "string",
-        description:
-          "Free-text preferences that matter to this traveler, including airline or hotel-brand preferences, e.g. 'prefers Delta flights'",
+        items: {
+          type: "object",
+          properties: {
+            match: {
+              type: "string",
+              description:
+                "Part of the cart item's title, enough to identify it uniquely",
+            },
+            action: {
+              type: "string",
+              enum: ["mark_booked", "unmark_booked", "remove"],
+            },
+          },
+          required: ["match", "action"],
+        },
       },
     },
-    required: [
-      "destination",
-      "startDate",
-      "endDate",
-      "travelers",
-      "budget",
-      "departureCity",
-      "departureAirportCode",
-      "vibes",
-      "description",
-    ],
-    additionalProperties: false,
+    required: ["operations"],
+  },
+};
+
+const openSavedTripTool: Anthropic.Tool = {
+  name: "open_saved_trip",
+  description:
+    "Load one of the traveler's saved trips (listed in the traveler context) back into the planner.",
+  input_schema: {
+    type: "object",
+    properties: {
+      name: {
+        type: "string",
+        description: "The saved trip's name as it appears in the context",
+      },
+    },
+    required: ["name"],
   },
 };
 
 export type WalterChatTurn = { role: "user" | "assistant"; content: string };
 
+export type WalterCartOp = {
+  match: string;
+  action: "mark_booked" | "unmark_booked" | "remove";
+};
+
+export type WalterChatContext = {
+  prefs?: Record<string, unknown>;
+  cart?: { title: string; type?: string; price?: number; booked?: boolean }[];
+  savedTrips?: { name: string; destination?: string; when?: string }[];
+};
+
 export type WalterChatResult = {
   reply: string;
   trip: Partial<TripPrefs> | null;
+  update: Partial<TripPrefs> | null;
+  cartOps: WalterCartOp[] | null;
+  openSaved: string | null;
 };
 
-/* One API call per chat message: Walter replies in text and, when the
- * conversation has produced a plannable trip, attaches a structured trip
- * via the propose_trip tool. The tool call ends the turn — the client
- * renders it as an "Open this trip" card, so no tool_result round trip. */
+function contextBlock(context: WalterChatContext | undefined, today: string) {
+  const lines: string[] = [`Today's date is ${today}. Proposed trips must start after this date.`];
+  if (context?.prefs && Object.keys(context.prefs).length) {
+    lines.push(`\nTRAVELER CONTEXT — CURRENT TRIP PLAN:\n${JSON.stringify(context.prefs)}`);
+  }
+  if (context?.cart?.length) {
+    lines.push(
+      `\nTRAVELER CONTEXT — CART (${context.cart.length} items):\n` +
+        context.cart
+          .map(
+            (i) =>
+              `- ${i.title}${i.type ? ` [${i.type}]` : ""}${
+                typeof i.price === "number" ? ` $${i.price}` : ""
+              } — ${i.booked ? "BOOKED" : "not booked yet"}`
+          )
+          .join("\n")
+    );
+  }
+  if (context?.savedTrips?.length) {
+    lines.push(
+      `\nTRAVELER CONTEXT — SAVED TRIPS:\n` +
+        context.savedTrips
+          .map(
+            (t) =>
+              `- "${t.name}"${t.destination ? ` (${t.destination}` : ""}${
+                t.when ? `, ${t.when})` : t.destination ? ")" : ""
+              }`
+          )
+          .join("\n")
+    );
+  }
+  return lines.join("\n");
+}
+
+/* One API call per chat message: Walter replies in text and may attach one
+ * or more actions via tools. Tool calls end the turn — the client applies
+ * them locally (the trip state lives on the device, not our servers). */
 export async function walterChat(
-  turns: WalterChatTurn[]
+  turns: WalterChatTurn[],
+  context?: WalterChatContext
 ): Promise<WalterChatResult> {
   const today = new Date().toISOString().slice(0, 10);
 
@@ -98,41 +195,82 @@ export async function walterChat(
     max_tokens: 1024,
     system: [
       { type: "text", text: WALTER_CHAT_SYSTEM },
-      {
-        type: "text",
-        text: `Today's date is ${today}. Proposed trips must start after this date.`,
-      },
+      { type: "text", text: contextBlock(context, today) },
     ],
-    tools: [proposeTripTool],
+    tools: [proposeTripTool, updateTripTool, manageCartTool, openSavedTripTool],
     messages: turns,
   });
 
-  let reply = "";
-  let trip: Partial<TripPrefs> | null = null;
+  const result: WalterChatResult = {
+    reply: "",
+    trip: null,
+    update: null,
+    cartOps: null,
+    openSaved: null,
+  };
 
   for (const block of response.content) {
     if (block.type === "text") {
-      reply += block.text;
-    } else if (block.type === "tool_use" && block.name === "propose_trip") {
-      trip = cleanTrip(block.input as Record<string, unknown>);
+      result.reply += block.text;
+    } else if (block.type === "tool_use") {
+      const input = block.input as Record<string, unknown>;
+      if (block.name === "propose_trip") {
+        result.trip = cleanTrip(input, true);
+      } else if (block.name === "update_trip") {
+        result.update = cleanTrip(input, false);
+      } else if (block.name === "manage_cart") {
+        result.cartOps = cleanCartOps(input);
+      } else if (block.name === "open_saved_trip" && typeof input.name === "string") {
+        result.openSaved = input.name.trim().slice(0, 120) || null;
+      }
     }
   }
 
-  if (!reply.trim()) {
-    reply = trip
+  if (!result.reply.trim()) {
+    result.reply = result.trip
       ? "Your trip is ready — open it to see live flights, places to stay, and things to do."
-      : "Tell me a little more about where you are dreaming of going.";
+      : result.update
+        ? "Done — I updated your trip."
+        : result.cartOps?.length
+          ? "Done — your trip checklist is updated."
+          : result.openSaved
+            ? "Pulling that trip back up for you."
+            : "Tell me a little more about where you are dreaming of going.";
   }
 
-  return { reply: reply.trim(), trip };
+  return { ...result, reply: result.reply.trim() };
 }
 
-function cleanTrip(input: Record<string, unknown>): Partial<TripPrefs> | null {
+function cleanCartOps(input: Record<string, unknown>): WalterCartOp[] | null {
+  if (!Array.isArray(input.operations)) return null;
+  const ops: WalterCartOp[] = [];
+  for (const raw of input.operations.slice(0, 12)) {
+    if (!raw || typeof raw !== "object") continue;
+    const { match, action } = raw as { match?: unknown; action?: unknown };
+    if (typeof match !== "string" || !match.trim()) continue;
+    if (
+      action !== "mark_booked" &&
+      action !== "unmark_booked" &&
+      action !== "remove"
+    )
+      continue;
+    ops.push({ match: match.trim().slice(0, 120), action });
+  }
+  return ops.length ? ops : null;
+}
+
+function cleanTrip(
+  input: Record<string, unknown>,
+  requireDestination: boolean
+): Partial<TripPrefs> | null {
   const destination =
     typeof input.destination === "string" ? input.destination.trim() : "";
-  if (!destination) return null;
+  if (requireDestination && !destination) return null;
 
   const iso = /^\d{4}-\d{2}-\d{2}$/;
+  const trip: Partial<TripPrefs> = {};
+  if (destination) trip.destination = destination;
+
   const startDate =
     typeof input.startDate === "string" && iso.test(input.startDate)
       ? input.startDate
@@ -141,16 +279,15 @@ function cleanTrip(input: Record<string, unknown>): Partial<TripPrefs> | null {
     typeof input.endDate === "string" && iso.test(input.endDate)
       ? input.endDate
       : undefined;
-
-  const trip: Partial<TripPrefs> = { destination };
   if (startDate) trip.startDate = startDate;
-  if (endDate && startDate && endDate > startDate) trip.endDate = endDate;
+  if (endDate && (!startDate || endDate > startDate)) trip.endDate = endDate;
 
   const travelers = Number(input.travelers);
-  trip.travelers =
-    Number.isFinite(travelers) && travelers >= 1 && travelers <= 16
-      ? Math.round(travelers)
-      : 2;
+  if (Number.isFinite(travelers) && travelers >= 1 && travelers <= 16) {
+    trip.travelers = Math.round(travelers);
+  } else if (requireDestination) {
+    trip.travelers = 2;
+  }
 
   const budget = Number(input.budget);
   if (Number.isFinite(budget) && budget > 0 && budget <= 1_000_000) {
@@ -176,5 +313,5 @@ function cleanTrip(input: Record<string, unknown>): Partial<TripPrefs> | null {
     trip.description = input.description.trim().slice(0, 500);
   }
 
-  return trip;
+  return Object.keys(trip).length ? trip : null;
 }
