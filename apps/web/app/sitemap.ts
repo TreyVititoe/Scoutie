@@ -4,7 +4,7 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://scoutie.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/explore", "/quick", "/clarify", "/about", "/privacy", "/terms"];
+  const routes = ["", "/explore", "/clarify", "/about", "/privacy", "/terms"];
   return routes.map((route) => ({
     url: `${SITE_URL}${route}`,
     changeFrequency: route === "" || route === "/explore" ? "weekly" : "monthly",

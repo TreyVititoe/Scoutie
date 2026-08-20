@@ -1,5 +1,26 @@
 # Session changes - 2026-08-20
 
+## Chat usability + quick trips retired (evening, post-submission)
+
+- Mobile chat keyboard now gets out of the way: drag down on the
+  conversation to dismiss (interactive on iOS, on-drag on Android), tap
+  anywhere outside the composer to dismiss, and while the keyboard is up
+  the composer drops its 86px tab-bar clearance and hugs the keyboard.
+- Copy support on both surfaces. Mobile: long-press any bubble (yours or
+  Walter's) to copy its text, long-press a trip card to copy a pasteable
+  trip summary; success haptic + transient "Copied" label. Web widget:
+  a quiet Copy button under every bubble and "Copy trip details" under
+  each trip card. Bold markers are stripped from copied text.
+  New dep: expo-clipboard ~55.0.16 (native module -- rides the prebuild
+  the next EAS build already needs; works in Expo Go today).
+- Quick trips retired everywhere: mobile tab bar is three circles
+  (Home/Trips/Chat, quick screen parked href:null like profile), web nav
+  link removed, shared-trip CTA now only "Design My Trip", /quick pulled
+  from the sitemap. The /quick page + /api/quick still exist, unlinked.
+- Verified: mobile tsc clean, web tsc clean, vitest 12/12, next build
+  passes. These changes are NOT in build 7 under Apple review; they ship
+  with v1.0.1 / build 8.
+
 ## Walter chat concierge + Trey's live punch list (same session, cont.)
 
 - Walter chat shipped on both surfaces: `POST /api/chat` (Claude Haiku,

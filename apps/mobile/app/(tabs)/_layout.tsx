@@ -7,11 +7,10 @@ import { colors } from "../../theme/colors";
 
 /* Floating pill bar holding four equal filled circles: dark gray with white
  * icons, turning accent blue when selected. */
-const TAB_ORDER = ["index", "saved", "quick", "chat"] as const;
+const TAB_ORDER = ["index", "saved", "chat"] as const;
 const TAB_META: Record<string, { icon: string; label: string }> = {
   index: { icon: "house.fill", label: "Home" },
   saved: { icon: "suitcase.fill", label: "Trips" },
-  quick: { icon: "sparkles", label: "Quick plan" },
   chat: { icon: "message.fill", label: "Chat" },
 };
 
@@ -125,7 +124,8 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ headerShown: false }} />
       <Tabs.Screen name="saved" options={{ title: "Trips" }} />
-      <Tabs.Screen name="quick" options={{ title: "Quick" }} />
+      {/* Quick trips are retired; the screen stays reachable by code only. */}
+      <Tabs.Screen name="quick" options={{ href: null, title: "Quick" }} />
       <Tabs.Screen name="chat" options={{ headerShown: false }} />
       {/* Folded into the Explore home; hidden from the bar. */}
       <Tabs.Screen name="explore" options={{ href: null }} />

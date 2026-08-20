@@ -426,15 +426,8 @@ export default function SharedTripPage() {
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link
-              href="/quick"
-              className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-[18px]">bolt</span>
-              Quick Plan
-            </Link>
-            <Link
               href="/"
-              className="inline-flex px-8 py-4 rounded-[10px] border border-ink/20 text-ink font-semibold hover:bg-ink/5 transition-colors items-center gap-2"
+              className="inline-flex px-8 py-4 rounded-[10px] bg-accent text-white font-semibold hover:bg-accent-light transition-colors items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">tune</span>
               Design My Trip

@@ -85,6 +85,33 @@ function shortDate(iso?: string): string {
   });
 }
 
+/* Plain-text version of a message: Walter's **bold** markers stripped. */
+function plainText(text: string): string {
+  return text.split("**").join("");
+}
+
+/* A pasteable summary of a proposed trip. */
+function tripSummaryText(trip: NonNullable<ChatTrip>): string {
+  const lines: string[] = [`Trip: ${trip.destination ?? "Trip"}`];
+  if (trip.startDate && trip.endDate) {
+    lines.push(`When: ${shortDate(trip.startDate)} to ${shortDate(trip.endDate)}`);
+  }
+  lines.push(
+    `Who: ${(trip.travelers ?? 0) > 1 ? `${trip.travelers} travelers` : "Solo trip"}`
+  );
+  if (trip.departureCity || trip.departureAirportCode) {
+    lines.push(
+      `From: ${trip.departureCity ?? "Departure"}${trip.departureAirportCode ? ` (${trip.departureAirportCode})` : ""}`
+    );
+  }
+  if ((trip.budget ?? 0) > 0) {
+    lines.push(`Budget: $${trip.budget!.toLocaleString()} for the group`);
+  }
+  if (trip.vibes?.length) lines.push(`Vibes: ${trip.vibes.join(", ")}`);
+  if (trip.description) lines.push(trip.description);
+  return lines.join("\n");
+}
+
 /* Walter bolds key phrases with **double asterisks**. */
 function Boldable({ text }: { text: string }) {
   const parts = text.split("**");
@@ -112,8 +139,21 @@ export function WalterChat() {
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const seqRef = useRef(0);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const copy = async (key: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      return; /* clipboard blocked (insecure context); leave the label alone */
+    }
+    setCopiedKey(key);
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+    copiedTimer.current = setTimeout(() => setCopiedKey(null), 1400);
+  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -301,6 +341,15 @@ export function WalterChat() {
                   >
                     <Boldable text={m.content} />
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => void copy(m.id, plainText(m.content))}
+                    className={`mt-1 text-[11px] font-medium text-ink-faint transition hover:text-ink ${
+                      m.role === "user" ? "ml-auto block text-right" : ""
+                    }`}
+                  >
+                    {copiedKey === m.id ? "Copied" : "Copy"}
+                  </button>
                   {m.trip?.destination ? (
                     <div className="mt-2 overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_14px_36px_-14px_rgba(20,30,60,0.35)]">
                       <div className="relative h-32">
@@ -376,6 +425,17 @@ export function WalterChat() {
                           className="block w-full rounded-full bg-accent py-2.5 text-center text-[13px] font-bold text-white transition hover:bg-accent-light"
                         >
                           Open live flights and stays
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            void copy(`trip-${m.id}`, tripSummaryText(m.trip!))
+                          }
+                          className="mt-1.5 block w-full text-center text-[11px] font-medium text-ink-faint transition hover:text-ink"
+                        >
+                          {copiedKey === `trip-${m.id}`
+                            ? "Trip details copied"
+                            : "Copy trip details"}
                         </button>
                       </div>
                     </div>

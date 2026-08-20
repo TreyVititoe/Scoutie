@@ -29,7 +29,6 @@ type CommunityTrip = {
 };
 
 const NAV_LINKS: { href: string; label: string; icon?: string }[] = [
-  { href: "/quick", label: "Quick plan", icon: "bolt" },
   { href: "/explore", label: "Explore" },
   { href: "/saved", label: "Saved" },
   { href: "/dashboard", label: "Trips" },

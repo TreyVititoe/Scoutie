@@ -1,5 +1,6 @@
 import type { TripPrefs } from "@walter/shared";
 import { api } from "@walter/api-client";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
@@ -8,6 +9,7 @@ import { SymbolView } from "expo-symbols";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -147,6 +149,30 @@ function shortDate(iso?: string): string {
   });
 }
 
+/* A pasteable summary of a proposed trip. */
+function tripSummaryText(trip: Partial<TripPrefs>): string {
+  const lines: string[] = [`Trip: ${trip.destination ?? "Trip"}`];
+  if (trip.startDate && trip.endDate) {
+    lines.push(
+      `When: ${shortDate(trip.startDate)} to ${shortDate(trip.endDate)}`
+    );
+  }
+  lines.push(
+    `Who: ${(trip.travelers ?? 0) > 1 ? `${trip.travelers} travelers` : "Solo trip"}`
+  );
+  if (trip.departureCity || trip.departureAirportCode) {
+    lines.push(
+      `From: ${trip.departureCity ?? "Departure"}${trip.departureAirportCode ? ` (${trip.departureAirportCode})` : ""}`
+    );
+  }
+  if ((trip.budget ?? 0) > 0) {
+    lines.push(`Budget: $${(trip.budget as number).toLocaleString()} for the group`);
+  }
+  if (trip.vibes?.length) lines.push(`Vibes: ${trip.vibes.join(", ")}`);
+  if (trip.description) lines.push(trip.description);
+  return lines.join("\n");
+}
+
 /* Walter bolds key phrases with **double asterisks**; render them heavy. */
 function BoldableText({
   text,
@@ -216,6 +242,16 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
     });
   }
 
+  const [copied, setCopied] = useState(false);
+
+  /* Long-press anywhere on the card copies a pasteable trip summary. */
+  const copyDetails = async () => {
+    await Clipboard.setStringAsync(tripSummaryText(trip));
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+  };
+
   const open = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     usePrefs.getState().patch({
@@ -235,6 +271,9 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
   return (
     <Pressable
       onPress={open}
+      onLongPress={() => void copyDetails()}
+      delayLongPress={350}
+      accessibilityHint="Long press to copy the trip details"
       className="bg-card rounded-3xl mt-2 overflow-hidden"
       style={{
         shadowColor: colors.shadow,
@@ -325,6 +364,11 @@ function TripProposalCard({ trip }: { trip: Partial<TripPrefs> }) {
           fallback={null}
         />
       </View>
+      {copied ? (
+        <Text className="text-ink-soft text-[11px] text-center -mt-2 mb-3">
+          Trip details copied
+        </Text>
+      ) : null}
     </Pressable>
   );
 }
@@ -337,7 +381,10 @@ export default function ChatScreen() {
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [keyboardUp, setKeyboardUp] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollToEnd = (animated = true) =>
     scrollRef.current?.scrollToEnd({ animated });
@@ -348,6 +395,30 @@ export default function ChatScreen() {
     const t = setTimeout(() => scrollToEnd(), 60);
     return () => clearTimeout(t);
   }, [messages.length, busy]);
+
+  useEffect(() => {
+    /* While the keyboard is up the floating tab bar sits behind it, so the
+     * composer drops its tab-bar clearance and hugs the keyboard instead. */
+    const showEvt =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvt =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const show = Keyboard.addListener(showEvt, () => setKeyboardUp(true));
+    const hide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
+    return () => {
+      show.remove();
+      hide.remove();
+      if (copiedTimer.current) clearTimeout(copiedTimer.current);
+    };
+  }, []);
+
+  const copyMessage = async (m: ChatMessage) => {
+    await Clipboard.setStringAsync(m.content.split("**").join(""));
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setCopiedId(m.id);
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+    copiedTimer.current = setTimeout(() => setCopiedId(null), 1400);
+  };
 
   const send = async (text: string) => {
     const content = text.trim();
@@ -459,8 +530,11 @@ export default function ChatScreen() {
         className="flex-1"
         contentContainerStyle={{ padding: 20, paddingBottom: 16 }}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
         onContentSizeChange={() => scrollToEnd(false)}
       >
+        {/* Tapping anywhere outside the composer drops the keyboard. */}
+        <Pressable onPress={Keyboard.dismiss} accessible={false}>
         {messages.length === 0 ? (
           <View>
             <View
@@ -489,7 +563,11 @@ export default function ChatScreen() {
         ) : (
           messages.map((m) => (
             <View key={m.id} className="mb-3">
-              <View
+              <Pressable
+                onPress={Keyboard.dismiss}
+                onLongPress={() => void copyMessage(m)}
+                delayLongPress={350}
+                accessibilityHint="Long press to copy this message"
                 className="rounded-2xl p-3.5"
                 style={{
                   maxWidth: "88%",
@@ -502,7 +580,17 @@ export default function ChatScreen() {
                   color={m.role === "user" ? "#FFFFFF" : colors.text}
                   text={m.content}
                 />
-              </View>
+              </Pressable>
+              {copiedId === m.id ? (
+                <Text
+                  className="text-ink-soft text-[11px] mt-1"
+                  style={{
+                    alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+                  }}
+                >
+                  Copied
+                </Text>
+              ) : null}
               {m.trip?.destination ? <TripProposalCard trip={m.trip} /> : null}
             </View>
           ))
@@ -525,11 +613,12 @@ export default function ChatScreen() {
             </Text>
           </View>
         ) : null}
+        </Pressable>
       </ScrollView>
 
       <View
         className="flex-row items-end gap-2.5 px-4 pt-2 border-t border-line bg-page-bg"
-        style={{ paddingBottom: insets.bottom + 86 }}
+        style={{ paddingBottom: keyboardUp ? 10 : insets.bottom + 86 }}
       >
         <TextInput
           value={draft}
