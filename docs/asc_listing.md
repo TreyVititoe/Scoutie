@@ -91,3 +91,33 @@ Required: 6.9" iPhone set (1320 × 2868). iPad not needed
 3. `npx eas-cli submit -p ios --latest` uploads the build.
 4. TestFlight internal test on a real device (Phase 4.2) before
    submitting for review.
+
+---
+
+## FINAL SUBMISSION CHECKLIST (2026-08-20 — everything below is Trey's)
+
+State: **build #4 (v1.0.0) uploaded and processing** — includes the
+group-price fix (7f3707f) that builds #2/#3 lack. Five screenshots at
+`docs/screenshots/01..05.png` (1320x2868, journey order: Home, Plan,
+Results, Trip, Checkout — real captures, live data).
+
+At https://appstoreconnect.apple.com/apps/6790163527 do, in order:
+
+1. **App Information:** rename the record from "Walter (a76742)" to
+   `Walter — Trip Planner` (fall back to "Walter" if free). Subtitle
+   `From daydream to booked`. Category Travel. Age rating 4+.
+2. **Pricing:** Free, all territories — OR exclude the EU if you do not
+   want to declare trader status (DSA). If you keep the EU, ASC will ask
+   for a trader declaration (Business tab); answering "non-trader" works
+   for a free app with no EU revenue.
+3. **App Privacy:** answer **"Data Not Collected"** (accounts are
+   unreachable in v1; no tracking, no ATT). Do NOT declare email or
+   location.
+4. **1.0 version page:** paste description + keywords + URLs from the
+   sections above; upload the five screenshots from `docs/screenshots/`
+   in order; select **build 4** once processing finishes (email from
+   Apple, ~10 min); paste the App Review notes from this doc into
+   Review Information; leave the sign-in fields OFF (no account needed).
+5. **Quick device QA first (recommended):** install build 4 from
+   TestFlight, run Home -> Plan -> Results -> Trip -> Checkout once.
+6. Press **Submit for Review**.

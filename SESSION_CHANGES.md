@@ -1,3 +1,24 @@
+# Session changes - 2026-08-20
+
+## App Store submission run (pre-Brennan-meeting push)
+
+- EAS production build #4 (v1.0.0) built and uploaded to App Store
+  Connect via `eas submit` — first binary carrying the group-trip price
+  fix (7f3707f). Builds #2/#3 lack it.
+- Five 6.9" screenshots (1320x2868) captured from the iPhone 17 Pro Max
+  simulator at `docs/screenshots/01..05.png`: Home, Plan a trip,
+  Results (live JFK->BCN fares), Trip (map + $3,130 cart), Checkout
+  ("2 of 5 booked"). Journey state seeded via AsyncStorage manifest;
+  navigation driven through Metro's Hermes inspector (imperative
+  `router.push`) because simctl openurl trips the scheme dialog.
+- Clarify screen skipped as a screenshot: its `headerLargeTitle` renders
+  as a blank band in the modal on the iOS 26 simulator — worth a look
+  on-device someday (title "A few details" missing; compact headers on
+  the other modals render fine).
+- docs/asc_listing.md now ends with a FINAL SUBMISSION CHECKLIST — the
+  remaining steps are all in Trey's ASC login (rename record, privacy
+  labels, screenshots, EU trader call, select build 4, submit).
+
 # Session changes - 2026-08-07
 
 ## Landing + results polish (commits cb7dce7, 2796cbd, 4edeafd, d2b4ac2)
