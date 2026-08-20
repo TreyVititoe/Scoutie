@@ -17,6 +17,30 @@ import { prefInterests, readStored, type StoredPrefs } from "@/lib/prefs";
 import type { FlightResult } from "@/lib/services/flights";
 import type { HotelResult } from "@/lib/services/hotels";
 import type { ScoredEvent, Suggestion } from "@/lib/types";
+import {
+  airlinesIn,
+  applyEventFilters,
+  applyFlightFilters,
+  applyHotelFilters,
+  applyPickFilters,
+  countActive,
+  defaultEventFilters,
+  defaultFlightFilters,
+  defaultHotelFilters,
+  defaultPickFilters,
+  eventCategories,
+  eventPoints,
+  type EventFilters,
+  type FlightFilters,
+  type HotelFilters,
+  type LatLng,
+  type PickFilters,
+} from "@/lib/resultsFilters";
+import {
+  ChipGroup,
+  FilterBar,
+  MultiChipGroup,
+} from "@/components/results/FilterBar";
 
 const tabs = [
   { id: "flights", label: "Flights", icon: "flight" },
@@ -76,6 +100,17 @@ export default function ResultsPage() {
   const [fetchKey, setFetchKey] = useState(0);
   const [stayType, setStayType] = useState<StayType>("hotel");
   const [hotelsUnavailable, setHotelsUnavailable] = useState(false);
+  /* Per-panel filters over the fetched results (client-side, instant). */
+  const [flightFilters, setFlightFilters] =
+    useState<FlightFilters>(defaultFlightFilters);
+  const [hotelFilters, setHotelFilters] =
+    useState<HotelFilters>(defaultHotelFilters);
+  const [eventFilters, setEventFilters] =
+    useState<EventFilters>(defaultEventFilters);
+  const [pickFilters, setPickFilters] =
+    useState<PickFilters>(defaultPickFilters);
+  /* Geocoded city center backs the distance filters. */
+  const [center, setCenter] = useState<LatLng | null>(null);
   /* A failed search must not read as "nothing found" -- each panel tracks its
    * own failure so it can offer a retry instead of a confident empty state. */
   const [flightsError, setFlightsError] = useState(false);
@@ -369,6 +404,30 @@ export default function ResultsPage() {
     (prefs as { destination?: string })?.destination ||
     "your destination";
 
+  /* City center for the distance filters. Best effort: filters that need
+   * it simply stay inert until it resolves. */
+  useEffect(() => {
+    if (!destination || destination === "your destination") return;
+    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+    if (!token) return;
+    let cancelled = false;
+    fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(destination)}.json?types=place&limit=1&access_token=${token}`
+    )
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const c = data?.features?.[0]?.center;
+        if (Array.isArray(c) && c.length === 2) {
+          setCenter({ lat: c[1], lng: c[0] });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [destination]);
+
   if (!pageReady) {
     return (
       <div className="min-h-screen bg-product-bg flex items-center justify-center">
@@ -377,19 +436,31 @@ export default function ResultsPage() {
     );
   }
 
-  const cheapestFlight = flights.length > 0
-    ? flights.reduce((a, b) => (a.price < b.price ? a : b))
+  const allEvents = [...events, ...(events.length < 3 ? similarEvents : []), ...topEvents];
+
+  /* Filters applied to the fetched lists; the cards render the survivors. */
+  const shownFlights = applyFlightFilters(flights, flightFilters);
+  const eventPts = eventPoints(allEvents);
+  const shownHotels = applyHotelFilters(hotels, hotelFilters, center, eventPts);
+  const shownEvents = applyEventFilters(allEvents, eventFilters, center);
+  const shownPicks = applyPickFilters(suggestions, pickFilters);
+
+  const flightFilterCount = countActive(flightFilters, defaultFlightFilters);
+  const hotelFilterCount = countActive(hotelFilters, defaultHotelFilters);
+  const eventFilterCount = countActive(eventFilters, defaultEventFilters);
+  const pickFilterCount = countActive(pickFilters, defaultPickFilters);
+
+  const cheapestFlight = shownFlights.length > 0
+    ? shownFlights.reduce((a, b) => (a.price < b.price ? a : b))
     : null;
 
-  const bestValueHotel = hotels.length > 0
-    ? hotels.reduce((a, b) => {
+  const bestValueHotel = shownHotels.length > 0
+    ? shownHotels.reduce((a, b) => {
         const scoreA = a.rating / (a.pricePerNight || 1);
         const scoreB = b.rating / (b.pricePerNight || 1);
         return scoreA > scoreB ? a : b;
       })
     : null;
-
-  const allEvents = [...events, ...(events.length < 3 ? similarEvents : []), ...topEvents];
 
   const travelers = (() => {
     const p = prefs as Record<string, unknown> | null;
@@ -552,10 +623,87 @@ export default function ResultsPage() {
                   flightsLoading
                     ? "Searching flights"
                     : flights.length > 0
-                      ? `${flights.length} flights ${(prefs as { departureCity?: string })?.departureCity ? `from ${(prefs as { departureCity?: string }).departureCity}` : ""}`
+                      ? `${shownFlights.length} flights ${(prefs as { departureCity?: string })?.departureCity ? `from ${(prefs as { departureCity?: string }).departureCity}` : ""}`
                       : "Flights"
                 }
               />
+
+              {!flightsLoading && flights.length > 0 && (
+                <FilterBar
+                  activeCount={flightFilterCount}
+                  onReset={() => setFlightFilters(defaultFlightFilters)}
+                  matchLine={
+                    flightFilterCount > 0
+                      ? `${shownFlights.length} of ${flights.length} flights match`
+                      : undefined
+                  }
+                >
+                  <ChipGroup
+                    label="Stops"
+                    value={flightFilters.stops}
+                    onChange={(v) => setFlightFilters({ ...flightFilters, stops: v })}
+                    options={[
+                      { value: "any", label: "Any" },
+                      { value: "nonstop", label: "Nonstop" },
+                      { value: "one", label: "1 stop max" },
+                    ]}
+                  />
+                  <ChipGroup
+                    label="Price"
+                    value={flightFilters.maxPrice}
+                    onChange={(v) => setFlightFilters({ ...flightFilters, maxPrice: v })}
+                    options={[
+                      { value: null, label: "Any" },
+                      { value: 300, label: "Under $300" },
+                      { value: 600, label: "Under $600" },
+                      { value: 1000, label: "Under $1,000" },
+                    ]}
+                  />
+                  <ChipGroup
+                    label="Duration"
+                    value={flightFilters.maxDurationH}
+                    onChange={(v) =>
+                      setFlightFilters({ ...flightFilters, maxDurationH: v })
+                    }
+                    options={[
+                      { value: null, label: "Any" },
+                      { value: 6, label: "Under 6h" },
+                      { value: 10, label: "Under 10h" },
+                      { value: 15, label: "Under 15h" },
+                    ]}
+                  />
+                  <MultiChipGroup
+                    label="Airline"
+                    options={airlinesIn(flights)}
+                    values={flightFilters.airlines}
+                    onChange={(v) =>
+                      setFlightFilters({ ...flightFilters, airlines: v })
+                    }
+                  />
+                  <ChipGroup
+                    label="Cabin"
+                    value={String((prefs as { flightClass?: string })?.flightClass || "economy")}
+                    onChange={(v) => handleInlineUpdate({ flightClass: v })}
+                    options={[
+                      { value: "economy", label: "Economy" },
+                      { value: "premium_economy", label: "Premium" },
+                      { value: "business", label: "Business" },
+                      { value: "first", label: "First" },
+                    ]}
+                  />
+                  <ChipGroup
+                    label="Sort"
+                    value={flightFilters.sort}
+                    onChange={(v) => setFlightFilters({ ...flightFilters, sort: v })}
+                    options={[
+                      { value: "best", label: "Best" },
+                      { value: "cheapest", label: "Cheapest" },
+                      { value: "fastest", label: "Fastest" },
+                      { value: "earliest", label: "Earliest out" },
+                    ]}
+                  />
+                </FilterBar>
+              )}
 
               {flightsLoading && (
                 <LoadingBackdrop image={heroImage}>
@@ -568,16 +716,24 @@ export default function ResultsPage() {
                 </LoadingBackdrop>
               )}
 
-              {!flightsLoading && flights.length > 0 && (
+              {!flightsLoading && shownFlights.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[...flights]
-                    .sort((a, b) =>
-                      a.id === cheapestFlight?.id ? -1 : b.id === cheapestFlight?.id ? 1 : 0
-                    )
-                    .map((f) => (
-                      <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
-                    ))}
+                  {(flightFilters.sort === "best"
+                    ? [...shownFlights].sort((a, b) =>
+                        a.id === cheapestFlight?.id ? -1 : b.id === cheapestFlight?.id ? 1 : 0
+                      )
+                    : shownFlights
+                  ).map((f) => (
+                    <FlightCard key={f.id} flight={f} cheapest={cheapestFlight?.id === f.id} />
+                  ))}
                 </div>
+              )}
+
+              {!flightsLoading && flights.length > 0 && shownFlights.length === 0 && (
+                <EmptyState
+                  icon="filter_alt_off"
+                  message="No flights match these filters. Loosen one or reset."
+                />
               )}
 
               {!flightsLoading && flightsError && (
@@ -615,7 +771,7 @@ export default function ResultsPage() {
                   hotelsLoading
                     ? "Searching stays"
                     : hotels.length > 0
-                      ? `${hotels.length} stays in ${destination}`
+                      ? `${shownHotels.length} stays in ${destination}`
                       : "Stays"
                 }
               />
@@ -636,18 +792,103 @@ export default function ResultsPage() {
                 ))}
               </div>
 
+              {!hotelsLoading && hotels.length > 0 && (
+                <FilterBar
+                  activeCount={hotelFilterCount}
+                  onReset={() => setHotelFilters(defaultHotelFilters)}
+                  matchLine={
+                    hotelFilterCount > 0
+                      ? `${shownHotels.length} of ${hotels.length} stays match`
+                      : undefined
+                  }
+                >
+                  <ChipGroup
+                    label="Per night"
+                    value={hotelFilters.maxNight}
+                    onChange={(v) => setHotelFilters({ ...hotelFilters, maxNight: v })}
+                    options={[
+                      { value: null, label: "Any" },
+                      { value: 100, label: "Under $100" },
+                      { value: 200, label: "Under $200" },
+                      { value: 400, label: "Under $400" },
+                    ]}
+                  />
+                  <ChipGroup
+                    label="Rating"
+                    value={hotelFilters.minRating}
+                    onChange={(v) => setHotelFilters({ ...hotelFilters, minRating: v })}
+                    options={[
+                      { value: null, label: "Any" },
+                      { value: 7, label: "7+" },
+                      { value: 8, label: "8+" },
+                      { value: 9, label: "9+" },
+                    ]}
+                  />
+                  {center && (
+                    <ChipGroup
+                      label="From center"
+                      value={hotelFilters.maxCenterKm}
+                      onChange={(v) =>
+                        setHotelFilters({ ...hotelFilters, maxCenterKm: v })
+                      }
+                      options={[
+                        { value: null, label: "Any" },
+                        { value: 1, label: "Under 1 km" },
+                        { value: 3, label: "Under 3 km" },
+                        { value: 5, label: "Under 5 km" },
+                      ]}
+                    />
+                  )}
+                  {eventPts.length > 0 && (
+                    <ChipGroup
+                      label="Near my events"
+                      value={hotelFilters.nearEventsKm}
+                      onChange={(v) =>
+                        setHotelFilters({ ...hotelFilters, nearEventsKm: v })
+                      }
+                      options={[
+                        { value: null, label: "Any" },
+                        { value: 2, label: "Within 2 km" },
+                        { value: 5, label: "Within 5 km" },
+                      ]}
+                    />
+                  )}
+                  <ChipGroup
+                    label="Sort"
+                    value={hotelFilters.sort}
+                    onChange={(v) => setHotelFilters({ ...hotelFilters, sort: v })}
+                    options={[
+                      { value: "value", label: "Best value" },
+                      { value: "cheapest", label: "Cheapest" },
+                      { value: "rating", label: "Top rated" },
+                      ...(center
+                        ? [{ value: "closest" as const, label: "Closest to center" }]
+                        : []),
+                    ]}
+                  />
+                </FilterBar>
+              )}
+
               {hotelsLoading && <LoadingBackdrop image={heroImage} caption="Talking to Booking.com…"><CardSkeletonGrid withImage /></LoadingBackdrop>}
 
-              {!hotelsLoading && hotels.length > 0 && (
+              {!hotelsLoading && shownHotels.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[...hotels]
-                    .sort((a, b) =>
-                      a.id === bestValueHotel?.id ? -1 : b.id === bestValueHotel?.id ? 1 : 0
-                    )
-                    .map((h) => (
-                      <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
-                    ))}
+                  {(hotelFilters.sort === "value"
+                    ? [...shownHotels].sort((a, b) =>
+                        a.id === bestValueHotel?.id ? -1 : b.id === bestValueHotel?.id ? 1 : 0
+                      )
+                    : shownHotels
+                  ).map((h) => (
+                    <HotelCard key={h.id} hotel={h} bestValue={bestValueHotel?.id === h.id} />
+                  ))}
                 </div>
+              )}
+
+              {!hotelsLoading && hotels.length > 0 && shownHotels.length === 0 && (
+                <EmptyState
+                  icon="filter_alt_off"
+                  message="No stays match these filters. Loosen one or reset."
+                />
               )}
 
               {!hotelsLoading && hotelsError && (
@@ -684,19 +925,89 @@ export default function ResultsPage() {
                   eventsLoading
                     ? "Searching events"
                     : allEvents.length > 0
-                      ? `${allEvents.length} events during your trip`
+                      ? `${shownEvents.length} events during your trip`
                       : "Events"
                 }
               />
 
+              {!eventsLoading && allEvents.length > 0 && (
+                <FilterBar
+                  activeCount={eventFilterCount}
+                  onReset={() => setEventFilters(defaultEventFilters)}
+                  matchLine={
+                    eventFilterCount > 0
+                      ? `${shownEvents.length} of ${allEvents.length} events match`
+                      : undefined
+                  }
+                >
+                  <ChipGroup
+                    label="Type"
+                    value={eventFilters.category}
+                    onChange={(v) => setEventFilters({ ...eventFilters, category: v })}
+                    options={[
+                      { value: null, label: "All" },
+                      ...eventCategories(allEvents)
+                        .slice(0, 6)
+                        .map((c) => ({ value: c, label: c })),
+                    ]}
+                  />
+                  <ChipGroup
+                    label="Ticket"
+                    value={eventFilters.maxPrice}
+                    onChange={(v) => setEventFilters({ ...eventFilters, maxPrice: v })}
+                    options={[
+                      { value: null, label: "Any" },
+                      { value: 50, label: "Under $50" },
+                      { value: 100, label: "Under $100" },
+                      { value: 250, label: "Under $250" },
+                    ]}
+                  />
+                  {center && (
+                    <ChipGroup
+                      label="From center"
+                      value={eventFilters.maxCenterKm}
+                      onChange={(v) =>
+                        setEventFilters({ ...eventFilters, maxCenterKm: v })
+                      }
+                      options={[
+                        { value: null, label: "Any" },
+                        { value: 2, label: "Under 2 km" },
+                        { value: 5, label: "Under 5 km" },
+                        { value: 10, label: "Under 10 km" },
+                      ]}
+                    />
+                  )}
+                  <ChipGroup
+                    label="Sort"
+                    value={eventFilters.sort}
+                    onChange={(v) => setEventFilters({ ...eventFilters, sort: v })}
+                    options={[
+                      { value: "match", label: "Best match" },
+                      { value: "date", label: "Date" },
+                      { value: "price", label: "Price" },
+                      ...(center
+                        ? [{ value: "closest" as const, label: "Closest" }]
+                        : []),
+                    ]}
+                  />
+                </FilterBar>
+              )}
+
               {eventsLoading && <LoadingBackdrop image={heroImage} caption="Checking Ticketmaster for your dates…"><CardSkeletonGrid withImage /></LoadingBackdrop>}
 
-              {!eventsLoading && allEvents.length > 0 && (
+              {!eventsLoading && shownEvents.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {allEvents.map((ev, i) => (
-                    <EventCard key={ev.id} event={ev} featured={i === 0 && events.length > 0} travelers={travelers} />
+                  {shownEvents.map((ev, i) => (
+                    <EventCard key={ev.id} event={ev} featured={i === 0 && eventFilterCount === 0 && events.length > 0} travelers={travelers} />
                   ))}
                 </div>
+              )}
+
+              {!eventsLoading && allEvents.length > 0 && shownEvents.length === 0 && (
+                <EmptyState
+                  icon="filter_alt_off"
+                  message="No events match these filters. Loosen one or reset."
+                />
               )}
 
               {!eventsLoading && eventsError && (
@@ -730,19 +1041,61 @@ export default function ResultsPage() {
                   suggestionsLoading
                     ? "Walter is picking spots"
                     : suggestions.length > 0
-                      ? `${suggestions.length} spots Walter likes`
+                      ? `${shownPicks.length} spots Walter likes`
                       : "Walter's picks"
                 }
               />
 
+              {!suggestionsLoading && suggestions.length > 0 && (
+                <FilterBar
+                  activeCount={pickFilterCount}
+                  onReset={() => setPickFilters(defaultPickFilters)}
+                  matchLine={
+                    pickFilterCount > 0
+                      ? `${shownPicks.length} of ${suggestions.length} picks match`
+                      : undefined
+                  }
+                >
+                  <ChipGroup
+                    label="Type"
+                    value={pickFilters.type}
+                    onChange={(v) => setPickFilters({ ...pickFilters, type: v })}
+                    options={[
+                      { value: "all", label: "All" },
+                      { value: "activity", label: "Activities" },
+                      { value: "restaurant", label: "Restaurants" },
+                      { value: "site", label: "Sites" },
+                    ]}
+                  />
+                  <ChipGroup
+                    label="Cost"
+                    value={pickFilters.maxCost}
+                    onChange={(v) => setPickFilters({ ...pickFilters, maxCost: v })}
+                    options={[
+                      { value: null, label: "Any" },
+                      { value: 25, label: "Under $25" },
+                      { value: 75, label: "Under $75" },
+                      { value: 150, label: "Under $150" },
+                    ]}
+                  />
+                </FilterBar>
+              )}
+
               {suggestionsLoading && <LoadingBackdrop image={heroImage} caption="Walter is thinking…"><CardSkeletonGrid /></LoadingBackdrop>}
 
-              {!suggestionsLoading && !suggestionsError && suggestions.length > 0 && (
+              {!suggestionsLoading && !suggestionsError && shownPicks.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {suggestions.map((s) => (
+                  {shownPicks.map((s) => (
                     <SuggestionCard key={s.id} suggestion={s} travelers={travelers} />
                   ))}
                 </div>
+              )}
+
+              {!suggestionsLoading && !suggestionsError && suggestions.length > 0 && shownPicks.length === 0 && (
+                <EmptyState
+                  icon="filter_alt_off"
+                  message="No picks match these filters. Loosen one or reset."
+                />
               )}
 
               {!suggestionsLoading && suggestionsError && (

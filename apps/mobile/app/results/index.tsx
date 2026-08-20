@@ -15,9 +15,31 @@ import {
 } from "../../components/results/ResultCards";
 import { AirportAutocomplete } from "../../components/AirportAutocomplete";
 import { DateRangePicker } from "../../components/DateRangePicker";
+import {
+  ChipRow,
+  FilterPanel,
+  MultiChipRow,
+} from "../../components/results/FilterChips";
 import { SegmentedControl } from "../../components/SegmentedControl";
 import { SkeletonListItem } from "../../components/Skeleton";
 import { api } from "../../lib/apiClient";
+import {
+  airlinesIn,
+  applyEventFilters,
+  applyFlightFilters,
+  applyHotelFilters,
+  applyPickFilters,
+  countActive,
+  defaultEventFilters,
+  defaultFlightFilters,
+  defaultHotelFilters,
+  defaultPickFilters,
+  eventCategories,
+  type EventFilters,
+  type FlightFilters,
+  type HotelFilters,
+  type PickFilters,
+} from "../../lib/resultsFilters";
 import { useTripCart } from "../../lib/stores/tripCartStore";
 import { usePrefs } from "../../lib/stores/walterPrefsStore";
 import { colors } from "../../theme/colors";
@@ -36,6 +58,10 @@ export default function ResultsScreen() {
   const cart = useTripCart();
   const [section, setSection] = useState<Section>("flights");
   const [stayType, setStayType] = useState<StayType>("hotel");
+  const [flightF, setFlightF] = useState<FlightFilters>(defaultFlightFilters);
+  const [hotelF, setHotelF] = useState<HotelFilters>(defaultHotelFilters);
+  const [eventF, setEventF] = useState<EventFilters>(defaultEventFilters);
+  const [pickF, setPickF] = useState<PickFilters>(defaultPickFilters);
   const destPhoto = prefs.destination ? api.photo.url(prefs.destination) : undefined;
 
   const travelers = prefs.travelers ?? 2;
@@ -127,13 +153,78 @@ export default function ResultsScreen() {
           />
         );
       if (flights.isLoading) return <Loading label="Searching flights…" photo={destPhoto} />;
-      const f = flights.data?.flights ?? [];
-      if (!f.length) return <Empty icon="airplane" label="No flights found." />;
-      const cheapest = f.reduce((a, b) => (a.price < b.price ? a : b));
-      const ordered = [...f].sort((a, b) =>
-        a.id === cheapest.id ? -1 : b.id === cheapest.id ? 1 : 0
+      const fAll = flights.data?.flights ?? [];
+      if (!fAll.length) return <Empty icon="airplane" label="No flights found." />;
+      const f = applyFlightFilters(fAll, flightF);
+      const flightPanel = (
+        <FilterPanel
+          activeCount={countActive(flightF, defaultFlightFilters)}
+          onReset={() => setFlightF(defaultFlightFilters)}
+        >
+          <ChipRow
+            label="Stops"
+            value={flightF.stops}
+            onChange={(v) => setFlightF({ ...flightF, stops: v })}
+            options={[
+              { value: "any", label: "Any" },
+              { value: "nonstop", label: "Nonstop" },
+              { value: "one", label: "1 stop max" },
+            ]}
+          />
+          <ChipRow
+            label="Price"
+            value={flightF.maxPrice}
+            onChange={(v) => setFlightF({ ...flightF, maxPrice: v })}
+            options={[
+              { value: null, label: "Any" },
+              { value: 300, label: "Under $300" },
+              { value: 600, label: "Under $600" },
+              { value: 1000, label: "Under $1,000" },
+            ]}
+          />
+          <MultiChipRow
+            label="Airline"
+            options={airlinesIn(fAll)}
+            values={flightF.airlines}
+            onToggle={(a) =>
+              setFlightF({
+                ...flightF,
+                airlines: flightF.airlines.includes(a)
+                  ? flightF.airlines.filter((x) => x !== a)
+                  : [...flightF.airlines, a],
+              })
+            }
+          />
+          <ChipRow
+            label="Sort"
+            value={flightF.sort}
+            onChange={(v) => setFlightF({ ...flightF, sort: v })}
+            options={[
+              { value: "best", label: "Best" },
+              { value: "cheapest", label: "Cheapest" },
+              { value: "fastest", label: "Fastest" },
+            ]}
+          />
+        </FilterPanel>
       );
-      return ordered.map((flight) => (
+      if (!f.length)
+        return (
+          <View>
+            {flightPanel}
+            <Empty icon="airplane" label="No flights match these filters." />
+          </View>
+        );
+      const cheapest = f.reduce((a, b) => (a.price < b.price ? a : b));
+      const ordered =
+        flightF.sort === "best"
+          ? [...f].sort((a, b) =>
+              a.id === cheapest.id ? -1 : b.id === cheapest.id ? 1 : 0
+            )
+          : f;
+      return (
+        <View>
+          {flightPanel}
+          {ordered.map((flight) => (
         <FlightCard
           key={flight.id}
           flight={flight}
@@ -155,7 +246,9 @@ export default function ResultsScreen() {
             });
           }}
         />
-      ));
+          ))}
+        </View>
+      );
     }
     if (section === "stay") {
       const pills = (
@@ -207,7 +300,47 @@ export default function ResultsScreen() {
             <Loading label="Searching stays…" photo={destPhoto} />
           </View>
         );
-      const h = hotels.data?.hotels ?? [];
+      const hAll = hotels.data?.hotels ?? [];
+      const h = applyHotelFilters(hAll, hotelF);
+      const hotelPanel = hAll.length ? (
+        <FilterPanel
+          activeCount={countActive(hotelF, defaultHotelFilters)}
+          onReset={() => setHotelF(defaultHotelFilters)}
+        >
+          <ChipRow
+            label="Per night"
+            value={hotelF.maxNight}
+            onChange={(v) => setHotelF({ ...hotelF, maxNight: v })}
+            options={[
+              { value: null, label: "Any" },
+              { value: 100, label: "Under $100" },
+              { value: 200, label: "Under $200" },
+              { value: 400, label: "Under $400" },
+            ]}
+          />
+          <ChipRow
+            label="Rating"
+            value={hotelF.minRating}
+            onChange={(v) => setHotelF({ ...hotelF, minRating: v })}
+            options={[
+              { value: null, label: "Any" },
+              { value: 7, label: "7+" },
+              { value: 8, label: "8+" },
+              { value: 9, label: "9+" },
+            ]}
+          />
+          <ChipRow
+            label="Sort"
+            value={hotelF.sort}
+            onChange={(v) => setHotelF({ ...hotelF, sort: v })}
+            options={[
+              { value: "value", label: "Best value" },
+              { value: "cheapest", label: "Cheapest" },
+              { value: "rating", label: "Top rated" },
+            ]}
+          />
+        </FilterPanel>
+      ) : null;
       const bestValue = h.length
         ? h.reduce((a, b) =>
             a.rating / (a.pricePerNight || 1) > b.rating / (b.pricePerNight || 1)
@@ -218,14 +351,23 @@ export default function ResultsScreen() {
       return (
         <View>
           {pills}
+          {hotelPanel}
           {!h.length ? (
-            <Empty icon="bed.double" label="No stays found for this type." />
+            <Empty
+              icon="bed.double"
+              label={
+                hAll.length
+                  ? "No stays match these filters."
+                  : "No stays found for this type."
+              }
+            />
           ) : (
-            [...h]
-              .sort((a, b) =>
-                a.id === bestValue?.id ? -1 : b.id === bestValue?.id ? 1 : 0
-              )
-              .map((hotel) => (
+            (hotelF.sort === "value"
+              ? [...h].sort((a, b) =>
+                  a.id === bestValue?.id ? -1 : b.id === bestValue?.id ? 1 : 0
+                )
+              : h
+            ).map((hotel) => (
               <HotelCard
                 key={hotel.id}
                 hotel={hotel}
@@ -270,8 +412,58 @@ export default function ResultsScreen() {
         ...(events.data?.topInArea ?? []),
       ];
       if (!all.length) return <Empty icon="ticket" label="No events found." />;
+      const shown = applyEventFilters(all, eventF);
+      const eventPanel = (
+        <FilterPanel
+          activeCount={countActive(eventF, defaultEventFilters)}
+          onReset={() => setEventF(defaultEventFilters)}
+        >
+          <ChipRow
+            label="Type"
+            value={eventF.category}
+            onChange={(v) => setEventF({ ...eventF, category: v })}
+            options={[
+              { value: null, label: "All" },
+              ...eventCategories(all)
+                .slice(0, 6)
+                .map((c) => ({ value: c, label: c })),
+            ]}
+          />
+          <ChipRow
+            label="Ticket"
+            value={eventF.maxPrice}
+            onChange={(v) => setEventF({ ...eventF, maxPrice: v })}
+            options={[
+              { value: null, label: "Any" },
+              { value: 50, label: "Under $50" },
+              { value: 100, label: "Under $100" },
+              { value: 250, label: "Under $250" },
+            ]}
+          />
+          <ChipRow
+            label="Sort"
+            value={eventF.sort}
+            onChange={(v) => setEventF({ ...eventF, sort: v })}
+            options={[
+              { value: "match", label: "Best match" },
+              { value: "date", label: "Date" },
+              { value: "price", label: "Price" },
+            ]}
+          />
+        </FilterPanel>
+      );
+      if (!shown.length)
+        return (
+          <View>
+            {eventPanel}
+            <Empty icon="ticket" label="No events match these filters." />
+          </View>
+        );
       const exactCount = events.data?.exactMatches?.length ?? 0;
-      return all.map((e, i) => (
+      return (
+        <View>
+          {eventPanel}
+          {shown.map((e, i) => (
         <EventCard
           key={e.id}
           event={e}
@@ -295,7 +487,9 @@ export default function ResultsScreen() {
             });
           }}
         />
-      ));
+          ))}
+        </View>
+      );
     }
     if (section === "do") {
       if (suggestions.isPaused)
@@ -311,10 +505,50 @@ export default function ResultsScreen() {
         );
       if (suggestions.isLoading)
         return <Loading label="Walter is thinking…" photo={destPhoto} />;
-      const s = suggestions.data?.suggestions ?? [];
-      if (!s.length)
+      const sAll = suggestions.data?.suggestions ?? [];
+      if (!sAll.length)
         return <Empty icon="lightbulb" label="No suggestions yet." />;
-      return s.map((sug) => (
+      const s = applyPickFilters(sAll, pickF);
+      const pickPanel = (
+        <FilterPanel
+          activeCount={countActive(pickF, defaultPickFilters)}
+          onReset={() => setPickF(defaultPickFilters)}
+        >
+          <ChipRow
+            label="Type"
+            value={pickF.type}
+            onChange={(v) => setPickF({ ...pickF, type: v })}
+            options={[
+              { value: "all", label: "All" },
+              { value: "activity", label: "Activities" },
+              { value: "restaurant", label: "Restaurants" },
+              { value: "site", label: "Sites" },
+            ]}
+          />
+          <ChipRow
+            label="Cost"
+            value={pickF.maxCost}
+            onChange={(v) => setPickF({ ...pickF, maxCost: v })}
+            options={[
+              { value: null, label: "Any" },
+              { value: 25, label: "Under $25" },
+              { value: 75, label: "Under $75" },
+              { value: 150, label: "Under $150" },
+            ]}
+          />
+        </FilterPanel>
+      );
+      if (!s.length)
+        return (
+          <View>
+            {pickPanel}
+            <Empty icon="lightbulb" label="No picks match these filters." />
+          </View>
+        );
+      return (
+        <View>
+          {pickPanel}
+          {s.map((sug) => (
         <SuggestionCard
           key={sug.id}
           suggestion={sug}
@@ -337,10 +571,12 @@ export default function ResultsScreen() {
             });
           }}
         />
-      ));
+          ))}
+        </View>
+      );
     }
     return null;
-  }, [section, flights, hotels, events, suggestions, cart, stayType, hasOrigin, destPhoto, travelers]);
+  }, [section, flights, hotels, events, suggestions, cart, stayType, hasOrigin, destPhoto, travelers, flightF, hotelF, eventF, pickF]);
 
   return (
     <View className="flex-1 bg-page-bg">
